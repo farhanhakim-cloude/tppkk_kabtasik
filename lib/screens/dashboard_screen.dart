@@ -318,20 +318,31 @@ class _MenuTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: BorderRadius.circular(20),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 58,
-            height: 58,
+            width: 60,
+            height: 60,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(18),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [color, Color.lerp(color, Colors.black, 0.15)!],
+              ),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: color.withOpacity(0.35),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                ),
+              ],
             ),
-            child: Icon(icon, color: color, size: 28),
+            child: Icon(icon, color: Colors.white, size: 28),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 9),
           Text(
             label,
             textAlign: TextAlign.center,
