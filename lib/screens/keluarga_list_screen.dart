@@ -39,7 +39,7 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
     final primary = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5FAF9),
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         title: Text('Data Keluarga', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
       ),

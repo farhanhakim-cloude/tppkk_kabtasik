@@ -62,7 +62,7 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
     final primary = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5FAF9),
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         title: const Text('Kesehatan Ibu & Anak'),
         bottom: TabBar(

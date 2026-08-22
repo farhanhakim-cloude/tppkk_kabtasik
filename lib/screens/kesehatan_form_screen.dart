@@ -95,7 +95,7 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
     final isBalita = _kategori == KategoriKesehatan.balita;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5FAF9),
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         title: Text(
           _isEdit ? 'Edit Data Kesehatan' : 'Tambah Data Kesehatan',

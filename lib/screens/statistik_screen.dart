@@ -50,7 +50,7 @@ class _StatistikScreenState extends State<StatistikScreen> {
     final primary = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5FAF9),
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         title: Text('Statistik', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
       ),
@@ -77,7 +77,7 @@ class _StatistikScreenState extends State<StatistikScreen> {
                 crossAxisSpacing: 12,
                 childAspectRatio: 1.4,
                 children: [
-                  _SummaryCard(label: 'Total Keluarga', value: '${data.totalKeluarga}', icon: Icons.home_rounded, color: const Color(0xFF0F9E8E)),
+                  _SummaryCard(label: 'Total Keluarga', value: '${data.totalKeluarga}', icon: Icons.home_rounded, color: const Color(0xFF2563EB)),
                   _SummaryCard(label: 'Total Anggota', value: '${data.totalAnggota}', icon: Icons.people_rounded, color: const Color(0xFF3F51B5)),
                   _SummaryCard(label: 'Ibu Hamil', value: '${data.totalIbuHamil}', icon: Icons.pregnant_woman_rounded, color: const Color(0xFFE91E63)),
                   _SummaryCard(label: 'Ibu Menyusui', value: '${data.totalIbuMenyusui}', icon: Icons.child_friendly_rounded, color: const Color(0xFFFF9800)),
@@ -98,7 +98,7 @@ class _StatistikScreenState extends State<StatistikScreen> {
                 padding: const EdgeInsets.all(18),
                 child: Column(
                   children: [
-                    _BarRow(label: 'Normal', value: data.balitaGiziNormal, total: data.totalBalita, color: const Color(0xFF0F9E8E)),
+                    _BarRow(label: 'Normal', value: data.balitaGiziNormal, total: data.totalBalita, color: const Color(0xFF2563EB)),
                     const SizedBox(height: 16),
                     _BarRow(label: 'Kurang', value: data.balitaGiziKurang, total: data.totalBalita, color: const Color(0xFFFF9800)),
                     const SizedBox(height: 16),

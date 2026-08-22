@@ -111,7 +111,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
     final primary = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5FAF9),
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         title: Text('Catat Kegiatan', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
       ),

@@ -134,7 +134,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5FAF9),
+      backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         title: Text(
           _isEdit ? 'Edit Data Keluarga' : 'Tambah Data Keluarga',

@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const primaryColor = Color(0xFF0F9E8E); // teal, sesuai referensi
+    const primaryColor = Color(0xFF2563EB); // blue, sesuai permintaan
 
     return MaterialApp(
       title: 'TPPKK Kab. Tasikmalaya',
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
           seedColor: primaryColor,
           primary: primaryColor,
         ),
-        scaffoldBackgroundColor: const Color(0xFFF5FAF9),
+        scaffoldBackgroundColor: const Color(0xFFF8FAFC),
         textTheme: GoogleFonts.plusJakartaSansTextTheme(),
         appBarTheme: AppBarTheme(
           backgroundColor: primaryColor,
