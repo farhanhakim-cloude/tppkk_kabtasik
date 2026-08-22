@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../models/berita.dart';
 import '../services/berita_service.dart';
 import 'keluarga_list_screen.dart';
@@ -6,6 +7,7 @@ import 'kesehatan_list_screen.dart';
 import 'statistik_screen.dart';
 import 'laporan_screen.dart';
 import 'profile_screen.dart';
+import 'catatan_kegiatan_form_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -44,71 +46,40 @@ class _DashboardScreenState extends State<DashboardScreen> {
         },
         child: CustomScrollView(
           slivers: [
+            // Top bar sederhana
             SliverToBoxAdapter(
-              child: Container(
-                padding: const EdgeInsets.fromLTRB(20, 56, 20, 56),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [primary, primary.withOpacity(0.85)],
-                  ),
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(32),
-                    bottomRight: Radius.circular(32),
-                  ),
-                ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 56, 20, 16),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    Row(
                       children: [
-                        const Text(
-                          'Selamat Datang,',
-                          style: TextStyle(color: Colors.white70, fontSize: 13),
-                        ),
-                        const SizedBox(height: 2),
-                        const Text(
-                          'Kader PKK',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.18),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: const Text(
-                            'RT 01 / RW 05',
-                            style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w500),
-                          ),
+                        Image.asset('assets/images/logo.png', width: 34, height: 34),
+                        const SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'TP PKK Kab. Tasikmalaya',
+                              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13),
+                            ),
+                            Text(
+                              'Kader Dasawisma',
+                              style: GoogleFonts.plusJakartaSans(fontSize: 11, color: Colors.grey[500]),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const ProfileScreen()),
-                        );
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
                       },
-                      child: Container(
-                        padding: const EdgeInsets.all(3),
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: CircleAvatar(
-                          radius: 24,
-                          backgroundColor: primary.withOpacity(0.1),
-                          child: Icon(Icons.person_rounded, color: primary, size: 26),
-                        ),
+                      child: CircleAvatar(
+                        radius: 20,
+                        backgroundColor: primary.withOpacity(0.1),
+                        child: Icon(Icons.person_rounded, color: primary, size: 22),
                       ),
                     ),
                   ],
@@ -120,36 +91,68 @@ class _DashboardScreenState extends State<DashboardScreen> {
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
-                  Padding(
-  padding: const EdgeInsets.only(top: 20),
-  child: Row(
-    children: [
-      Expanded(
-        child: _StatCard(
-          label: 'Total Keluarga',
-          value: '128',
-          icon: Icons.home_rounded,
-          color: const Color(0xFF0F9E8E),
-        ),
-      ),
-      const SizedBox(width: 12),
-      Expanded(
-        child: _StatCard(
-          label: 'Balita Terpantau',
-          value: '45',
-          icon: Icons.child_friendly_rounded,
-          color: const Color(0xFFFF9800),
-        ),
-      ),
-    ],
-  ),
-),
+                  // Banner promo
+                  Container(
+                    height: 130,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [primary, primary.withOpacity(0.75)],
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          right: -20,
+                          bottom: -20,
+                          child: Icon(Icons.favorite, size: 130, color: Colors.white.withOpacity(0.08)),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'e-PKK Dasawisma',
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: Colors.white,
+                                  fontSize: 19,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Kabupaten Tasikmalaya',
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: Colors.white.withOpacity(0.85),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
 
-                  const Text('Menu Utama', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+                  // Menu Pencatatan Data
+                  Text('Menu Pencatatan Data', style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 14),
-                  _MenuGrid(
-                    items: [
-                      _MenuItem(
+                  GridView.count(
+                    crossAxisCount: 3,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 12,
+                    childAspectRatio: 0.85,
+                    children: [
+                      _MenuTile(
                         icon: Icons.home_work_rounded,
                         label: 'Data Keluarga',
                         color: const Color(0xFF0F9E8E),
@@ -157,7 +160,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const KeluargaListScreen()));
                         },
                       ),
-                      _MenuItem(
+                      _MenuTile(
                         icon: Icons.child_care_rounded,
                         label: 'Kesehatan Ibu & Anak',
                         color: const Color(0xFFE91E63),
@@ -165,7 +168,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const KesehatanListScreen()));
                         },
                       ),
-                      _MenuItem(
+                      _MenuTile(
                         icon: Icons.insert_chart_rounded,
                         label: 'Statistik',
                         color: const Color(0xFF3F51B5),
@@ -173,7 +176,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const StatistikScreen()));
                         },
                       ),
-                      _MenuItem(
+                      _MenuTile(
                         icon: Icons.description_rounded,
                         label: 'Laporan',
                         color: const Color(0xFFFF9800),
@@ -181,14 +184,55 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           Navigator.push(context, MaterialPageRoute(builder: (context) => const LaporanScreen()));
                         },
                       ),
+                      _MenuTile(
+                        icon: Icons.edit_note_rounded,
+                        label: 'Catat Kegiatan',
+                        color: const Color(0xFF9C27B0),
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const CatatanKegiatanFormScreen()));
+                        },
+                      ),
+                      _MenuTile(
+                        icon: Icons.more_horiz_rounded,
+                        label: 'Lainnya',
+                        color: const Color(0xFF607D8B),
+                        onTap: () {},
+                      ),
                     ],
                   ),
                   const SizedBox(height: 28),
 
+                  // Rekap Keseluruhan Data
+                  Text('Rekap Keseluruhan Data', style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 14),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _StatCard(
+                          label: 'Total Keluarga',
+                          value: '128',
+                          icon: Icons.home_rounded,
+                          color: const Color(0xFF0F9E8E),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _StatCard(
+                          label: 'Balita Terpantau',
+                          value: '45',
+                          icon: Icons.child_friendly_rounded,
+                          color: const Color(0xFFFF9800),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 28),
+
+                  // Berita — paling bawah
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Berita Terbaru', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+                      Text('Berita Terbaru', style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w700)),
                       Icon(Icons.campaign_rounded, color: primary, size: 20),
                     ],
                   ),
@@ -204,14 +248,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         );
                       }
                       if (snapshot.hasError) {
-                        return Center(child: Text('Gagal memuat berita: ${snapshot.error}'));
+                        return Center(child: Text('Gagal memuat berita: ${snapshot.error}', style: GoogleFonts.plusJakartaSans()));
                       }
 
                       final beritaList = snapshot.data ?? [];
                       if (beritaList.isEmpty) {
-                        return const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 24),
-                          child: Center(child: Text('Belum ada berita')),
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 24),
+                          child: Center(child: Text('Belum ada berita', style: GoogleFonts.plusJakartaSans())),
                         );
                       }
 
@@ -262,61 +306,41 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 }
 
-class _MenuItem {
+class _MenuTile extends StatelessWidget {
   final IconData icon;
   final String label;
   final Color color;
   final VoidCallback onTap;
 
-  _MenuItem({required this.icon, required this.label, required this.color, required this.onTap});
-}
-
-class _MenuGrid extends StatelessWidget {
-  final List<_MenuItem> items;
-
-  const _MenuGrid({required this.items});
+  const _MenuTile({required this.icon, required this.label, required this.color, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: items.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 10,
-        childAspectRatio: 0.8,
-      ),
-      itemBuilder: (context, index) {
-        final item = items[index];
-        return InkWell(
-          onTap: item.onTap,
-          borderRadius: BorderRadius.circular(18),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: item.color.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                child: Icon(item.icon, color: item.color, size: 28),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                item.label,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500, height: 1.2),
-              ),
-            ],
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(18),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 58,
+            height: 58,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: Icon(icon, color: color, size: 28),
           ),
-        );
-      },
+          const SizedBox(height: 8),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w600, height: 1.2),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -336,11 +360,7 @@ class _StatCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
+          BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 16, offset: const Offset(0, 6)),
         ],
       ),
       padding: const EdgeInsets.all(16),
@@ -349,16 +369,13 @@ class _StatCard extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(12),
-            ),
+            decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(12)),
             child: Icon(icon, color: color, size: 22),
           ),
           const SizedBox(height: 12),
-          Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          Text(value, style: GoogleFonts.plusJakartaSans(fontSize: 24, fontWeight: FontWeight.w800)),
           const SizedBox(height: 2),
-          Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+          Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.grey[600])),
         ],
       ),
     );
@@ -379,18 +396,12 @@ class _BeritaCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 14,
-            offset: const Offset(0, 5),
-          ),
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 14, offset: const Offset(0, 5)),
         ],
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(18),
-        onTap: () {
-          // Nanti: navigasi ke halaman detail berita
-        },
+        onTap: () {},
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -399,10 +410,7 @@ class _BeritaCard extends StatelessWidget {
               Container(
                 width: 44,
                 height: 44,
-                decoration: BoxDecoration(
-                  color: primary.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(14),
-                ),
+                decoration: BoxDecoration(color: primary.withOpacity(0.12), borderRadius: BorderRadius.circular(14)),
                 child: Icon(Icons.article_rounded, color: primary, size: 22),
               ),
               const SizedBox(width: 14),
@@ -414,24 +422,21 @@ class _BeritaCard extends StatelessWidget {
                       berita.judul,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                      style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 15),
                     ),
                     const SizedBox(height: 6),
                     Text(
                       berita.ringkasan,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: Colors.grey[600], fontSize: 13, height: 1.4),
+                      style: GoogleFonts.plusJakartaSans(color: Colors.grey[600], fontSize: 13, height: 1.4),
                     ),
                     const SizedBox(height: 8),
                     Row(
                       children: [
                         Icon(Icons.access_time_rounded, size: 12, color: Colors.grey[400]),
                         const SizedBox(width: 4),
-                        Text(
-                          berita.tanggal,
-                          style: TextStyle(color: Colors.grey[500], fontSize: 11),
-                        ),
+                        Text(berita.tanggal, style: GoogleFonts.plusJakartaSans(color: Colors.grey[500], fontSize: 11)),
                       ],
                     ),
                   ],

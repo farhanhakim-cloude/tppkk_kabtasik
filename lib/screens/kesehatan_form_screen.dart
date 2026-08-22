@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../models/kesehatan.dart';
 import '../services/kesehatan_service.dart';
 
@@ -69,11 +70,11 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Hapus data?'),
-        content: const Text('Data ini akan dihapus permanen.'),
+        title: Text('Hapus data?', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
+        content: Text('Data ini akan dihapus permanen.', style: GoogleFonts.plusJakartaSans()),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Batal')),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Hapus')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Batal', style: GoogleFonts.plusJakartaSans())),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: Text('Hapus', style: GoogleFonts.plusJakartaSans(color: Colors.red))),
         ],
       ),
     );
@@ -84,16 +85,24 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
     }
   }
 
+  InputDecoration _dec(String label) => InputDecoration(
+        labelText: label,
+        labelStyle: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[600]),
+      );
+
   @override
   Widget build(BuildContext context) {
     final isBalita = _kategori == KategoriKesehatan.balita;
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF5FAF9),
       appBar: AppBar(
-        title: Text(_isEdit ? 'Edit Data Kesehatan' : 'Tambah Data Kesehatan'),
+        title: Text(
+          _isEdit ? 'Edit Data Kesehatan' : 'Tambah Data Kesehatan',
+          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 17),
+        ),
         actions: [
-          if (_isEdit)
-            IconButton(onPressed: _delete, icon: const Icon(Icons.delete_outline)),
+          if (_isEdit) IconButton(onPressed: _delete, icon: const Icon(Icons.delete_outline)),
         ],
       ),
       body: Form(
@@ -103,7 +112,8 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
           children: [
             DropdownButtonFormField<KategoriKesehatan>(
               value: _kategori,
-              decoration: const InputDecoration(labelText: 'Kategori'),
+              decoration: _dec('Kategori'),
+              style: GoogleFonts.plusJakartaSans(fontSize: 14, color: Colors.black87),
               items: KategoriKesehatan.values
                   .map((k) => DropdownMenuItem(value: k, child: Text(k.label)))
                   .toList(),
@@ -112,30 +122,32 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
             const SizedBox(height: 12),
             TextFormField(
               controller: _namaIbuController,
-              decoration: const InputDecoration(labelText: 'Nama Ibu'),
+              style: GoogleFonts.plusJakartaSans(fontSize: 14),
+              decoration: _dec('Nama Ibu'),
               validator: (v) => (v == null || v.trim().isEmpty) ? 'Wajib diisi' : null,
             ),
             if (isBalita) ...[
               const SizedBox(height: 12),
               TextFormField(
                 controller: _namaAnakController,
-                decoration: const InputDecoration(labelText: 'Nama Anak'),
+                style: GoogleFonts.plusJakartaSans(fontSize: 14),
+                decoration: _dec('Nama Anak'),
                 validator: (v) => (v == null || v.trim().isEmpty) ? 'Wajib diisi' : null,
               ),
             ],
             const SizedBox(height: 12),
             TextFormField(
               controller: _usiaController,
-              decoration: InputDecoration(
-                labelText: isBalita ? 'Usia Anak (contoh: 18 bulan)' : 'Usia Kehamilan/Menyusui (contoh: 20 minggu)',
-              ),
+              style: GoogleFonts.plusJakartaSans(fontSize: 14),
+              decoration: _dec(isBalita ? 'Usia Anak (contoh: 18 bulan)' : 'Usia Kehamilan/Menyusui (contoh: 20 minggu)'),
               validator: (v) => (v == null || v.trim().isEmpty) ? 'Wajib diisi' : null,
             ),
             if (isBalita) ...[
               const SizedBox(height: 12),
               TextFormField(
                 controller: _statusGiziController,
-                decoration: const InputDecoration(labelText: 'Status Gizi (Normal/Kurang/Lebih)'),
+                style: GoogleFonts.plusJakartaSans(fontSize: 14),
+                decoration: _dec('Status Gizi (Normal/Kurang/Lebih)'),
               ),
             ],
             const SizedBox(height: 12),
@@ -144,7 +156,8 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
                 Expanded(
                   child: TextFormField(
                     controller: _rtController,
-                    decoration: const InputDecoration(labelText: 'RT'),
+                    style: GoogleFonts.plusJakartaSans(fontSize: 14),
+                    decoration: _dec('RT'),
                     validator: (v) => (v == null || v.trim().isEmpty) ? 'Wajib' : null,
                   ),
                 ),
@@ -152,7 +165,8 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
                 Expanded(
                   child: TextFormField(
                     controller: _rwController,
-                    decoration: const InputDecoration(labelText: 'RW'),
+                    style: GoogleFonts.plusJakartaSans(fontSize: 14),
+                    decoration: _dec('RW'),
                     validator: (v) => (v == null || v.trim().isEmpty) ? 'Wajib' : null,
                   ),
                 ),
@@ -161,9 +175,15 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
             const SizedBox(height: 24),
             _saving
                 ? const Center(child: CircularProgressIndicator())
-                : ElevatedButton(
-                    onPressed: _save,
-                    child: Text(_isEdit ? 'Simpan Perubahan' : 'Tambah Data'),
+                : SizedBox(
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: _save,
+                      child: Text(
+                        _isEdit ? 'Simpan Perubahan' : 'Tambah Data',
+                        style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 15),
+                      ),
+                    ),
                   ),
           ],
         ),

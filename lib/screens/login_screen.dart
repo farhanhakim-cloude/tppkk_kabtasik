@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -33,10 +34,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final pink = Theme.of(context).colorScheme.primary;
+    final primary = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
-      backgroundColor: pink,
+      backgroundColor: primary,
       body: SafeArea(
         child: SingleChildScrollView(
           child: ConstrainedBox(
@@ -45,27 +46,33 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 40),
+                    padding: const EdgeInsets.symmetric(vertical: 36),
                     child: Column(
                       children: [
                         Image.asset(
-  'assets/images/logotasik.png',
-  width: 94,
-  height: 94,
-),
-                        const SizedBox(height: 16),
-                        const Text(
+                          'assets/images/logo.png',
+                          width: 88,
+                          height: 88,
+                        ),
+                        const SizedBox(height: 18),
+                        Text(
                           'TP PKK Kab. Tasikmalaya',
-                          style: TextStyle(
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.plusJakartaSans(
                             color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 21,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 0.3,
                           ),
                         ),
                         const SizedBox(height: 4),
-                        const Text(
-                          'Sistem ',
-                          style: TextStyle(color: Colors.white70, fontSize: 13),
+                        Text(
+                          'Sistem Pencatatan Kader',
+                          style: GoogleFonts.plusJakartaSans(
+                            color: Colors.white.withOpacity(0.8),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ],
                     ),
@@ -86,23 +93,37 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               'Selamat Datang',
-                              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 24,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.black87,
+                              ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               'Masuk untuk melanjutkan',
-                              style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                              style: GoogleFonts.plusJakartaSans(
+                                color: Colors.grey[600],
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                             const SizedBox(height: 28),
-                            const Text('Email', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+
+                            Text(
+                              'Email',
+                              style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w700),
+                            ),
                             const SizedBox(height: 6),
                             TextFormField(
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
+                              style: GoogleFonts.plusJakartaSans(fontSize: 15),
                               decoration: InputDecoration(
                                 hintText: 'nama@email.com',
+                                hintStyle: GoogleFonts.plusJakartaSans(color: Colors.grey[400]),
                                 prefixIcon: const Icon(Icons.email_outlined, size: 20),
                               ),
                               validator: (v) {
@@ -112,13 +133,19 @@ class _LoginScreenState extends State<LoginScreen> {
                               },
                             ),
                             const SizedBox(height: 18),
-                            const Text('Password', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+
+                            Text(
+                              'Password',
+                              style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w700),
+                            ),
                             const SizedBox(height: 6),
                             TextFormField(
                               controller: _passwordController,
                               obscureText: _obscurePassword,
+                              style: GoogleFonts.plusJakartaSans(fontSize: 15),
                               decoration: InputDecoration(
                                 hintText: '••••••••',
+                                hintStyle: GoogleFonts.plusJakartaSans(color: Colors.grey[400]),
                                 prefixIcon: const Icon(Icons.lock_outline, size: 20),
                                 suffixIcon: IconButton(
                                   icon: Icon(
@@ -130,11 +157,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               validator: (v) => (v == null || v.isEmpty) ? 'Password wajib diisi' : null,
                             ),
+
                             const Spacer(),
                             const SizedBox(height: 24),
+
                             SizedBox(
                               width: double.infinity,
-                              height: 50,
+                              height: 52,
                               child: ElevatedButton(
                                 onPressed: _loading ? null : _handleLogin,
                                 child: _loading
@@ -146,14 +175,24 @@ class _LoginScreenState extends State<LoginScreen> {
                                           valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                         ),
                                       )
-                                    : const Text('Masuk', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                                    : Text(
+                                        'Masuk',
+                                        style: GoogleFonts.plusJakartaSans(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
                               ),
                             ),
                             const SizedBox(height: 16),
                             Center(
                               child: Text(
                                 'Hubungi admin jika lupa password',
-                                style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: Colors.grey[500],
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
                           ],

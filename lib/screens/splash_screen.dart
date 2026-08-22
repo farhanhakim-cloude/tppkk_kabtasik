@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../services/auth_service.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -29,41 +30,43 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final pink = Theme.of(context).colorScheme.primary;
+    final primary = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
-      backgroundColor: pink,
+      backgroundColor: primary,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              'assets/images/logotasik.png',
-              width: 110,
-              height: 110,
+              'assets/images/logo.png',
+              width: 120,
+              height: 120,
             ),
-            const SizedBox(height: 24),
-            const Text(
+            const SizedBox(height: 28),
+            Text(
               'TP PKK',
-              style: TextStyle(
+              style: GoogleFonts.plusJakartaSans(
                 color: Colors.white,
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.2,
+                fontSize: 32,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1.5,
               ),
             ),
-            const SizedBox(height: 4),
-            const Text(
-              'Kabupaten Tasikmalaya',
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 14,
+            const SizedBox(height: 6),
+            Text(
+              'KABUPATEN TASIKMALAYA',
+              style: GoogleFonts.plusJakartaSans(
+                color: Colors.white.withOpacity(0.85),
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 2.2,
               ),
             ),
-            const SizedBox(height: 48),
+            const SizedBox(height: 56),
             const SizedBox(
-              width: 28,
-              height: 28,
+              width: 26,
+              height: 26,
               child: CircularProgressIndicator(
                 strokeWidth: 2.5,
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),

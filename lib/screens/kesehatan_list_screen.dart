@@ -59,14 +59,17 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
 
   @override
   Widget build(BuildContext context) {
-    final pink = Theme.of(context).colorScheme.primary;
+    final primary = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF5FAF9),
       appBar: AppBar(
         title: const Text('Kesehatan Ibu & Anak'),
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.white,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
           tabs: const [
             Tab(text: 'Ibu Hamil'),
             Tab(text: 'Ibu Menyusui'),
@@ -104,10 +107,10 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
                 margin: const EdgeInsets.only(bottom: 10),
                 child: ListTile(
                   leading: CircleAvatar(
-                    backgroundColor: pink.withOpacity(0.1),
+                    backgroundColor: primary.withOpacity(0.1),
                     child: Icon(
                       isBalita ? Icons.child_care : Icons.pregnant_woman,
-                      color: pink,
+                      color: primary,
                     ),
                   ),
                   title: Text(
@@ -129,4 +132,4 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
       ),
     );
   }
-} 
+}

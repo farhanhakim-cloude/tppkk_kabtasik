@@ -6,6 +6,7 @@ class Keluarga {
   final String rw;
   final int jumlahAnggota;
   final String pekerjaan;
+  final String? fotoRumahPath;
 
   Keluarga({
     required this.id,
@@ -15,6 +16,7 @@ class Keluarga {
     required this.rw,
     required this.jumlahAnggota,
     required this.pekerjaan,
+    this.fotoRumahPath,
   });
 
   Keluarga copyWith({
@@ -25,6 +27,7 @@ class Keluarga {
     String? rw,
     int? jumlahAnggota,
     String? pekerjaan,
+    String? fotoRumahPath,
   }) {
     return Keluarga(
       id: id ?? this.id,
@@ -34,6 +37,7 @@ class Keluarga {
       rw: rw ?? this.rw,
       jumlahAnggota: jumlahAnggota ?? this.jumlahAnggota,
       pekerjaan: pekerjaan ?? this.pekerjaan,
+      fotoRumahPath: fotoRumahPath ?? this.fotoRumahPath,
     );
   }
 }
