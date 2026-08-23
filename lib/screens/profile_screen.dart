@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/user.dart';
@@ -112,7 +112,7 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
             return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return Center(child: Text('Gagal memuat profil', style: GoogleFonts.plusJakartaSans()));
+            return Center(child: Text('Gagal memuat profil: ${snapshot.error}', style: GoogleFonts.plusJakartaSans()));
           }
 
           final user = snapshot.data!;
