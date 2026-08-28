@@ -142,25 +142,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildHeaderCard(Color primary, {bool isScrolled = false}) {
-    // Access by KAI style: biru saat top (menyatu bg), putih saat scroll
-    final isBlue = !isScrolled;
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 280),
-      curve: Curves.easeOutCubic,
-      padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
-      decoration: BoxDecoration(
-        color: isBlue ? primary : Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: isBlue ? null : Border.all(color: Colors.grey.withValues(alpha: 0.08)),
-        boxShadow: [
-          BoxShadow(
-            color: (isBlue ? Colors.black : Colors.black).withValues(alpha: isBlue ? 0.12 : 0.08),
-            blurRadius: isBlue ? 16 : 20,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Row(
+    // Header selalu putih sekarang, jadi teks & ikon selalu pakai warna gelap
+    final isBlue = false;
+    return Padding(
+  padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
+  child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(2),
@@ -229,95 +215,187 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildBanner(Color primary) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Colors.white, Colors.white.withValues(alpha: 0.95)],
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 16, offset: const Offset(0, 6))],
-      ),
+    Widget _buildBanner(Color primary) {
+  return AspectRatio(
+    aspectRatio: 4.15,
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(16),
       child: Stack(
+        fit: StackFit.expand,
         children: [
+
+          // ==========================================
+          // GAMBAR BACKGROUND
+          // ==========================================
+          Image.asset(
+            'assets/images/banner_pkk.png',
+            fit: BoxFit.cover,
+            alignment: Alignment.center,
+          ),
+
+          // ==========================================
+          // TEKS KIRI
+          // ==========================================
           Positioned(
-            right: -18,
-            top: -18,
-            child: Container(
-              width: 110,
-              height: 110,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [primary.withValues(alpha: 0.12), primary.withValues(alpha: 0.03)]),
-                shape: BoxShape.circle,
+            left: 14,
+            top: 10,
+            right: 45,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+
+                // Judul + Badge
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Kegiatan PKK',
+                      style: GoogleFonts.plusJakartaSans(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.4,
+                      ),
+                    ),
+
+                    const SizedBox(width: 5),
+
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        'Baru ✦',
+                        style: GoogleFonts.plusJakartaSans(
+                          color: const Color(0xFFE91E63),
+                          fontSize: 7,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 3),
+
+                Text(
+                  'Pantau informasi dan kegiatan\ndi lingkungan PKK',
+                  style: GoogleFonts.plusJakartaSans(
+                    color: Colors.white,
+                    fontSize: 8.5,
+                    height: 1.35,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // ==========================================
+          // TOMBOL
+          // ==========================================
+          Positioned(
+            left: 14,
+            bottom: 18,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(7),
+                onTap: () {
+                  HapticFeedback.selectionClick();
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const GaleriAgendaScreen(),
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 13,
+                    vertical: 7,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(7),
+                  ),
+                  child: Text(
+                    'Lihat Selengkapnya',
+                    style: GoogleFonts.plusJakartaSans(
+                      color: const Color(0xFF315DE8),
+                      fontSize: 8.5,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
+
+          // ==========================================
+          // DOT SLIDER
+          // ==========================================
           Positioned(
-            right: 18,
-            bottom: -10,
-            child: Icon(Icons.favorite_rounded, size: 90, color: primary.withValues(alpha: 0.06)),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 18, 20, 18),
+            bottom: 5,
+            left: 0,
+            right: 0,
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(color: primary.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(20)),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.verified_rounded, size: 13, color: primary),
-                            const SizedBox(width: 4),
-                            Text('TP PKK DIGITAL', style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.w800, color: primary, letterSpacing: 0.6)),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      Text('e-PKK Dasawisma', style: GoogleFonts.plusJakartaSans(color: const Color(0xFF0F172A), fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: -0.5)),
-                      const SizedBox(height: 2),
-                      Text('Kabupaten Tasikmalaya', style: GoogleFonts.plusJakartaSans(color: primary, fontSize: 14, fontWeight: FontWeight.w700)),
-                      const SizedBox(height: 6),
-                      Text('Pendataan keluarga & kesehatan\nterintegrasi dalam genggaman', style: GoogleFonts.plusJakartaSans(color: Colors.grey[600], fontSize: 12.5, height: 1.45, fontWeight: FontWeight.w500)),
-                    ],
+                Container(
+                  width: 17,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                const SizedBox(width: 12),
+
+                const SizedBox(width: 4),
+
                 Container(
-                  width: 72,
-                  height: 72,
+                  width: 5,
+                  height: 5,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [primary, const Color(0xFF1D4ED8)]),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [BoxShadow(color: primary.withValues(alpha: 0.35), blurRadius: 16, offset: const Offset(0, 6))],
+                    color: Colors.white.withOpacity(0.65),
+                    shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.groups_rounded, color: Colors.white, size: 34),
+                ),
+
+                const SizedBox(width: 4),
+
+                Container(
+                  width: 5,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.65),
+                    shape: BoxShape.circle,
+                  ),
                 ),
               ],
             ),
           ),
         ],
       ),
-    );
-  }
-
+    ),
+  );
+}
   @override
   Widget build(BuildContext context) {
     final primary = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5FAF9),
+      backgroundColor: Colors.white,
       body: Column(
         children: [
           // ---- HEADER PINNED ALA ACCESS BY KAI ----
-          // Biru saat top (menyatu dengan banner), putih saat scroll >20px
+          // Putih saat top (menyatu dengan banner), putih saat scroll >20px
           // Banner tidak akan ketutup karena header di Column, bukan Stack overlay
           AnimatedContainer(
             duration: const Duration(milliseconds: 280),
@@ -328,7 +406,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   : LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [primary, const Color(0xFF1E40AF)],
+                      colors: [Colors.white, Colors.white],
                     ),
               color: _isScrolled ? Colors.white : null,
               boxShadow: _isScrolled
@@ -369,28 +447,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 controller: _scrollController,
                 physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                 slivers: [
-                  // Banner hero — di dalam scroll, dengan background biru tipis di belakangnya agar menyatu saat top
-                  SliverToBoxAdapter(
-                    child: Stack(
-                      children: [
-                        // background biru di belakang banner, menyambung dengan header biru saat belum scroll
-                        Container(
-                          height: 90,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [primary, const Color(0xFF1E40AF)],
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                          child: _buildBanner(primary),
-                        ),
-                      ],
-                    ),
-                  ),
+                  // =========================
+// BANNER PKK
+// =========================
+SliverToBoxAdapter(
+  child: Padding(
+    padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+    child: _buildBanner(primary),
+  ),
+),
 
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
@@ -423,7 +488,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     physics: const NeverScrollableScrollPhysics(),
                     mainAxisSpacing: 14,
                     crossAxisSpacing: 12,
-                    childAspectRatio: 0.86,
+                    childAspectRatio: 0.92,
                     children: [
                       _MenuTile(
                         icon: Icons.home_work_rounded,
@@ -728,7 +793,7 @@ class _MenuTileState extends State<_MenuTile> with SingleTickerProviderStateMixi
               Text(widget.label, textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFF0F172A), letterSpacing: -0.2)),
               if (widget.subtitle.isNotEmpty) ...[
                 const SizedBox(height: 2),
-                Text(widget.subtitle, style: GoogleFonts.plusJakartaSans(fontSize: 10.5, color: Colors.grey[500], fontWeight: FontWeight.w600)),
+                Text(widget.subtitle, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.plusJakartaSans(fontSize: 10.5, color: Colors.grey[500], fontWeight: FontWeight.w600)),
               ],
             ],
           ),
