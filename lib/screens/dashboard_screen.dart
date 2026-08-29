@@ -148,29 +148,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
   padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
   child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: isBlue ? Colors.white.withValues(alpha: 0.25) : primary.withValues(alpha: 0.12), width: 1.5),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.asset('assets/images/logo.png', width: 36, height: 36, errorBuilder: (_, __, ___) => Icon(Icons.groups_rounded, color: isBlue ? Colors.white : primary, size: 24)),
-            ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Image.asset('assets/images/logo.png', width: 40, height: 40, errorBuilder: (_, __, ___) => Icon(Icons.groups_rounded, color: isBlue ? Colors.white : primary, size: 24)),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('TP PKK Kab. Tasikmalaya', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 13.5, color: isBlue ? Colors.white : const Color(0xFF0F172A), letterSpacing: -0.2)),
+                Text('TP PKK Kab. Tasikmalaya', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 13.5, color: isBlue ? Colors.white : const Color(0xFF0F172A), letterSpacing: -0.2)),
                 const SizedBox(height: 2),
                 Row(
                   children: [
                     Container(width: 7, height: 7, decoration: BoxDecoration(color: const Color(0xFF10B981), shape: BoxShape.circle, border: Border.all(color: isBlue ? primary : Colors.white, width: 1.2))),
                     const SizedBox(width: 5),
-                    Text('Kader Dasawisma • Aktif', style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: isBlue ? Colors.white.withValues(alpha: 0.9) : Colors.grey[600], fontWeight: FontWeight.w500)),
+                    Text('Kader Dasawisma • Aktif', style: GoogleFonts.poppins(fontSize: 11.5, color: isBlue ? Colors.white.withValues(alpha: 0.9) : Colors.grey[600], fontWeight: FontWeight.w500)),
                   ],
                 ),
               ],
@@ -448,6 +441,91 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                 slivers: [
                   // =========================
+                  // REKAP TERKINI
+                  // =========================
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Rekap Terkini', style: GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.w800, color: const Color(0xFF0F172A), letterSpacing: -0.4)),
+                                  const SizedBox(height: 3),
+                                  Text('Pantau perkembangan data', style: GoogleFonts.plusJakartaSans(fontSize: 12.5, color: Colors.grey[500], fontWeight: FontWeight.w500)),
+                                ],
+                              ),
+                              GestureDetector(
+                                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const StatistikScreen())),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                                  decoration: BoxDecoration(color: primary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(20)),
+                                  child: Row(
+                                    children: [
+                                      Text('Detail', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: primary, fontWeight: FontWeight.w700)),
+                                      const SizedBox(width: 4),
+                                      Icon(Icons.arrow_forward_rounded, size: 14, color: primary),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          FutureBuilder<({int keluarga, int balita})>(
+                            future: _statFuture,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return Row(
+                                  children: [
+                                    Expanded(child: _StatShimmer()),
+                                    const SizedBox(width: 12),
+                                    Expanded(child: _StatShimmer()),
+                                  ],
+                                );
+                              }
+                              final data = snapshot.data;
+                              final keluargaCount = data?.keluarga ?? 0;
+                              final balitaCount = data?.balita ?? 0;
+                              return Row(
+                                children: [
+                                  Expanded(
+                                    child: _StatCard(
+                                      label: 'Total Keluarga',
+                                      value: '$keluargaCount',
+                                      sublabel: 'KK terdata aktif',
+                                      icon: Icons.family_restroom_rounded,
+                                      color: const Color(0xFF3B82F6), // Premium Blue
+                                      trend: '+3 Bulan ini',
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: _StatCard(
+                                      label: 'Balita Terpantau',
+                                      value: '$balitaCount',
+                                      sublabel: 'Gizi terpanau',
+                                      icon: Icons.child_friendly_rounded,
+                                      color: const Color(0xFF10B981), // Premium Emerald
+                                      trend: '100% Valid',
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // =========================
 // BANNER PKK
 // =========================
 SliverToBoxAdapter(
@@ -535,69 +613,7 @@ SliverToBoxAdapter(
                       ),
                     ],
                   ),
-                  const SizedBox(height: 26),
-
-                  // ---- REKAP ----
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Rekap Terkini', style: GoogleFonts.plusJakartaSans(fontSize: 17, fontWeight: FontWeight.w800, color: const Color(0xFF0F172A), letterSpacing: -0.3)),
-                      GestureDetector(
-                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const StatistikScreen())),
-                        child: Row(
-                          children: [
-                            Text('Detail', style: GoogleFonts.plusJakartaSans(fontSize: 13, color: primary, fontWeight: FontWeight.w700)),
-                            const SizedBox(width: 2),
-                            Icon(Icons.chevron_right_rounded, size: 18, color: primary),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 14),
-                  FutureBuilder<({int keluarga, int balita})>(
-                    future: _statFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Row(
-                          children: [
-                            Expanded(child: _StatShimmer()),
-                            const SizedBox(width: 12),
-                            Expanded(child: _StatShimmer()),
-                          ],
-                        );
-                      }
-                      final data = snapshot.data;
-                      final keluargaCount = data?.keluarga ?? 0;
-                      final balitaCount = data?.balita ?? 0;
-                      return Row(
-                        children: [
-                          Expanded(
-                            child: _StatCard(
-                              label: 'Total Keluarga',
-                              value: '$keluargaCount',
-                              sublabel: 'KK terdata',
-                              icon: Icons.home_rounded,
-                              color: const Color(0xFF0F9E8E),
-                              trend: '+3 bulan ini',
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _StatCard(
-                              label: 'Balita Terpantau',
-                              value: '$balitaCount',
-                              sublabel: 'Status gizi aktif',
-                              icon: Icons.child_friendly_rounded,
-                              color: const Color(0xFFFF9800),
-                              trend: '100% terdata',
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 26),
+                  const SizedBox(height: 16),
 
                   // ---- BERITA ----
                   Row(
@@ -778,16 +794,8 @@ class _MenuTileState extends State<_MenuTile> with SingleTickerProviderStateMixi
               Container(
                 width: 58,
                 height: 58,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: widget.isMore ? [const Color(0xFFF1F5F9), const Color(0xFFE2E8F0)] : [widget.color, Color.lerp(widget.color, Colors.black, 0.18)!],
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: widget.isMore ? null : [BoxShadow(color: widget.color.withValues(alpha: 0.30), blurRadius: 12, offset: const Offset(0, 6))],
-                ),
-                child: Icon(widget.icon, color: widget.isMore ? const Color(0xFF64748B) : Colors.white, size: 26),
+                alignment: Alignment.center,
+                child: Icon(widget.icon, color: widget.isMore ? const Color(0xFF64748B) : widget.color, size: 32),
               ),
               const SizedBox(height: 10),
               Text(widget.label, textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFF0F172A), letterSpacing: -0.2)),
@@ -818,10 +826,10 @@ class _StatCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 16, offset: const Offset(0, 6))],
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 16, offset: const Offset(0, 6))],
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -830,24 +838,24 @@ class _StatCard extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(color: color.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(12)),
-                child: Icon(icon, color: color, size: 20),
+                decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(14)),
+                child: Icon(icon, color: color, size: 22),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                 decoration: BoxDecoration(color: const Color(0xFFF0FDF4), borderRadius: BorderRadius.circular(20), border: Border.all(color: const Color(0xFFBBF7D0))),
                 child: Row(children: [
                   const Icon(Icons.trending_up_rounded, size: 12, color: Color(0xFF16A34A)),
-                  const SizedBox(width: 3),
-                  Text(trend, style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.w700, color: const Color(0xFF16A34A))),
+                  const SizedBox(width: 4),
+                  Text(trend, style: GoogleFonts.plusJakartaSans(fontSize: 10.5, fontWeight: FontWeight.w800, color: const Color(0xFF16A34A))),
                 ]),
               ),
             ],
           ),
-          const SizedBox(height: 14),
-          Text(value, style: GoogleFonts.plusJakartaSans(fontSize: 28, fontWeight: FontWeight.w800, color: const Color(0xFF0F172A), letterSpacing: -0.8)),
+          const SizedBox(height: 16),
+          Text(value, style: GoogleFonts.plusJakartaSans(fontSize: 30, fontWeight: FontWeight.w800, color: const Color(0xFF0F172A), letterSpacing: -1.0)),
           const SizedBox(height: 2),
-          Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w700, color: const Color(0xFF0F172A))),
+          Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 13.5, fontWeight: FontWeight.w700, color: const Color(0xFF0F172A))),
           if (sublabel.isNotEmpty) ...[
             const SizedBox(height: 2),
             Text(sublabel, style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: Colors.grey[500], fontWeight: FontWeight.w500)),
