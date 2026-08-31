@@ -1,52 +1,116 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import '../models/user.dart';
 import '../services/auth_service.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final bool embedded;
+  const ProfileScreen({super.key, this.embedded = false});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen>
-    with TickerProviderStateMixin {
+class _ProfileScreenState extends State<ProfileScreen> {
   final _authService = AuthService();
+  final _picker = ImagePicker();
+
   late Future<User> _future;
+  File? _profileImage;
   bool _loggingOut = false;
-
-  late AnimationController _fadeCtrl;
-  late Animation<double> _fadeAnim;
-
-  late AnimationController _slideCtrl;
-  late Animation<Offset> _slideAnim;
 
   @override
   void initState() {
     super.initState();
     _future = _authService.getCurrentUser();
-
-    _fadeCtrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 700));
-    _fadeAnim = CurvedAnimation(parent: _fadeCtrl, curve: Curves.easeOut);
-
-    _slideCtrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 700));
-    _slideAnim =
-        Tween<Offset>(begin: const Offset(0, 0.18), end: Offset.zero).animate(
-            CurvedAnimation(parent: _slideCtrl, curve: Curves.easeOutCubic));
-
-    _fadeCtrl.forward();
-    _slideCtrl.forward();
   }
 
-  @override
-  void dispose() {
-    _fadeCtrl.dispose();
-    _slideCtrl.dispose();
-    super.dispose();
+  Future<void> _pilihFotoProfil() async {
+    HapticFeedback.lightImpact();
+    final sumber = await showModalBottomSheet<ImageSource>(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+          child: Wrap(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Text(
+                  'Ubah Foto Profil',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 16,
+                    color: const Color(0xFF0F172A),
+                  ),
+                ),
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF2563EB).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.camera_alt_rounded, color: Color(0xFF2563EB)),
+                ),
+                title: Text('Ambil dari Kamera',
+                    style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
+                subtitle: Text('Gunakan kamera langsung',
+                    style: GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.grey[500])),
+                onTap: () => Navigator.pop(context, ImageSource.camera),
+              ),
+              ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF10B981).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.photo_library_rounded, color: Color(0xFF10B981)),
+                ),
+                title: Text('Pilih dari Galeri',
+                    style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
+                subtitle: Text('Ambil dari album foto ponsel',
+                    style: GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.grey[500])),
+                onTap: () => Navigator.pop(context, ImageSource.gallery),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    if (sumber == null) return;
+    try {
+      final img = await _picker.pickImage(source: sumber, imageQuality: 80, maxWidth: 600);
+      if (img != null) {
+        setState(() {
+          _profileImage = File(img.path);
+        });
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Foto profil berhasil diperbarui',
+                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600)),
+              backgroundColor: const Color(0xFF10B981),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+          );
+        }
+      }
+    } catch (_) {
+      // Fallback
+    }
   }
 
   Future<void> _handleLogout() async {
@@ -56,25 +120,44 @@ class _ProfileScreenState extends State<ProfileScreen>
       builder: (context) => AlertDialog(
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Text('Keluar Akun?',
-            style: GoogleFonts.plusJakartaSans(
-                fontWeight: FontWeight.w800, fontSize: 18)),
+        title: Text(
+          'Keluar Akun?',
+          style: GoogleFonts.plusJakartaSans(
+            fontWeight: FontWeight.w800,
+            fontSize: 18,
+            color: const Color(0xFF0F172A),
+          ),
+        ),
         content: Text(
-            'Kamu akan keluar dari aplikasi.\nApakah kamu yakin?',
-            style: GoogleFonts.plusJakartaSans(fontSize: 14, color: Colors.grey[600])),
+          'Anda akan keluar dari aplikasi e-PKK.\nApakah Anda yakin ingin melanjutkan?',
+          style: GoogleFonts.plusJakartaSans(fontSize: 13.5, color: Colors.grey[600], height: 1.4),
+        ),
+        actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text('Batal',
-                style: GoogleFonts.plusJakartaSans(
-                    color: Colors.grey[600], fontWeight: FontWeight.w600)),
+            child: Text(
+              'Batal',
+              style: GoogleFonts.plusJakartaSans(
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
-          TextButton(
+          ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(backgroundColor: Colors.red.withOpacity(0.1)),
-            child: Text('Keluar',
-                style: GoogleFonts.plusJakartaSans(
-                    color: Colors.red, fontWeight: FontWeight.w700)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFEF4444),
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: Text(
+              'Ya, Keluar',
+              style: GoogleFonts.plusJakartaSans(
+                fontWeight: FontWeight.w800,
+              ),
+            ),
           ),
         ],
       ),
@@ -90,12 +173,41 @@ class _ProfileScreenState extends State<ProfileScreen>
     }
   }
 
+  void _showInfoDialog(String title, String message) {
+    HapticFeedback.selectionClick();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(title,
+            style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 17)),
+        content: Text(message,
+            style: GoogleFonts.plusJakartaSans(fontSize: 13.5, color: Colors.grey[600], height: 1.4)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('Tutup',
+                style: GoogleFonts.plusJakartaSans(
+                    fontWeight: FontWeight.w700, color: const Color(0xFF2563EB))),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final primary = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF1F5F9),
+      backgroundColor: const Color(0xFFF8FAFC),
+      appBar: widget.embedded
+          ? null
+          : AppBar(
+              title: Text('Profil Kader',
+                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
+            ),
       body: FutureBuilder<User>(
         future: _future,
         builder: (context, snapshot) {
@@ -104,506 +216,458 @@ class _ProfileScreenState extends State<ProfileScreen>
           }
           if (snapshot.hasError) {
             return Center(
-                child: Text('Gagal memuat profil: ${snapshot.error}',
-                    style: GoogleFonts.plusJakartaSans()));
+              child: Text('Gagal memuat profil: ${snapshot.error}',
+                  style: GoogleFonts.plusJakartaSans()),
+            );
           }
 
           final user = snapshot.data!;
 
           return SingleChildScrollView(
-            child: FadeTransition(
-              opacity: _fadeAnim,
-              child: Column(
-                children: [
-                  // ─── HERO HEADER ───────────────────────────────────────
-                  _HeroHeader(user: user, primary: primary, onBack: () {
-                    HapticFeedback.lightImpact();
-                    Navigator.pop(context);
-                  }),
+            padding: const EdgeInsets.only(bottom: 40),
+            child: Column(
+              children: [
+                // ── 1. BLUE HERO HEADER (DENGAN TAMBAH FOTO PROFIL) ──
+                _buildHeroHeader(user),
 
-                  // ─── KONTEN BAWAH ──────────────────────────────────────
-                  SlideTransition(
-                    position: _slideAnim,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
-                      child: Column(
-                        children: [
-                          // Stats row
-                          _StatsRow(primary: primary),
-                          const SizedBox(height: 20),
+                // ── 2. CONTRIBUTION STATS ──
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  child: Row(
+                    children: [
+                      _buildStatCard('24 KK', 'Keluarga', Icons.home_work_rounded, const Color(0xFF2563EB)),
+                      const SizedBox(width: 10),
+                      _buildStatCard('18 Anak', 'KIA & Gizi', Icons.child_care_rounded, const Color(0xFF0EA5E9)),
+                      const SizedBox(width: 10),
+                      _buildStatCard('12 Laporan', 'Pokja I-IV', Icons.assignment_turned_in_rounded, const Color(0xFF3B82F6)),
+                    ],
+                  ),
+                ),
 
-                          // Info section header
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              'Informasi Akun',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontWeight: FontWeight.w800,
-                                fontSize: 16,
-                                color: const Color(0xFF1E293B),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
+                // ── 3. DATA WILAYAH & TUGAS ──
+                _buildSectionContainer(
+                  title: 'Wilayah Tugas & Dasawisma',
+                  icon: Icons.location_on_rounded,
+                  iconColor: const Color(0xFF2563EB),
+                  items: [
+                    _InfoRow(label: 'Kabupaten', value: 'Kabupaten Tasikmalaya'),
+                    _InfoRow(label: 'Kecamatan', value: 'Kecamatan Singaparna'),
+                    _InfoRow(label: 'Desa / Kelurahan', value: 'Desa Cipakat'),
+                    _InfoRow(label: 'Kelompok Dasawisma', value: 'Dasawisma Mawar 02'),
+                    _InfoRow(label: 'Wilayah RT / RW', value: 'RT 02 / RW 05'),
+                  ],
+                ),
 
-                          // Info cards
-                          _InfoCard(
-                            icon: Icons.email_rounded,
-                            label: 'Alamat Email',
-                            value: user.email,
-                            gradientColors: const [Color(0xFF3B82F6), Color(0xFF6366F1)],
-                          ),
-                          const SizedBox(height: 10),
-                          _InfoCard(
-                            icon: Icons.location_on_rounded,
-                            label: 'Wilayah Tugas',
-                            value: user.wilayah,
-                            gradientColors: const [Color(0xFF10B981), Color(0xFF059669)],
-                          ),
-                          const SizedBox(height: 10),
-                          _InfoCard(
-                            icon: Icons.badge_rounded,
-                            label: 'Jabatan',
-                            value: user.jabatan,
-                            gradientColors: const [Color(0xFFF59E0B), Color(0xFFEF4444)],
-                          ),
-                          const SizedBox(height: 28),
+                // ── 4. PENGATURAN & BANTUAN ──
+                _buildSectionContainer(
+                  title: 'Pengaturan & Bantuan',
+                  icon: Icons.settings_rounded,
+                  iconColor: const Color(0xFF64748B),
+                  items: [
+                    _ActionRow(
+                      icon: Icons.menu_book_rounded,
+                      title: 'Buku Panduan 10 Program Pokok PKK',
+                      onTap: () => _showInfoDialog(
+                        '10 Program Pokok PKK',
+                        '1. Penghayatan dan Pengamalan Pancasila\n'
+                        '2. Gotong Royong\n'
+                        '3. Pangan\n'
+                        '4. Sandang\n'
+                        '5. Perumahan dan Tata Laksana Rumah Tangga\n'
+                        '6. Pendidikan dan Keterampilan\n'
+                        '7. Kesehatan\n'
+                        '8. Pengembangan Kehidupan Berkoperasi\n'
+                        '9. Kelestarian Lingkungan Hidup\n'
+                        '10. Perencanaan Sehat',
+                      ),
+                    ),
+                    _ActionRow(
+                      icon: Icons.lock_outline_rounded,
+                      title: 'Ubah Kata Sandi Akun',
+                      onTap: () => _showInfoDialog(
+                        'Ubah Kata Sandi',
+                        'Untuk mengganti kata sandi akun, silakan hubungi Admin TP PKK Kecamatan Anda.',
+                      ),
+                    ),
+                    _ActionRow(
+                      icon: Icons.info_outline_rounded,
+                      title: 'Tentang Aplikasi e-PKK Kab. Tasikmalaya',
+                      onTap: () => _showInfoDialog(
+                        'Tentang Aplikasi',
+                        'e-PKK Kabupaten Tasikmalaya\nVersi 1.0.0 (Build 2026)\n\n'
+                        'Aplikasi digitalisasi pencatatan data keluarga, gizi KIA, dan kegiatan Pokja TP PKK Kabupaten Tasikmalaya.',
+                      ),
+                    ),
+                  ],
+                ),
 
-                          // Section header
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              'Pengaturan',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontWeight: FontWeight.w800,
-                                fontSize: 16,
-                                color: const Color(0xFF1E293B),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
+                const SizedBox(height: 24),
 
-                          // Settings tiles
-                          _SettingsTile(
-                            icon: Icons.lock_outline_rounded,
-                            label: 'Ubah Password',
-                            color: const Color(0xFF8B5CF6),
-                            onTap: () {},
-                          ),
-                          const SizedBox(height: 8),
-                          _SettingsTile(
-                            icon: Icons.help_outline_rounded,
-                            label: 'Bantuan & Dukungan',
-                            color: const Color(0xFF0EA5E9),
-                            onTap: () {},
-                          ),
-                          const SizedBox(height: 28),
-
-                          // Logout button
-                          _loggingOut
-                              ? const CircularProgressIndicator()
-                              : _LogoutButton(onTap: _handleLogout),
-                          const SizedBox(height: 12),
-                          Text(
-                            'e-PKK Kader Dasawisma • v1.0.0',
-                            style: GoogleFonts.plusJakartaSans(
-                              color: Colors.grey[400],
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
+                // ── 5. TOMBOL LOGOUT ──
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: OutlinedButton.icon(
+                      onPressed: _loggingOut ? null : _handleLogout,
+                      icon: _loggingOut
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.red),
+                            )
+                          : const Icon(Icons.logout_rounded, color: Color(0xFFEF4444), size: 20),
+                      label: Text(
+                        _loggingOut ? 'Memproses...' : 'Keluar dari Akun',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 14,
+                          color: const Color(0xFFEF4444),
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Color(0xFFFECACA), width: 1.5),
+                        backgroundColor: const Color(0xFFFEF2F2),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+
+                const SizedBox(height: 16),
+                Text(
+                  'TP PKK Kabupaten Tasikmalaya • v1.0.0',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 11.5,
+                    color: Colors.grey[400],
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
           );
         },
       ),
     );
   }
-}
 
-// ─── HERO HEADER ────────────────────────────────────────────────────────────
-class _HeroHeader extends StatelessWidget {
-  final User user;
-  final Color primary;
-  final VoidCallback onBack;
-
-  const _HeroHeader({required this.user, required this.primary, required this.onBack});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildHeroHeader(User user) {
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF1D4ED8), Color(0xFF2563EB), Color(0xFF3B82F6)],
+          colors: [
+            Color(0xFF1D4ED8), // Royal Blue
+            Color(0xFF2563EB), // Vibrant Blue
+            Color(0xFF3B82F6), // Sky Blue
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(36),
-          bottomRight: Radius.circular(36),
-        ),
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(32)),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0x332563EB),
+            blurRadius: 20,
+            offset: Offset(0, 8),
+          ),
+        ],
       ),
-      child: Stack(
-        children: [
-          // Dekorasi lingkaran
-          Positioned(top: -30, right: -30,
-              child: _Blob(size: 140, opacity: 0.08)),
-          Positioned(bottom: 30, left: -20,
-              child: _Blob(size: 100, opacity: 0.06)),
-          Positioned(top: 80, right: 60,
-              child: _Blob(size: 50, opacity: 0.10)),
-
-          // Konten
-          SafeArea(
-            bottom: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(8, 4, 8, 36),
-              child: Column(
-                children: [
-                  // AppBar row
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                            size: 20, color: Colors.white),
-                        onPressed: onBack,
-                      ),
-                      Expanded(
-                        child: Text(
-                          'Profil Saya',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.plusJakartaSans(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 17,
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+          child: Column(
+            children: [
+              // Avatar with upload option
+              GestureDetector(
+                onTap: _pilihFotoProfil,
+                child: Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 3.5),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
                           ),
+                        ],
+                      ),
+                      child: CircleAvatar(
+                        radius: 46,
+                        backgroundColor: const Color(0xFF1E40AF),
+                        backgroundImage: _profileImage != null
+                            ? FileImage(_profileImage!)
+                            : null,
+                        child: _profileImage == null
+                            ? Text(
+                                user.nama.isNotEmpty ? user.nama[0].toUpperCase() : 'K',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 38,
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : null,
+                      ),
+                    ),
+                    // Camera Edit Button Badge
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.all(7),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.camera_alt_rounded,
+                          size: 16,
+                          color: Color(0xFF2563EB),
                         ),
                       ),
-                      // Placeholder supaya title tetap center
-                      const SizedBox(width: 48),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Avatar
-                  Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: const LinearGradient(
-                        colors: [Colors.white, Color(0xFFBFDBFE)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.18),
-                          blurRadius: 24,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
                     ),
-                    child: CircleAvatar(
-                      radius: 52,
-                      backgroundColor: const Color(0xFFEFF6FF),
-                      child: Icon(Icons.person_rounded,
-                          size: 58, color: primary.withOpacity(0.7)),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Nama
-                  Text(
-                    user.nama,
-                    style: GoogleFonts.plusJakartaSans(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.3,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-
-                  // Badge jabatan
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.18),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
-                    ),
-                    child: Text(
-                      user.jabatan,
-                      style: GoogleFonts.plusJakartaSans(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13,
-                        letterSpacing: 0.2,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─── STATS ROW ───────────────────────────────────────────────────────────────
-class _StatsRow extends StatelessWidget {
-  final Color primary;
-  const _StatsRow({required this.primary});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 16, offset: const Offset(0, 4)),
-        ],
-      ),
-      child: Row(
-        children: [
-          _StatItem(value: 'Aktif', label: 'Status', icon: Icons.check_circle_rounded, color: const Color(0xFF10B981)),
-          Container(width: 1, height: 40, color: Colors.grey[100]),
-          _StatItem(value: 'Kader', label: 'Peran', icon: Icons.people_alt_rounded, color: primary),
-          Container(width: 1, height: 40, color: Colors.grey[100]),
-          _StatItem(value: '2024', label: 'Bergabung', icon: Icons.calendar_month_rounded, color: const Color(0xFFF59E0B)),
-        ],
-      ),
-    );
-  }
-}
-
-class _StatItem extends StatelessWidget {
-  final String value;
-  final String label;
-  final IconData icon;
-  final Color color;
-
-  const _StatItem({required this.value, required this.label, required this.icon, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        children: [
-          Icon(icon, color: color, size: 22),
-          const SizedBox(height: 6),
-          Text(value,
-              style: GoogleFonts.plusJakartaSans(
-                  fontWeight: FontWeight.w800, fontSize: 14, color: const Color(0xFF1E293B))),
-          Text(label,
-              style: GoogleFonts.plusJakartaSans(
-                  fontSize: 11, color: Colors.grey[400], fontWeight: FontWeight.w500)),
-        ],
-      ),
-    );
-  }
-}
-
-// ─── INFO CARD ───────────────────────────────────────────────────────────────
-class _InfoCard extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final List<Color> gradientColors;
-
-  const _InfoCard({
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.gradientColors,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 3)),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: gradientColors,
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(14),
-              boxShadow: [
-                BoxShadow(
-                  color: gradientColors.first.withOpacity(0.30),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
+                  ],
                 ),
-              ],
-            ),
-            child: Icon(icon, color: Colors.white, size: 20),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(label,
-                    style: GoogleFonts.plusJakartaSans(
-                        fontSize: 11.5,
-                        color: Colors.grey[400],
-                        fontWeight: FontWeight.w500)),
-                const SizedBox(height: 2),
-                Text(value,
-                    style: GoogleFonts.plusJakartaSans(
-                        fontSize: 14.5,
+              ),
+              const SizedBox(height: 14),
+
+              // Name
+              Text(
+                user.nama,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                  letterSpacing: -0.3,
+                ),
+              ),
+              const SizedBox(height: 6),
+
+              // Role Badge
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Colors.white30),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.verified_rounded, size: 14, color: Colors.white),
+                    const SizedBox(width: 6),
+                    Text(
+                      '${user.jabatan} • TP PKK',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        color: const Color(0xFF1E293B))),
-              ],
-            ),
-          ),
-          Icon(Icons.chevron_right_rounded, color: Colors.grey[300], size: 22),
-        ],
-      ),
-    );
-  }
-}
-
-// ─── SETTINGS TILE ───────────────────────────────────────────────────────────
-class _SettingsTile extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _SettingsTile({required this.icon, required this.label, required this.color, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(18),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(18),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(18),
-            boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 3)),
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Ketuk foto untuk mengganti foto profil',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 11,
+                  color: Colors.white70,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
             ],
           ),
-          child: Row(
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatCard(String value, String label, IconData icon, Color color) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: color, size: 18),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: GoogleFonts.plusJakartaSans(
+                fontWeight: FontWeight.w800,
+                fontSize: 14.5,
+                color: const Color(0xFF0F172A),
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 11,
+                color: Colors.grey[500],
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionContainer({
+    required String title,
+    required IconData icon,
+    required Color iconColor,
+    required List<Widget> items,
+  }) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(14),
+                  color: iconColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(icon, color: color, size: 20),
+                child: Icon(icon, size: 16, color: iconColor),
               ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Text(label,
-                    style: GoogleFonts.plusJakartaSans(
-                        fontSize: 14.5,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF1E293B))),
+              const SizedBox(width: 10),
+              Text(
+                title,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 14.5,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF0F172A),
+                ),
               ),
-              Icon(Icons.chevron_right_rounded, color: Colors.grey[300], size: 22),
             ],
           ),
-        ),
+          const SizedBox(height: 12),
+          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+          const SizedBox(height: 6),
+          ...items,
+        ],
       ),
     );
   }
 }
 
-// ─── LOGOUT BUTTON ───────────────────────────────────────────────────────────
-class _LogoutButton extends StatelessWidget {
-  final VoidCallback onTap;
-  const _LogoutButton({required this.onTap});
+class _InfoRow extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool isSuccess;
+
+  const _InfoRow({required this.label, required this.value, this.isSuccess = false});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 54,
-      child: Material(
-        borderRadius: BorderRadius.circular(18),
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(18),
-          onTap: onTap,
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFEF4444), Color(0xFFDC2626)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(18),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFFEF4444).withOpacity(0.35),
-                  blurRadius: 16,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.logout_rounded, color: Colors.white, size: 20),
-                const SizedBox(width: 10),
-                Text('Keluar Akun',
-                    style: GoogleFonts.plusJakartaSans(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 15.5)),
-              ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 7),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 13,
+              color: Colors.grey[600],
             ),
           ),
-        ),
+          Flexible(
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: isSuccess ? const Color(0xFF059669) : const Color(0xFF0F172A),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-// ─── BLOB / DEKORASI ─────────────────────────────────────────────────────────
-class _Blob extends StatelessWidget {
-  final double size;
-  final double opacity;
-  const _Blob({required this.size, required this.opacity});
+class _ActionRow extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final VoidCallback onTap;
+
+  const _ActionRow({required this.icon, required this.title, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white.withOpacity(opacity),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 4),
+        child: Row(
+          children: [
+            Icon(icon, size: 18, color: const Color(0xFF475569)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF1E293B),
+                ),
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded, size: 18, color: Color(0xFF94A3B8)),
+          ],
+        ),
       ),
     );
   }

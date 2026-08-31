@@ -10,18 +10,21 @@ class BeritaService {
         judul: 'Kegiatan Posyandu Bulan Ini',
         ringkasan: 'Pelaksanaan posyandu rutin di seluruh desa dimulai minggu ini.',
         tanggal: '05 Agu 2026',
+        gambar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/1200px-Cat03.jpg', // ganti dengan URL foto berita asli
       ),
       Berita(
         id: 2,
         judul: 'Pelatihan Kader PKK',
         ringkasan: 'Pelatihan kader baru akan dilaksanakan di aula kecamatan.',
         tanggal: '03 Agu 2026',
+        gambar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Cat03.jpg/1200px-Cat03.jpg', // ganti dengan URL foto berita asli
       ),
       Berita(
         id: 3,
         judul: 'Lomba Kebersihan Antar RT',
         ringkasan: 'Penilaian lomba kebersihan dimulai pekan depan.',
         tanggal: '01 Agu 2026',
+        // gambar: null  → berita tanpa foto tetap aman (tampil fallback ikon)
       ),
     ];
 
@@ -33,6 +36,7 @@ class BeritaService {
     //   judul: json['judul'],
     //   ringkasan: json['ringkasan'],
     //   tanggal: json['tanggal'],
+    //   gambar: json['gambar'],   // ← tambahkan ini
     // )).toList();
   }
 }

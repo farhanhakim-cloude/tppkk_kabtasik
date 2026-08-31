@@ -14,37 +14,16 @@ extension PokjaKategoriLabel on PokjaKategori {
     }
   }
 
-  // Daftar field angka yang relevan per kategori — ini yang bikin form dinamis
-  List<String> get fieldAngka {
+  String get shortLabel {
     switch (this) {
       case PokjaKategori.pokja1:
-        return [
-          'Jumlah Kegiatan Gotong Royong',
-          'Jumlah Keluarga Berpartisipasi',
-          'Jumlah Kegiatan Keagamaan',
-          'Jumlah Peserta Penyuluhan',
-        ];
+        return 'Pokja I';
       case PokjaKategori.pokja2:
-        return [
-          'Jumlah Warga Buta Aksara Terentaskan',
-          'Jumlah Kelompok UP2K Aktif',
-          'Jumlah Peserta Pelatihan Keterampilan',
-          'Jumlah Anggota Koperasi Baru',
-        ];
+        return 'Pokja II';
       case PokjaKategori.pokja3:
-        return [
-          'Jumlah Keluarga Tanam Pekarangan',
-          'Jumlah Rumah Tidak Layak Huni Terdata',
-          'Jumlah Keluarga Ikut Penyuluhan Pangan',
-          'Jumlah Keluarga Dibina Tata Laksana RT',
-        ];
+        return 'Pokja III';
       case PokjaKategori.pokja4:
-        return [
-          'Jumlah Balita Ditimbang',
-          'Jumlah Ibu Hamil Diperiksa',
-          'Jumlah Rumah dengan Jamban Sehat',
-          'Jumlah Kegiatan Kerja Bakti Lingkungan',
-        ];
+        return 'Pokja IV';
     }
   }
 }
@@ -58,9 +37,10 @@ extension StatusKegiatanLabel on StatusKegiatan {
 class CatatanKegiatan {
   final int id;
   final String judul;
-  final String ceritaSingkat;
+  final String deskripsiSingkat;
   final PokjaKategori kategori;
-  final Map<String, int> dataAngka; // label field -> nilai
+  final String kecamatan;
+  final String? desa;
   final String? fotoPath;
   final DateTime tanggal;
   final StatusKegiatan status;
@@ -68,11 +48,78 @@ class CatatanKegiatan {
   CatatanKegiatan({
     required this.id,
     required this.judul,
-    required this.ceritaSingkat,
+    required this.deskripsiSingkat,
     required this.kategori,
-    required this.dataAngka,
+    required this.kecamatan,
+    this.desa,
     this.fotoPath,
     required this.tanggal,
     this.status = StatusKegiatan.terkirim,
   });
+
+  CatatanKegiatan copyWith({
+    int? id,
+    String? judul,
+    String? deskripsiSingkat,
+    PokjaKategori? kategori,
+    String? kecamatan,
+    String? desa,
+    String? fotoPath,
+    DateTime? tanggal,
+    StatusKegiatan? status,
+  }) {
+    return CatatanKegiatan(
+      id: id ?? this.id,
+      judul: judul ?? this.judul,
+      deskripsiSingkat: deskripsiSingkat ?? this.deskripsiSingkat,
+      kategori: kategori ?? this.kategori,
+      kecamatan: kecamatan ?? this.kecamatan,
+      desa: desa ?? this.desa,
+      fotoPath: fotoPath ?? this.fotoPath,
+      tanggal: tanggal ?? this.tanggal,
+      status: status ?? this.status,
+    );
+  }
+
+  static const List<String> daftar39Kecamatan = [
+    'Bantarkalong',
+    'Bojongasih',
+    'Bojonggambir',
+    'Ciawi',
+    'Cibalong',
+    'Cigalontang',
+    'Cikalong',
+    'Cikatomas',
+    'Cineam',
+    'Cipatujah',
+    'Cisayong',
+    'Culamega',
+    'Gunungtanjung',
+    'Jamanis',
+    'Jatiwaras',
+    'Kadipaten',
+    'Karangjaya',
+    'Karangnunggal',
+    'Leuwisari',
+    'Mangunreja',
+    'Manonjaya',
+    'Padakembang',
+    'Pagerageung',
+    'Pancatengah',
+    'Parungponteng',
+    'Puspahiang',
+    'Rajapolah',
+    'Salawu',
+    'Salopa',
+    'Sariwangi',
+    'Singaparna',
+    'Sodonghilir',
+    'Sukahening',
+    'Sukaraja',
+    'Sukarame',
+    'Sukaratu',
+    'Sukaresik',
+    'Tanjungjaya',
+    'Taraju',
+  ];
 }

@@ -7,6 +7,8 @@ class Keluarga {
   final int jumlahAnggota;
   final String pekerjaan;
   final String? fotoRumahPath;
+  final double? latitude;
+  final double? longitude;
 
   Keluarga({
     required this.id,
@@ -17,6 +19,8 @@ class Keluarga {
     required this.jumlahAnggota,
     required this.pekerjaan,
     this.fotoRumahPath,
+    this.latitude,
+    this.longitude,
   });
 
   Keluarga copyWith({
@@ -28,6 +32,8 @@ class Keluarga {
     int? jumlahAnggota,
     String? pekerjaan,
     String? fotoRumahPath,
+    double? latitude,
+    double? longitude,
   }) {
     return Keluarga(
       id: id ?? this.id,
@@ -38,6 +44,8 @@ class Keluarga {
       jumlahAnggota: jumlahAnggota ?? this.jumlahAnggota,
       pekerjaan: pekerjaan ?? this.pekerjaan,
       fotoRumahPath: fotoRumahPath ?? this.fotoRumahPath,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
     );
   }
 }

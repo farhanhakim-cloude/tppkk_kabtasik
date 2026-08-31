@@ -5,7 +5,8 @@ import '../services/keluarga_service.dart';
 import 'keluarga_form_screen.dart';
 
 class KeluargaListScreen extends StatefulWidget {
-  const KeluargaListScreen({super.key});
+  final bool embedded;
+  const KeluargaListScreen({super.key, this.embedded = false});
 
   @override
   State<KeluargaListScreen> createState() => _KeluargaListScreenState();
@@ -19,11 +20,19 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
   @override
   void initState() {
     super.initState();
-    _future = _service.getAll();
+    _reload();
   }
 
   void _reload() {
-    setState(() => _future = _service.getAll(query: _searchController.text));
+    setState(() {
+      _future = _service.getAll(query: _searchController.text);
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _openForm({Keluarga? keluarga}) async {
@@ -40,26 +49,62 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        title: Text('Data Keluarga', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
-      ),
-      floatingActionButton: FloatingActionButton(
+      appBar: widget.embedded
+          ? null
+          : AppBar(
+              title: Text('Data Keluarga',
+                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
+            ),
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openForm(),
-        child: const Icon(Icons.add),
+        backgroundColor: primary,
+        icon: const Icon(Icons.add, color: Colors.white),
+        label: Text(
+          'Tambah KK',
+          style: GoogleFonts.plusJakartaSans(
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+        ),
       ),
       body: Column(
         children: [
+          if (widget.embedded)
+            SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Data Keluarga',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF0F172A),
+                        letterSpacing: -0.4,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+          // Search Field
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             child: TextField(
               controller: _searchController,
               style: GoogleFonts.plusJakartaSans(fontSize: 14),
               decoration: InputDecoration(
                 hintText: 'Cari nama kepala keluarga...',
-                hintStyle: GoogleFonts.plusJakartaSans(fontSize: 14, color: Colors.grey[400]),
-                prefixIcon: const Icon(Icons.search),
+                hintStyle:
+                    GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[400]),
+                prefixIcon: const Icon(Icons.search, size: 20),
                 filled: true,
                 fillColor: Colors.white,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
@@ -68,6 +113,8 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
               onChanged: (_) => _reload(),
             ),
           ),
+
+          // List of Families
           Expanded(
             child: FutureBuilder<List<Keluarga>>(
               future: _future,
@@ -77,7 +124,8 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
                 }
                 if (snapshot.hasError) {
                   return Center(
-                    child: Text('Gagal memuat data: ${snapshot.error}', style: GoogleFonts.plusJakartaSans()),
+                    child: Text('Gagal memuat data: ${snapshot.error}',
+                        style: GoogleFonts.plusJakartaSans()),
                   );
                 }
 
@@ -89,19 +137,21 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
                       children: [
                         Icon(Icons.inbox_outlined, size: 56, color: Colors.grey[300]),
                         const SizedBox(height: 12),
-                        Text('Belum ada data', style: GoogleFonts.plusJakartaSans(color: Colors.grey[500])),
+                        Text('Belum ada data keluarga',
+                            style: GoogleFonts.plusJakartaSans(color: Colors.grey[500])),
                       ],
                     ),
                   );
                 }
 
                 return ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 80),
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 90),
                   itemCount: list.length,
                   itemBuilder: (context, index) {
                     final k = list[index];
+                    final hasLocation = k.latitude != null && k.longitude != null;
                     return Container(
-                      margin: const EdgeInsets.only(bottom: 10),
+                      margin: const EdgeInsets.only(bottom: 12),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
@@ -118,45 +168,62 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
                         onTap: () => _openForm(keluarga: k),
                         child: Padding(
                           padding: const EdgeInsets.all(14),
-                          child: Row(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(
-                                width: 46,
-                                height: 46,
-                                decoration: BoxDecoration(
-                                  color: primary.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(14),
-                                ),
-                                child: Icon(Icons.home_rounded, color: primary),
-                              ),
-                              const SizedBox(width: 14),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      k.namaKepalaKeluarga,
-                                      style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 15),
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 44,
+                                    height: 44,
+                                    decoration: BoxDecoration(
+                                      color: primary.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
-                                    const SizedBox(height: 3),
-                                    Text(
-                                      k.alamat,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: GoogleFonts.plusJakartaSans(fontSize: 12.5, color: Colors.grey[600]),
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Wrap(
-                                      spacing: 6,
+                                    child: Icon(Icons.home_rounded, color: primary),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        _Chip(text: 'RT ${k.rt}/RW ${k.rw}', color: primary),
-                                        _Chip(text: '${k.jumlahAnggota} anggota', color: Colors.grey[500]!),
+                                        Text(
+                                          k.namaKepalaKeluarga,
+                                          style: GoogleFonts.plusJakartaSans(
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          k.alamat,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: GoogleFonts.plusJakartaSans(
+                                            fontSize: 12,
+                                            color: Colors.grey[600],
+                                          ),
+                                        ),
                                       ],
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                  Icon(Icons.chevron_right_rounded, color: Colors.grey[400]),
+                                ],
                               ),
-                              Icon(Icons.chevron_right_rounded, color: Colors.grey[400]),
+                              const SizedBox(height: 10),
+                              Wrap(
+                                spacing: 6,
+                                runSpacing: 4,
+                                children: [
+                                  _Chip(text: 'RT ${k.rt}/RW ${k.rw}', color: primary),
+                                  _Chip(text: '${k.jumlahAnggota} Anggota', color: Colors.grey[600]!),
+                                  if (hasLocation)
+                                    _Chip(
+                                      text: '📍 Ada Titik Peta',
+                                      color: const Color(0xFF059669),
+                                    ),
+                                ],
+                              ),
                             ],
                           ),
                         ),
@@ -184,12 +251,16 @@ class _Chip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withOpacity(0.08),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
         text,
-        style: GoogleFonts.plusJakartaSans(fontSize: 10.5, fontWeight: FontWeight.w600, color: color),
+        style: GoogleFonts.plusJakartaSans(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: color,
+        ),
       ),
     );
   }

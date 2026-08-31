@@ -10,4 +10,6 @@ class User {
     required this.jabatan,
     required this.wilayah,
   });
+
+  String get role => jabatan;
 }

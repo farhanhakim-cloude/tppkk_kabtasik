@@ -6,6 +6,8 @@ class KesehatanService {
     DataKesehatan(id: 2, namaIbu: 'Dewi Lestari', namaAnak: 'Raka', kategori: KategoriKesehatan.balita, usiaKehamilanAtauAnak: '18 bulan', statusGizi: 'Normal', rt: '02', rw: '05'),
     DataKesehatan(id: 3, namaIbu: 'Nur Halimah', namaAnak: 'Aisyah', kategori: KategoriKesehatan.balita, usiaKehamilanAtauAnak: '8 bulan', statusGizi: 'Kurang', rt: '01', rw: '06'),
     DataKesehatan(id: 4, namaIbu: 'Wulan Sari', kategori: KategoriKesehatan.ibuMenyusui, usiaKehamilanAtauAnak: '2 bulan', rt: '03', rw: '05'),
+    DataKesehatan(id: 5, namaIbu: 'Lilis Karlina', namaAnak: 'Dimas', kategori: KategoriKesehatan.anak, usiaKehamilanAtauAnak: '6 tahun', statusGizi: 'Normal', rt: '01', rw: '05'),
+    DataKesehatan(id: 6, namaIbu: 'Rina Nose', namaAnak: 'Zahra', kategori: KategoriKesehatan.anak, usiaKehamilanAtauAnak: '8 tahun', statusGizi: 'Normal', rt: '03', rw: '06'),
   ];
 
   Future<List<DataKesehatan>> getAll({KategoriKesehatan? filter}) async {

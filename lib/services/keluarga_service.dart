@@ -3,9 +3,9 @@ import '../models/keluarga.dart';
 class KeluargaService {
   // SEKARANG: data dummy disimpan di memory (hilang kalau app di-restart)
   static final List<Keluarga> _data = [
-    Keluarga(id: 1, namaKepalaKeluarga: 'Ahmad Fauzi', alamat: 'Jl. Mawar No. 12', rt: '01', rw: '05', jumlahAnggota: 4, pekerjaan: 'Wiraswasta'),
-    Keluarga(id: 2, namaKepalaKeluarga: 'Budi Santoso', alamat: 'Jl. Kenanga No. 7', rt: '02', rw: '05', jumlahAnggota: 3, pekerjaan: 'PNS'),
-    Keluarga(id: 3, namaKepalaKeluarga: 'Cecep Hidayat', alamat: 'Jl. Melati No. 21', rt: '01', rw: '06', jumlahAnggota: 5, pekerjaan: 'Petani'),
+    Keluarga(id: 1, namaKepalaKeluarga: 'Ahmad Fauzi', alamat: 'Jl. Mawar No. 12', rt: '01', rw: '05', jumlahAnggota: 4, pekerjaan: 'Wiraswasta', latitude: -7.3274, longitude: 108.2207),
+    Keluarga(id: 2, namaKepalaKeluarga: 'Budi Santoso', alamat: 'Jl. Kenanga No. 7', rt: '02', rw: '05', jumlahAnggota: 3, pekerjaan: 'PNS', latitude: -7.3298, longitude: 108.2145),
+    Keluarga(id: 3, namaKepalaKeluarga: 'Cecep Hidayat', alamat: 'Jl. Melati No. 21', rt: '01', rw: '06', jumlahAnggota: 5, pekerjaan: 'Petani', latitude: -7.3341, longitude: 108.2289),
   ];
 
   Future<List<Keluarga>> getAll({String query = ''}) async {

@@ -1,4 +1,4 @@
-enum KategoriKesehatan { ibuHamil, ibuMenyusui, balita }
+enum KategoriKesehatan { ibuHamil, ibuMenyusui, balita, anak }
 
 class DataKesehatan {
   final int id;
@@ -54,6 +54,8 @@ extension KategoriKesehatanLabel on KategoriKesehatan {
         return 'Ibu Menyusui';
       case KategoriKesehatan.balita:
         return 'Balita';
+      case KategoriKesehatan.anak:
+        return 'Anak';
     }
   }
 }

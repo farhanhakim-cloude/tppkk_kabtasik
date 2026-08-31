@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/keluarga.dart';
 import '../services/keluarga_service.dart';
+import 'map_picker_screen.dart';
 
 class KeluargaFormScreen extends StatefulWidget {
   final Keluarga? keluarga;
@@ -27,6 +28,8 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
   late final TextEditingController _pekerjaanController;
 
   File? _fotoRumah;
+  double? _latitude;
+  double? _longitude;
   bool _saving = false;
   bool get _isEdit => widget.keluarga != null;
 
@@ -40,6 +43,8 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
     _rwController = TextEditingController(text: k?.rw ?? '');
     _jumlahController = TextEditingController(text: k?.jumlahAnggota.toString() ?? '');
     _pekerjaanController = TextEditingController(text: k?.pekerjaan ?? '');
+    _latitude = k?.latitude;
+    _longitude = k?.longitude;
 
     if (k?.fotoRumahPath != null) {
       _fotoRumah = File(k!.fotoRumahPath!);
@@ -92,6 +97,8 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
       jumlahAnggota: int.tryParse(_jumlahController.text) ?? 0,
       pekerjaan: _pekerjaanController.text.trim(),
       fotoRumahPath: _fotoRumah?.path,
+      latitude: _latitude,
+      longitude: _longitude,
     );
 
     if (_isEdit) {
@@ -247,6 +254,83 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                           ),
                         ],
                       ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text('Peta Lokasi Rumah', style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 8),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.grey[300]!),
+              ),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(Icons.map_rounded, color: Theme.of(context).colorScheme.primary, size: 20),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _latitude != null && _longitude != null
+                                  ? 'Lokasi Terpilih'
+                                  : 'Lokasi belum diatur',
+                              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13.5),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              _latitude != null && _longitude != null
+                                  ? 'Lat: ${_latitude!.toStringAsFixed(5)}, Lng: ${_longitude!.toStringAsFixed(5)}'
+                                  : 'Silakan pilih titik lokasi rumah di peta',
+                              style: GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.grey[500]),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 40,
+                    child: OutlinedButton.icon(
+                      onPressed: () async {
+                        final result = await Navigator.push<Map<String, double>>(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MapPickerScreen(
+                              initialLat: _latitude,
+                              initialLng: _longitude,
+                            ),
+                          ),
+                        );
+                        if (result != null) {
+                          setState(() {
+                            _latitude = result['lat'];
+                            _longitude = result['lng'];
+                          });
+                        }
+                      },
+                      icon: const Icon(Icons.pin_drop_rounded, size: 16),
+                      label: Text(
+                        _latitude != null && _longitude != null ? 'Ubah Lokasi' : 'Pilih Lokasi',
+                        style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 24),
