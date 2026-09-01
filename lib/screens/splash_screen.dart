@@ -24,6 +24,9 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   late AnimationController _loaderController;
   late Animation<double> _loaderOpacity;
 
+  late AnimationController _progressController;
+  late Animation<double> _progressValue;
+
   @override
   void initState() {
     super.initState();
@@ -45,6 +48,13 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     // Loader: fade in last
     _loaderController = AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
     _loaderOpacity = CurvedAnimation(parent: _loaderController, curve: Curves.easeIn);
+
+    // Progress bar shimmer (looping)
+    _progressController = AnimationController(vsync: this, duration: const Duration(milliseconds: 1400))
+      ..repeat();
+    _progressValue = Tween<double>(begin: -1.0, end: 2.0).animate(
+      CurvedAnimation(parent: _progressController, curve: Curves.easeInOut),
+    );
 
     _startAnimations();
   }
@@ -69,6 +79,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     _logoController.dispose();
     _textController.dispose();
     _loaderController.dispose();
+    _progressController.dispose();
     super.dispose();
   }
 
@@ -107,14 +118,9 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                     scale: _logoScale,
                     child: FadeTransition(
                       opacity: _logoOpacity,
-                      child: Container(
+                      child: SizedBox(
                         width: 110,
                         height: 110,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(28),
-                        ),
-                        padding: const EdgeInsets.all(14),
                         child: Image.asset('assets/images/logo.png'),
                       ),
                     ),
@@ -130,46 +136,86 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                         children: [
                           Text(
                             'TP PKK',
-                            style: GoogleFonts.plusJakartaSans(
+                            style: GoogleFonts.poppins(
                               color: Colors.white,
                               fontSize: 34,
                               fontWeight: FontWeight.w800,
                               letterSpacing: 2,
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              'KABUPATEN TASIKMALAYA',
-                              style: GoogleFonts.plusJakartaSans(
-                                color: Colors.white.withOpacity(0.9),
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 2.5,
-                              ),
+                          const SizedBox(height: 6),
+                          Text(
+                            'KABUPATEN TASIKMALAYA',
+                            style: GoogleFonts.poppins(
+                              color: Colors.white.withOpacity(0.8),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              letterSpacing: 2.5,
                             ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  const SizedBox(height: 60),
+                  const SizedBox(height: 56),
 
-                  // Loader
+                  // Loading bar shimmer
                   FadeTransition(
                     opacity: _loaderOpacity,
-                    child: const SizedBox(
-                      width: 28,
-                      height: 28,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2.5,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white70),
-                      ),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Memuat...',
+                          style: GoogleFonts.poppins(
+                            color: Colors.white.withOpacity(0.6),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w400,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          width: 160,
+                          height: 4,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: Stack(
+                              children: [
+                                // Track
+                                Container(
+                                  color: Colors.white.withOpacity(0.2),
+                                ),
+                                // Shimmer slider
+                                AnimatedBuilder(
+                                  animation: _progressValue,
+                                  builder: (context, _) {
+                                    return FractionallySizedBox(
+                                      widthFactor: 1.0,
+                                      child: Transform.translate(
+                                        offset: Offset(_progressValue.value * 160, 0),
+                                        child: FractionallySizedBox(
+                                          widthFactor: 0.45,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              gradient: LinearGradient(
+                                                colors: [
+                                                  Colors.white.withOpacity(0.0),
+                                                  Colors.white.withOpacity(0.85),
+                                                  Colors.white.withOpacity(0.0),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -186,7 +232,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                 child: Text(
                   'e-PKK Kader Dasawisma',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.plusJakartaSans(
+                  style: GoogleFonts.poppins(
                     color: Colors.white.withOpacity(0.5),
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
