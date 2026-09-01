@@ -17,16 +17,35 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _loading = false;
   bool _obscurePassword = true;
+  String _errorMessage = '';
 
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _loading = true);
-    await _authService.login(_emailController.text.trim(), _passwordController.text);
-    setState(() => _loading = false);
+    setState(() {
+      _loading = true;
+      _errorMessage = '';
+    });
 
-    if (mounted) {
-      Navigator.pushReplacementNamed(context, '/dashboard');
+    try {
+      // FIX: AuthService.login() SUDAH menyimpan token & user dengan benar
+      // ke SharedPreferences (path yang tepat: data['data']['token']).
+      // Kode duplikat sebelumnya di sini salah ambil path (response['token']
+      // yang tidak ada), sehingga MENIMPA token yang benar jadi string kosong.
+      // Tidak perlu simpan ulang di sini sama sekali.
+      await _authService.login(
+        _emailController.text.trim(),
+        _passwordController.text,
+      );
+
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/dashboard');
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString().replaceFirst('Exception: ', '');
+        _loading = false;
+      });
     }
   }
 
@@ -51,7 +70,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Container(
                       width: 90,
                       height: 90,
-                      decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.12)),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withOpacity(0.12),
+                      ),
                     ),
                   ),
                   Positioned(
@@ -60,7 +82,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Container(
                       width: 40,
                       height: 40,
-                      decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.15)),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withOpacity(0.15),
+                      ),
                     ),
                   ),
                   Positioned(
@@ -69,7 +94,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Container(
                       width: 60,
                       height: 60,
-                      decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.white.withOpacity(0.10)),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white.withOpacity(0.10),
+                      ),
                     ),
                   ),
                   Padding(
@@ -77,7 +105,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Image.asset('assets/images/logo.png', width: 60, height: 60),
+                        Image.asset(
+                          'assets/images/logo.png',
+                          width: 60,
+                          height: 60,
+                          errorBuilder: (context, error, stackTrace) {
+                            return const Icon(
+                              Icons.people,
+                              size: 60,
+                              color: Colors.white,
+                            );
+                          },
+                        ),
                         const Spacer(),
                         Align(
                           alignment: Alignment.centerLeft,
@@ -86,16 +125,30 @@ class _LoginScreenState extends State<LoginScreen> {
                             children: [
                               Text(
                                 'Selamat',
-                                style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w800, height: 1.1),
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: Colors.white,
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.w800,
+                                  height: 1.1,
+                                ),
                               ),
                               Text(
                                 'Datang',
-                                style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w800, height: 1.1),
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: Colors.white,
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.w800,
+                                  height: 1.1,
+                                ),
                               ),
                               const SizedBox(height: 6),
                               Text(
                                 'TP PKK Kab. Tasikmalaya',
-                                style: GoogleFonts.plusJakartaSans(color: Colors.white.withOpacity(0.85), fontSize: 13, fontWeight: FontWeight.w500),
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: Colors.white.withOpacity(0.85),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ],
                           ),
@@ -109,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
 
-          // Bagian bawah: card putih (diperbesar) dengan wave clip di atasnya
+          // Bagian bawah: card putih dengan wave clip
           Expanded(
             flex: 8,
             child: ClipPath(
@@ -126,10 +179,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         Text(
                           'Masuk ke Akun',
-                          style: GoogleFonts.plusJakartaSans(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.black87),
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.black87,
+                          ),
                         ),
                         const SizedBox(height: 28),
 
+                        // Field Email
                         _UnderlineField(
                           controller: _emailController,
                           hint: 'Email',
@@ -137,12 +195,18 @@ class _LoginScreenState extends State<LoginScreen> {
                           primary: primary,
                           keyboardType: TextInputType.emailAddress,
                           validator: (v) {
-                            if (v == null || v.trim().isEmpty) return 'Email wajib diisi';
-                            if (!v.contains('@')) return 'Format email tidak valid';
+                            if (v == null || v.trim().isEmpty) {
+                              return 'Email wajib diisi';
+                            }
+                            if (!v.contains('@')) {
+                              return 'Format email tidak valid';
+                            }
                             return null;
                           },
                         ),
                         const SizedBox(height: 26),
+
+                        // Field Password
                         _UnderlineField(
                           controller: _passwordController,
                           hint: 'Password',
@@ -151,24 +215,79 @@ class _LoginScreenState extends State<LoginScreen> {
                           obscureText: _obscurePassword,
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                              _obscurePassword
+                                  ? Icons.visibility_outlined
+                                  : Icons.visibility_off_outlined,
                               size: 19,
                               color: Colors.grey[400],
                             ),
-                            onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                            onPressed: () {
+                              setState(() {
+                                _obscurePassword = !_obscurePassword;
+                              });
+                            },
                           ),
-                          validator: (v) => (v == null || v.isEmpty) ? 'Password wajib diisi' : null,
+                          validator: (v) {
+                            if (v == null || v.isEmpty) {
+                              return 'Password wajib diisi';
+                            }
+                            if (v.length < 4) {
+                              return 'Password minimal 4 karakter';
+                            }
+                            return null;
+                          },
                         ),
                         const SizedBox(height: 10),
+
+                        // Lupa password
                         Align(
                           alignment: Alignment.centerRight,
                           child: Text(
                             'Hubungi admin jika lupa password',
-                            style: GoogleFonts.plusJakartaSans(color: primary, fontSize: 12.5, fontWeight: FontWeight.w600),
+                            style: GoogleFonts.plusJakartaSans(
+                              color: primary,
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 34),
+                        const SizedBox(height: 12),
 
+                        // Error message
+                        if (_errorMessage.isNotEmpty)
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.red.shade50,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: Colors.red.shade200,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.error_outline,
+                                  color: Colors.red.shade700,
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    _errorMessage,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      color: Colors.red.shade700,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        const SizedBox(height: 20),
+
+                        // Tombol Login
                         SizedBox(
                           width: double.infinity,
                           height: 54,
@@ -185,22 +304,33 @@ class _LoginScreenState extends State<LoginScreen> {
                                         height: 22,
                                         child: CircularProgressIndicator(
                                           strokeWidth: 2.5,
-                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                          valueColor: AlwaysStoppedAnimation<Color>(
+                                            Colors.white,
+                                          ),
                                         ),
                                       )
                                     : Text(
                                         'Masuk',
-                                        style: GoogleFonts.plusJakartaSans(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
+                                        style: GoogleFonts.plusJakartaSans(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                        ),
                                       ),
                               ),
                             ),
                           ),
                         ),
                         const SizedBox(height: 20),
+
+                        // Footer
                         Center(
                           child: Text(
                             'Sistem khusus kader terdaftar',
-                            style: GoogleFonts.plusJakartaSans(color: Colors.grey[400], fontSize: 12),
+                            style: GoogleFonts.plusJakartaSans(
+                              color: Colors.grey[400],
+                              fontSize: 12,
+                            ),
                           ),
                         ),
                       ],
@@ -216,6 +346,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
+// ============================================================
+// WAVE CLIPPER
+// ============================================================
 class _WaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
@@ -233,6 +366,9 @@ class _WaveClipper extends CustomClipper<Path> {
   bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }
 
+// ============================================================
+// UNDERLINE FIELD
+// ============================================================
 class _UnderlineField extends StatelessWidget {
   final TextEditingController controller;
   final String hint;
@@ -264,15 +400,30 @@ class _UnderlineField extends StatelessWidget {
       validator: validator,
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: GoogleFonts.plusJakartaSans(color: Colors.grey[400], fontSize: 14.5),
-        prefixIcon: Icon(icon, size: 20, color: Colors.grey[400]),
+        hintStyle: GoogleFonts.plusJakartaSans(
+          color: Colors.grey[400],
+          fontSize: 14.5,
+        ),
+        prefixIcon: Icon(
+          icon,
+          size: 20,
+          color: Colors.grey[400],
+        ),
         suffixIcon: suffixIcon,
         isDense: true,
         contentPadding: const EdgeInsets.symmetric(vertical: 12),
-        border: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey[300]!)),
-        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey[300]!)),
-        focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: primary, width: 1.6)),
-        errorBorder: const UnderlineInputBorder(borderSide: BorderSide(color: Colors.redAccent, width: 1.2)),
+        border: UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey[300]!),
+        ),
+        enabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.grey[300]!),
+        ),
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: primary, width: 1.6),
+        ),
+        errorBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.redAccent, width: 1.2),
+        ),
       ),
     );
   }

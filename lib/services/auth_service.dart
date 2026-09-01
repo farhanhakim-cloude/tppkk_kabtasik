@@ -1,39 +1,162 @@
+// lib/services/auth_service.dart
+
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
+import '../constants/app_constants.dart';
 
 class AuthService {
-  // SEKARANG: user dummy tetap, tidak peduli email/password yang dimasukkan
-  static final User _dummyUser = User(
-    nama: 'Kader PKK',
-    email: 'kader@tasikmalayakota.go.id',
-    jabatan: 'Kader Dasawisma',
-    wilayah: 'RT 01/RW 05',
-  );
+  final http.Client _client = http.Client();
 
-  Future<void> login(String email, String password) async {
-    await Future.delayed(const Duration(seconds: 1));
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isLoggedIn', true);
+  // ============================================================
+  // LOGIN - KONEK KE API LARAVEL
+  // ============================================================
+  Future<Map<String, dynamic>> login(String email, String password) async {
+    try {
+      final response = await _client.post(
+        Uri.parse('${AppConstants.baseUrl}${AppConstants.login}'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email, 'password': password}),
+      );
 
-    // NANTI: ganti jadi http.post ke /api/login, simpan token asli, decode user dari response
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        // 🔥 AMBIL TOKEN & USER DARI RESPONSE (data wrapper)
+        print('🔍 LOGIN RESPONSE: ${response.body}');
+        final token = data['data']['token'] ?? '';
+        print('🔍 TOKEN SAVED: "$token"');
+        final userData = data['data']['user'] ?? {};
+
+        // Simpan token dan user data ke SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString(AppConstants.tokenKey, token);
+        await prefs.setString(AppConstants.userKey, jsonEncode(userData));
+        await prefs.setBool('isLoggedIn', true);
+
+        return data;
+      } else if (response.statusCode == 401) {
+        throw Exception('Email atau password salah');
+      } else if (response.statusCode == 422) {
+        throw Exception('Email atau password salah');
+      } else {
+        throw Exception('Login gagal: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Terjadi kesalahan: $e');
+    }
   }
 
+  // ============================================================
+  // CEK STATUS LOGIN
+  // ============================================================
   Future<bool> isLoggedIn() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool('isLoggedIn') ?? false;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString(AppConstants.tokenKey);
+
+      if (token == null || token.isEmpty) return false;
+
+      // Cek token ke server (opsional)
+      final response = await _client.get(
+        Uri.parse('${AppConstants.baseUrl}${AppConstants.me}'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      return response.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
   }
 
+  // ============================================================
+  // GET CURRENT USER
+  // ============================================================
   Future<User> getCurrentUser() async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    return _dummyUser;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString(AppConstants.tokenKey);
 
-    // NANTI: ganti jadi http.get ke /api/me pakai token tersimpan
+      if (token == null || token.isEmpty) {
+        return _getDummyUser();
+      }
+
+      final response = await _client.get(
+        Uri.parse('${AppConstants.baseUrl}${AppConstants.me}'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return User.fromJson(data);
+      } else {
+        return _getDummyUser();
+      }
+    } catch (e) {
+      return _getDummyUser();
+    }
   }
 
+  // ============================================================
+  // LOGOUT
+  // ============================================================
   Future<void> logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('isLoggedIn');
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString(AppConstants.tokenKey);
 
-    // NANTI: juga panggil http.post ke /api/logout dan hapus token
+      if (token != null && token.isNotEmpty) {
+        await _client.post(
+          Uri.parse('${AppConstants.baseUrl}${AppConstants.logout}'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        );
+      }
+    } catch (e) {
+      // Ignore error saat logout
+    } finally {
+      // Hapus semua data lokal
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(AppConstants.tokenKey);
+      await prefs.remove(AppConstants.userKey);
+      await prefs.remove('isLoggedIn');
+    }
+  }
+
+  // ============================================================
+  // GET TOKEN
+  // ============================================================
+  Future<String?> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(AppConstants.tokenKey);
+  }
+
+  // ============================================================
+  // DUMMY USER (FALLBACK)
+  // ============================================================
+  User _getDummyUser() {
+    return User(
+      id: 0,
+      name: 'Kader PKK',
+      username: 'kader',
+      email: 'kader@tasikmalayakab.go.id',
+      roles: [],
+    );
+  }
+
+  // ============================================================
+  // DISPOSE
+  // ============================================================
+  void dispose() {
+    _client.close();
   }
 }

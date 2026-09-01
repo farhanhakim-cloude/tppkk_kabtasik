@@ -1,7 +1,10 @@
+// lib/screens/CatatanKegiatanFormScreen.dart
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import '../constants/kecamatan_options.dart';
 import '../models/catatan_kegiatan.dart';
 import '../services/catatan_kegiatan_service.dart';
 
@@ -21,6 +24,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
   final _ceritaController = TextEditingController();
 
   PokjaKategori? _kategori;
+  String? _kecamatan;
   Map<String, TextEditingController> _angkaControllers = {};
   File? _foto;
   bool _sending = false;
@@ -71,6 +75,12 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
       );
       return;
     }
+    if (_kecamatan == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Pilih kecamatan terlebih dahulu', style: GoogleFonts.plusJakartaSans())),
+      );
+      return;
+    }
 
     setState(() => _sending = true);
 
@@ -79,23 +89,38 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
         entry.key: int.tryParse(entry.value.text) ?? 0,
     };
 
-    await _service.kirim(CatatanKegiatan(
-      id: 0,
-      judul: _judulController.text.trim(),
-      ceritaSingkat: _ceritaController.text.trim(),
-      kategori: _kategori!,
-      dataAngka: dataAngka,
-      fotoPath: _foto?.path,
-      tanggal: DateTime.now(),
-    ));
+    try {
+      await _service.kirim(CatatanKegiatan(
+        id: 0,
+        judul: _judulController.text.trim(),
+        ceritaSingkat: _ceritaController.text.trim(),
+        kategori: _kategori!,
+        dataAngka: dataAngka,
+        fotoPath: _foto?.path,
+        tanggal: DateTime.now(),
+        kecamatan: _kecamatan!,
+      ));
 
-    setState(() => _sending = false);
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Catatan kegiatan terkirim ke Admin Kecamatan', style: GoogleFonts.plusJakartaSans())),
-      );
-      Navigator.pop(context, true);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Catatan kegiatan terkirim ke Admin Kecamatan', style: GoogleFonts.plusJakartaSans())),
+        );
+        Navigator.pop(context, true);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Gagal mengirim: ${e.toString().replaceAll('Exception: ', '')}',
+              style: GoogleFonts.plusJakartaSans(),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _sending = false);
     }
   }
 
@@ -120,6 +145,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            // Info banner
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -141,6 +167,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
             ),
             const SizedBox(height: 20),
 
+            // Judul
             TextFormField(
               controller: _judulController,
               style: GoogleFonts.plusJakartaSans(fontSize: 14),
@@ -149,6 +176,21 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
             ),
             const SizedBox(height: 14),
 
+            // Kecamatan
+            DropdownButtonFormField<String>(
+              value: _kecamatan,
+              decoration: _dec('Kecamatan'),
+              isExpanded: true,
+              style: GoogleFonts.plusJakartaSans(fontSize: 14, color: Colors.black87),
+              items: kKecamatanOptions
+                  .map((k) => DropdownMenuItem(value: k, child: Text(k, style: GoogleFonts.plusJakartaSans(fontSize: 13))))
+                  .toList(),
+              onChanged: (v) => setState(() => _kecamatan = v),
+              validator: (v) => v == null ? 'Pilih kecamatan' : null,
+            ),
+            const SizedBox(height: 14),
+
+            // Cerita
             TextFormField(
               controller: _ceritaController,
               style: GoogleFonts.plusJakartaSans(fontSize: 14),
@@ -158,6 +200,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
             ),
             const SizedBox(height: 14),
 
+            // Kategori
             DropdownButtonFormField<PokjaKategori>(
               value: _kategori,
               decoration: _dec('Kategori Kegiatan'),
@@ -169,6 +212,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
               validator: (v) => v == null ? 'Pilih kategori' : null,
             ),
 
+            // 🔥 FIELD ANGKA - PAKAI getLabelForField
             if (_kategori != null) ...[
               const SizedBox(height: 20),
               Text('Data Angka Kegiatan', style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.w700)),
@@ -185,12 +229,14 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                     controller: entry.value,
                     keyboardType: TextInputType.number,
                     style: GoogleFonts.plusJakartaSans(fontSize: 14),
-                    decoration: _dec(entry.key),
+                    // 🔥 PAKAI getLabelForField BIAR LABELNYA SESUAI DATABASE
+                    decoration: _dec(_kategori!.getLabelForField(entry.key), hint: 'Masukkan angka'),
                   ),
                 );
               }),
             ],
 
+            // Foto
             const SizedBox(height: 20),
             Text('Foto Kegiatan', style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w700)),
             const SizedBox(height: 8),
@@ -238,6 +284,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
             ),
             const SizedBox(height: 24),
 
+            // Tombol Kirim
             _sending
                 ? const Center(child: CircularProgressIndicator())
                 : SizedBox(
