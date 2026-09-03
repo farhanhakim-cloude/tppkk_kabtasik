@@ -1,3 +1,5 @@
+// lib/screens/catatan_kegiatan_form_screen.dart
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -142,95 +144,57 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Pilih Wilayah Kecamatan',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFF0F172A),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF3B82F6).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        '39 Kecamatan',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                          color: const Color(0xFF3B82F6),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
                 Text(
-                  'Daftar kecamatan di Kabupaten Tasikmalaya',
-                  style: GoogleFonts.plusJakartaSans(fontSize: 12.5, color: Colors.grey[500]),
+                  'Pilih Wilayah Kecamatan',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: const Color(0xFF0F172A),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Daftar 39 kecamatan di Kabupaten Tasikmalaya',
+                  style: GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.grey[500]),
                 ),
                 const SizedBox(height: 14),
-                // Search Box
                 TextField(
                   controller: searchCtrl,
-                  style: GoogleFonts.plusJakartaSans(fontSize: 14),
                   decoration: InputDecoration(
-                    hintText: 'Cari nama kecamatan...',
+                    hintText: 'Cari kecamatan...',
                     hintStyle: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[400]),
                     prefixIcon: const Icon(Icons.search, size: 20),
                     filled: true,
                     fillColor: const Color(0xFFF1F5F9),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 16),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide.none,
                     ),
                   ),
-                  onChanged: (val) {
+                  onChanged: (q) {
                     setModalState(() {
                       filteredList = CatatanKegiatan.daftar39Kecamatan
-                          .where((k) => k.toLowerCase().contains(val.toLowerCase()))
+                          .where((k) => k.toLowerCase().contains(q.toLowerCase()))
                           .toList();
                     });
                   },
                 ),
-                const SizedBox(height: 12),
-                // List of Kecamatans
+                const SizedBox(height: 10),
                 Expanded(
                   child: ListView.separated(
                     itemCount: filteredList.length,
-                    separatorBuilder: (_, __) => Divider(height: 1, color: Colors.grey[200]),
-                    itemBuilder: (context, idx) {
-                      final kec = filteredList[idx];
+                    separatorBuilder: (_, __) => const Divider(height: 1),
+                    itemBuilder: (context, index) {
+                      final kec = filteredList[index];
                       final isSelected = kec == _selectedKecamatan;
                       return ListTile(
                         contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        leading: Container(
-                          width: 34,
-                          height: 34,
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? const Color(0xFF3B82F6).withOpacity(0.12)
-                                : const Color(0xFFF8FAFC),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.location_on_rounded,
-                            size: 18,
-                            color: isSelected ? const Color(0xFF3B82F6) : Colors.grey[400],
-                          ),
-                        ),
                         title: Text(
                           kec,
                           style: GoogleFonts.plusJakartaSans(
-                            fontSize: 14,
-                            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                            fontSize: 14.5,
+                            fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
                             color: isSelected ? const Color(0xFF3B82F6) : const Color(0xFF1E293B),
                           ),
                         ),
@@ -238,7 +202,6 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                             ? const Icon(Icons.check_circle_rounded, color: Color(0xFF3B82F6), size: 20)
                             : null,
                         onTap: () {
-                          HapticFeedback.selectionClick();
                           setState(() => _selectedKecamatan = kec);
                           Navigator.pop(ctx);
                         },
@@ -255,6 +218,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
   }
 
   Future<void> _pilihTanggal() async {
+    HapticFeedback.selectionClick();
     final picked = await showDatePicker(
       context: context,
       initialDate: _tanggal,
@@ -272,39 +236,54 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
     setState(() => _isSaving = true);
     HapticFeedback.mediumImpact();
 
-    final item = CatatanKegiatan(
-      id: widget.catatan?.id ?? 0,
-      judul: _judulController.text.trim(),
-      deskripsiSingkat: _deskripsiController.text.trim(),
-      kategori: _kategori,
-      kecamatan: _selectedKecamatan,
-      desa: _desaController.text.trim().isEmpty ? null : _desaController.text.trim(),
-      fotoPath: _fotoFile?.path,
-      tanggal: _tanggal,
-    );
-
-    await _service.save(item);
-
-    if (mounted) {
-      setState(() => _isSaving = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            children: [
-              const Icon(Icons.check_circle, color: Colors.white, size: 20),
-              const SizedBox(width: 10),
-              Text(
-                'Catatan kegiatan Pokja berhasil disimpan',
-                style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
-              ),
-            ],
-          ),
-          backgroundColor: const Color(0xFF10B981),
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        ),
+    try {
+      final item = CatatanKegiatan(
+        id: widget.catatan?.id ?? 0,
+        judul: _judulController.text.trim(),
+        deskripsiSingkat: _deskripsiController.text.trim(),
+        kategori: _kategori,
+        kecamatan: _selectedKecamatan,
+        desa: _desaController.text.trim().isEmpty ? null : _desaController.text.trim(),
+        fotoPath: _fotoFile?.path,
+        tanggal: _tanggal,
       );
-      Navigator.pop(context, true);
+
+      await _service.kirim(item);
+
+      if (mounted) {
+        setState(() => _isSaving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.check_circle, color: Colors.white, size: 20),
+                const SizedBox(width: 10),
+                Text(
+                  'Catatan kegiatan Pokja berhasil disimpan',
+                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+            backgroundColor: const Color(0xFF10B981),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+        Navigator.pop(context, true);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isSaving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Gagal: ${e.toString().replaceFirst('Exception: ', '')}',
+              style: GoogleFonts.plusJakartaSans(),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -313,11 +292,11 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
       case PokjaKategori.pokja1:
         return const Color(0xFF3B82F6); // Blue
       case PokjaKategori.pokja2:
-        return const Color(0xFF8B5CF6); // Purple
-      case PokjaKategori.pokja3:
         return const Color(0xFF10B981); // Emerald
-      case PokjaKategori.pokja4:
+      case PokjaKategori.pokja3:
         return const Color(0xFFF59E0B); // Amber
+      case PokjaKategori.pokja4:
+        return const Color(0xFFEF4444); // Red
     }
   }
 
@@ -328,9 +307,8 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
-        backgroundColor: Colors.white,
         elevation: 0,
-        scrolledUnderElevation: 0,
+        backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
           onPressed: () => Navigator.pop(context),
@@ -364,60 +342,50 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
               style: GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.grey[500]),
             ),
             const SizedBox(height: 10),
-            GestureDetector(
+            InkWell(
               onTap: _pilihFoto,
+              borderRadius: BorderRadius.circular(16),
               child: Container(
-                width: double.infinity,
-                height: 190,
+                height: 170,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: _fotoFile != null ? const Color(0xFF3B82F6) : const Color(0xFFCBD5E1),
-                    width: _fotoFile != null ? 1.5 : 1,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.03),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
+                  border: Border.all(color: const Color(0xFFCBD5E1)),
                 ),
                 child: _fotoFile != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(15),
-                        child: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            Image.file(_fotoFile!, fit: BoxFit.cover),
-                            Positioned(
-                              top: 8,
-                              right: 8,
+                    ? Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: Image.file(_fotoFile!, fit: BoxFit.cover),
+                          ),
+                          Positioned(
+                            bottom: 8,
+                            right: 8,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.65),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
                               child: Row(
                                 children: [
-                                  CircleAvatar(
-                                    backgroundColor: Colors.black54,
-                                    radius: 16,
-                                    child: IconButton(
-                                      icon: const Icon(Icons.edit, size: 16, color: Colors.white),
-                                      onPressed: _pilihFoto,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  CircleAvatar(
-                                    backgroundColor: Colors.red.withOpacity(0.85),
-                                    radius: 16,
-                                    child: IconButton(
-                                      icon: const Icon(Icons.close, size: 16, color: Colors.white),
-                                      onPressed: () => setState(() => _fotoFile = null),
+                                  const Icon(Icons.edit, color: Colors.white, size: 14),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Ganti Foto',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      color: Colors.white,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       )
                     : Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -425,24 +393,25 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: primary.withOpacity(0.08),
+                              color: const Color(0xFF3B82F6).withOpacity(0.1),
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(Icons.add_a_photo_rounded, color: primary, size: 30),
+                            child: const Icon(Icons.add_a_photo_rounded,
+                                color: Color(0xFF3B82F6), size: 28),
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            'Ketuk untuk Ambil / Unggah Foto Kegiatan',
+                            'Pilih atau Ambil Foto',
                             style: GoogleFonts.plusJakartaSans(
+                              fontSize: 13.5,
                               fontWeight: FontWeight.w700,
-                              fontSize: 13,
-                              color: primary,
+                              color: const Color(0xFF0F172A),
                             ),
                           ),
-                          const SizedBox(height: 3),
+                          const SizedBox(height: 2),
                           Text(
                             'Kamera atau Galeri ponsel',
-                            style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: Colors.grey[400]),
+                            style: GoogleFonts.plusJakartaSans(fontSize: 11, color: Colors.grey[400]),
                           ),
                         ],
                       ),

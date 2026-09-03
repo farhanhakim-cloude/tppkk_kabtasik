@@ -13,10 +13,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const primaryColor = Color(0xFF2563EB); // blue, sesuai permintaan
+    // 🔥 PAKE TEAL (KONSISTEN DENGAN DASHBOARD)
+    const primaryColor = Color(0xFF0D9488); // Teal 600
 
     return MaterialApp(
       title: 'TPPKK Kab. Tasikmalaya',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
@@ -45,8 +47,13 @@ class MyApp extends StatelessWidget {
             backgroundColor: primaryColor,
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)), // pill shape
-            textStyle: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, fontSize: 15),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30),
+            ),
+            textStyle: GoogleFonts.plusJakartaSans(
+              fontWeight: FontWeight.w600,
+              fontSize: 15,
+            ),
           ),
         ),
         inputDecorationTheme: InputDecorationTheme(

@@ -1,8 +1,10 @@
+// lib/screens/berita_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/berita.dart';
-import '../services/berita_service.dart';
+import '../services/api_service.dart';
 
 class BeritaScreen extends StatefulWidget {
   const BeritaScreen({super.key});
@@ -12,13 +14,19 @@ class BeritaScreen extends StatefulWidget {
 }
 
 class _BeritaScreenState extends State<BeritaScreen> {
-  final _service = BeritaService();
+  final ApiService _apiService = ApiService();
   late Future<List<Berita>> _future;
 
   @override
   void initState() {
     super.initState();
-    _future = _service.getBerita();
+    _future = _apiService.getBerita();
+  }
+
+  @override
+  void dispose() {
+    _apiService.dispose();
+    super.dispose();
   }
 
   @override
@@ -42,16 +50,32 @@ class _BeritaScreenState extends State<BeritaScreen> {
         ),
         title: Text(
           'Berita PKK',
-          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 17, color: Colors.black87),
+          style: GoogleFonts.plusJakartaSans(
+            fontWeight: FontWeight.w700,
+            fontSize: 17,
+            color: Colors.black87,
+          ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh_rounded),
+            onPressed: () {
+              HapticFeedback.selectionClick();
+              setState(() {
+                _future = _apiService.getBerita();
+              });
+            },
+          ),
+        ],
       ),
       body: FutureBuilder<List<Berita>>(
         future: _future,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return _ShimmerList();
+            return const _ShimmerList();
           }
+
           if (snapshot.hasError) {
             return Center(
               child: Column(
@@ -59,7 +83,34 @@ class _BeritaScreenState extends State<BeritaScreen> {
                 children: [
                   Icon(Icons.wifi_off_rounded, size: 48, color: Colors.grey[300]),
                   const SizedBox(height: 12),
-                  Text('Gagal memuat berita', style: GoogleFonts.plusJakartaSans(color: Colors.grey[500])),
+                  Text(
+                    'Gagal memuat berita',
+                    style: GoogleFonts.plusJakartaSans(color: Colors.grey[500]),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    snapshot.error.toString().replaceFirst('Exception: ', ''),
+                    style: GoogleFonts.plusJakartaSans(
+                      color: Colors.grey[400],
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _future = _apiService.getBerita();
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primary,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text('Coba Lagi'),
+                  ),
                 ],
               ),
             );
@@ -74,13 +125,32 @@ class _BeritaScreenState extends State<BeritaScreen> {
                 children: [
                   Container(
                     padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(color: primary.withOpacity(0.06), shape: BoxShape.circle),
-                    child: Icon(Icons.campaign_rounded, size: 48, color: primary.withOpacity(0.4)),
+                    decoration: BoxDecoration(
+                      color: primary.withOpacity(0.06),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.campaign_rounded,
+                      size: 48,
+                      color: primary.withOpacity(0.4),
+                    ),
                   ),
                   const SizedBox(height: 16),
-                  Text('Belum Ada Berita', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 17)),
+                  Text(
+                    'Belum Ada Berita',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 17,
+                    ),
+                  ),
                   const SizedBox(height: 6),
-                  Text('Berita terbaru akan muncul di sini', style: GoogleFonts.plusJakartaSans(color: Colors.grey[500], fontSize: 13)),
+                  Text(
+                    'Berita terbaru akan muncul di sini',
+                    style: GoogleFonts.plusJakartaSans(
+                      color: Colors.grey[500],
+                      fontSize: 13,
+                    ),
+                  ),
                 ],
               ),
             );
@@ -106,6 +176,9 @@ class _BeritaScreenState extends State<BeritaScreen> {
   }
 }
 
+// ================================================================
+// BERITA CARD
+// ================================================================
 class _BeritaCard extends StatefulWidget {
   final Berita berita;
   const _BeritaCard({required this.berita});
@@ -121,31 +194,56 @@ class _BeritaCardState extends State<_BeritaCard> with SingleTickerProviderState
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 100));
-    _scale = Tween(begin: 1.0, end: 0.97).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 100),
+    );
+    _scale = Tween(begin: 1.0, end: 0.97).animate(
+      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
+    );
   }
 
   @override
-  void dispose() { _ctrl.dispose(); super.dispose(); }
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final primary = Theme.of(context).colorScheme.primary;
     final berita = widget.berita;
 
+    // Format tanggal
+    String tanggal = berita.createdAt ?? berita.tanggal ?? 'Tanggal tidak tersedia';
+    String deskripsi = berita.deskripsi ?? berita.konten ?? 'Klik untuk membaca selengkapnya';
+    // Strip HTML tags jika ada
+    deskripsi = deskripsi.replaceAll(RegExp(r'<[^>]*>'), '');
+
     return GestureDetector(
       onTapDown: (_) => _ctrl.forward(),
-      onTapUp: (_) { _ctrl.reverse(); HapticFeedback.selectionClick(); },
+      onTapUp: (_) {
+        _ctrl.reverse();
+        HapticFeedback.selectionClick();
+        _showDetailDialog(context, berita);
+      },
       onTapCancel: () => _ctrl.reverse(),
       child: AnimatedBuilder(
         animation: _scale,
-        builder: (context, child) => Transform.scale(scale: _scale.value, child: child),
+        builder: (context, child) => Transform.scale(
+          scale: _scale.value,
+          child: child,
+        ),
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 4)),
+              BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
             ],
             border: Border.all(color: Colors.grey.withOpacity(0.06)),
           ),
@@ -159,7 +257,9 @@ class _BeritaCardState extends State<_BeritaCard> with SingleTickerProviderState
                   gradient: LinearGradient(
                     colors: [primary, primary.withOpacity(0.4)],
                   ),
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(18),
+                  ),
                 ),
               ),
               Padding(
@@ -179,20 +279,41 @@ class _BeritaCardState extends State<_BeritaCard> with SingleTickerProviderState
                             ),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Icon(Icons.campaign_rounded, color: Colors.white, size: 18),
+                          child: const Icon(
+                            Icons.campaign_rounded,
+                            color: Colors.white,
+                            size: 18,
+                          ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Berita Resmi', style: GoogleFonts.plusJakartaSans(fontSize: 11, color: primary, fontWeight: FontWeight.w600)),
+                              Text(
+                                'Berita Resmi',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 11,
+                                  color: primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                               const SizedBox(height: 2),
                               Row(
                                 children: [
-                                  Icon(Icons.schedule_rounded, size: 12, color: Colors.grey[400]),
+                                  Icon(
+                                    Icons.schedule_rounded,
+                                    size: 12,
+                                    color: Colors.grey[400],
+                                  ),
                                   const SizedBox(width: 4),
-                                  Text(berita.tanggal, style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: Colors.grey[500])),
+                                  Text(
+                                    tanggal,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 11.5,
+                                      color: Colors.grey[500],
+                                    ),
+                                  ),
                                 ],
                               ),
                             ],
@@ -203,19 +324,38 @@ class _BeritaCardState extends State<_BeritaCard> with SingleTickerProviderState
                     const SizedBox(height: 14),
                     Text(
                       berita.judul,
-                      style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 16, color: const Color(0xFF1E293B)),
+                      style: GoogleFonts.plusJakartaSans(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                        color: const Color(0xFF1E293B),
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      berita.ringkasan,
-                      style: GoogleFonts.plusJakartaSans(fontSize: 13.5, color: Colors.grey[600], height: 1.55),
+                      deskripsi.length > 150 ? '${deskripsi.substring(0, 150)}...' : deskripsi,
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 13.5,
+                        color: Colors.grey[600],
+                        height: 1.55,
+                      ),
                     ),
                     const SizedBox(height: 14),
                     Row(
                       children: [
-                        Text('Baca selengkapnya', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: primary, fontWeight: FontWeight.w600)),
+                        Text(
+                          'Baca selengkapnya',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12,
+                            color: primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                         const SizedBox(width: 4),
-                        Icon(Icons.arrow_forward_rounded, size: 14, color: primary),
+                        Icon(
+                          Icons.arrow_forward_rounded,
+                          size: 14,
+                          color: primary,
+                        ),
                       ],
                     ),
                   ],
@@ -227,9 +367,102 @@ class _BeritaCardState extends State<_BeritaCard> with SingleTickerProviderState
       ),
     );
   }
+
+  void _showDetailDialog(BuildContext context, Berita berita) {
+    final primary = Theme.of(context).colorScheme.primary;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) => DraggableScrollableSheet(
+        initialChildSize: 0.85,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (_, scrollCtrl) => Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            children: [
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 12),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: scrollCtrl,
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        berita.judul,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 20,
+                          color: const Color(0xFF0F172A),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.schedule_rounded,
+                            size: 14,
+                            color: Colors.grey[400],
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            berita.createdAt ?? berita.tanggal ?? 'Tanggal tidak tersedia',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 13,
+                              color: Colors.grey[500],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Container(
+                        height: 4,
+                        width: 60,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [primary, primary.withOpacity(0.4)],
+                          ),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        berita.deskripsi ?? berita.konten ?? 'Tidak ada konten',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 14.5,
+                          color: Colors.grey[700],
+                          height: 1.7,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
-// Fade in animation widget
+// ================================================================
+// FADE IN ANIMATION
+// ================================================================
 class _FadeIn extends StatefulWidget {
   final Widget child;
   final Duration delay;
@@ -247,55 +480,90 @@ class _FadeInState extends State<_FadeIn> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 450));
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 450),
+    );
     _opacity = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
-    _slide = Tween<Offset>(begin: const Offset(0, 0.12), end: Offset.zero)
-        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic));
-    Future.delayed(widget.delay, () { if (mounted) _ctrl.forward(); });
+    _slide = Tween<Offset>(
+      begin: const Offset(0, 0.12),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic));
+
+    Future.delayed(widget.delay, () {
+      if (mounted) _ctrl.forward();
+    });
   }
 
   @override
-  void dispose() { _ctrl.dispose(); super.dispose(); }
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return FadeTransition(opacity: _opacity, child: SlideTransition(position: _slide, child: widget.child));
+    return FadeTransition(
+      opacity: _opacity,
+      child: SlideTransition(
+        position: _slide,
+        child: widget.child,
+      ),
+    );
   }
 }
 
-// Shimmer loading
+// ================================================================
+// SHIMMER LIST
+// ================================================================
 class _ShimmerList extends StatefulWidget {
+  const _ShimmerList();
+
   @override
   State<_ShimmerList> createState() => _ShimmerListState();
 }
 
-class _ShimmerListState extends State<_ShimmerList> with SingleTickerProviderStateMixin {
+class _ShimmerListState extends State<_ShimmerList>
+    with SingleTickerProviderStateMixin {
   late AnimationController _ctrl;
   late Animation<double> _anim;
 
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1200))..repeat(reverse: true);
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat(reverse: true);
     _anim = CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut);
   }
 
   @override
-  void dispose() { _ctrl.dispose(); super.dispose(); }
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _anim,
       builder: (context, _) {
-        final c = Color.lerp(const Color(0xFFE2E8F0), const Color(0xFFCBD5E8), _anim.value)!;
+        final c = Color.lerp(
+          const Color(0xFFE2E8F0),
+          const Color(0xFFCBD5E8),
+          _anim.value,
+        )!;
         return ListView.separated(
           padding: const EdgeInsets.all(16),
           itemCount: 3,
           separatorBuilder: (_, __) => const SizedBox(height: 14),
           itemBuilder: (_, __) => Container(
             height: 140,
-            decoration: BoxDecoration(color: c, borderRadius: BorderRadius.circular(18)),
+            decoration: BoxDecoration(
+              color: c,
+              borderRadius: BorderRadius.circular(18),
+            ),
           ),
         );
       },

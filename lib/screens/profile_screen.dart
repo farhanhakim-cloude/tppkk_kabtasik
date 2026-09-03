@@ -1,3 +1,5 @@
+// lib/screens/profile_screen.dart
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,6 +28,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     _future = _authService.getCurrentUser();
+  }
+
+  @override
+  void dispose() {
+    _authService.dispose();
+    super.dispose();
   }
 
   Future<void> _pilihFotoProfil() async {
@@ -114,8 +122,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _handleLogout() async {
-    HapticFeedback.mediumImpact();
-    final confirm = await showDialog<bool>(
+    final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: Colors.white,
@@ -163,15 +170,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
 
-    if (confirm != true) return;
-
-    setState(() => _loggingOut = true);
-    await _authService.logout();
-
-    if (mounted) {
-      Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+    if (confirmed == true) {
+      setState(() => _loggingOut = true);
+      await _authService.logout();
+      if (mounted) {
+        setState(() => _loggingOut = false);
+        Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+      }
     }
   }
+
+  void _logout() => _handleLogout();
 
   void _showInfoDialog(String title, String message) {
     HapticFeedback.selectionClick();
@@ -198,8 +207,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final primary = Theme.of(context).colorScheme.primary;
-
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: widget.embedded
@@ -212,12 +219,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
         future: _future,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           }
+
           if (snapshot.hasError) {
             return Center(
-              child: Text('Gagal memuat profil: ${snapshot.error}',
-                  style: GoogleFonts.plusJakartaSans()),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.error_outline, size: 48, color: Colors.grey[400]),
+                  const SizedBox(height: 12),
+                  Text('Gagal memuat profil',
+                      style: GoogleFonts.plusJakartaSans(color: Colors.grey[600])),
+                  const SizedBox(height: 8),
+                  Text(
+                    snapshot.error.toString().replaceFirst('Exception: ', ''),
+                    style: GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.grey[500]),
+                  ),
+                ],
+              ),
             );
           }
 
