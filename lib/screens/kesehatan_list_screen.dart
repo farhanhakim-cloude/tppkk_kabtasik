@@ -78,6 +78,7 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: null,
         onPressed: () => _openForm(),
         child: const Icon(Icons.add),
       ),

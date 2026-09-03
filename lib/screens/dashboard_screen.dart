@@ -232,125 +232,171 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // BUILD HEADER
   // ================================================================
   Widget _buildHeaderCard(Color primary, {bool isScrolled = false}) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
-      child: Row(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Image.asset(
-              'assets/images/logo.png',
-              width: 40,
-              height: 40,
-              errorBuilder: (_, __, ___) => Icon(
-                Icons.groups_rounded,
-                color: Colors.teal,
-                size: 24,
-              ),
+    return Row(
+      children: [
+        // Logo
+        Container(
+          width: 38,
+          height: 38,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: primary.withOpacity(0.08),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Image.asset(
+            'assets/images/logo.png',
+            fit: BoxFit.contain,
+            errorBuilder: (_, __, ___) => Icon(
+              Icons.groups_rounded,
+              color: primary,
+              size: 22,
             ),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'TP PKK Kab. Tasikmalaya',
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 13.5,
-                    color: const Color(0xFF0F172A),
-                    letterSpacing: -0.2,
-                  ),
+        ),
+        const SizedBox(width: 10),
+        // Title
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'TP PKK Tasikmalaya',
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
+                  color: const Color(0xFF0F172A),
                 ),
-                const SizedBox(height: 2),
-                Row(
-                  children: [
-                    Container(
-                      width: 7,
-                      height: 7,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF10B981),
-                        shape: BoxShape.circle,
-                      ),
+              ),
+              Row(
+                children: [
+                  Container(
+                    width: 6,
+                    height: 6,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF22C55E),
+                      shape: BoxShape.circle,
                     ),
-                    const SizedBox(width: 5),
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Kader Aktif',
+                    style: GoogleFonts.poppins(
+                      fontSize: 11,
+                      color: Colors.grey[500],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        // Notif
+        _HeaderIconBtn(
+          icon: Icons.notifications_outlined,
+          onTap: () {
+            HapticFeedback.selectionClick();
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Belum ada notifikasi baru',
+                  style: GoogleFonts.plusJakartaSans(),
+                ),
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            );
+          },
+        ),
+        const SizedBox(width: 6),
+        // Avatar
+        GestureDetector(
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const ProfileScreen()),
+          ),
+          child: CircleAvatar(
+            radius: 18,
+            backgroundColor: primary.withOpacity(0.12),
+            child: Icon(Icons.person_rounded, color: primary, size: 20),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ================================================================
+  // BUILD TREND STATISTIC (Pengganti Banner) - DIAGRAM BATANG
+  // ================================================================
+  Widget _buildTrendStatistic(Color primary) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFF1F5F9)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Aktivitas Kegiatan',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF0F172A),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade50,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.trending_up_rounded, size: 14, color: Colors.green.shade700),
+                    const SizedBox(width: 4),
                     Text(
-                      'Kader Dasawisma • Aktif',
-                      style: GoogleFonts.poppins(
-                        fontSize: 11.5,
-                        color: Colors.grey[600],
-                        fontWeight: FontWeight.w500,
+                      '+14%',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.green.shade700,
                       ),
                     ),
                   ],
                 ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          // Bar Chart Custom
+          SizedBox(
+            height: 110,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                _buildBarItem(label: 'Jan', value: 0.3, primary: primary),
+                _buildBarItem(label: 'Feb', value: 0.5, primary: primary),
+                _buildBarItem(label: 'Mar', value: 0.4, primary: primary),
+                _buildBarItem(label: 'Apr', value: 0.7, primary: primary),
+                _buildBarItem(label: 'Mei', value: 0.6, primary: primary),
+                _buildBarItem(label: 'Jun', value: 1.0, primary: primary),
               ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFFF1F5F9),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: IconButton(
-              icon: Icon(
-                Icons.notifications_none_rounded,
-                color: Colors.grey[700],
-                size: 20,
-              ),
-              onPressed: () {
-                HapticFeedback.selectionClick();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Belum ada notifikasi baru',
-                      style: GoogleFonts.plusJakartaSans(),
-                    ),
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          const SizedBox(width: 8),
-          GestureDetector(
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const ProfileScreen()),
-            ),
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [primary, primary.withOpacity(0.8)],
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: primary.withOpacity(0.25),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.all(2),
-              child: CircleAvatar(
-                radius: 19,
-                backgroundColor: Colors.white,
-                child: CircleAvatar(
-                  radius: 17,
-                  backgroundColor: primary.withOpacity(0.10),
-                  child: Icon(
-                    Icons.person_rounded,
-                    color: primary,
-                    size: 20,
-                  ),
-                ),
-              ),
             ),
           ),
         ],
@@ -358,151 +404,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  // ================================================================
-  // BUILD BANNER
-  // ================================================================
-  Widget _buildBanner(Color primary) {
-    return AspectRatio(
-      aspectRatio: 4.15,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.asset(
-              'assets/images/banner_pkk.png',
-              fit: BoxFit.cover,
-              alignment: Alignment.center,
-            ),
-            Positioned(
-              left: 14,
-              top: 10,
-              right: 45,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Kegiatan PKK',
-                        style: GoogleFonts.plusJakartaSans(
-                          color: Colors.white,
-                          fontSize: 17,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -0.4,
-                        ),
-                      ),
-                      const SizedBox(width: 5),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          'Baru ✦',
-                          style: GoogleFonts.plusJakartaSans(
-                            color: const Color(0xFFE91E63),
-                            fontSize: 7,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    'Pantau informasi dan kegiatan\ndi lingkungan PKK',
-                    style: GoogleFonts.plusJakartaSans(
-                      color: Colors.white,
-                      fontSize: 8.5,
-                      height: 1.35,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Positioned(
-              left: 14,
-              bottom: 18,
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(7),
-                  onTap: () {
-                    HapticFeedback.selectionClick();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const GaleriAgendaScreen(),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 13,
-                      vertical: 7,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(7),
-                    ),
-                    child: Text(
-                      'Lihat Selengkapnya',
-                      style: GoogleFonts.plusJakartaSans(
-                        color: const Color(0xFF315DE8),
-                        fontSize: 8.5,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
+  Widget _buildBarItem({required String label, required double value, required Color primary}) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Expanded(
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: FractionallySizedBox(
+              heightFactor: value,
+              child: Container(
+                width: 26,
+                decoration: BoxDecoration(
+                  color: value == 1.0 ? primary : primary.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(6),
                 ),
               ),
             ),
-            Positioned(
-              bottom: 5,
-              left: 0,
-              right: 0,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 17,
-                    height: 5,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  Container(
-                    width: 5,
-                    height: 5,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.65),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  Container(
-                    width: 5,
-                    height: 5,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.65),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
+        const SizedBox(height: 10),
+        Text(
+          label,
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 11,
+            color: value == 1.0 ? const Color(0xFF0F172A) : Colors.grey[400],
+            fontWeight: value == 1.0 ? FontWeight.w700 : FontWeight.w600,
+          ),
+        ),
+      ],
     );
   }
 
@@ -514,28 +444,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final primary = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF8FAFC),
       body: Column(
         children: [
           // Header
           AnimatedContainer(
-            duration: const Duration(milliseconds: 280),
-            curve: Curves.easeOutCubic,
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOut,
             decoration: BoxDecoration(
-              gradient: _isScrolled
-                  ? null
-                  : const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Colors.white, Colors.white],
-                    ),
-              color: _isScrolled ? Colors.white : null,
+              color: Colors.white,
               boxShadow: _isScrolled
                   ? [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
-                        blurRadius: 16,
-                        offset: const Offset(0, 4),
+                        color: Colors.black.withOpacity(0.06),
+                        blurRadius: 12,
+                        offset: const Offset(0, 2),
                       ),
                     ]
                   : [],
@@ -543,7 +466,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             child: SafeArea(
               bottom: false,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                padding: const EdgeInsets.fromLTRB(18, 10, 18, 14),
                 child: _buildHeaderCard(primary, isScrolled: _isScrolled),
               ),
             ),
@@ -641,12 +564,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
 
                   // =========================
-                  // BANNER
+                  // TREND STATISTIC
                   // =========================
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                      child: _buildBanner(primary),
+                      child: _buildTrendStatistic(primary),
                     ),
                   ),
 
@@ -783,9 +706,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
           crossAxisCount: 3,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 14,
-          crossAxisSpacing: 12,
-          childAspectRatio: 0.92,
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 10,
+          childAspectRatio: 0.95,
           children: [
             _MenuTile(
               icon: Icons.home_work_rounded,
@@ -1026,6 +949,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
 }
 
 // ================================================================
+// HEADER ICON BUTTON
+// ================================================================
+class _HeaderIconBtn extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  const _HeaderIconBtn({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          color: const Color(0xFFF1F5F9),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(icon, size: 18, color: const Color(0xFF64748B)),
+      ),
+    );
+  }
+}
+
+// ================================================================
 // MENU TILE
 // ================================================================
 class _MenuTile extends StatefulWidget {
@@ -1090,18 +1038,12 @@ class _MenuTileState extends State<_MenuTile> with SingleTickerProviderStateMixi
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            border: widget.isMore
-                ? Border.all(
-                    color: const Color(0xFF64748B).withOpacity(0.12),
-                    width: 1.2,
-                  )
-                : null,
+            borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 14,
-                offset: const Offset(0, 6),
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
@@ -1109,26 +1051,31 @@ class _MenuTileState extends State<_MenuTile> with SingleTickerProviderStateMixi
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: 58,
-                height: 58,
+                width: 48,
+                height: 48,
                 alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: widget.isMore
+                      ? const Color(0xFF64748B).withOpacity(0.08)
+                      : widget.color.withOpacity(0.10),
+                  borderRadius: BorderRadius.circular(14),
+                ),
                 child: Icon(
                   widget.icon,
                   color: widget.isMore ? const Color(0xFF64748B) : widget.color,
-                  size: 32,
+                  size: 24,
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               Text(
                 widget.label,
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: GoogleFonts.plusJakartaSans(
-                  fontSize: 12,
+                  fontSize: 11.5,
                   fontWeight: FontWeight.w700,
                   color: const Color(0xFF0F172A),
-                  letterSpacing: -0.2,
                 ),
               ),
               if (widget.subtitle.isNotEmpty) ...[
@@ -1138,9 +1085,9 @@ class _MenuTileState extends State<_MenuTile> with SingleTickerProviderStateMixi
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.plusJakartaSans(
-                    fontSize: 10.5,
-                    color: Colors.grey[500],
-                    fontWeight: FontWeight.w600,
+                    fontSize: 10,
+                    color: Colors.grey[400],
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -1177,86 +1124,65 @@ class _StatCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: color.withOpacity(0.08),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(9),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(14),
+                  color: color.withOpacity(0.10),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, color: color, size: 22),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF0FDF4),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: const Color(0xFFBBF7D0)),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.trending_up_rounded,
-                      size: 12,
-                      color: Color(0xFF16A34A),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      trend,
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 10.5,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFF16A34A),
-                      ),
-                    ),
-                  ],
-                ),
+                child: Icon(icon, color: color, size: 20),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           Text(
             value,
             style: GoogleFonts.plusJakartaSans(
-              fontSize: 30,
+              fontSize: 28,
               fontWeight: FontWeight.w800,
               color: const Color(0xFF0F172A),
-              letterSpacing: -1.0,
+              letterSpacing: -0.8,
             ),
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: 1),
           Text(
             label,
             style: GoogleFonts.plusJakartaSans(
-              fontSize: 13.5,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFF0F172A),
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFF334155),
             ),
           ),
-          if (sublabel.isNotEmpty) ...[
-            const SizedBox(height: 2),
-            Text(
-              sublabel,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 11.5,
-                color: Colors.grey[500],
-                fontWeight: FontWeight.w500,
-              ),
+          if (trend.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(Icons.trending_up_rounded, size: 11, color: color),
+                const SizedBox(width: 3),
+                Text(
+                  trend,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w700,
+                    color: color,
+                  ),
+                ),
+              ],
             ),
           ],
         ],

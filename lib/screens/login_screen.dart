@@ -55,289 +55,268 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       backgroundColor: primary,
-      body: Column(
+      body: Stack(
         children: [
-          // Bagian atas: wave + welcome text
-          Expanded(
-            flex: 4,
-            child: SafeArea(
-              bottom: false,
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: 10,
-                    right: -20,
-                    child: Container(
-                      width: 90,
-                      height: 90,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.12),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    top: 70,
-                    right: 60,
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.15),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 50,
-                    left: 20,
-                    child: Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white.withOpacity(0.10),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          'assets/images/logo.png',
-                          width: 60,
-                          height: 60,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Icon(
-                              Icons.people,
-                              size: 60,
-                              color: Colors.white,
-                            );
-                          },
-                        ),
-                        const Spacer(),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Selamat',
-                                style: GoogleFonts.plusJakartaSans(
-                                  color: Colors.white,
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.w800,
-                                  height: 1.1,
-                                ),
-                              ),
-                              Text(
-                                'Datang',
-                                style: GoogleFonts.plusJakartaSans(
-                                  color: Colors.white,
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.w800,
-                                  height: 1.1,
-                                ),
-                              ),
-                              const SizedBox(height: 6),
-                              Text(
-                                'TP PKK Kab. Tasikmalaya',
-                                style: GoogleFonts.plusJakartaSans(
-                                  color: Colors.white.withOpacity(0.85),
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                      ],
-                    ),
-                  ),
-                ],
+          // Background circles
+          Positioned(
+            top: -30,
+            right: -30,
+            child: Container(
+              width: 160,
+              height: 160,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.07),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 80,
+            right: 50,
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.10),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 120,
+            left: -20,
+            child: Container(
+              width: 100,
+              height: 100,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.06),
               ),
             ),
           ),
 
-          // Bagian bawah: card putih dengan wave clip
-          Expanded(
-            flex: 8,
-            child: ClipPath(
-              clipper: _WaveClipper(),
-              child: Container(
-                width: double.infinity,
-                color: Colors.white,
-                padding: const EdgeInsets.fromLTRB(28, 48, 28, 28),
-                child: Form(
-                  key: _formKey,
-                  child: SingleChildScrollView(
+          // Content
+          SafeArea(
+            child: Column(
+              children: [
+                // Top: Logo + greeting
+                Expanded(
+                  flex: 3,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(28, 24, 28, 0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Logo pill
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.15),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Image.asset(
+                            'assets/images/logo.png',
+                            width: 36,
+                            height: 36,
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Icon(Icons.people, size: 36, color: Colors.white),
+                          ),
+                        ),
+                        const Spacer(),
                         Text(
-                          'Masuk ke Akun',
+                          'Selamat Datang',
                           style: GoogleFonts.plusJakartaSans(
-                            fontSize: 20,
+                            color: Colors.white,
+                            fontSize: 30,
                             fontWeight: FontWeight.w800,
-                            color: Colors.black87,
+                            height: 1.1,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Masuk ke sistem TP PKK\nKabupaten Tasikmalaya',
+                          style: GoogleFonts.plusJakartaSans(
+                            color: Colors.white.withOpacity(0.75),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            height: 1.5,
                           ),
                         ),
                         const SizedBox(height: 28),
-
-                        // Field Email
-                        _UnderlineField(
-                          controller: _emailController,
-                          hint: 'Email',
-                          icon: Icons.email_outlined,
-                          primary: primary,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: (v) {
-                            if (v == null || v.trim().isEmpty) {
-                              return 'Email wajib diisi';
-                            }
-                            if (!v.contains('@')) {
-                              return 'Format email tidak valid';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 26),
-
-                        // Field Password
-                        _UnderlineField(
-                          controller: _passwordController,
-                          hint: 'Password',
-                          icon: Icons.lock_outline_rounded,
-                          primary: primary,
-                          obscureText: _obscurePassword,
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscurePassword
-                                  ? Icons.visibility_outlined
-                                  : Icons.visibility_off_outlined,
-                              size: 19,
-                              color: Colors.grey[400],
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscurePassword = !_obscurePassword;
-                              });
-                            },
-                          ),
-                          validator: (v) {
-                            if (v == null || v.isEmpty) {
-                              return 'Password wajib diisi';
-                            }
-                            if (v.length < 4) {
-                              return 'Password minimal 4 karakter';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 10),
-
-                        // Lupa password
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            'Hubungi admin jika lupa password',
-                            style: GoogleFonts.plusJakartaSans(
-                              color: primary,
-                              fontSize: 12.5,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-
-                        // Error message
-                        if (_errorMessage.isNotEmpty)
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.red.shade50,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: Colors.red.shade200,
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.error_outline,
-                                  color: Colors.red.shade700,
-                                  size: 18,
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    _errorMessage,
-                                    style: GoogleFonts.plusJakartaSans(
-                                      color: Colors.red.shade700,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        const SizedBox(height: 20),
-
-                        // Tombol Login
-                        SizedBox(
-                          width: double.infinity,
-                          height: 54,
-                          child: Material(
-                            color: primary,
-                            borderRadius: BorderRadius.circular(27),
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(27),
-                              onTap: _loading ? null : _handleLogin,
-                              child: Center(
-                                child: _loading
-                                    ? const SizedBox(
-                                        width: 22,
-                                        height: 22,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2.5,
-                                          valueColor: AlwaysStoppedAnimation<Color>(
-                                            Colors.white,
-                                          ),
-                                        ),
-                                      )
-                                    : Text(
-                                        'Masuk',
-                                        style: GoogleFonts.plusJakartaSans(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-
-                        // Footer
-                        Center(
-                          child: Text(
-                            'Sistem khusus kader terdaftar',
-                            style: GoogleFonts.plusJakartaSans(
-                              color: Colors.grey[400],
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ),
                 ),
-              ),
+
+                // Bottom: Form card
+                Expanded(
+                  flex: 7,
+                  child: Container(
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(32),
+                      ),
+                    ),
+                    padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+                    child: Form(
+                      key: _formKey,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Masuk ke Akun',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800,
+                                color: const Color(0xFF0F172A),
+                                letterSpacing: -0.3,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Khusus kader PKK terdaftar',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 13,
+                                color: Colors.grey[500],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: 28),
+
+                            // Field Email
+                            _RoundedField(
+                              controller: _emailController,
+                              hint: 'Alamat Email',
+                              icon: Icons.email_outlined,
+                              primary: primary,
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (v) {
+                                if (v == null || v.trim().isEmpty) return 'Email wajib diisi';
+                                if (!v.contains('@')) return 'Format email tidak valid';
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 14),
+
+                            // Field Password
+                            _RoundedField(
+                              controller: _passwordController,
+                              hint: 'Password',
+                              icon: Icons.lock_outline_rounded,
+                              primary: primary,
+                              obscureText: _obscurePassword,
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility_outlined
+                                      : Icons.visibility_off_outlined,
+                                  size: 19,
+                                  color: Colors.grey[400],
+                                ),
+                                onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                              ),
+                              validator: (v) {
+                                if (v == null || v.isEmpty) return 'Password wajib diisi';
+                                if (v.length < 4) return 'Password minimal 4 karakter';
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 10),
+
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                'Hubungi admin jika lupa password',
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: primary,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Error message
+                            if (_errorMessage.isNotEmpty)
+                              Container(
+                                margin: const EdgeInsets.only(bottom: 16),
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.shade50,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: Colors.red.shade200),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.error_outline, color: Colors.red.shade700, size: 18),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        _errorMessage,
+                                        style: GoogleFonts.plusJakartaSans(
+                                          color: Colors.red.shade700,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                            // Tombol Login
+                            SizedBox(
+                              width: double.infinity,
+                              height: 52,
+                              child: Material(
+                                color: primary,
+                                borderRadius: BorderRadius.circular(16),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(16),
+                                  onTap: _loading ? null : _handleLogin,
+                                  child: Center(
+                                    child: _loading
+                                        ? const SizedBox(
+                                            width: 22,
+                                            height: 22,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2.5,
+                                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                            ),
+                                          )
+                                        : Text(
+                                            'Masuk',
+                                            style: GoogleFonts.plusJakartaSans(
+                                              color: Colors.white,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            Center(
+                              child: Text(
+                                'Sistem khusus kader terdaftar',
+                                style: GoogleFonts.plusJakartaSans(
+                                  color: Colors.grey[400],
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -347,29 +326,9 @@ class _LoginScreenState extends State<LoginScreen> {
 }
 
 // ============================================================
-// WAVE CLIPPER
+// ROUNDED FIELD (menggantikan UnderlineField)
 // ============================================================
-class _WaveClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-    path.lineTo(0, 40);
-    path.quadraticBezierTo(size.width * 0.25, 0, size.width * 0.5, 18);
-    path.quadraticBezierTo(size.width * 0.75, 36, size.width, 4);
-    path.lineTo(size.width, size.height);
-    path.lineTo(0, size.height);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
-}
-
-// ============================================================
-// UNDERLINE FIELD
-// ============================================================
-class _UnderlineField extends StatelessWidget {
+class _RoundedField extends StatelessWidget {
   final TextEditingController controller;
   final String hint;
   final IconData icon;
@@ -379,7 +338,7 @@ class _UnderlineField extends StatelessWidget {
   final Widget? suffixIcon;
   final String? Function(String?)? validator;
 
-  const _UnderlineField({
+  const _RoundedField({
     required this.controller,
     required this.hint,
     required this.icon,
@@ -396,33 +355,38 @@ class _UnderlineField extends StatelessWidget {
       controller: controller,
       obscureText: obscureText,
       keyboardType: keyboardType,
-      style: GoogleFonts.plusJakartaSans(fontSize: 15),
+      style: GoogleFonts.plusJakartaSans(fontSize: 14.5),
       validator: validator,
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: GoogleFonts.plusJakartaSans(
           color: Colors.grey[400],
-          fontSize: 14.5,
+          fontSize: 14,
         ),
-        prefixIcon: Icon(
-          icon,
-          size: 20,
-          color: Colors.grey[400],
-        ),
+        prefixIcon: Icon(icon, size: 19, color: Colors.grey[400]),
         suffixIcon: suffixIcon,
-        isDense: true,
-        contentPadding: const EdgeInsets.symmetric(vertical: 12),
-        border: UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey[300]!),
+        filled: true,
+        fillColor: const Color(0xFFF8FAFC),
+        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
         ),
-        enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.grey[300]!),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
         ),
-        focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: primary, width: 1.6),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: primary, width: 1.5),
         ),
-        errorBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.redAccent, width: 1.2),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Colors.redAccent, width: 1.2),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
         ),
       ),
     );

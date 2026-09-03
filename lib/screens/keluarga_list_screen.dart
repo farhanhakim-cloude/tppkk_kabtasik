@@ -44,6 +44,7 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
         title: Text('Data Keluarga', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: null,
         onPressed: () => _openForm(),
         child: const Icon(Icons.add),
       ),
