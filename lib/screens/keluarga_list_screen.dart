@@ -56,6 +56,7 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
                   style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
             ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: null,
         onPressed: () => _openForm(),
         backgroundColor: primary,
         icon: const Icon(Icons.add, color: Colors.white),

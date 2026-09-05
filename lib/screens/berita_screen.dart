@@ -1,10 +1,12 @@
 // lib/screens/berita_screen.dart
 
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/berita.dart';
-import '../services/api_service.dart';
+import '../services/berita_service.dart';
+import 'berita_form_screen.dart';
 
 class BeritaScreen extends StatefulWidget {
   const BeritaScreen({super.key});
@@ -14,19 +16,30 @@ class BeritaScreen extends StatefulWidget {
 }
 
 class _BeritaScreenState extends State<BeritaScreen> {
-  final ApiService _apiService = ApiService();
+  final BeritaService _beritaService = BeritaService();
   late Future<List<Berita>> _future;
 
   @override
   void initState() {
     super.initState();
-    _future = _apiService.getBerita();
+    _reload();
   }
 
-  @override
-  void dispose() {
-    _apiService.dispose();
-    super.dispose();
+  void _reload() {
+    setState(() {
+      _future = _beritaService.getBerita();
+    });
+  }
+
+  Future<void> _openTulisBerita() async {
+    HapticFeedback.lightImpact();
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const BeritaFormScreen()),
+    );
+    if (result == true) {
+      _reload();
+    }
   }
 
   @override
@@ -35,6 +48,19 @@ class _BeritaScreenState extends State<BeritaScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
+      floatingActionButton: FloatingActionButton.extended(
+        heroTag: null,
+        onPressed: _openTulisBerita,
+        backgroundColor: primary,
+        icon: const Icon(Icons.edit_note_rounded, color: Colors.white, size: 22),
+        label: Text(
+          'Tulis Berita',
+          style: GoogleFonts.plusJakartaSans(
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+        ),
+      ),
       appBar: AppBar(
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
@@ -60,12 +86,16 @@ class _BeritaScreenState extends State<BeritaScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
+            tooltip: 'Segarkan Berita',
             onPressed: () {
               HapticFeedback.selectionClick();
-              setState(() {
-                _future = _apiService.getBerita();
-              });
+              _reload();
             },
+          ),
+          IconButton(
+            icon: const Icon(Icons.add_circle_outline_rounded),
+            tooltip: 'Tulis Berita',
+            onPressed: _openTulisBerita,
           ),
         ],
       ),
@@ -97,11 +127,7 @@ class _BeritaScreenState extends State<BeritaScreen> {
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _future = _apiService.getBerita();
-                      });
-                    },
+                    onPressed: _reload,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: primary,
                       foregroundColor: Colors.white,
@@ -250,18 +276,28 @@ class _BeritaCardState extends State<_BeritaCard> with SingleTickerProviderState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Gradient accent bar
-              Container(
-                height: 4,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [primary, primary.withOpacity(0.4)],
+              if (berita.gambar != null && berita.gambar!.isNotEmpty)
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(17)),
+                  child: SizedBox(
+                    height: 150,
+                    width: double.infinity,
+                    child: _buildBeritaImage(berita.gambar!, primary),
                   ),
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(18),
+                )
+              else
+                // Gradient accent bar
+                Container(
+                  height: 4,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [primary, primary.withOpacity(0.4)],
+                    ),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(18),
+                    ),
                   ),
                 ),
-              ),
               Padding(
                 padding: const EdgeInsets.all(18),
                 child: Column(
@@ -428,6 +464,17 @@ class _BeritaCardState extends State<_BeritaCard> with SingleTickerProviderState
                           ),
                         ],
                       ),
+                      if (berita.gambar != null && berita.gambar!.isNotEmpty) ...[
+                        const SizedBox(height: 14),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: SizedBox(
+                            height: 200,
+                            width: double.infinity,
+                            child: _buildBeritaImage(berita.gambar!, primary),
+                          ),
+                        ),
+                      ],
                       const SizedBox(height: 16),
                       Container(
                         height: 4,
@@ -458,6 +505,36 @@ class _BeritaCardState extends State<_BeritaCard> with SingleTickerProviderState
       ),
     );
   }
+}
+
+Widget _buildBeritaImage(String pathOrUrl, Color primary) {
+  if (pathOrUrl.startsWith('http://') || pathOrUrl.startsWith('https://')) {
+    return Image.network(
+      pathOrUrl,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => _buildFallbackImage(primary),
+    );
+  }
+  try {
+    final file = File(pathOrUrl);
+    if (file.existsSync()) {
+      return Image.file(
+        file,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => _buildFallbackImage(primary),
+      );
+    }
+  } catch (_) {}
+  return _buildFallbackImage(primary);
+}
+
+Widget _buildFallbackImage(Color primary) {
+  return Container(
+    color: primary.withOpacity(0.08),
+    child: Center(
+      child: Icon(Icons.newspaper_rounded, color: primary.withOpacity(0.6), size: 36),
+    ),
+  );
 }
 
 // ================================================================

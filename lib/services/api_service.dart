@@ -1,6 +1,7 @@
 // lib/services/api_service.dart
 
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../constants/app_constants.dart';
 import '../models/pokja_1_model.dart';
@@ -10,6 +11,7 @@ import '../models/pokja_4_model.dart';
 import '../models/sekretariat_model.dart';
 import '../models/berita.dart';
 import '../models/user.dart';
+import 'berita_service.dart';
 
 class ApiService {
   final http.Client _client = http.Client();
@@ -156,6 +158,22 @@ class ApiService {
     } else {
       throw Exception('Gagal load detail berita: ${response.statusCode}');
     }
+  }
+
+  Future<Berita> publishBerita({
+    required String judul,
+    required String ringkasan,
+    String? konten,
+    String? kategori,
+    File? fotoFile,
+  }) async {
+    return BeritaService().publishBerita(
+      judul: judul,
+      ringkasan: ringkasan,
+      konten: konten,
+      kategori: kategori,
+      fotoFile: fotoFile,
+    );
   }
 
   // ============================================================

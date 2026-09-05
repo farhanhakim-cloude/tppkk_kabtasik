@@ -41,7 +41,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
     _alamatController = TextEditingController(text: k?.alamat ?? '');
     _rtController = TextEditingController(text: k?.rt ?? '');
     _rwController = TextEditingController(text: k?.rw ?? '');
-    _jumlahController = TextEditingController(text: k?.jumlahAnggota.toString() ?? '');
+    _jumlahController = TextEditingController(text: k != null ? k.jumlahAnggota.toString() : '');
     _pekerjaanController = TextEditingController(text: k?.pekerjaan ?? '');
     _latitude = k?.latitude;
     _longitude = k?.longitude;

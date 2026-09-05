@@ -1,5 +1,6 @@
 // lib/screens/dashboard_screen.dart
 
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,6 +14,7 @@ import 'kesehatan_list_screen.dart';
 import 'laporan_screen.dart';
 import 'profile_screen.dart';
 import 'berita_screen.dart';
+import 'berita_form_screen.dart';
 import 'statistik_screen.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -522,43 +524,82 @@ class _BerandaPageState extends State<_BerandaPage> {
                           ),
                         ],
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          HapticFeedback.selectionClick();
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => const BeritaScreen()),
-                          );
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.grey.withOpacity(0.12)),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.04),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () async {
+                              HapticFeedback.selectionClick();
+                              final res = await Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => const BeritaFormScreen()),
+                              );
+                              if (res == true) {
+                                _onRefresh();
+                              }
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                              margin: const EdgeInsets.only(right: 8),
+                              decoration: BoxDecoration(
+                                color: primary.withOpacity(0.09),
+                                borderRadius: BorderRadius.circular(20),
                               ),
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-                              Text(
-                                'Lihat Semua',
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                  color: primary,
-                                ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.edit_note_rounded, size: 15, color: primary),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Tulis',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700,
+                                      color: primary,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: 4),
-                              Icon(Icons.arrow_forward_rounded, size: 14, color: primary),
-                            ],
+                            ),
                           ),
-                        ),
+                          GestureDetector(
+                            onTap: () async {
+                              HapticFeedback.selectionClick();
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => const BeritaScreen()),
+                              );
+                              _onRefresh();
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: Colors.grey.withOpacity(0.12)),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.04),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    'Lihat Semua',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700,
+                                      color: primary,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Icon(Icons.arrow_forward_rounded, size: 14, color: primary),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -872,7 +913,6 @@ class _StatCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
@@ -882,36 +922,6 @@ class _StatCard extends StatelessWidget {
                 ),
                 child: Icon(icon, color: color, size: 18),
               ),
-              if (trend.isNotEmpty)
-                Flexible(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF0FDF4),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFFBBF7D0)),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.trending_up_rounded, size: 10, color: Color(0xFF16A34A)),
-                        const SizedBox(width: 3),
-                        Flexible(
-                          child: Text(
-                            trend,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 9,
-                              fontWeight: FontWeight.w800,
-                              color: const Color(0xFF16A34A),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
             ],
           ),
           const SizedBox(height: 10),
@@ -1033,11 +1043,19 @@ class _BeritaCard extends StatelessWidget {
                 height: 110,
                 width: double.infinity,
                 child: hasImage
-                    ? Image.network(
-                        berita.gambar!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => _ImageFallback(primary: primary),
-                      )
+                    ? (berita.gambar!.startsWith('http://') || berita.gambar!.startsWith('https://')
+                        ? Image.network(
+                            berita.gambar!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => _ImageFallback(primary: primary),
+                          )
+                        : (File(berita.gambar!).existsSync()
+                            ? Image.file(
+                                File(berita.gambar!),
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => _ImageFallback(primary: primary),
+                              )
+                            : _ImageFallback(primary: primary)))
                     : _ImageFallback(primary: primary),
               ),
             ),

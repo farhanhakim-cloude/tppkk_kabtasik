@@ -22,7 +22,7 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
   late Future<List<DataKesehatan>> _future;
 
   // Single unified Blue color theme
-  static const Color _primaryBlue = Color(0xFF2563EB);
+  static const Color _primaryBlue = Color(0xFF0D9488);
 
   final _kategoriList = [
     KategoriKesehatan.ibuHamil,
@@ -93,6 +93,7 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
                   style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
             ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: null,
         onPressed: () => _openForm(),
         backgroundColor: _primaryBlue,
         icon: const Icon(Icons.add, color: Colors.white),
