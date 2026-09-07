@@ -1,6 +1,8 @@
 // lib/models/catatan_kegiatan.dart
 
 import 'dart:convert';
+import 'package:http/http.dart' as http;
+import '../constants/app_constants.dart';
 
 enum PokjaKategori { pokja1, pokja2, pokja3, pokja4 }
 
@@ -31,6 +33,32 @@ extension PokjaKategoriLabel on PokjaKategori {
     }
   }
 
+  String get apiEndpoint {
+    switch (this) {
+      case PokjaKategori.pokja1:
+        return '/api/pokja1';
+      case PokjaKategori.pokja2:
+        return '/api/pokja2';
+      case PokjaKategori.pokja3:
+        return '/api/pokja3';
+      case PokjaKategori.pokja4:
+        return '/api/pokja4';
+    }
+  }
+
+  String get tableName {
+    switch (this) {
+      case PokjaKategori.pokja1:
+        return 'pokja_ones';
+      case PokjaKategori.pokja2:
+        return 'pokja_twos';
+      case PokjaKategori.pokja3:
+        return 'pokja_threes';
+      case PokjaKategori.pokja4:
+        return 'pokja_fours';
+    }
+  }
+
   // ============================================================
   // FIELD ANGKA SESUAI DATABASE
   // ============================================================
@@ -46,27 +74,24 @@ extension PokjaKategoriLabel on PokjaKategori {
         ];
       case PokjaKategori.pokja2:
         return [
-          'warga_buta_l', 'warga_buta_p',
-          'kelompok_belajar_paket_a',
-          'kelompok_belajar_paket_b',
-          'kelompok_belajar_paket_c',
-          'kf',
-          'paud',
-          'koperasi_berbadan_hukum',
+          'pendidikan_l', 'pendidikan_p',
+          'keterampilan_l', 'keterampilan_p',
+          'koperasi_l', 'koperasi_p',
+          'kader_pokja2_l', 'kader_pokja2_p',
         ];
       case PokjaKategori.pokja3:
         return [
-          'rumah_sehat',
-          'rumah_tidak_sehat',
-          'pemanfaatan_pekarangan',
-          'industri_rumah_tangga',
+          'pangan_l', 'pangan_p',
+          'sandang_l', 'sandang_p',
+          'perumahan_l', 'perumahan_p',
+          'kader_pokja3_l', 'kader_pokja3_p',
         ];
       case PokjaKategori.pokja4:
         return [
-          'posyandu',
-          'akseptor_kb',
-          'phbs',
-          'jamban_keluarga',
+          'kesehatan_l', 'kesehatan_p',
+          'lingkungan_l', 'lingkungan_p',
+          'perencanaan_l', 'perencanaan_p',
+          'kader_pokja4_l', 'kader_pokja4_p',
         ];
     }
   }
@@ -89,34 +114,39 @@ extension PokjaKategoriLabel on PokjaKategori {
       case 'kader_pokja1_p': return 'Kader Pokja I Perempuan';
       
       // Pokja 2
-      case 'warga_buta_l': return 'Warga Buta Aksara Laki-laki';
-      case 'warga_buta_p': return 'Warga Buta Aksara Perempuan';
-      case 'kelompok_belajar_paket_a': return 'Kelompok Belajar Paket A';
-      case 'kelompok_belajar_paket_b': return 'Kelompok Belajar Paket B';
-      case 'kelompok_belajar_paket_c': return 'Kelompok Belajar Paket C';
-      case 'kf': return 'KF (Kegiatan Fungsional)';
-      case 'paud': return 'PAUD / Sejenis';
-      case 'koperasi_berbadan_hukum': return 'Koperasi Berbadan Hukum';
+      case 'pendidikan_l': return 'Pendidikan Laki-laki';
+      case 'pendidikan_p': return 'Pendidikan Perempuan';
+      case 'keterampilan_l': return 'Keterampilan Laki-laki';
+      case 'keterampilan_p': return 'Keterampilan Perempuan';
+      case 'koperasi_l': return 'Koperasi Laki-laki';
+      case 'koperasi_p': return 'Koperasi Perempuan';
+      case 'kader_pokja2_l': return 'Kader Pokja II Laki-laki';
+      case 'kader_pokja2_p': return 'Kader Pokja II Perempuan';
       
       // Pokja 3
-      case 'rumah_sehat': return 'Rumah Sehat';
-      case 'rumah_tidak_sehat': return 'Rumah Tidak Sehat';
-      case 'pemanfaatan_pekarangan': return 'Pemanfaatan Pekarangan';
-      case 'industri_rumah_tangga': return 'Industri Rumah Tangga';
+      case 'pangan_l': return 'Pangan Laki-laki';
+      case 'pangan_p': return 'Pangan Perempuan';
+      case 'sandang_l': return 'Sandang Laki-laki';
+      case 'sandang_p': return 'Sandang Perempuan';
+      case 'perumahan_l': return 'Perumahan Laki-laki';
+      case 'perumahan_p': return 'Perumahan Perempuan';
+      case 'kader_pokja3_l': return 'Kader Pokja III Laki-laki';
+      case 'kader_pokja3_p': return 'Kader Pokja III Perempuan';
       
       // Pokja 4
-      case 'posyandu': return 'Jumlah Posyandu';
-      case 'akseptor_kb': return 'Akseptor KB';
-      case 'phbs': return 'PHBS (Perilaku Hidup Bersih Sehat)';
-      case 'jamban_keluarga': return 'Jamban Keluarga';
+      case 'kesehatan_l': return 'Kesehatan Laki-laki';
+      case 'kesehatan_p': return 'Kesehatan Perempuan';
+      case 'lingkungan_l': return 'Lingkungan Laki-laki';
+      case 'lingkungan_p': return 'Lingkungan Perempuan';
+      case 'perencanaan_l': return 'Perencanaan Laki-laki';
+      case 'perencanaan_p': return 'Perencanaan Perempuan';
+      case 'kader_pokja4_l': return 'Kader Pokja IV Laki-laki';
+      case 'kader_pokja4_p': return 'Kader Pokja IV Perempuan';
       
       default: return field;
     }
   }
 
-  // ============================================================
-  // KONVERSI DARI STRING KE ENUM
-  // ============================================================
   static PokjaKategori fromString(String value) {
     switch (value) {
       case 'I':
@@ -245,6 +275,341 @@ class CatatanKegiatan {
     'Tanjungjaya',
     'Taraju',
   ];
+
+  // ============================================================
+  // CREATE POKJA 1
+  // ============================================================
+  static Future<Map<String, dynamic>> createPokja1({
+    required String token,
+    required String judulKegiatan,
+    required String deskripsi,
+    required String kecamatan,
+    required String namaKecamatan,
+    int? pkbnL,
+    int? pkbnP,
+    int? pkdrtL,
+    int? pkdrtP,
+    int? polaAsuhL,
+    int? polaAsuhP,
+    int? lansiaL,
+    int? lansiaP,
+    int? kaderPokja1L,
+    int? kaderPokja1P,
+  }) async {
+    final data = {
+      'judul_kegiatan': judulKegiatan,
+      'deskripsi': deskripsi,
+      'kategori': 'Pokja I',
+      'kecamatan': kecamatan,
+      'nama_kecamatan': namaKecamatan,
+      'pkbn_l': pkbnL ?? 0,
+      'pkbn_p': pkbnP ?? 0,
+      'pkdrt_l': pkdrtL ?? 0,
+      'pkdrt_p': pkdrtP ?? 0,
+      'pola_asuh_l': polaAsuhL ?? 0,
+      'pola_asuh_p': polaAsuhP ?? 0,
+      'lansia_l': lansiaL ?? 0,
+      'lansia_p': lansiaP ?? 0,
+      'kader_pokja1_l': kaderPokja1L ?? 0,
+      'kader_pokja1_p': kaderPokja1P ?? 0,
+    };
+
+    final response = await http.post(
+      Uri.parse('${AppConstants.baseUrl}/api/pokja1'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      return {'success': true, 'data': jsonDecode(response.body)};
+    } else {
+      return {
+        'success': false,
+        'message': 'Gagal menambahkan data Pokja 1: ${response.statusCode}',
+        'body': response.body,
+      };
+    }
+  }
+
+  // ============================================================
+  // CREATE POKJA 2
+  // ============================================================
+  static Future<Map<String, dynamic>> createPokja2({
+    required String token,
+    required String judulKegiatan,
+    required String deskripsi,
+    required String kecamatan,
+    required String namaKecamatan,
+    int? pendidikanL,
+    int? pendidikanP,
+    int? keterampilanL,
+    int? keterampilanP,
+    int? koperasiL,
+    int? koperasiP,
+    int? kaderPokja2L,
+    int? kaderPokja2P,
+  }) async {
+    final data = {
+      'judul_kegiatan': judulKegiatan,
+      'deskripsi': deskripsi,
+      'kategori': 'Pokja II',
+      'kecamatan': kecamatan,
+      'nama_kecamatan': namaKecamatan,
+      'pendidikan_l': pendidikanL ?? 0,
+      'pendidikan_p': pendidikanP ?? 0,
+      'keterampilan_l': keterampilanL ?? 0,
+      'keterampilan_p': keterampilanP ?? 0,
+      'koperasi_l': koperasiL ?? 0,
+      'koperasi_p': koperasiP ?? 0,
+      'kader_pokja2_l': kaderPokja2L ?? 0,
+      'kader_pokja2_p': kaderPokja2P ?? 0,
+    };
+
+    final response = await http.post(
+      Uri.parse('${AppConstants.baseUrl}/api/pokja2'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      return {'success': true, 'data': jsonDecode(response.body)};
+    } else {
+      return {
+        'success': false,
+        'message': 'Gagal menambahkan data Pokja 2: ${response.statusCode}',
+        'body': response.body,
+      };
+    }
+  }
+
+  // ============================================================
+  // CREATE POKJA 3
+  // ============================================================
+  static Future<Map<String, dynamic>> createPokja3({
+    required String token,
+    required String judulKegiatan,
+    required String deskripsi,
+    required String kecamatan,
+    required String namaKecamatan,
+    int? panganL,
+    int? panganP,
+    int? sandangL,
+    int? sandangP,
+    int? perumahanL,
+    int? perumahanP,
+    int? kaderPokja3L,
+    int? kaderPokja3P,
+  }) async {
+    final data = {
+      'judul_kegiatan': judulKegiatan,
+      'deskripsi': deskripsi,
+      'kategori': 'Pokja III',
+      'kecamatan': kecamatan,
+      'nama_kecamatan': namaKecamatan,
+      'pangan_l': panganL ?? 0,
+      'pangan_p': panganP ?? 0,
+      'sandang_l': sandangL ?? 0,
+      'sandang_p': sandangP ?? 0,
+      'perumahan_l': perumahanL ?? 0,
+      'perumahan_p': perumahanP ?? 0,
+      'kader_pokja3_l': kaderPokja3L ?? 0,
+      'kader_pokja3_p': kaderPokja3P ?? 0,
+    };
+
+    final response = await http.post(
+      Uri.parse('${AppConstants.baseUrl}/api/pokja3'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      return {'success': true, 'data': jsonDecode(response.body)};
+    } else {
+      return {
+        'success': false,
+        'message': 'Gagal menambahkan data Pokja 3: ${response.statusCode}',
+        'body': response.body,
+      };
+    }
+  }
+
+  // ============================================================
+  // CREATE POKJA 4
+  // ============================================================
+  static Future<Map<String, dynamic>> createPokja4({
+    required String token,
+    required String judulKegiatan,
+    required String deskripsi,
+    required String kecamatan,
+    required String namaKecamatan,
+    int? kesehatanL,
+    int? kesehatanP,
+    int? lingkunganL,
+    int? lingkunganP,
+    int? perencanaanL,
+    int? perencanaanP,
+    int? kaderPokja4L,
+    int? kaderPokja4P,
+  }) async {
+    final data = {
+      'judul_kegiatan': judulKegiatan,
+      'deskripsi': deskripsi,
+      'kategori': 'Pokja IV',
+      'kecamatan': kecamatan,
+      'nama_kecamatan': namaKecamatan,
+      'kesehatan_l': kesehatanL ?? 0,
+      'kesehatan_p': kesehatanP ?? 0,
+      'lingkungan_l': lingkunganL ?? 0,
+      'lingkungan_p': lingkunganP ?? 0,
+      'perencanaan_l': perencanaanL ?? 0,
+      'perencanaan_p': perencanaanP ?? 0,
+      'kader_pokja4_l': kaderPokja4L ?? 0,
+      'kader_pokja4_p': kaderPokja4P ?? 0,
+    };
+
+    final response = await http.post(
+      Uri.parse('${AppConstants.baseUrl}/api/pokja4'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(data),
+    );
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      return {'success': true, 'data': jsonDecode(response.body)};
+    } else {
+      return {
+        'success': false,
+        'message': 'Gagal menambahkan data Pokja 4: ${response.statusCode}',
+        'body': response.body,
+      };
+    }
+  }
+
+  // ============================================================
+  // CREATE POKJA GENERIC (PAKAI API ENDPOINT DARI ENUM)
+  // ============================================================
+  static Future<Map<String, dynamic>> createPokja({
+    required String token,
+    required PokjaKategori kategori,
+    required String judulKegiatan,
+    required String deskripsi,
+    required String kecamatan,
+    required String namaKecamatan,
+    Map<String, int>? dataAngka,
+  }) async {
+    Map<String, dynamic> payload = {
+      'judul_kegiatan': judulKegiatan,
+      'deskripsi': deskripsi,
+      'kategori': kategori.shortLabel,
+      'kecamatan': kecamatan,
+      'nama_kecamatan': namaKecamatan,
+    };
+
+    // Tambahkan data angka
+    if (dataAngka != null) {
+      payload.addAll(dataAngka);
+    }
+
+    // Tambahkan field angka dengan default 0
+    for (var field in kategori.fieldAngka) {
+      if (!payload.containsKey(field)) {
+        payload[field] = 0;
+      }
+    }
+
+    final response = await http.post(
+      Uri.parse('${AppConstants.baseUrl}${kategori.apiEndpoint}'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(payload),
+    );
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      return {'success': true, 'data': jsonDecode(response.body)};
+    } else {
+      return {
+        'success': false,
+        'message': 'Gagal menambahkan data ${kategori.shortLabel}: ${response.statusCode}',
+        'body': response.body,
+      };
+    }
+  }
+
+  // ============================================================
+  // GET ALL POKJA
+  // ============================================================
+  static Future<Map<String, dynamic>> getAllPokja(String token) async {
+    final response = await http.get(
+      Uri.parse('${AppConstants.baseUrl}/api/pokja/all'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return {'success': true, 'data': jsonDecode(response.body)};
+    } else {
+      return {'success': false, 'message': 'Gagal mengambil data'};
+    }
+  }
+
+  // ============================================================
+  // GET BY KECAMATAN
+  // ============================================================
+  static Future<Map<String, dynamic>> getPokjaByKecamatan(
+    String token,
+    String kecamatan,
+  ) async {
+    final response = await http.get(
+      Uri.parse('${AppConstants.baseUrl}/api/pokja/kecamatan/$kecamatan'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return {'success': true, 'data': jsonDecode(response.body)};
+    } else {
+      return {'success': false, 'message': 'Gagal mengambil data'};
+    }
+  }
+
+  // ============================================================
+  // GET POKJA BY TYPE
+  // ============================================================
+  static Future<Map<String, dynamic>> getPokjaByType(
+    String token,
+    PokjaKategori kategori,
+  ) async {
+    final response = await http.get(
+      Uri.parse('${AppConstants.baseUrl}${kategori.apiEndpoint}'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return {'success': true, 'data': jsonDecode(response.body)};
+    } else {
+      return {
+        'success': false,
+        'message': 'Gagal mengambil data ${kategori.shortLabel}',
+      };
+    }
+  }
 
   // ============================================================
   // fromJson
