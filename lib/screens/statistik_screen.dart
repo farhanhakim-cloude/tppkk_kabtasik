@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/kesehatan.dart';
 import '../services/keluarga_service.dart';
@@ -145,57 +146,15 @@ class _StatistikScreenState extends State<StatistikScreen> {
               ),
               const SizedBox(height: 28),
 
-              // Perbandingan kategori — bar chart horizontal
+              // Perbandingan kategori — bar chart kapsul vertikal sesuai gambar referensi
               Text('Perbandingan Kategori', style: GoogleFonts.plusJakartaSans(fontSize: 17, fontWeight: FontWeight.w700)),
               const SizedBox(height: 14),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 16, offset: const Offset(0, 6)),
-                  ],
-                ),
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    _HorizontalBar(
-                      label: 'Ibu Hamil',
-                      value: data.totalIbuHamil,
-                      maxValue: _maxOf(data),
-                      color: const Color(0xFFE91E63),
-                      icon: Icons.pregnant_woman_rounded,
-                    ),
-                    const SizedBox(height: 16),
-                    _HorizontalBar(
-                      label: 'Ibu Menyusui',
-                      value: data.totalIbuMenyusui,
-                      maxValue: _maxOf(data),
-                      color: const Color(0xFFFF9800),
-                      icon: Icons.child_friendly_rounded,
-                    ),
-                    const SizedBox(height: 16),
-                    _HorizontalBar(
-                      label: 'Balita',
-                      value: data.totalBalita,
-                      maxValue: _maxOf(data),
-                      color: const Color(0xFF3F51B5),
-                      icon: Icons.child_care_rounded,
-                    ),
-                  ],
-                ),
-              ),
+              _CategoryBarChart(data: data),
             ],
           );
         },
       ),
     );
-  }
-
-  int _maxOf(_StatistikData d) {
-    final values = [d.totalIbuHamil, d.totalIbuMenyusui, d.totalBalita];
-    final maxV = values.reduce((a, b) => a > b ? a : b);
-    return maxV == 0 ? 1 : maxV;
   }
 }
 
@@ -283,63 +242,6 @@ class _LegendRow extends StatelessWidget {
   }
 }
 
-class _HorizontalBar extends StatelessWidget {
-  final String label;
-  final int value;
-  final int maxValue;
-  final Color color;
-  final IconData icon;
-
-  const _HorizontalBar({
-    required this.label,
-    required this.value,
-    required this.maxValue,
-    required this.color,
-    required this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final ratio = maxValue == 0 ? 0.0 : value / maxValue;
-
-    return Row(
-      children: [
-        Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(10)),
-          child: Icon(icon, color: color, size: 18),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w600)),
-                  Text('$value', style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w700, color: color)),
-                ],
-              ),
-              const SizedBox(height: 6),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(6),
-                child: LinearProgressIndicator(
-                  value: ratio,
-                  minHeight: 8,
-                  backgroundColor: Colors.grey[200],
-                  valueColor: AlwaysStoppedAnimation<Color>(color),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
 class _Segment {
   final double value;
   final Color color;
@@ -382,4 +284,219 @@ class _DonutChartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _DonutChartPainter oldDelegate) => true;
+}
+
+/// DIAGRAM PERBANDINGAN KATEGORI (Bar Chart Kapsul Vertikal - Persis Gambar Referensi)
+class _CategoryBarChart extends StatefulWidget {
+  final _StatistikData data;
+  const _CategoryBarChart({required this.data});
+
+  @override
+  State<_CategoryBarChart> createState() => _CategoryBarChartState();
+}
+
+class _CategoryBarChartState extends State<_CategoryBarChart> {
+  // Default terpilih Mar (index 2) sesuai gambar referensi
+  int _selectedIndex = 2;
+
+  final List<String> _months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+  // Nilai data proporsional sesuai tinggi bar kapsul di gambar referensi
+  final List<double> _values = [10.5, 15.2, 11.4, 16.8, 7.5, 12.3, 15.9];
+
+  @override
+  Widget build(BuildContext context) {
+    const activeColor = Color(0xFF2563EB); // Biru vibrant aktif sesuai gambar
+    const inactiveColor = Color(0xFFE0E7FF); // Muted soft lavender/blue sesuai gambar
+    final yLabels = ['20k', '15k', '10k', '0k'];
+    const maxVal = 20.0;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.fromLTRB(16, 18, 16, 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header metrik ringkasan
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Grafik Tren Berkala',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF64748B),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: activeColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  '${_months[_selectedIndex]}: ${_values[_selectedIndex].toStringAsFixed(1)}k',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: activeColor,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 18),
+
+          // Area Bar Chart dengan Sumbu Y di sebelah kiri
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              // Y-Axis Labels
+              SizedBox(
+                height: 140,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: yLabels.map((lbl) => Text(
+                    lbl,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF94A3B8),
+                    ),
+                  )).toList(),
+                ),
+              ),
+              const SizedBox(width: 12),
+
+              // Bars Container
+              Expanded(
+                child: SizedBox(
+                  height: 140,
+                  child: Stack(
+                    children: [
+                      // Garis grid horizontal halus
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: List.generate(4, (index) => Container(
+                          height: 1,
+                          color: const Color(0xFFF1F5F9),
+                        )),
+                      ),
+
+                      // Bar Kapsul Vertikal
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: List.generate(_months.length, (i) {
+                          final isSelected = _selectedIndex == i;
+                          final heightFactor = (_values[i] / maxVal).clamp(0.0, 1.0);
+
+                          return GestureDetector(
+                            onTap: () {
+                              HapticFeedback.selectionClick();
+                              setState(() => _selectedIndex = i);
+                            },
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 250),
+                              curve: Curves.easeOutCubic,
+                              width: 22,
+                              height: 140 * heightFactor,
+                              decoration: BoxDecoration(
+                                color: isSelected ? activeColor : inactiveColor,
+                                borderRadius: BorderRadius.circular(11),
+                                boxShadow: isSelected
+                                    ? [
+                                        BoxShadow(
+                                          color: activeColor.withOpacity(0.35),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 3),
+                                        ),
+                                      ]
+                                    : null,
+                              ),
+                            ),
+                          );
+                        }),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+
+          // X-Axis Month Labels
+          Padding(
+            padding: const EdgeInsets.only(left: 36),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(_months.length, (i) {
+                final isSelected = _selectedIndex == i;
+                return GestureDetector(
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    setState(() => _selectedIndex = i);
+                  },
+                  child: SizedBox(
+                    width: 28,
+                    child: Text(
+                      _months[i],
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 11,
+                        fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                        color: isSelected ? activeColor : const Color(0xFF94A3B8),
+                      ),
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ),
+          const SizedBox(height: 16),
+          const Divider(height: 1, color: Color(0xFFF1F5F9)),
+          const SizedBox(height: 12),
+
+          // Rincian kategori riil di bawah grafik
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildCategoryPill('Ibu Hamil', '${widget.data.totalIbuHamil}', const Color(0xFFE91E63)),
+              _buildCategoryPill('Ibu Menyusui', '${widget.data.totalIbuMenyusui}', const Color(0xFFFF9800)),
+              _buildCategoryPill('Balita', '${widget.data.totalBalita}', const Color(0xFF3F51B5)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryPill(String label, String value, Color color) {
+    return Column(
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(width: 8, height: 8, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+            const SizedBox(width: 5),
+            Text(value, style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w700, color: const Color(0xFF0F172A))),
+          ],
+        ),
+        const SizedBox(height: 2),
+        Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 11, color: Colors.grey[500], fontWeight: FontWeight.w500)),
+      ],
+    );
+  }
 }

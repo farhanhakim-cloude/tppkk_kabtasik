@@ -16,6 +16,9 @@ import 'profile_screen.dart';
 import 'berita_screen.dart';
 import 'berita_form_screen.dart';
 import 'statistik_screen.dart';
+import 'galeri_agenda_screen.dart';
+import '../models/user.dart';
+import '../services/auth_service.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MAIN SHELL with Bottom Navigation
@@ -182,8 +185,10 @@ class _BerandaPageState extends State<_BerandaPage> {
   final _beritaService = BeritaService();
   final _keluargaService = KeluargaService();
   final _kesehatanService = KesehatanService();
+  final _authService = AuthService();
   late Future<List<Berita>> _beritaFuture;
   late Future<({int keluarga, int balita})> _statFuture;
+  late Future<User> _userFuture;
 
   final PageController _beritaPageController = PageController(viewportFraction: 0.88);
   final ScrollController _scrollController = ScrollController();
@@ -191,10 +196,192 @@ class _BerandaPageState extends State<_BerandaPage> {
 
   String _getGreeting() {
     final hour = DateTime.now().hour;
-    if (hour >= 5 && hour < 11) return 'Selamat Pagi';
+    if (hour >= 4 && hour < 11) return 'Selamat Pagi';
     if (hour >= 11 && hour < 15) return 'Selamat Siang';
     if (hour >= 15 && hour < 18) return 'Selamat Sore';
     return 'Selamat Malam';
+  }
+
+  void _showNotificationSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: const Color(0xFFCBD5E1),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF1F5F9),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: const Icon(Icons.notifications_active_outlined, color: Color(0xFF0D9488), size: 24),
+                ),
+                const SizedBox(width: 14),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Pemberitahuan',
+                      style: GoogleFonts.outfit(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: const Color(0xFF0F172A),
+                      ),
+                    ),
+                    Text(
+                      'Semua data Posyandu tersinkronisasi',
+                      style: GoogleFonts.outfit(
+                        fontSize: 13,
+                        color: const Color(0xFF64748B),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.check_circle_rounded, color: Color(0xFF10B981), size: 20),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Tidak ada agenda mendesak hari ini. Tetap semangat melayani masyarakat!',
+                      style: GoogleFonts.outfit(
+                        fontSize: 13,
+                        color: const Color(0xFF334155),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showQuickMenu(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFCBD5E1),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Menu Navigasi',
+              style: GoogleFonts.outfit(
+                fontSize: 19,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF0F172A),
+              ),
+            ),
+            const SizedBox(height: 14),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF0FDFA),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.calendar_month_rounded, color: Color(0xFF0D9488)),
+              ),
+              title: Text('Agenda Kegiatan', style: GoogleFonts.outfit(fontWeight: FontWeight.w600, fontSize: 15)),
+              subtitle: Text('Jadwal & dokumentasi kegiatan', style: GoogleFonts.outfit(fontSize: 12, color: const Color(0xFF64748B))),
+              trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFF94A3B8)),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const GaleriAgendaScreen()));
+              },
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFEFF6FF),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.newspaper_rounded, color: Color(0xFF2563EB)),
+              ),
+              title: Text('Berita & Informasi PKK', style: GoogleFonts.outfit(fontWeight: FontWeight.w600, fontSize: 15)),
+              subtitle: Text('Kumpulan artikel dan pengumuman', style: GoogleFonts.outfit(fontSize: 12, color: const Color(0xFF64748B))),
+              trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFF94A3B8)),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const BeritaScreen()));
+              },
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                child: const Icon(Icons.person_rounded, color: Color(0xFF475569)),
+              ),
+              title: Text('Profil Kader', style: GoogleFonts.outfit(fontWeight: FontWeight.w600, fontSize: 15)),
+              subtitle: Text('Informasi akun dan data diri', style: GoogleFonts.outfit(fontSize: 12, color: const Color(0xFF64748B))),
+              trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFF94A3B8)),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfileScreen()));
+              },
+            ),
+            const SizedBox(height: 10),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -206,6 +393,7 @@ class _BerandaPageState extends State<_BerandaPage> {
   void _loadAll() {
     _beritaFuture = _beritaService.getBerita();
     _statFuture = _loadStats();
+    _userFuture = _authService.getCurrentUser();
   }
 
   Future<({int keluarga, int balita})> _loadStats() async {
@@ -218,7 +406,7 @@ class _BerandaPageState extends State<_BerandaPage> {
 
   Future<void> _onRefresh() async {
     setState(() => _loadAll());
-    await Future.wait([_beritaFuture, _statFuture]);
+    await Future.wait([_beritaFuture, _statFuture, _userFuture]);
   }
 
   @override
@@ -239,103 +427,137 @@ class _BerandaPageState extends State<_BerandaPage> {
         controller: _scrollController,
         physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
         slivers: [
-          // ── HEADER ──
+          // ── HEADER TOP BAR (Sesuai Referensi Pengguna) ──
           SliverToBoxAdapter(
             child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [primary.withOpacity(0.07), Colors.white],
-                ),
-              ),
+              color: const Color(0xFFF8FAFC),
               child: SafeArea(
                 bottom: false,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-                  child: Row(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Avatar
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: LinearGradient(colors: [primary, primary.withOpacity(0.8)]),
-                          boxShadow: [
-                            BoxShadow(
-                              color: primary.withOpacity(0.25),
-                              blurRadius: 8,
-                              offset: const Offset(0, 3),
+                      // Baris 1: Foto Profil (Kiri) & Kapsul Lonceng + Menu (Kanan)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          // Foto Profil
+                          GestureDetector(
+                            onTap: () {
+                              HapticFeedback.lightImpact();
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                              );
+                            },
+                            child: CircleAvatar(
+                              radius: 26,
+                              backgroundColor: const Color(0xFFE2E8F0),
+                              backgroundImage: const NetworkImage(
+                                'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+                              ),
+                              onBackgroundImageError: (_, __) {},
+                              child: const Icon(Icons.person_rounded, color: Color(0xFF64748B), size: 28),
                             ),
-                          ],
-                        ),
-                        padding: const EdgeInsets.all(2),
-                        child: CircleAvatar(
-                          radius: 22,
-                          backgroundColor: Colors.white,
-                          child: CircleAvatar(
-                            radius: 20,
-                            backgroundColor: primary.withOpacity(0.1),
-                            child: Icon(Icons.person_rounded, color: primary, size: 24),
                           ),
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'Selamat Datang Bapak/Ibu,',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 13.5,
-                                color: Colors.grey[500],
-                              ),
+
+                          // Kapsul Aksi: Tombol Lonceng Notifikasi + Menu Hamburger
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(36),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.04),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                              border: Border.all(color: const Color(0xFFF1F5F9), width: 1.2),
                             ),
-                            const SizedBox(height: 2),
-                            Text(
-                              _getGreeting(),
-                              style: GoogleFonts.plusJakartaSans(
-                                fontWeight: FontWeight.w800,
-                                fontSize: 22,
-                                color: const Color(0xFF0F172A),
-                                letterSpacing: -0.5,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFECFDF5),
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: const Color(0xFFA7F3D0)),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Container(
-                                    width: 6,
-                                    height: 6,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                // Tombol Notifikasi (Lonceng dalam lingkaran lembut)
+                                GestureDetector(
+                                  onTap: () {
+                                    HapticFeedback.lightImpact();
+                                    _showNotificationSheet(context);
+                                  },
+                                  child: Container(
+                                    width: 38,
+                                    height: 38,
                                     decoration: const BoxDecoration(
-                                      color: Color(0xFF10B981),
+                                      color: Color(0xFFF1F5F9),
                                       shape: BoxShape.circle,
                                     ),
-                                  ),
-                                  const SizedBox(width: 5),
-                                  Text(
-                                    'Kader Dasawisma • Aktif',
-                                    style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 10,
-                                      color: const Color(0xFF065F46),
-                                      fontWeight: FontWeight.w700,
+                                    child: const Icon(
+                                      Icons.notifications_none_rounded,
+                                      color: Color(0xFF0F172A),
+                                      size: 21,
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                                const SizedBox(width: 4),
+                                // Tombol Hamburger Menu (3 Garis Horizontal)
+                                GestureDetector(
+                                  onTap: () {
+                                    HapticFeedback.lightImpact();
+                                    _showQuickMenu(context);
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                    child: const Icon(
+                                      Icons.menu_rounded,
+                                      color: Color(0xFF0F172A),
+                                      size: 24,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 22),
+
+                      // Baris 2: Sapaan (Bahasa Indonesia) & Nama User
+                      FutureBuilder<User>(
+                        future: _userFuture,
+                        builder: (context, snapshot) {
+                          final user = snapshot.data;
+                          final displayName = (user != null && user.nama.trim().isNotEmpty)
+                              ? user.nama
+                              : 'Kader PKK';
+                          final greeting = _getGreeting();
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                greeting,
+                                style: GoogleFonts.outfit(
+                                  fontSize: 21,
+                                  fontWeight: FontWeight.w400,
+                                  color: const Color(0xFF475569),
+                                  letterSpacing: -0.2,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                displayName,
+                                style: GoogleFonts.outfit(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w700,
+                                  color: const Color(0xFF0F172A),
+                                  letterSpacing: -0.6,
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -347,34 +569,62 @@ class _BerandaPageState extends State<_BerandaPage> {
           // ── REKAP TERKINI ──
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text(
-                        'Rekap Terkini',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          color: const Color(0xFF0F172A),
-                          letterSpacing: -0.4,
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Rekap Terkini',
+                            style: GoogleFonts.outfit(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: const Color(0xFF0F172A),
+                              letterSpacing: -0.3,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Pantau data keluarga & gizi binaan',
+                            style: GoogleFonts.outfit(
+                              fontSize: 12.5,
+                              color: const Color(0xFF64748B),
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 3),
-                      Text(
-                        'Pantau perkembangan data',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 12.5,
-                          color: Colors.grey[500],
-                          fontWeight: FontWeight.w500,
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF1F5F9),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.check_circle_rounded, size: 12, color: Color(0xFF0D9488)),
+                            const SizedBox(width: 5),
+                            Text(
+                              'Data Valid',
+                              style: GoogleFonts.outfit(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF475569),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 14),
                   FutureBuilder<({int keluarga, int balita})>(
                     future: _statFuture,
                     builder: (context, snapshot) {
@@ -392,12 +642,21 @@ class _BerandaPageState extends State<_BerandaPage> {
                         children: [
                           Expanded(
                             child: _StatCard(
-                              label: 'Total Keluarga',
+                              label: 'Keluarga (KK)',
                               value: '${data?.keluarga ?? 0}',
-                              sublabel: 'KK terdata aktif',
+                              sublabel: 'Binaan Dasawisma',
                               icon: Icons.family_restroom_rounded,
-                              color: const Color(0xFF3B82F6),
-                              trend: '+3 Bulan ini',
+                              color: const Color(0xFF0D9488),
+                              trend: '+3 Bln ini',
+                              onTap: () {
+                                HapticFeedback.selectionClick();
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const KeluargaListScreen(),
+                                  ),
+                                );
+                              },
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -405,10 +664,19 @@ class _BerandaPageState extends State<_BerandaPage> {
                             child: _StatCard(
                               label: 'Balita Terpantau',
                               value: '${data?.balita ?? 0}',
-                              sublabel: 'Gizi terpantau',
-                              icon: Icons.child_friendly_rounded,
-                              color: const Color(0xFF10B981),
-                              trend: '100% Valid',
+                              sublabel: 'Gizi Terverifikasi',
+                              icon: Icons.child_care_rounded,
+                              color: const Color(0xFF0284C7),
+                              trend: 'Posyandu',
+                              onTap: () {
+                                HapticFeedback.selectionClick();
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const KesehatanListScreen(),
+                                  ),
+                                );
+                              },
                             ),
                           ),
                         ],
@@ -692,7 +960,7 @@ class _BerandaPageState extends State<_BerandaPage> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// NUTRITION LINE CHART (Custom Painter)
+// NUTRITION AREA WAVE CHART (Custom Painter - Persis Gambar Referensi)
 // ─────────────────────────────────────────────────────────────────────────────
 class _NutritionChart extends StatelessWidget {
   final Color primary;
@@ -700,11 +968,10 @@ class _NutritionChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Mock 6-month data points: [Mar, Apr, May, Jun, Jul, Aug]
-    final giziBaik = [12, 14, 13, 16, 15, 17];
-    final giziKurang = [5, 4, 6, 3, 4, 3];
-    final giziBuruk = [2, 2, 1, 2, 1, 1];
-    final months = ['Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu'];
+    const chartBlue = Color(0xFF2563EB); // Biru vibrant persis seperti pada gambar
+    const shadowBlue = Color(0xFF60A5FA);
+    final yLabels = ['20k', '15k', '10k', '0k'];
+    final xLabels = ['0', '5', '10', '15', '20', '25'];
 
     return Container(
       decoration: BoxDecoration(
@@ -712,52 +979,141 @@ class _NutritionChart extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 14,
             offset: const Offset(0, 4),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 18, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Legend
-          const Row(
+          // Header ringkasan metrik
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _LegendDot(color: Color(0xFF10B981), label: 'Gizi Baik'),
-              SizedBox(width: 16),
-              _LegendDot(color: Color(0xFFF59E0B), label: 'Gizi Kurang'),
-              SizedBox(width: 16),
-              _LegendDot(color: Color(0xFFEF4444), label: 'Gizi Buruk'),
+              Row(
+                children: [
+                  Container(
+                    width: 10,
+                    height: 10,
+                    decoration: const BoxDecoration(
+                      color: chartBlue,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Realisasi Gizi Balita',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF0F172A),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      color: shadowBlue.withOpacity(0.35),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Target Pemantauan',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: const Color(0xFF64748B),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
           const SizedBox(height: 16),
-          SizedBox(
-            height: 140,
-            child: CustomPaint(
-              size: Size.infinite,
-              painter: _LineChartPainter(
-                giziBaik: giziBaik,
-                giziKurang: giziKurang,
-                giziBuruk: giziBuruk,
+
+          // Area Chart dengan Y-Axis di sebelah kiri
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Y-Axis Labels
+              SizedBox(
+                height: 130,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: yLabels.map((val) {
+                    final isZero = val == '0k';
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (isZero)
+                          Container(
+                            width: 5,
+                            height: 5,
+                            margin: const EdgeInsets.only(right: 3),
+                            decoration: const BoxDecoration(
+                              color: Color(0xFFF43F5E),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        Text(
+                          val,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: isZero
+                                ? const Color(0xFFF43F5E)
+                                : const Color(0xFF94A3B8),
+                          ),
+                        ),
+                      ],
+                    );
+                  }).toList(),
+                ),
               ),
-            ),
+              const SizedBox(width: 8),
+
+              // Canvas Chart Area Wave
+              Expanded(
+                child: SizedBox(
+                  height: 130,
+                  child: CustomPaint(
+                    size: Size.infinite,
+                    painter: _AreaWaveChartPainter(
+                      foregroundColor: chartBlue,
+                      backgroundColor: shadowBlue,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 8),
-          // X Axis labels
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: months
-                .map((m) => Text(
-                      m,
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 10.5,
-                        color: Colors.grey[400],
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ))
-                .toList(),
+
+          // X-Axis Labels
+          Padding(
+            padding: const EdgeInsets.only(left: 32),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: xLabels
+                  .map((lbl) => Text(
+                        lbl,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 10.5,
+                          color: const Color(0xFF94A3B8),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ))
+                  .toList(),
+            ),
           ),
         ],
       ),
@@ -765,109 +1121,138 @@ class _NutritionChart extends StatelessWidget {
   }
 }
 
-class _LegendDot extends StatelessWidget {
-  final Color color;
-  final String label;
-  const _LegendDot({required this.color, required this.label});
+/// CustomPainter untuk menghasilkan gelombang area bertingkat persis gambar referensi
+class _AreaWaveChartPainter extends CustomPainter {
+  final Color foregroundColor;
+  final Color backgroundColor;
 
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: 10,
-          height: 10,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-        ),
-        const SizedBox(width: 5),
-        Text(
-          label,
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-            color: Colors.grey[600],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _LineChartPainter extends CustomPainter {
-  final List<int> giziBaik;
-  final List<int> giziKurang;
-  final List<int> giziBuruk;
-
-  _LineChartPainter({
-    required this.giziBaik,
-    required this.giziKurang,
-    required this.giziBuruk,
+  _AreaWaveChartPainter({
+    required this.foregroundColor,
+    required this.backgroundColor,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    final allValues = [...giziBaik, ...giziKurang, ...giziBuruk];
-    final maxVal = allValues.reduce((a, b) => a > b ? a : b).toDouble();
-    final minVal = 0.0;
-    final count = giziBaik.length;
+    final w = size.width;
+    final h = size.height;
 
-    double xStep = size.width / (count - 1);
-    double yRange = maxVal - minVal;
-
-    // Draw grid lines
+    // Garis Grid Horizontal halus
     final gridPaint = Paint()
       ..color = const Color(0xFFF1F5F9)
-      ..strokeWidth = 1;
-    for (int i = 0; i <= 4; i++) {
-      final y = size.height - (i / 4) * size.height;
-      canvas.drawLine(Offset(0, y), Offset(size.width, y), gridPaint);
+      ..strokeWidth = 1.0;
+
+    for (int i = 0; i <= 3; i++) {
+      final y = (i / 3) * h;
+      canvas.drawLine(Offset(0, y), Offset(w, y), gridPaint);
     }
 
-    Offset getOffset(int index, int value) {
-      final x = index * xStep;
-      final y = size.height - ((value - minVal) / yRange) * size.height;
-      return Offset(x, y);
-    }
+    // 1. LAYER BACKGROUND (Area Bayangan Lembut / Target Projection)
+    final bgPath = Path();
+    bgPath.moveTo(0, h * 0.85);
 
-    void drawLine(List<int> data, Color color) {
-      final linePaint = Paint()
-        ..color = color
-        ..strokeWidth = 2.5
-        ..strokeCap = StrokeCap.round
-        ..strokeJoin = StrokeJoin.round
-        ..style = PaintingStyle.stroke;
+    // Titik spline untuk gelombang latar belakang
+    bgPath.cubicTo(w * 0.08, h * 0.60, w * 0.12, h * 0.12, w * 0.18, h * 0.12);
+    bgPath.cubicTo(w * 0.24, h * 0.12, w * 0.28, h * 0.45, w * 0.35, h * 0.48);
+    bgPath.cubicTo(w * 0.42, h * 0.52, w * 0.48, h * 0.38, w * 0.55, h * 0.40);
+    bgPath.cubicTo(w * 0.62, h * 0.42, w * 0.68, h * 0.65, w * 0.78, h * 0.70);
+    bgPath.cubicTo(w * 0.86, h * 0.75, w * 0.94, h * 0.88, w, h * 0.92);
 
-      final dotPaint = Paint()..color = color;
-      final dotBorder = Paint()
-        ..color = Colors.white
-        ..strokeWidth = 2
-        ..style = PaintingStyle.stroke;
+    bgPath.lineTo(w, h);
+    bgPath.lineTo(0, h);
+    bgPath.close();
 
-      final path = Path();
-      for (int i = 0; i < data.length; i++) {
-        final offset = getOffset(i, data[i]);
-        if (i == 0) {
-          path.moveTo(offset.dx, offset.dy);
-        } else {
-          final prev = getOffset(i - 1, data[i - 1]);
-          final cp1 = Offset((prev.dx + offset.dx) / 2, prev.dy);
-          final cp2 = Offset((prev.dx + offset.dx) / 2, offset.dy);
-          path.cubicTo(cp1.dx, cp1.dy, cp2.dx, cp2.dy, offset.dx, offset.dy);
-        }
-      }
-      canvas.drawPath(path, linePaint);
+    final bgFillPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          backgroundColor.withOpacity(0.25),
+          backgroundColor.withOpacity(0.04),
+        ],
+      ).createShader(Rect.fromLTWH(0, 0, w, h))
+      ..style = PaintingStyle.fill;
 
-      // Draw dots
-      for (int i = 0; i < data.length; i++) {
-        final offset = getOffset(i, data[i]);
-        canvas.drawCircle(offset, 4.5, dotPaint);
-        canvas.drawCircle(offset, 4.5, dotBorder);
-      }
-    }
+    canvas.drawPath(bgPath, bgFillPaint);
 
-    drawLine(giziBaik, const Color(0xFF10B981));
-    drawLine(giziKurang, const Color(0xFFF59E0B));
-    drawLine(giziBuruk, const Color(0xFFEF4444));
+    final bgStrokePaint = Paint()
+      ..color = backgroundColor.withOpacity(0.4)
+      ..strokeWidth = 1.5
+      ..style = PaintingStyle.stroke;
+
+    final bgEdgePath = Path();
+    bgEdgePath.moveTo(0, h * 0.85);
+    bgEdgePath.cubicTo(w * 0.08, h * 0.60, w * 0.12, h * 0.12, w * 0.18, h * 0.12);
+    bgEdgePath.cubicTo(w * 0.24, h * 0.12, w * 0.28, h * 0.45, w * 0.35, h * 0.48);
+    bgEdgePath.cubicTo(w * 0.42, h * 0.52, w * 0.48, h * 0.38, w * 0.55, h * 0.40);
+    bgEdgePath.cubicTo(w * 0.62, h * 0.42, w * 0.68, h * 0.65, w * 0.78, h * 0.70);
+    bgEdgePath.cubicTo(w * 0.86, h * 0.75, w * 0.94, h * 0.88, w, h * 0.92);
+    canvas.drawPath(bgEdgePath, bgStrokePaint);
+
+    // 2. LAYER FOREGROUND (Gelombang Puncak Biru Utama - Persis Gambar)
+    final fgPath = Path();
+    fgPath.moveTo(0, h);
+
+    // Puncak pertama yang tajam dan tinggi
+    fgPath.cubicTo(w * 0.04, h * 0.95, w * 0.08, h * 0.70, w * 0.12, h * 0.35);
+    fgPath.cubicTo(w * 0.13, h * 0.25, w * 0.14, h * 0.25, w * 0.15, h * 0.38);
+
+    // Turun ke lembah
+    fgPath.cubicTo(w * 0.17, h * 0.65, w * 0.19, h * 0.82, w * 0.22, h * 0.82);
+
+    // Puncak kedua lebih kecil
+    fgPath.cubicTo(w * 0.25, h * 0.82, w * 0.27, h * 0.72, w * 0.30, h * 0.72);
+    fgPath.cubicTo(w * 0.33, h * 0.72, w * 0.36, h * 0.88, w * 0.39, h * 0.88);
+
+    // Puncak ketiga
+    fgPath.cubicTo(w * 0.43, h * 0.88, w * 0.47, h * 0.62, w * 0.51, h * 0.62);
+    fgPath.cubicTo(w * 0.55, h * 0.62, w * 0.58, h * 0.85, w * 0.61, h * 0.85);
+
+    // Puncak keempat
+    fgPath.cubicTo(w * 0.64, h * 0.85, w * 0.67, h * 0.75, w * 0.71, h * 0.75);
+    fgPath.cubicTo(w * 0.75, h * 0.75, w * 0.79, h * 0.96, w * 0.83, h);
+
+    fgPath.lineTo(0, h);
+    fgPath.close();
+
+    final fgFillPaint = Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          foregroundColor,
+          foregroundColor.withOpacity(0.92),
+        ],
+      ).createShader(Rect.fromLTWH(0, 0, w, h))
+      ..style = PaintingStyle.fill;
+
+    canvas.drawPath(fgPath, fgFillPaint);
+
+    // Garis tepi atas gelombang foreground
+    final fgEdgePath = Path();
+    fgEdgePath.moveTo(0, h);
+    fgEdgePath.cubicTo(w * 0.04, h * 0.95, w * 0.08, h * 0.70, w * 0.12, h * 0.35);
+    fgEdgePath.cubicTo(w * 0.13, h * 0.25, w * 0.14, h * 0.25, w * 0.15, h * 0.38);
+    fgEdgePath.cubicTo(w * 0.17, h * 0.65, w * 0.19, h * 0.82, w * 0.22, h * 0.82);
+    fgEdgePath.cubicTo(w * 0.25, h * 0.82, w * 0.27, h * 0.72, w * 0.30, h * 0.72);
+    fgEdgePath.cubicTo(w * 0.33, h * 0.72, w * 0.36, h * 0.88, w * 0.39, h * 0.88);
+    fgEdgePath.cubicTo(w * 0.43, h * 0.88, w * 0.47, h * 0.62, w * 0.51, h * 0.62);
+    fgEdgePath.cubicTo(w * 0.55, h * 0.62, w * 0.58, h * 0.85, w * 0.61, h * 0.85);
+    fgEdgePath.cubicTo(w * 0.64, h * 0.85, w * 0.67, h * 0.75, w * 0.71, h * 0.75);
+    fgEdgePath.cubicTo(w * 0.75, h * 0.75, w * 0.79, h * 0.96, w * 0.83, h);
+
+    final fgStrokePaint = Paint()
+      ..color = const Color(0xFF1D4ED8)
+      ..strokeWidth = 2.0
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+
+    canvas.drawPath(fgEdgePath, fgStrokePaint);
+
+    // Garis dasar horizontal bawah
+    final axisPaint = Paint()
+      ..color = const Color(0xFFCBD5E1)
+      ..strokeWidth = 1.2;
+    canvas.drawLine(Offset(0, h), Offset(w, h), axisPaint);
   }
 
   @override
@@ -884,6 +1269,7 @@ class _StatCard extends StatelessWidget {
   final String trend;
   final IconData icon;
   final Color color;
+  final VoidCallback? onTap;
 
   const _StatCard({
     required this.label,
@@ -892,69 +1278,123 @@ class _StatCard extends StatelessWidget {
     required this.color,
     this.sublabel = '',
     this.trend = '',
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(icon, color: color, size: 18),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Ink(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: const Color(0xFFE2E8F0), width: 1.1),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x06000000),
+                blurRadius: 12,
+                offset: Offset(0, 4),
               ),
             ],
           ),
-          const SizedBox(height: 10),
-          Text(
-            value,
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 24,
-              fontWeight: FontWeight.w800,
-              color: const Color(0xFF0F172A),
-              letterSpacing: -0.6,
-            ),
-          ),
-          const SizedBox(height: 1),
-          Text(
-            label,
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 12.5,
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFF0F172A),
-            ),
-          ),
-          if (sublabel.isNotEmpty) ...[
-            const SizedBox(height: 1),
-            Text(
-              sublabel,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 11,
-                color: Colors.grey[500],
-                fontWeight: FontWeight.w500,
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Baris atas: Ikon badge di kiri, badge status / tren di kanan
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(9),
+                    decoration: BoxDecoration(
+                      color: color.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(icon, color: color, size: 20),
+                  ),
+                  if (trend.isNotEmpty)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: color.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: color.withOpacity(0.2), width: 1),
+                      ),
+                      child: Text(
+                        trend,
+                        style: GoogleFonts.outfit(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.w600,
+                          color: color,
+                        ),
+                      ),
+                    ),
+                ],
               ),
-            ),
-          ],
-        ],
+              const SizedBox(height: 14),
+
+              // Nilai angka metrik
+              Text(
+                value,
+                style: GoogleFonts.outfit(
+                  fontSize: 28,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF0F172A),
+                  letterSpacing: -0.5,
+                  height: 1.1,
+                ),
+              ),
+              const SizedBox(height: 4),
+
+              // Judul kartu
+              Text(
+                label,
+                style: GoogleFonts.outfit(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF1E293B),
+                ),
+              ),
+
+              // Keterangan bawah
+              if (sublabel.isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.check_circle_outline_rounded,
+                      size: 13,
+                      color: color,
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        sublabel,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.outfit(
+                          fontSize: 11,
+                          color: const Color(0xFF64748B),
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                    const Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 10,
+                      color: Color(0xFF94A3B8),
+                    ),
+                  ],
+                ),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }
