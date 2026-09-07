@@ -10,42 +10,53 @@ class BeritaService {
   factory BeritaService() => _instance;
   BeritaService._internal();
 
-  final List<Berita> _localBerita = [
-    Berita(
-      id: 1,
-      judul: 'Kegiatan Posyandu Rutin Bulan Ini',
-      ringkasan: 'Pelaksanaan posyandu rutin pemantauan gizi dan tumbuh kembang balita di seluruh desa dimulai minggu ini.',
-      konten: 'Pelaksanaan posyandu rutin pemantauan gizi dan tumbuh kembang balita di seluruh desa dimulai minggu ini. Kader Dasawisma bersama tenaga medis Puskesmas setempat melakukan penimbangan berat badan, pengukuran tinggi badan, imunisasi, serta pemberian makanan tambahan (PMT) bergizi tinggi.',
-      tanggal: '05 Agu 2026',
-      gambar: 'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?w=600&auto=format&fit=crop&q=80',
-    ),
-    Berita(
-      id: 2,
-      judul: 'Pelatihan Kader PKK Tingkat Kecamatan',
-      ringkasan: 'Pelatihan kader baru tentang pemanfaatan pekarangan HATINYA PKK dan administrasi dasawisma akan dilaksanakan di aula kecamatan.',
-      konten: 'Pelatihan kader baru tentang pemanfaatan pekarangan HATINYA PKK dan administrasi dasawisma akan dilaksanakan di aula kecamatan. Kegiatan ini bertujuan memperkuat kapasitas kader dalam pendataan digital serta ketahanan pangan keluarga.',
-      tanggal: '03 Agu 2026',
-      gambar: 'https://images.unsplash.com/photo-1577495508048-b635879837f1?w=600&auto=format&fit=crop&q=80',
-    ),
-    Berita(
-      id: 3,
-      judul: 'Lomba Kebersihan Lingkungan dan PHBS Antar RW',
-      ringkasan: 'Penilaian lomba pemanfaatan pekarangan, pengolahan sampah mandiri, dan kebersihan lingkungan dimulai pekan depan.',
-      konten: 'Penilaian lomba pemanfaatan pekarangan, pengolahan sampah mandiri, dan kebersihan lingkungan dimulai pekan depan. Warga bersama kader dasawisma antusias mempersiapkan lingkungan yang asri, bersih, dan sehat.',
-      tanggal: '01 Agu 2026',
-      gambar: 'https://images.unsplash.com/photo-1588880331179-bc9b93a8cb5e?w=600&auto=format&fit=crop&q=80',
-    ),
-  ];
-
+  // ============================================================
+  // TOKEN
+  // ============================================================
   Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(AppConstants.tokenKey);
   }
 
+  Future<String?> _getKecamatan() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('default_kecamatan');
+  }
+
   // ============================================================
-  // AMBIL DAFTAR BERITA (API DENGAN FALLBACK LOKAL)
+  // 🔥 GET MY BERITA (Berita yang dikirim sendiri)
   // ============================================================
-  Future<List<Berita>> getBerita() async {
+  Future<List<Berita>> getMyBerita() async {
+    try {
+      final token = await _getToken();
+      if (token == null || token.isEmpty) {
+        return [];
+      }
+
+      // ✅ FIX: baseUrl sudah mengandung "/api/", jadi jangan tambahkan "/api/" lagi
+      final response = await http.get(
+        Uri.parse('${AppConstants.baseUrl}berita/saya'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      ).timeout(const Duration(seconds: 8));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final List<dynamic> list = data['data'] ?? [];
+        return list.map((item) => Berita.fromJson(item)).toList();
+      }
+    } catch (e) {
+      print('⚠️ Gagal mengambil berita saya: $e');
+    }
+    return [];
+  }
+
+  // ============================================================
+  // 🔥 GET ALL BERITA (Public)
+  // ============================================================
+  Future<List<Berita>> getBerita({String? search, String? kecamatan}) async {
     try {
       final token = await _getToken();
       final headers = <String, String>{'Accept': 'application/json'};
@@ -53,117 +64,318 @@ class BeritaService {
         headers['Authorization'] = 'Bearer $token';
       }
 
-      final response = await http
-          .get(
-            Uri.parse('${AppConstants.baseUrl}${AppConstants.berita}'),
-            headers: headers,
-          )
-          .timeout(const Duration(seconds: 4));
+      final queryParams = <String, String>{};
+      if (search != null && search.isNotEmpty) {
+        queryParams['search'] = search;
+      }
+      if (kecamatan != null && kecamatan.isNotEmpty) {
+        queryParams['kecamatan'] = kecamatan;
+      }
+
+      // ✅ FIX
+      final uri = Uri.parse('${AppConstants.baseUrl}berita')
+          .replace(queryParameters: queryParams);
+
+      final response = await http.get(uri, headers: headers).timeout(
+        const Duration(seconds: 8),
+      );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final List<dynamic> list = data['data'] ?? (data is List ? data : []);
-        final apiList = list.map((item) => Berita.fromJson(item)).toList();
-
-        if (apiList.isNotEmpty) {
-          // Gabungkan berita lokal yang baru dipublish jika belum ada di server
-          final existingIds = apiList.map((e) => e.id).toSet();
-          final localUnsynced = _localBerita.where((b) => !existingIds.contains(b.id)).toList();
-          return [...localUnsynced, ...apiList];
-        }
+        final List<dynamic> list = data['data']?['data'] ?? data['data'] ?? [];
+        return list.map((item) => Berita.fromJson(item)).toList();
       }
     } catch (e) {
-      print('⚠️ API berita offline/tidak merespon, memuat data lokal: $e');
+      print('⚠️ Gagal mengambil berita: $e');
     }
-
-    return List.from(_localBerita);
+    return [];
   }
 
   // ============================================================
-  // PUBLISH BERITA BARU
+  // 🔥 GET DETAIL BERITA
   // ============================================================
-  Future<Berita> publishBerita({
-    required String judul,
-    required String ringkasan,
-    String? konten,
-    String? kategori,
-    File? fotoFile,
-  }) async {
-    final now = DateTime.now();
-    final formattedDate =
-        '${now.day.toString().padLeft(2, '0')} ${_namaBulan(now.month)} ${now.year}';
-
-    // Buat Berita lokal terlebih dahulu agar langsung muncul di aplikasi
-    final newId = _localBerita.isEmpty
-        ? 1
-        : _localBerita.map((b) => b.id).reduce((a, b) => a > b ? a : b) + 1;
-
-    Berita newBerita = Berita(
-      id: newId,
-      judul: judul,
-      ringkasan: ringkasan,
-      konten: (konten != null && konten.isNotEmpty) ? konten : ringkasan,
-      tanggal: formattedDate,
-      gambar: fotoFile?.path,
-    );
-
-    _localBerita.insert(0, newBerita);
-
-    // Kirim ke backend Laravel API jika server tersedia
+  Future<Berita?> getBeritaDetail(String slug) async {
     try {
       final token = await _getToken();
-      final uri = Uri.parse('${AppConstants.baseUrl}${AppConstants.berita}');
-      final request = http.MultipartRequest('POST', uri);
-
+      final headers = <String, String>{'Accept': 'application/json'};
       if (token != null && token.isNotEmpty) {
-        request.headers['Authorization'] = 'Bearer $token';
-      }
-      request.headers['Accept'] = 'application/json';
-
-      request.fields['judul'] = judul;
-      request.fields['deskripsi'] = ringkasan;
-      request.fields['ringkasan'] = ringkasan;
-      request.fields['konten'] = (konten != null && konten.isNotEmpty) ? konten : ringkasan;
-      if (kategori != null && kategori.isNotEmpty) {
-        request.fields['kategori'] = kategori;
+        headers['Authorization'] = 'Bearer $token';
       }
 
-      if (fotoFile != null && await fotoFile.exists()) {
-        try {
-          final multipartFile = await http.MultipartFile.fromPath('foto', fotoFile.path);
-          request.files.add(multipartFile);
-        } catch (e) {
-          print('⚠️ Gagal melampirkan foto: $e');
-        }
-      }
+      // ✅ FIX
+      final response = await http.get(
+        Uri.parse('${AppConstants.baseUrl}berita/$slug'),
+        headers: headers,
+      ).timeout(const Duration(seconds: 8));
 
-      final streamedResponse = await request.send().timeout(const Duration(seconds: 8));
-      final response = await http.Response.fromStream(streamedResponse);
-      print('📡 Publish response status: ${response.statusCode}');
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        if (data['data'] != null) {
-          final apiBerita = Berita.fromJson(data['data']);
-          _localBerita[0] = apiBerita;
-          return apiBerita;
-        }
+        return Berita.fromJson(data['data'] ?? data);
       }
     } catch (e) {
-      print('⚠️ Tidak dapat terhubung ke server Laravel saat publish, berita tersimpan lokal: $e');
+      print('⚠️ Gagal mengambil detail berita: $e');
     }
-
-    return newBerita;
+    return null;
   }
 
-  String _namaBulan(int month) {
-    const bulan = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-      'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
-    ];
-    if (month >= 1 && month <= 12) {
-      return bulan[month - 1];
+  // ============================================================
+  // 🔥 SUBMIT BERITA (Kader Mobile) - DENGAN DEBUG
+  // ============================================================
+  Future<Berita> submitBerita({
+    required String judul,
+    required String konten,
+    String? kategori,
+    String? kecamatan,
+    File? fotoFile,
+    String? fotoBase64,
+  }) async {
+    try {
+      print('📝 SUBMIT BERITA:');
+      print('  - Judul: $judul');
+      print('  - Kategori: $kategori');
+      print('  - Kecamatan: $kecamatan');
+      print('  - Foto File: ${fotoFile?.path}');
+      print('  - Foto Base64: ${fotoBase64 != null ? fotoBase64.substring(0, 50) + "..." : "null"}');
+
+      final token = await _getToken();
+      if (token == null || token.isEmpty) {
+        throw Exception('Token tidak ditemukan, silakan login ulang');
+      }
+
+      String? finalKecamatan = kecamatan;
+      if (finalKecamatan == null || finalKecamatan.isEmpty) {
+        finalKecamatan = await _getKecamatan();
+      }
+
+      print('  - Final Kecamatan: $finalKecamatan');
+
+      // ✅ FIX: baseUrl sudah "http://127.0.0.1:8000/api/",
+      // jadi cukup tambahkan "berita" saja (tanpa "/api/" lagi)
+      final uri = Uri.parse('${AppConstants.baseUrl}berita');
+
+      final body = {
+        'judul': judul,
+        'konten': konten,
+        'kategori': kategori ?? 'Kegiatan',
+        'kecamatan': finalKecamatan ?? '',
+      };
+
+      if (fotoBase64 != null && fotoBase64.isNotEmpty) {
+        body['foto'] = fotoBase64;
+        print('  - Foto dikirim via Base64 (${fotoBase64.length} chars)');
+      } else if (fotoFile != null && await fotoFile.exists()) {
+        try {
+          final bytes = await fotoFile.readAsBytes();
+          final base64 = base64Encode(bytes);
+          body['foto'] = base64;
+          print('  - Foto di-convert ke Base64 (${base64.length} chars)');
+        } catch (e) {
+          print('⚠️ Gagal convert foto ke base64: $e');
+        }
+      }
+
+      final response = await http.post(
+        uri,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(body),
+      ).timeout(const Duration(seconds: 15));
+
+      print('📡 Response status: ${response.statusCode}');
+      print('📡 Response body: ${response.body.substring(0, response.body.length > 200 ? 200 : response.body.length)}...');
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final berita = Berita.fromJson(data['data'] ?? data);
+        if (berita.id == 0) {
+          throw Exception('Berita gagal disimpan, data tidak valid');
+        }
+        print('✅ Berita berhasil dikirim! ID: ${berita.id}');
+        return berita;
+      } else {
+        final error = jsonDecode(response.body);
+        throw Exception(error['message'] ?? 'Gagal mengirim berita: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('❌ Error submit berita: $e');
+      rethrow;
     }
-    return '';
+  }
+
+  // ============================================================
+  // 🔥 UPDATE BERITA (Hanya jika status pending)
+  // ============================================================
+  Future<Berita?> updateBerita({
+    required int id,
+    required String judul,
+    required String konten,
+    String? kategori,
+    String? kecamatan,
+    File? fotoFile,
+    String? fotoBase64,
+  }) async {
+    try {
+      final token = await _getToken();
+      if (token == null || token.isEmpty) {
+        throw Exception('Token tidak ditemukan, silakan login ulang');
+      }
+
+      String? finalKecamatan = kecamatan;
+      if (finalKecamatan == null || finalKecamatan.isEmpty) {
+        finalKecamatan = await _getKecamatan();
+      }
+
+      // ✅ FIX
+      final uri = Uri.parse('${AppConstants.baseUrl}berita/saya/$id');
+
+      final body = {
+        'judul': judul,
+        'konten': konten,
+        'kategori': kategori ?? 'Kegiatan',
+        'kecamatan': finalKecamatan ?? '',
+      };
+
+      if (fotoBase64 != null && fotoBase64.isNotEmpty) {
+        body['foto'] = fotoBase64;
+      } else if (fotoFile != null && await fotoFile.exists()) {
+        final bytes = await fotoFile.readAsBytes();
+        final base64 = base64Encode(bytes);
+        body['foto'] = base64;
+      }
+
+      final response = await http.put(
+        uri,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(body),
+      ).timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return Berita.fromJson(data['data'] ?? data);
+      } else {
+        final error = jsonDecode(response.body);
+        throw Exception(error['message'] ?? 'Gagal update berita');
+      }
+    } catch (e) {
+      print('⚠️ Error update berita: $e');
+      rethrow;
+    }
+  }
+
+  // ============================================================
+  // 🔥 DELETE BERITA (Hanya jika status pending)
+  // ============================================================
+  Future<bool> deleteBerita(int id) async {
+    try {
+      final token = await _getToken();
+      if (token == null || token.isEmpty) {
+        throw Exception('Token tidak ditemukan, silakan login ulang');
+      }
+
+      // ✅ FIX
+      final response = await http.delete(
+        Uri.parse('${AppConstants.baseUrl}berita/saya/$id'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      ).timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        final error = jsonDecode(response.body);
+        throw Exception(error['message'] ?? 'Gagal hapus berita');
+      }
+    } catch (e) {
+      print('⚠️ Error delete berita: $e');
+      rethrow;
+    }
+  }
+
+  // ============================================================
+  // 🔥 GET LATEST BERITA (Untuk Homepage)
+  // ============================================================
+  Future<List<Berita>> getLatestBerita({int limit = 6}) async {
+    try {
+      // ✅ FIX
+      final response = await http.get(
+        Uri.parse('${AppConstants.baseUrl}berita/latest?limit=$limit'),
+        headers: {'Accept': 'application/json'},
+      ).timeout(const Duration(seconds: 8));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final List<dynamic> list = data['data'] ?? [];
+        return list.map((item) => Berita.fromJson(item)).toList();
+      }
+    } catch (e) {
+      print('⚠️ Gagal mengambil berita terbaru: $e');
+    }
+    return [];
+  }
+
+  // ============================================================
+  // 🔥 GET KECAMATAN TERAKTIF
+  // ============================================================
+  Future<List<Map<String, dynamic>>> getKecamatanTeraktif() async {
+    try {
+      // ✅ FIX
+      final response = await http.get(
+        Uri.parse('${AppConstants.baseUrl}berita/kecamatan-teraktif'),
+        headers: {'Accept': 'application/json'},
+      ).timeout(const Duration(seconds: 8));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final List<dynamic> list = data['data'] ?? [];
+        return list.map((item) => {
+          'kecamatan': item['kecamatan'] ?? '',
+          'total': item['total'] ?? 0,
+        }).toList();
+      }
+    } catch (e) {
+      print('⚠️ Gagal mengambil kecamatan teraktif: $e');
+    }
+    return [];
+  }
+
+  // ============================================================
+  // 🔥 GET PENDING COUNT (Untuk Badge Admin)
+  // ============================================================
+  Future<int> getPendingCount() async {
+    try {
+      final token = await _getToken();
+      if (token == null || token.isEmpty) return 0;
+
+      // ⚠️ CATATAN: route "/admin/berita/pending-count" TIDAK ADA
+      // di routes/api.php kamu. Yang ada cuma:
+      //   GET /admin/berita/pending   (tanpa "-count")
+      // Ini juga akan 404 kalau dipanggil. Sesuaikan salah satu:
+      // - ubah endpoint ini jadi 'admin/berita/pending', atau
+      // - tambahkan route baru di Laravel untuk pending-count
+      final response = await http.get(
+        Uri.parse('${AppConstants.baseUrl}admin/berita/pending-count'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      ).timeout(const Duration(seconds: 5));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['count'] ?? 0;
+      }
+    } catch (e) {
+      print('⚠️ Gagal mengambil pending count: $e');
+    }
+    return 0;
   }
 }

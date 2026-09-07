@@ -120,75 +120,143 @@ class ApiService {
   // BERITA
   // ============================================================
   Future<List<Berita>> getBerita() async {
-    final response = await _client.get(
-      Uri.parse('${AppConstants.baseUrl}${AppConstants.berita}'),
-    );
+    try {
+      final response = await _client.get(
+        Uri.parse('${AppConstants.baseUrl}${AppConstants.berita}'),
+      ).timeout(const Duration(seconds: 10));
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final List<dynamic> list = data['data'] ?? [];
-      return list.map((item) => Berita.fromJson(item)).toList();
-    } else {
-      throw Exception('Gagal load berita: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final List<dynamic> list = data['data']?['data'] ?? data['data'] ?? [];
+        return list.map((item) => Berita.fromJson(item)).toList();
+      } else {
+        throw Exception('Gagal load berita: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Gagal load berita: $e');
     }
   }
 
   Future<List<Berita>> getBeritaLatest() async {
-    final response = await _client.get(
-      Uri.parse('${AppConstants.baseUrl}${AppConstants.beritaLatest}'),
-    );
+    try {
+      final response = await _client.get(
+        Uri.parse('${AppConstants.baseUrl}${AppConstants.beritaLatest}'),
+      ).timeout(const Duration(seconds: 10));
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final List<dynamic> list = data['data'] ?? [];
-      return list.map((item) => Berita.fromJson(item)).toList();
-    } else {
-      throw Exception('Gagal load berita terbaru: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final List<dynamic> list = data['data'] ?? [];
+        return list.map((item) => Berita.fromJson(item)).toList();
+      } else {
+        throw Exception('Gagal load berita terbaru: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Gagal load berita terbaru: $e');
     }
   }
 
   Future<Berita> getBeritaDetail(String slug) async {
-    final response = await _client.get(
-      Uri.parse('${AppConstants.baseUrl}${AppConstants.berita}/$slug'),
-    );
+    try {
+      final response = await _client.get(
+        Uri.parse('${AppConstants.baseUrl}${AppConstants.berita}/$slug'),
+      ).timeout(const Duration(seconds: 10));
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return Berita.fromJson(data);
-    } else {
-      throw Exception('Gagal load detail berita: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return Berita.fromJson(data['data'] ?? data);
+      } else {
+        throw Exception('Gagal load detail berita: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Gagal load detail berita: $e');
     }
   }
 
-  Future<Berita> publishBerita({
+  // ============================================================
+  // 🔥 SUBMIT BERITA - FIX VERSION
+  // ============================================================
+  Future<Berita> submitBerita({
     required String judul,
     required String ringkasan,
     String? konten,
     String? kategori,
+    String? kecamatan,
     File? fotoFile,
+    String? fotoBase64,
   }) async {
-    return BeritaService().publishBerita(
-      judul: judul,
-      ringkasan: ringkasan,
-      konten: konten,
-      kategori: kategori,
-      fotoFile: fotoFile,
-    );
+    try {
+      final beritaService = BeritaService();
+
+      // 🔥 PASTIKAN KONTEN TIDAK NULL
+      final kontenFinal = konten ?? ringkasan;
+
+      final result = await beritaService.submitBerita(
+        judul: judul,
+        konten: kontenFinal,
+        kategori: kategori,
+        kecamatan: kecamatan,
+        fotoFile: fotoFile,
+        fotoBase64: fotoBase64,
+      );
+
+      // 🔥 CEK HASIL
+      if (result.id == 0) {
+        throw Exception('Berita gagal disimpan, data tidak valid');
+      }
+
+      return result;
+    } catch (e) {
+      print('❌ ApiService.submitBerita error: $e');
+      throw Exception('Gagal submit berita: $e');
+    }
+  }
+
+  // ============================================================
+  // 🔥 MY BERITA
+  // ============================================================
+  Future<List<Berita>> getMyBerita(String token) async {
+    try {
+      // ✅ FIX: koma yang hilang setelah Uri.parse(...) sudah ditambahkan,
+      // dan endpoint diarahkan ke "berita/saya" (bukan cuma "berita")
+      final response = await _client.get(
+        Uri.parse('${AppConstants.baseUrl}berita/saya'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      ).timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final List<dynamic> list = data['data'] ?? [];
+        return list.map((item) => Berita.fromJson(item)).toList();
+      } else {
+        throw Exception('Gagal load berita saya: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Gagal load berita saya: $e');
+    }
   }
 
   // ============================================================
   // GALERI
   // ============================================================
   Future<List<dynamic>> getGaleri() async {
-    final response = await _client.get(
-      Uri.parse('${AppConstants.baseUrl}${AppConstants.galeri}'),
-    );
+    try {
+      // ✅ FIX: dikembalikan ke endpoint galeri yang benar
+      // (sebelumnya salah tertukar memanggil "berita/saya")
+      final response = await _client.get(
+        Uri.parse('${AppConstants.baseUrl}${AppConstants.galeri}'),
+      ).timeout(const Duration(seconds: 10));
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data['data'] ?? [];
-    } else {
-      throw Exception('Gagal load galeri: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['data'] ?? [];
+      } else {
+        throw Exception('Gagal load galeri: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Gagal load galeri: $e');
     }
   }
 
@@ -196,15 +264,19 @@ class ApiService {
   // AGENDA
   // ============================================================
   Future<List<dynamic>> getAgenda() async {
-    final response = await _client.get(
-      Uri.parse('${AppConstants.baseUrl}${AppConstants.agenda}'),
-    );
+    try {
+      final response = await _client.get(
+        Uri.parse('${AppConstants.baseUrl}${AppConstants.agenda}'),
+      ).timeout(const Duration(seconds: 10));
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data['data'] ?? [];
-    } else {
-      throw Exception('Gagal load agenda: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['data'] ?? [];
+      } else {
+        throw Exception('Gagal load agenda: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Gagal load agenda: $e');
     }
   }
 
@@ -212,32 +284,40 @@ class ApiService {
   // LAPORAN KEGIATAN
   // ============================================================
   Future<List<dynamic>> getLaporanKegiatan() async {
-    final response = await _client.get(
-      Uri.parse('${AppConstants.baseUrl}${AppConstants.laporanKegiatan}'),
-    );
+    try {
+      final response = await _client.get(
+        Uri.parse('${AppConstants.baseUrl}${AppConstants.laporanKegiatan}'),
+      ).timeout(const Duration(seconds: 10));
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data['data'] ?? [];
-    } else {
-      throw Exception('Gagal load laporan kegiatan: ${response.statusCode}');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['data'] ?? [];
+      } else {
+        throw Exception('Gagal load laporan kegiatan: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Gagal load laporan kegiatan: $e');
     }
   }
 
   Future<Map<String, dynamic>> createLaporanKegiatan(Map<String, dynamic> data, String token) async {
-    final response = await _client.post(
-      Uri.parse('${AppConstants.baseUrl}${AppConstants.laporanKegiatan}'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode(data),
-    );
+    try {
+      final response = await _client.post(
+        Uri.parse('${AppConstants.baseUrl}${AppConstants.laporanKegiatan}'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(data),
+      ).timeout(const Duration(seconds: 15));
 
-    if (response.statusCode == 201 || response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Gagal buat laporan: ${response.statusCode}');
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception('Gagal buat laporan: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Gagal buat laporan: $e');
     }
   }
 

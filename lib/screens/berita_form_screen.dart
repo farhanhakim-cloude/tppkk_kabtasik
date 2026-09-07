@@ -1,8 +1,10 @@
-import 'dart:io';
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/berita_service.dart';
 
 class BeritaFormScreen extends StatefulWidget {
@@ -18,12 +20,18 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
   final _picker = ImagePicker();
 
   final _judulController = TextEditingController();
-  final _ringkasanController = TextEditingController();
   final _kontenController = TextEditingController();
 
   String _selectedKategori = 'Kegiatan PKK';
-  File? _fotoFile;
+  String? _selectedKecamatan;
+
+  // 🔥 FIX: ganti dari File? (dart:io) jadi Uint8List? — supaya aman
+  // dipakai baik di Flutter Web maupun native (Android/iOS/Desktop).
+  // dart:io.File tidak pernah bisa jalan di browser sama sekali.
+  Uint8List? _fotoBytes;
+  String? _fotoBase64;
   bool _isPublishing = false;
+  bool _isLoadingKecamatan = true;
 
   final List<String> _kategoriList = [
     'Kegiatan PKK',
@@ -34,31 +42,103 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
     'Pengumuman',
   ];
 
+  final List<String> _kecamatanList = [
+    'Bantarkalong',
+    'Bojongasih',
+    'Bojonggambir',
+    'Ciawi',
+    'Cibalong',
+    'Cigalontang',
+    'Cikalong',
+    'Cikatomas',
+    'Cineam',
+    'Cipatujah',
+    'Cisayong',
+    'Culamega',
+    'Gunungtanjung',
+    'Jamanis',
+    'Jatiwaras',
+    'Kadipaten',
+    'Karangjaya',
+    'Karangnunggal',
+    'Leuwisari',
+    'Mangunreja',
+    'Manonjaya',
+    'Padakembang',
+    'Pagerageung',
+    'Pancatengah',
+    'Parungponteng',
+    'Puspahiang',
+    'Rajapolah',
+    'Salawu',
+    'Salopa',
+    'Sariwangi',
+    'Singaparna',
+    'Sodonghilir',
+    'Sukahening',
+    'Sukaraja',
+    'Sukarame',
+    'Sukaratu',
+    'Sukaresik',
+    'Tanjungjaya',
+    'Taraju',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDefaultKecamatan();
+  }
+
   @override
   void dispose() {
     _judulController.dispose();
-    _ringkasanController.dispose();
     _kontenController.dispose();
     super.dispose();
   }
 
+  // 🔥 LOAD DEFAULT KECAMATAN DARI SHARED PREFERENCES
+  Future<void> _loadDefaultKecamatan() async {
+    setState(() => _isLoadingKecamatan = true);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final savedKecamatan = prefs.getString('default_kecamatan');
+      if (savedKecamatan != null && _kecamatanList.contains(savedKecamatan)) {
+        setState(() {
+          _selectedKecamatan = savedKecamatan;
+          _isLoadingKecamatan = false;
+        });
+      } else {
+        setState(() => _isLoadingKecamatan = false);
+      }
+    } catch (e) {
+      setState(() => _isLoadingKecamatan = false);
+    }
+  }
+
+  // 🔥 PILIH FOTO — FIX: baca bytes langsung dari XFile, TIDAK bungkus
+  // pakai dart:io File lagi. picked.readAsBytes() aman dipakai di
+  // semua platform (web, Android, iOS, desktop).
   Future<void> _pilihFoto(ImageSource source) async {
     try {
-      final picked = await _picker.pickImage(
+      final XFile? picked = await _picker.pickImage(
         source: source,
         imageQuality: 80,
         maxWidth: 1200,
       );
       if (picked != null) {
+        final bytes = await picked.readAsBytes();
+        final base64 = base64Encode(bytes);
         setState(() {
-          _fotoFile = File(picked.path);
+          _fotoBytes = bytes;
+          _fotoBase64 = base64;
         });
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Gagal memilih gambar: $e', style: GoogleFonts.plusJakartaSans()),
+            content: Text('Gagal memilih gambar: $e'),
             backgroundColor: const Color(0xFFEF4444),
           ),
         );
@@ -149,9 +229,23 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
     );
   }
 
-  Future<void> _handlePublish() async {
+  // 🔥 SUBMIT BERITA
+  Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) {
       HapticFeedback.heavyImpact();
+      return;
+    }
+
+    if (_selectedKecamatan == null || _selectedKecamatan!.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Pilih kecamatan terlebih dahulu!',
+            style: GoogleFonts.plusJakartaSans(),
+          ),
+          backgroundColor: const Color(0xFFEF4444),
+        ),
+      );
       return;
     }
 
@@ -159,12 +253,15 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
     HapticFeedback.mediumImpact();
 
     try {
-      await _beritaService.publishBerita(
+      // 🔥 FIX: fotoFile dihapus (parameter File? dart:io tidak aman
+      // dipakai di Web). Upload foto sekarang murni lewat fotoBase64,
+      // yang sudah dihasilkan dari bytes — aman di semua platform.
+      final berita = await _beritaService.submitBerita(
         judul: _judulController.text.trim(),
-        ringkasan: _ringkasanController.text.trim(),
         konten: _kontenController.text.trim(),
         kategori: _selectedKategori,
-        fotoFile: _fotoFile,
+        kecamatan: _selectedKecamatan,
+        fotoBase64: _fotoBase64,
       );
 
       if (mounted) {
@@ -177,7 +274,9 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Berita berhasil dipublikasikan!',
+                    berita != null
+                        ? '✅ Berita berhasil dikirim! Menunggu persetujuan admin.'
+                        : '✅ Berita berhasil dikirim!',
                     style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700),
                   ),
                 ),
@@ -186,6 +285,7 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
             backgroundColor: const Color(0xFF0D9488),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            duration: const Duration(seconds: 3),
           ),
         );
         Navigator.pop(context, true);
@@ -195,8 +295,13 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
         setState(() => _isPublishing = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Terjadi kesalahan: $e', style: GoogleFonts.plusJakartaSans()),
+            content: Text(
+              '❌ Gagal mengirim berita: $e',
+              style: GoogleFonts.plusJakartaSans(),
+            ),
             backgroundColor: const Color(0xFFEF4444),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         );
       }
@@ -215,10 +320,18 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
         scrolledUnderElevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            if (_judulController.text.isNotEmpty ||
+                _kontenController.text.isNotEmpty ||
+                _fotoBytes != null) {
+              _showDiscardDialog();
+            } else {
+              Navigator.pop(context);
+            }
+          },
         ),
         title: Text(
-          'Publikasikan Berita',
+          'Tulis Berita',
           style: GoogleFonts.plusJakartaSans(
             fontWeight: FontWeight.w800,
             fontSize: 18,
@@ -230,16 +343,19 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 12),
             child: TextButton.icon(
-              onPressed: _isPublishing ? null : _handlePublish,
+              onPressed: _isPublishing ? null : _handleSubmit,
               icon: _isPublishing
                   ? const SizedBox(
                       width: 16,
                       height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF0D9488)),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Color(0xFF0D9488),
+                      ),
                     )
                   : const Icon(Icons.send_rounded, size: 16),
               label: Text(
-                'Publish',
+                _isPublishing ? 'Mengirim...' : 'Kirim',
                 style: GoogleFonts.plusJakartaSans(
                   fontWeight: FontWeight.w800,
                   fontSize: 14,
@@ -254,396 +370,516 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
       ),
       body: Form(
         key: _formKey,
-        child: ListView(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 40),
-          children: [
-            // ── FOTO BERITA BANNER ──
-            GestureDetector(
-              onTap: _showImagePickerSheet,
-              child: Container(
-                height: 190,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(
-                    color: _fotoFile != null ? primary.withOpacity(0.4) : const Color(0xFFE2E8F0),
-                    width: 1.5,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.03),
-                      blurRadius: 10,
-                      offset: const Offset(0, 3),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // ── FOTO BERITA BANNER ──
+              GestureDetector(
+                onTap: _showImagePickerSheet,
+                child: Container(
+                  height: 190,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(
+                      color: _fotoBytes != null
+                          ? primary.withOpacity(0.4)
+                          : const Color(0xFFE2E8F0),
+                      width: 1.5,
                     ),
-                  ],
-                ),
-                child: _fotoFile != null
-                    ? Stack(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(17),
-                            child: Image.file(
-                              _fotoFile!,
-                              width: double.infinity,
-                              height: double.infinity,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.03),
+                        blurRadius: 10,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: _fotoBytes != null
+                      ? Stack(
+                          children: [
+                            ClipRRect(
                               borderRadius: BorderRadius.circular(17),
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Colors.black.withOpacity(0.1),
-                                  Colors.black.withOpacity(0.55),
+                              // 🔥 FIX: Image.memory (bekerja di web &
+                              // native) menggantikan Image.file (yang
+                              // butuh dart:io, cuma jalan di native).
+                              child: Image.memory(
+                                _fotoBytes!,
+                                width: double.infinity,
+                                height: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(17),
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.black.withOpacity(0.1),
+                                    Colors.black.withOpacity(0.55),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 12,
+                              right: 12,
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.9),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Icon(Icons.edit_rounded, size: 14, color: primary),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          'Ganti Foto',
+                                          style: GoogleFonts.plusJakartaSans(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w700,
+                                            color: primary,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  GestureDetector(
+                                    onTap: () {
+                                      HapticFeedback.lightImpact();
+                                      setState(() {
+                                        _fotoBytes = null;
+                                        _fotoBase64 = null;
+                                      });
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.all(6),
+                                      decoration: const BoxDecoration(
+                                        color: Color(0xFFEF4444),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(
+                                        Icons.close_rounded,
+                                        size: 16,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
-                          ),
-                          Positioned(
-                            bottom: 12,
-                            right: 12,
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.9),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.edit_rounded, size: 14, color: primary),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        'Ganti Foto',
-                                        style: GoogleFonts.plusJakartaSans(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w700,
-                                          color: primary,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                GestureDetector(
-                                  onTap: () {
-                                    HapticFeedback.lightImpact();
-                                    setState(() => _fotoFile = null);
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.all(6),
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xFFEF4444),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(Icons.close_rounded, size: 16, color: Colors.white),
-                                  ),
-                                ),
-                              ],
+                          ],
+                        )
+                      : Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                color: primary.withOpacity(0.08),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.add_photo_alternate_rounded,
+                                size: 36,
+                                color: primary,
+                              ),
                             ),
-                          ),
-                        ],
-                      )
-                    : Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(14),
-                            decoration: BoxDecoration(
-                              color: primary.withOpacity(0.08),
-                              shape: BoxShape.circle,
+                            const SizedBox(height: 10),
+                            Text(
+                              'Unggah Foto Sampul Berita',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF1E293B),
+                              ),
                             ),
-                            child: Icon(Icons.add_photo_alternate_rounded, size: 36, color: primary),
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            'Unggah Foto Sampul Berita',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: const Color(0xFF1E293B),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Format JPG atau PNG (Opsional)',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 12,
+                                color: Colors.grey[400],
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Format JPG atau PNG (Opsional)',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 12,
-                              color: Colors.grey[400],
-                            ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-            // ── KATEGORI CHIPS ──
-            Text(
-              'Kategori Berita',
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 13.5,
-                fontWeight: FontWeight.w800,
-                color: const Color(0xFF0F172A),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: _kategoriList.map((kat) {
-                final isSelected = kat == _selectedKategori;
-                return ChoiceChip(
-                  label: Text(kat),
-                  selected: isSelected,
-                  selectedColor: primary,
-                  backgroundColor: Colors.white,
-                  labelStyle: GoogleFonts.plusJakartaSans(
-                    fontSize: 12,
-                    fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                    color: isSelected ? Colors.white : const Color(0xFF475569),
-                  ),
-                  side: BorderSide(
-                    color: isSelected ? primary : const Color(0xFFCBD5E1),
-                  ),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                  onSelected: (selected) {
-                    if (selected) {
-                      HapticFeedback.selectionClick();
-                      setState(() => _selectedKategori = kat);
-                    }
-                  },
-                );
-              }).toList(),
-            ),
-            const SizedBox(height: 20),
-
-            // ── JUDUL BERITA ──
-            Row(
-              children: [
-                Text(
-                  'Judul Berita',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF0F172A),
-                  ),
-                ),
-                const SizedBox(width: 4),
-                const Text('*', style: TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.bold)),
-              ],
-            ),
-            const SizedBox(height: 8),
-            TextFormField(
-              controller: _judulController,
-              maxLength: 120,
-              style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.w600),
-              decoration: InputDecoration(
-                hintText: 'Contoh: Pelaksanaan Posyandu Mawar Bulan September',
-                hintStyle: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[400]),
-                prefixIcon: Icon(Icons.title_rounded, size: 20, color: primary),
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(color: primary, width: 1.8),
-                ),
-              ),
-              validator: (v) {
-                if (v == null || v.trim().isEmpty) return 'Judul berita wajib diisi';
-                if (v.trim().length < 5) return 'Judul minimal 5 karakter';
-                return null;
-              },
-            ),
-            const SizedBox(height: 12),
-
-            // ── RINGKASAN BERITA ──
-            Row(
-              children: [
-                Text(
-                  'Ringkasan Singkat (Lead / Excerpt)',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF0F172A),
-                  ),
-                ),
-                const SizedBox(width: 4),
-                const Text('*', style: TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.bold)),
-              ],
-            ),
-            const SizedBox(height: 8),
-            TextFormField(
-              controller: _ringkasanController,
-              maxLines: 3,
-              maxLength: 250,
-              style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
-              decoration: InputDecoration(
-                hintText: 'Tuliskan rangkuman 1-2 kalimat yang akan muncul di daftar berita...',
-                hintStyle: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[400]),
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: const EdgeInsets.all(14),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(color: primary, width: 1.8),
-                ),
-              ),
-              validator: (v) {
-                if (v == null || v.trim().isEmpty) return 'Ringkasan berita wajib diisi';
-                return null;
-              },
-            ),
-            const SizedBox(height: 12),
-
-            // ── KONTEN LENGKAP ──
-            Row(
-              children: [
-                Text(
-                  'Isi Lengkap Berita',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF0F172A),
-                  ),
-                ),
-                const SizedBox(width: 4),
-                const Text('*', style: TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.bold)),
-              ],
-            ),
-            const SizedBox(height: 8),
-            TextFormField(
-              controller: _kontenController,
-              maxLines: 8,
-              minLines: 5,
-              style: GoogleFonts.plusJakartaSans(fontSize: 13.5, height: 1.5),
-              decoration: InputDecoration(
-                hintText: 'Tuliskan narasi lengkap kegiatan, pihak yang terlibat, lokasi, dan hasil yang dicapai...',
-                hintStyle: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[400]),
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: const EdgeInsets.all(14),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(color: primary, width: 1.8),
-                ),
-              ),
-              validator: (v) {
-                if (v == null || v.trim().isEmpty) return 'Isi berita wajib diisi';
-                return null;
-              },
-            ),
-            const SizedBox(height: 20),
-
-            // ── BADGE PENERBIT ──
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF0FDF4),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: const Color(0xFFBBF7D0)),
-              ),
-              child: Row(
+              // ── KECAMATAN ──
+              Row(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF10B981),
-                      shape: BoxShape.circle,
+                  Text(
+                    'Kecamatan',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF0F172A),
                     ),
-                    child: const Icon(Icons.verified_user_rounded, color: Colors.white, size: 16),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Publikasi Resmi TP PKK',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                            color: const Color(0xFF166534),
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          'Berita akan diverifikasi dan tampil di Beranda serta Portal Berita PKK.',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 11.5,
-                            color: const Color(0xFF15803D),
-                          ),
-                        ),
-                      ],
-                    ),
+                  const SizedBox(width: 4),
+                  const Text(
+                    '*',
+                    style: TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(height: 28),
-
-            // ── TOMBOL SUBMIT ──
-            SizedBox(
-              height: 52,
-              child: ElevatedButton.icon(
-                onPressed: _isPublishing ? null : _handlePublish,
-                icon: _isPublishing
-                    ? const SizedBox.shrink()
-                    : const Icon(Icons.cloud_upload_rounded, size: 20),
-                label: _isPublishing
-                    ? const SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
-                      )
-                    : Text(
-                        'Publikasikan Berita',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 15,
+              const SizedBox(height: 8),
+              _isLoadingKecamatan
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : DropdownButtonFormField<String>(
+                      value: _selectedKecamatan,
+                      decoration: InputDecoration(
+                        hintText: 'Pilih Kecamatan',
+                        prefixIcon: Icon(Icons.location_on_rounded, color: primary),
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide(color: primary, width: 1.8),
                         ),
                       ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primary,
-                  foregroundColor: Colors.white,
-                  elevation: 3,
-                  shadowColor: primary.withOpacity(0.35),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      items: _kecamatanList.map((kec) {
+                        return DropdownMenuItem(
+                          value: kec,
+                          child: Text(
+                            kec,
+                            style: GoogleFonts.plusJakartaSans(),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() => _selectedKecamatan = value);
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Pilih kecamatan terlebih dahulu';
+                        }
+                        return null;
+                      },
+                    ),
+              const SizedBox(height: 16),
+
+              // ── KATEGORI CHIPS ──
+              Text(
+                'Kategori Berita',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF0F172A),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: _kategoriList.map((kat) {
+                  final isSelected = kat == _selectedKategori;
+                  return ChoiceChip(
+                    label: Text(kat),
+                    selected: isSelected,
+                    selectedColor: primary,
+                    backgroundColor: Colors.white,
+                    labelStyle: GoogleFonts.plusJakartaSans(
+                      fontSize: 12,
+                      fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                      color: isSelected ? Colors.white : const Color(0xFF475569),
+                    ),
+                    side: BorderSide(
+                      color: isSelected ? primary : const Color(0xFFCBD5E1),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    onSelected: (selected) {
+                      if (selected) {
+                        HapticFeedback.selectionClick();
+                        setState(() => _selectedKategori = kat);
+                      }
+                    },
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 20),
+
+              // ── JUDUL BERITA ──
+              Row(
+                children: [
+                  Text(
+                    'Judul Berita',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF0F172A),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  const Text(
+                    '*',
+                    style: TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _judulController,
+                maxLength: 120,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+                decoration: InputDecoration(
+                  hintText: 'Contoh: Pelaksanaan Posyandu Mawar Bulan September',
+                  hintStyle: GoogleFonts.plusJakartaSans(
+                    fontSize: 13,
+                    color: Colors.grey[400],
+                  ),
+                  prefixIcon: Icon(Icons.title_rounded, size: 20, color: primary),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(color: primary, width: 1.8),
+                  ),
+                ),
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) {
+                    return 'Judul berita wajib diisi';
+                  }
+                  if (v.trim().length < 5) {
+                    return 'Judul minimal 5 karakter';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+
+              // ── KONTEN LENGKAP ──
+              Row(
+                children: [
+                  Text(
+                    'Isi Lengkap Berita',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF0F172A),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  const Text(
+                    '*',
+                    style: TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _kontenController,
+                maxLines: 8,
+                minLines: 5,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 13.5,
+                  height: 1.5,
+                ),
+                decoration: InputDecoration(
+                  hintText:
+                      'Tuliskan narasi lengkap kegiatan, pihak yang terlibat, lokasi, dan hasil yang dicapai...',
+                  hintStyle: GoogleFonts.plusJakartaSans(
+                    fontSize: 13,
+                    color: Colors.grey[400],
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.all(14),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(color: primary, width: 1.8),
+                  ),
+                ),
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) {
+                    return 'Isi berita wajib diisi';
+                  }
+                  if (v.trim().length < 20) {
+                    return 'Isi berita minimal 20 karakter';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+
+              // ── BADGE PENERBIT ──
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF0FDF4),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: const Color(0xFFBBF7D0)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF10B981),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.verified_user_rounded,
+                        color: Colors.white,
+                        size: 16,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Publikasi Resmi TP PKK',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                              color: const Color(0xFF166534),
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Berita akan diverifikasi oleh admin sebelum tampil di publik.',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 11.5,
+                              color: const Color(0xFF15803D),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 28),
+
+              // ── TOMBOL SUBMIT ──
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton.icon(
+                  onPressed: _isPublishing ? null : _handleSubmit,
+                  icon: _isPublishing
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(Icons.cloud_upload_rounded, size: 20),
+                  label: Text(
+                    _isPublishing ? 'Mengirim...' : 'Kirim Berita',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                    ),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primary,
+                    foregroundColor: Colors.white,
+                    elevation: 3,
+                    shadowColor: primary.withOpacity(0.35),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  // 🔥 DIALOG DISCARD
+  void _showDiscardDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          'Batalkan Penulisan?',
+          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800),
+        ),
+        content: Text(
+          'Anda memiliki perubahan yang belum disimpan. Yakin ingin keluar?',
+          style: GoogleFonts.plusJakartaSans(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(
+              'Lanjut Menulis',
+              style: GoogleFonts.plusJakartaSans(
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF0F172A),
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              Navigator.pop(context);
+            },
+            child: Text(
+              'Keluar',
+              style: GoogleFonts.plusJakartaSans(
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFFEF4444),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
