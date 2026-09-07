@@ -194,13 +194,13 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
                       boxShadow: [
                         if (isSelected)
                           BoxShadow(
-                            color: _primaryBlue.withOpacity(0.3),
+                            color: _primaryBlue.withValues(alpha: 0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 3),
                           )
                         else
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.02),
+                            color: Colors.black.withValues(alpha: 0.02),
                             blurRadius: 4,
                             offset: const Offset(0, 2),
                           ),
@@ -265,11 +265,11 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
                         Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: _primaryBlue.withOpacity(0.08),
+                            color: _primaryBlue.withValues(alpha: 0.08),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(_getCategoryIcon(currentKategori),
-                              size: 48, color: _primaryBlue.withOpacity(0.7)),
+                              size: 48, color: _primaryBlue.withValues(alpha: 0.7)),
                         ),
                         const SizedBox(height: 14),
                         Text(
@@ -306,7 +306,7 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
                         borderRadius: BorderRadius.circular(18),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.04),
+                            color: Colors.black.withValues(alpha: 0.04),
                             blurRadius: 12,
                             offset: const Offset(0, 3),
                           ),
@@ -336,7 +336,7 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
                                   borderRadius: BorderRadius.circular(16),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: _primaryBlue.withOpacity(0.25),
+                                      color: _primaryBlue.withValues(alpha: 0.25),
                                       blurRadius: 8,
                                       offset: const Offset(0, 3),
                                     ),
@@ -406,7 +406,7 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 8, vertical: 2.5),
                                           decoration: BoxDecoration(
-                                            color: _primaryBlue.withOpacity(0.08),
+                                            color: _primaryBlue.withValues(alpha: 0.08),
                                             borderRadius: BorderRadius.circular(6),
                                           ),
                                           child: Text(
@@ -452,9 +452,9 @@ class _StatusGiziBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2.5),
       decoration: BoxDecoration(
-        color: const Color(0xFF2563EB).withOpacity(0.1),
+        color: const Color(0xFF2563EB).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: const Color(0xFF2563EB).withOpacity(0.3)),
+        border: Border.all(color: const Color(0xFF2563EB).withValues(alpha: 0.3)),
       ),
       child: Text(
         'Gizi $status',
@@ -467,3 +467,4 @@ class _StatusGiziBadge extends StatelessWidget {
     );
   }
 }
+

@@ -85,3 +85,4 @@ class Berita {
   String get ringkasan => deskripsi ?? konten ?? 'Klik untuk membaca selengkapnya';
   String? get gambar => fotoUrl;
 }
+

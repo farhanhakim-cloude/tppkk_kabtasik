@@ -146,7 +146,7 @@ class _SplashScreenState extends State<SplashScreen>
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: Colors.white.withOpacity(_liquidSplashOpacity.value),
+                    color: Colors.white.withValues(alpha: _liquidSplashOpacity.value),
                     width: 2.5,
                   ),
                 ),
@@ -223,7 +223,7 @@ class _SplashScreenState extends State<SplashScreen>
                           width: 8.5,
                           height: 8.5,
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(opacity),
+                            color: Colors.white.withValues(alpha: opacity),
                             shape: BoxShape.circle,
                           ),
                         ),
@@ -292,3 +292,4 @@ class _LiquidCircularRevealClipper extends CustomClipper<Path> {
     return oldClipper.revealProgress != revealProgress || oldClipper.wobble != wobble;
   }
 }
+

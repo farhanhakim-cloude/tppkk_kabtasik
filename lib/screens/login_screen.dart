@@ -104,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 75,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: const Color(0xFF14B8A6).withOpacity(0.35),
+                          color: const Color(0xFF14B8A6).withValues(alpha: 0.35),
                         ),
                       ),
                     ),
@@ -117,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 42,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.white.withOpacity(0.12),
+                          color: Colors.white.withValues(alpha: 0.12),
                         ),
                       ),
                     ),
@@ -130,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 55,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.black.withOpacity(0.10),
+                          color: Colors.black.withValues(alpha: 0.10),
                         ),
                       ),
                     ),
@@ -143,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 22,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.white.withOpacity(0.20),
+                          color: Colors.white.withValues(alpha: 0.20),
                         ),
                       ),
                     ),
@@ -171,7 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: Container(
                                 padding: const EdgeInsets.all(6),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.15),
+                                  color: Colors.white.withValues(alpha: 0.15),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
@@ -201,7 +201,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             // Teks Welcome Back
                             Text(
                               'Welcome\nBack',
-                              style: GoogleFonts.outfit(
+                              style: GoogleFonts.plusJakartaSans(
                                 fontSize: 30,
                                 fontWeight: FontWeight.w700,
                                 color: Colors.white,
@@ -212,10 +212,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             const SizedBox(height: 4),
                             Text(
                               'TP PKK Kab. Tasikmalaya',
-                              style: GoogleFonts.outfit(
+                              style: GoogleFonts.plusJakartaSans(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w500,
-                                color: Colors.white.withOpacity(0.85),
+                                color: Colors.white.withValues(alpha: 0.85),
                               ),
                             ),
                             const SizedBox(height: 38),
@@ -256,7 +256,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             Expanded(
                               child: Text(
                                 _errorMessage,
-                                style: GoogleFonts.outfit(
+                                style: GoogleFonts.plusJakartaSans(
                                   color: const Color(0xFFDC2626),
                                   fontSize: 13,
                                   fontWeight: FontWeight.w500,
@@ -328,7 +328,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             SnackBar(
                               content: Text(
                                 'Silakan hubungi admin TP PKK Kab. Tasikmalaya untuk reset kata sandi.',
-                                style: GoogleFonts.outfit(fontSize: 13),
+                                style: GoogleFonts.plusJakartaSans(fontSize: 13),
                               ),
                               backgroundColor: const Color(0xFF0F172A),
                               behavior: SnackBarBehavior.floating,
@@ -346,7 +346,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: Text(
                           'Forgot password?',
-                          style: GoogleFonts.outfit(
+                          style: GoogleFonts.plusJakartaSans(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                             color: primaryTeal,
@@ -365,9 +365,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           backgroundColor: primaryTeal,
                           foregroundColor: Colors.white,
                           disabledBackgroundColor:
-                              primaryTeal.withOpacity(0.6),
+                              primaryTeal.withValues(alpha: 0.6),
                           elevation: 2,
-                          shadowColor: primaryTeal.withOpacity(0.4),
+                          shadowColor: primaryTeal.withValues(alpha: 0.4),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(26),
                           ),
@@ -383,7 +383,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               )
                             : Text(
                                 'Log in',
-                                style: GoogleFonts.outfit(
+                                style: GoogleFonts.plusJakartaSans(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
                                   letterSpacing: 0.3,
@@ -406,7 +406,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 14),
                           child: Text(
                             'or',
-                            style: GoogleFonts.outfit(
+                            style: GoogleFonts.plusJakartaSans(
                               fontSize: 13,
                               color: const Color(0xFF94A3B8),
                             ),
@@ -431,7 +431,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             SnackBar(
                               content: Text(
                                 'Pendaftaran akun kader PKK dilakukan melalui Sekretariat TP PKK Kabupaten Tasikmalaya.',
-                                style: GoogleFonts.outfit(fontSize: 13),
+                                style: GoogleFonts.plusJakartaSans(fontSize: 13),
                               ),
                               backgroundColor: deepTeal,
                               behavior: SnackBarBehavior.floating,
@@ -452,7 +452,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: Text(
                           'Hubungi Admin TP PKK',
-                          style: GoogleFonts.outfit(
+                          style: GoogleFonts.plusJakartaSans(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                             color: const Color(0xFF64748B),
@@ -486,7 +486,7 @@ class _LoginScreenState extends State<LoginScreen> {
       keyboardType: keyboardType,
       obscureText: obscureText,
       validator: validator,
-      style: GoogleFonts.outfit(
+      style: GoogleFonts.plusJakartaSans(
         fontSize: 14,
         color: const Color(0xFF0F172A),
         fontWeight: FontWeight.w500,
@@ -495,7 +495,7 @@ class _LoginScreenState extends State<LoginScreen> {
         filled: true,
         fillColor: const Color(0xFFF8FAFC),
         hintText: hintText,
-        hintStyle: GoogleFonts.outfit(
+        hintStyle: GoogleFonts.plusJakartaSans(
           fontSize: 14,
           color: const Color(0xFF94A3B8),
           fontWeight: FontWeight.w400,
@@ -524,7 +524,7 @@ class _LoginScreenState extends State<LoginScreen> {
           borderRadius: BorderRadius.circular(26),
           borderSide: const BorderSide(color: Color(0xFFDC2626), width: 1.8),
         ),
-        errorStyle: GoogleFonts.outfit(
+        errorStyle: GoogleFonts.plusJakartaSans(
           fontSize: 11,
           color: const Color(0xFFDC2626),
         ),
@@ -568,3 +568,4 @@ class HeaderWaveClipper extends CustomClipper<Path> {
   @override
   bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }
+

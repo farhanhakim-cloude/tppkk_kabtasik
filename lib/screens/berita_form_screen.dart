@@ -102,7 +102,7 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                 leading: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0D9488).withOpacity(0.1),
+                    color: const Color(0xFF0D9488).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(Icons.photo_camera_rounded, color: Color(0xFF0D9488)),
@@ -124,7 +124,7 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                 leading: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF3B82F6).withOpacity(0.1),
+                    color: const Color(0xFF3B82F6).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(Icons.photo_library_rounded, color: Color(0xFF3B82F6)),
@@ -267,12 +267,12 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(
-                    color: _fotoFile != null ? primary.withOpacity(0.4) : const Color(0xFFE2E8F0),
+                    color: _fotoFile != null ? primary.withValues(alpha: 0.4) : const Color(0xFFE2E8F0),
                     width: 1.5,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.03),
+                      color: Colors.black.withValues(alpha: 0.03),
                       blurRadius: 10,
                       offset: const Offset(0, 3),
                     ),
@@ -297,8 +297,8 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                                 begin: Alignment.topCenter,
                                 end: Alignment.bottomCenter,
                                 colors: [
-                                  Colors.black.withOpacity(0.1),
-                                  Colors.black.withOpacity(0.55),
+                                  Colors.black.withValues(alpha: 0.1),
+                                  Colors.black.withValues(alpha: 0.55),
                                 ],
                               ),
                             ),
@@ -311,7 +311,7 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.9),
+                                    color: Colors.white.withValues(alpha: 0.9),
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Row(
@@ -355,7 +355,7 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                           Container(
                             padding: const EdgeInsets.all(14),
                             decoration: BoxDecoration(
-                              color: primary.withOpacity(0.08),
+                              color: primary.withValues(alpha: 0.08),
                               shape: BoxShape.circle,
                             ),
                             child: Icon(Icons.add_photo_alternate_rounded, size: 36, color: primary),
@@ -637,7 +637,7 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                   backgroundColor: primary,
                   foregroundColor: Colors.white,
                   elevation: 3,
-                  shadowColor: primary.withOpacity(0.35),
+                  shadowColor: primary.withValues(alpha: 0.35),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 ),
               ),
@@ -648,3 +648,4 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
     );
   }
 }
+

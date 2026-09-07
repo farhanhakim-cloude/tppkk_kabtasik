@@ -59,3 +59,4 @@ extension KategoriKesehatanLabel on KategoriKesehatan {
     }
   }
 }
+

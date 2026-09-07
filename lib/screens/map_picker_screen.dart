@@ -97,7 +97,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                       height: 16,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: primary.withOpacity(0.2),
+                        color: primary.withValues(alpha: 0.2),
                         border: Border.all(color: primary, width: 2),
                       ),
                     ),
@@ -126,7 +126,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 16, offset: const Offset(0, 4)),
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 16, offset: const Offset(0, 4)),
                 ],
               ),
               child: Row(
@@ -186,7 +186,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.12), blurRadius: 20, offset: const Offset(0, 8)),
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.12), blurRadius: 20, offset: const Offset(0, 8)),
                 ],
               ),
               child: Column(
@@ -198,7 +198,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: primary.withOpacity(0.1),
+                          color: primary.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(Icons.my_location_rounded, color: primary, size: 18),
@@ -281,7 +281,7 @@ class _MapButton extends StatelessWidget {
         color: Colors.white,
         shape: BoxShape.circle,
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 10, offset: const Offset(0, 2)),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 10, offset: const Offset(0, 2)),
         ],
       ),
       child: IconButton(
@@ -377,7 +377,7 @@ class _MapPainter extends CustomPainter {
     canvas.drawLine(const Offset(0, -1000), const Offset(0, 1000), paintRoadLine);
 
     // Draw some points of interest (mock markers on land)
-    final paintPoi = Paint()..color = primaryColor.withOpacity(0.6);
+    final paintPoi = Paint()..color = primaryColor.withValues(alpha: 0.6);
     canvas.drawCircle(const Offset(-200, 80), 8, paintPoi);
     canvas.drawCircle(const Offset(220, 200), 8, paintPoi);
     canvas.drawCircle(const Offset(-400, -250), 10, paintPoi);
@@ -388,3 +388,4 @@ class _MapPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
+

@@ -106,7 +106,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF3B82F6).withOpacity(0.1),
+                    color: const Color(0xFF3B82F6).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Icon(Icons.camera_alt_rounded, color: Color(0xFF3B82F6)),
@@ -119,7 +119,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                 leading: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF10B981).withOpacity(0.1),
+                    color: const Color(0xFF10B981).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const Icon(Icons.photo_library_rounded, color: Color(0xFF10B981)),
@@ -345,7 +345,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
   // ─────────────────────────────────────────────────────────────
   Widget _buildDataAngkaSection() {
     final color = _getPokjaColor(_kategori);
-    final colorBg = color.withOpacity(0.08);
+    final colorBg = color.withValues(alpha: 0.08);
 
     // Definisi kegiatan per pokja
     final List<_PokjaGroup> groups;
@@ -446,7 +446,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                   boxShadow: isActive
                       ? [
                           BoxShadow(
-                            color: color.withOpacity(0.25),
+                            color: color.withValues(alpha: 0.25),
                             blurRadius: 8,
                             offset: const Offset(0, 3),
                           )
@@ -479,7 +479,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
             decoration: BoxDecoration(
               color: colorBg,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: color.withOpacity(0.25)),
+              border: Border.all(color: color.withValues(alpha: 0.25)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -560,12 +560,12 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide(
-                                    color: color.withOpacity(0.3)),
+                                    color: color.withValues(alpha: 0.3)),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
                                 borderSide: BorderSide(
-                                    color: color.withOpacity(0.3)),
+                                    color: color.withValues(alpha: 0.3)),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -653,7 +653,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                             child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                               decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.65),
+                                color: Colors.black.withValues(alpha: 0.65),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Row(
@@ -680,7 +680,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF3B82F6).withOpacity(0.1),
+                              color: const Color(0xFF3B82F6).withValues(alpha: 0.1),
                               shape: BoxShape.circle,
                             ),
                             child: const Icon(Icons.add_a_photo_rounded,
@@ -741,7 +741,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                     duration: const Duration(milliseconds: 180),
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
-                      color: isSelected ? color.withOpacity(0.1) : Colors.white,
+                      color: isSelected ? color.withValues(alpha: 0.1) : Colors.white,
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
                         color: isSelected ? color : const Color(0xFFE2E8F0),
@@ -749,7 +749,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.02),
+                          color: Colors.black.withValues(alpha: 0.02),
                           blurRadius: 6,
                           offset: const Offset(0, 2),
                         ),
@@ -762,7 +762,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                           width: 30,
                           height: 30,
                           decoration: BoxDecoration(
-                            color: color.withOpacity(isSelected ? 0.9 : 0.15),
+                            color: color.withValues(alpha: isSelected ? 0.9 : 0.15),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Center(
@@ -849,7 +849,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                   border: Border.all(color: const Color(0xFFCBD5E1)),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.02),
+                      color: Colors.black.withValues(alpha: 0.02),
                       blurRadius: 6,
                       offset: const Offset(0, 2),
                     ),
@@ -860,7 +860,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF3B82F6).withOpacity(0.1),
+                        color: const Color(0xFF3B82F6).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: const Icon(Icons.location_city_rounded,
@@ -1100,3 +1100,4 @@ class _PokjaGroup {
   final List<String> fields;
   const _PokjaGroup(this.label, this.fields);
 }
+

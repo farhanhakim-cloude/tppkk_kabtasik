@@ -82,7 +82,7 @@ class _GaleriAgendaScreenState extends State<GaleriAgendaScreen> with SingleTick
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(28),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 4, offset: const Offset(0, 2)),
+                  BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 4, offset: const Offset(0, 2)),
                 ],
               ),
               indicatorSize: TabBarIndicatorSize.tab,
@@ -143,7 +143,7 @@ class _GaleriAgendaScreenState extends State<GaleriAgendaScreen> with SingleTick
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
-                          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 12, offset: const Offset(0, 4)),
+                          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4)),
                         ],
                       ),
                       child: Column(
@@ -157,20 +157,20 @@ class _GaleriAgendaScreenState extends State<GaleriAgendaScreen> with SingleTick
                                       fotoUrl,
                                       fit: BoxFit.cover,
                                       errorBuilder: (context, error, stackTrace) => Container(
-                                        color: primary.withOpacity(0.05),
-                                        child: Icon(Icons.image_not_supported_outlined, size: 40, color: primary.withOpacity(0.3)),
+                                        color: primary.withValues(alpha: 0.05),
+                                        child: Icon(Icons.image_not_supported_outlined, size: 40, color: primary.withValues(alpha: 0.3)),
                                       ),
                                       loadingBuilder: (context, child, progress) {
                                         if (progress == null) return child;
                                         return Container(
-                                          color: primary.withOpacity(0.05),
+                                          color: primary.withValues(alpha: 0.05),
                                           child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
                                         );
                                       },
                                     )
                                   : Container(
-                                      color: primary.withOpacity(0.05),
-                                      child: Icon(Icons.image_outlined, size: 40, color: primary.withOpacity(0.3)),
+                                      color: primary.withValues(alpha: 0.05),
+                                      child: Icon(Icons.image_outlined, size: 40, color: primary.withValues(alpha: 0.3)),
                                     ),
                             ),
                           ),
@@ -249,9 +249,9 @@ class _GaleriAgendaScreenState extends State<GaleriAgendaScreen> with SingleTick
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(18),
-                        border: Border.all(color: Colors.grey.withOpacity(0.08)),
+                        border: Border.all(color: Colors.grey.withValues(alpha: 0.08)),
                         boxShadow: [
-                          BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 4)),
+                          BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 4)),
                         ],
                       ),
                       padding: const EdgeInsets.all(16),
@@ -261,7 +261,7 @@ class _GaleriAgendaScreenState extends State<GaleriAgendaScreen> with SingleTick
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                             decoration: BoxDecoration(
-                              color: primary.withOpacity(0.08),
+                              color: primary.withValues(alpha: 0.08),
                               borderRadius: BorderRadius.circular(14),
                             ),
                             child: Column(
@@ -387,3 +387,4 @@ class _FadeInState extends State<_FadeIn> with SingleTickerProviderStateMixin {
     return FadeTransition(opacity: _opacity, child: SlideTransition(position: _slide, child: widget.child));
   }
 }
+

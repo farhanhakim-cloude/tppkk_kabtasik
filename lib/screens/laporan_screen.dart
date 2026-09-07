@@ -175,7 +175,7 @@ class _LaporanScreenState extends State<LaporanScreen>
                 borderRadius: BorderRadius.circular(18),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -191,7 +191,7 @@ class _LaporanScreenState extends State<LaporanScreen>
                         width: 42,
                         height: 42,
                         decoration: BoxDecoration(
-                          color: primary.withOpacity(0.1),
+                          color: primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Icon(Icons.analytics_rounded, color: primary),
@@ -288,7 +288,7 @@ class _LaporanScreenState extends State<LaporanScreen>
                     _reloadAll();
                   },
                   backgroundColor: Colors.white,
-                  selectedColor: primary.withOpacity(0.15),
+                  selectedColor: primary.withValues(alpha: 0.15),
                   labelStyle: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
                     fontWeight: _filterPokja == null ? FontWeight.w700 : FontWeight.w500,
@@ -309,7 +309,7 @@ class _LaporanScreenState extends State<LaporanScreen>
                       _reloadAll();
                     },
                     backgroundColor: Colors.white,
-                    selectedColor: color.withOpacity(0.15),
+                    selectedColor: color.withValues(alpha: 0.15),
                     labelStyle: GoogleFonts.plusJakartaSans(
                       fontSize: 12,
                       fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
@@ -377,7 +377,7 @@ class _LaporanScreenState extends State<LaporanScreen>
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
+                          color: Colors.black.withValues(alpha: 0.04),
                           blurRadius: 10,
                           offset: const Offset(0, 3),
                         ),
@@ -414,7 +414,7 @@ class _LaporanScreenState extends State<LaporanScreen>
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 8, vertical: 3),
                                       decoration: BoxDecoration(
-                                        color: pokjaColor.withOpacity(0.12),
+                                        color: pokjaColor.withValues(alpha: 0.12),
                                         borderRadius: BorderRadius.circular(6),
                                       ),
                                       child: Text(
@@ -562,7 +562,7 @@ class _LaporanScreenState extends State<LaporanScreen>
                 borderRadius: BorderRadius.circular(10),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -651,3 +651,4 @@ class _LaporanData {
     required this.balitaGiziKurang,
   });
 }
+

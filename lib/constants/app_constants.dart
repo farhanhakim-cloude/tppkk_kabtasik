@@ -55,3 +55,4 @@ class AppConstants {
   static const String userKey = "user_data";
   static const String isLoggedInKey = "isLoggedIn";
 }
+

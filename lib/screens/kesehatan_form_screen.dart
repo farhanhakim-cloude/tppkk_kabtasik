@@ -306,7 +306,7 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
                           duration: const Duration(milliseconds: 180),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           decoration: BoxDecoration(
-                            color: isSel ? _primaryBlue.withOpacity(0.12) : Colors.white,
+                            color: isSel ? _primaryBlue.withValues(alpha: 0.12) : Colors.white,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: isSel ? _primaryBlue : const Color(0xFFCBD5E1),
@@ -419,3 +419,4 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
     );
   }
 }
+

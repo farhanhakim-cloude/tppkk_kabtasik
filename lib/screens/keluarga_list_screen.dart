@@ -3,6 +3,12 @@ import 'package:google_fonts/google_fonts.dart';
 import '../models/keluarga.dart';
 import '../services/keluarga_service.dart';
 import 'keluarga_form_screen.dart';
+import 'rekap_ibu_anak_list_screen.dart';
+import 'rekap_ibu_anak_form_screen.dart';
+import 'data_keluarga_dasawisma_list_screen.dart';
+import 'data_keluarga_dasawisma_form_screen.dart';
+import 'kriteria_rumah_list_screen.dart';
+import 'kriteria_rumah_form_screen.dart';
 
 class KeluargaListScreen extends StatefulWidget {
   final bool embedded;
@@ -16,6 +22,8 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
   final _service = KeluargaService();
   final _searchController = TextEditingController();
   late Future<List<Keluarga>> _future;
+
+  int _subTabIndex = 0; // 0 = Data Dasawisma, 1 = Daftar Warga (KK), 2 = Ibu & Anak, 3 = Kriteria Rumah
 
   @override
   void initState() {
@@ -36,11 +44,61 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
   }
 
   Future<void> _openForm({Keluarga? keluarga}) async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => KeluargaFormScreen(keluarga: keluarga)),
-    );
-    if (result == true) _reload();
+    if (_subTabIndex == 0) {
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const DataKeluargaDasawismaFormScreen()),
+      );
+      if (result == true) _reload();
+    } else if (_subTabIndex == 1) {
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => KeluargaFormScreen(keluarga: keluarga)),
+      );
+      if (result == true) _reload();
+    } else if (_subTabIndex == 2) {
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const RekapIbuAnakFormScreen()),
+      );
+      if (result == true) _reload();
+    } else {
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const KriteriaRumahFormScreen()),
+      );
+      if (result == true) _reload();
+    }
+  }
+
+  String get _appBarTitle {
+    switch (_subTabIndex) {
+      case 0:
+        return 'Data Dasawisma';
+      case 1:
+        return 'Daftar Warga TP PKK';
+      case 2:
+        return 'Data Ibu & Anak Dasa Wisma';
+      case 3:
+        return 'Kriteria Rumah';
+      default:
+        return 'Data Dasawisma';
+    }
+  }
+
+  String get _fabLabel {
+    switch (_subTabIndex) {
+      case 0:
+        return 'Catat Dasawisma';
+      case 1:
+        return 'Tambah Warga';
+      case 2:
+        return 'Catat Ibu & Anak';
+      case 3:
+        return 'Nilai Rumah';
+      default:
+        return 'Tambah Data';
+    }
   }
 
   @override
@@ -52,16 +110,18 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
       appBar: widget.embedded
           ? null
           : AppBar(
-              title: Text('Data Keluarga',
-                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
+              title: Text(
+                _appBarTitle,
+                style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700),
+              ),
             ),
       floatingActionButton: FloatingActionButton.extended(
-        heroTag: null,
+        heroTag: 'fab_data_main_3tabs',
         onPressed: () => _openForm(),
         backgroundColor: primary,
         icon: const Icon(Icons.add, color: Colors.white),
         label: Text(
-          'Tambah KK',
+          _fabLabel,
           style: GoogleFonts.plusJakartaSans(
             fontWeight: FontWeight.w700,
             color: Colors.white,
@@ -79,7 +139,7 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Data Keluarga',
+                      'Menu Data PKK',
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 22,
                         fontWeight: FontWeight.w800,
@@ -92,150 +152,239 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
               ),
             ),
 
-          // Search Field
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-            child: TextField(
-              controller: _searchController,
-              style: GoogleFonts.plusJakartaSans(fontSize: 14),
-              decoration: InputDecoration(
-                hintText: 'Cari nama kepala keluarga...',
-                hintStyle:
-                    GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[400]),
-                prefixIcon: const Icon(Icons.search, size: 20),
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-              onChanged: (_) => _reload(),
+          // ── SEGMENTED 4-SUB-TAB TOGGLE ──
+          Container(
+            margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE2E8F0),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Row(
+              children: [
+                _buildSubTabItem(0, 'Dasawisma', Icons.holiday_village_rounded, primary),
+                _buildSubTabItem(1, 'Daftar Warga', Icons.badge_rounded, primary),
+                _buildSubTabItem(2, 'Ibu & Anak', Icons.child_care_rounded, primary),
+                _buildSubTabItem(3, 'Kriteria Rumah', Icons.home_work_rounded, primary),
+              ],
             ),
           ),
 
-          // List of Families
+          // ── TAB CONTENT ──
           Expanded(
-            child: FutureBuilder<List<Keluarga>>(
-              future: _future,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Gagal memuat data: ${snapshot.error}',
-                        style: GoogleFonts.plusJakartaSans()),
-                  );
-                }
+            child: IndexedStack(
+              index: _subTabIndex,
+              children: [
+                // SUB-TAB 0: DATA KELUARGA DASAWISMA
+                const DataKeluargaDasawismaListScreen(embedded: true),
 
-                final list = snapshot.data ?? [];
-                if (list.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.inbox_outlined, size: 56, color: Colors.grey[300]),
-                        const SizedBox(height: 12),
-                        Text('Belum ada data keluarga',
-                            style: GoogleFonts.plusJakartaSans(color: Colors.grey[500])),
-                      ],
-                    ),
-                  );
-                }
-
-                return ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 90),
-                  itemCount: list.length,
-                  itemBuilder: (context, index) {
-                    final k = list[index];
-                    final hasLocation = k.latitude != null && k.longitude != null;
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.04),
-                            blurRadius: 10,
-                            offset: const Offset(0, 3),
+                // SUB-TAB 1: DAFTAR WARGA (KK) 20 POIN
+                Column(
+                  children: [
+                    // Search Field
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                      child: TextField(
+                        controller: _searchController,
+                        style: GoogleFonts.plusJakartaSans(fontSize: 14),
+                        decoration: InputDecoration(
+                          hintText: 'Cari nama warga / kepala keluarga...',
+                          hintStyle:
+                              GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[400]),
+                          prefixIcon: const Icon(Icons.search, size: 20),
+                          filled: true,
+                          fillColor: Colors.white,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
                           ),
-                        ],
+                        ),
+                        onChanged: (_) => _reload(),
                       ),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(16),
-                        onTap: () => _openForm(keluarga: k),
-                        child: Padding(
-                          padding: const EdgeInsets.all(14),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
+                    ),
+
+                    // List of Warga
+                    Expanded(
+                      child: FutureBuilder<List<Keluarga>>(
+                        future: _future,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const Center(child: CircularProgressIndicator());
+                          }
+                          if (snapshot.hasError) {
+                            return Center(
+                              child: Text('Gagal memuat data: ${snapshot.error}',
+                                  style: GoogleFonts.plusJakartaSans()),
+                            );
+                          }
+
+                          final list = snapshot.data ?? [];
+                          if (list.isEmpty) {
+                            return Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Container(
-                                    width: 44,
-                                    height: 44,
-                                    decoration: BoxDecoration(
-                                      color: primary.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(12),
+                                  Icon(Icons.inbox_outlined, size: 56, color: Colors.grey[300]),
+                                  const SizedBox(height: 12),
+                                  Text('Belum ada data warga',
+                                      style: GoogleFonts.plusJakartaSans(color: Colors.grey[500])),
+                                ],
+                              ),
+                            );
+                          }
+
+                          return ListView.builder(
+                            padding: const EdgeInsets.fromLTRB(16, 4, 16, 90),
+                            itemCount: list.length,
+                            itemBuilder: (context, index) {
+                              final k = list[index];
+                              final hasLocation = k.latitude != null && k.longitude != null;
+                              return Container(
+                                margin: const EdgeInsets.only(bottom: 12),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(alpha: 0.04),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 3),
                                     ),
-                                    child: Icon(Icons.home_rounded, color: primary),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
+                                  ],
+                                ),
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(16),
+                                  onTap: () => _openForm(keluarga: k),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(14),
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          k.namaKepalaKeluarga,
-                                          style: GoogleFonts.plusJakartaSans(
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 15,
-                                          ),
+                                        Row(
+                                          children: [
+                                            Container(
+                                              width: 44,
+                                              height: 44,
+                                              decoration: BoxDecoration(
+                                                color: primary.withValues(alpha: 0.1),
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              child: Icon(Icons.person_rounded, color: primary),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    k.namaKepalaKeluarga,
+                                                    style: GoogleFonts.plusJakartaSans(
+                                                      fontWeight: FontWeight.w700,
+                                                      fontSize: 15,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 2),
+                                                  Text(
+                                                    '${k.alamat} • RT ${k.rt}/RW ${k.rw}',
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: GoogleFonts.plusJakartaSans(
+                                                      fontSize: 12,
+                                                      color: Colors.grey[600],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            Icon(Icons.chevron_right_rounded, color: Colors.grey[400]),
+                                          ],
                                         ),
-                                        const SizedBox(height: 2),
-                                        Text(
-                                          k.alamat,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: GoogleFonts.plusJakartaSans(
-                                            fontSize: 12,
-                                            color: Colors.grey[600],
-                                          ),
+                                        const SizedBox(height: 10),
+                                        Wrap(
+                                          spacing: 6,
+                                          runSpacing: 4,
+                                          children: [
+                                            _Chip(text: 'NIK/KK: ${k.noKtpKk.isNotEmpty ? k.noKtpKk : "-"}', color: primary),
+                                            _Chip(text: 'Pekerjaan: ${k.pekerjaan}', color: Colors.grey[700]!),
+                                            if (hasLocation)
+                                              _Chip(
+                                                text: '📍 Ada Titik Peta',
+                                                color: const Color(0xFF059669),
+                                              ),
+                                          ],
                                         ),
                                       ],
                                     ),
                                   ),
-                                  Icon(Icons.chevron_right_rounded, color: Colors.grey[400]),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              Wrap(
-                                spacing: 6,
-                                runSpacing: 4,
-                                children: [
-                                  _Chip(text: 'RT ${k.rt}/RW ${k.rw}', color: primary),
-                                  _Chip(text: '${k.jumlahAnggota} Anggota', color: Colors.grey[600]!),
-                                  if (hasLocation)
-                                    _Chip(
-                                      text: '📍 Ada Titik Peta',
-                                      color: const Color(0xFF059669),
-                                    ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
+                                ),
+                              );
+                            },
+                          );
+                        },
                       ),
-                    );
-                  },
-                );
-              },
+                    ),
+                  ],
+                ),
+
+                // SUB-TAB 2: REKAP IBU & ANAK DASA WISMA
+                const RekapIbuAnakListScreen(embedded: true),
+
+                // SUB-TAB 3: KRITERIA RUMAH LAYAK/TIDAK LAYAK HUNI
+                const KriteriaRumahListScreen(embedded: true),
+              ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSubTabItem(int index, String title, IconData icon, Color primary) {
+    final isSelected = _subTabIndex == index;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _subTabIndex = index),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.white : Colors.transparent,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : [],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 15,
+                color: isSelected ? primary : const Color(0xFF64748B),
+              ),
+              const SizedBox(width: 4),
+              Flexible(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 11.5,
+                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                    color: isSelected ? primary : const Color(0xFF64748B),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -252,7 +401,7 @@ class _Chip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
+        color: color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(

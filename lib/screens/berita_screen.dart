@@ -152,13 +152,13 @@ class _BeritaScreenState extends State<BeritaScreen> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: primary.withOpacity(0.06),
+                      color: primary.withValues(alpha: 0.06),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       Icons.campaign_rounded,
                       size: 48,
-                      color: primary.withOpacity(0.4),
+                      color: primary.withValues(alpha: 0.4),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -266,12 +266,12 @@ class _BeritaCardState extends State<_BeritaCard> with SingleTickerProviderState
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.04),
+                color: Colors.black.withValues(alpha: 0.04),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
             ],
-            border: Border.all(color: Colors.grey.withOpacity(0.06)),
+            border: Border.all(color: Colors.grey.withValues(alpha: 0.06)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -291,7 +291,7 @@ class _BeritaCardState extends State<_BeritaCard> with SingleTickerProviderState
                   height: 4,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [primary, primary.withOpacity(0.4)],
+                      colors: [primary, primary.withValues(alpha: 0.4)],
                     ),
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(18),
@@ -309,7 +309,7 @@ class _BeritaCardState extends State<_BeritaCard> with SingleTickerProviderState
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [primary.withOpacity(0.8), primary],
+                              colors: [primary.withValues(alpha: 0.8), primary],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
@@ -481,7 +481,7 @@ class _BeritaCardState extends State<_BeritaCard> with SingleTickerProviderState
                         width: 60,
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [primary, primary.withOpacity(0.4)],
+                            colors: [primary, primary.withValues(alpha: 0.4)],
                           ),
                           borderRadius: BorderRadius.circular(2),
                         ),
@@ -530,9 +530,9 @@ Widget _buildBeritaImage(String pathOrUrl, Color primary) {
 
 Widget _buildFallbackImage(Color primary) {
   return Container(
-    color: primary.withOpacity(0.08),
+    color: primary.withValues(alpha: 0.08),
     child: Center(
-      child: Icon(Icons.newspaper_rounded, color: primary.withOpacity(0.6), size: 36),
+      child: Icon(Icons.newspaper_rounded, color: primary.withValues(alpha: 0.6), size: 36),
     ),
   );
 }
@@ -647,3 +647,4 @@ class _ShimmerListState extends State<_ShimmerList>
     );
   }
 }
+

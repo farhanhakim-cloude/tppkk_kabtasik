@@ -52,3 +52,4 @@ class Pokja4Response {
     );
   }
 }
+

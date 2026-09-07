@@ -96,7 +96,7 @@ class _StatistikScreenState extends State<StatistikScreen> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
-                    BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 16, offset: const Offset(0, 6)),
+                    BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 16, offset: const Offset(0, 6)),
                   ],
                 ),
                 padding: const EdgeInsets.all(20),
@@ -195,7 +195,7 @@ class _SummaryCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 12, offset: const Offset(0, 4)),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 12, offset: const Offset(0, 4)),
         ],
       ),
       padding: const EdgeInsets.all(14),
@@ -204,7 +204,7 @@ class _SummaryCard extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
             child: Icon(icon, color: color, size: 20),
           ),
           const Spacer(),
@@ -316,7 +316,7 @@ class _CategoryBarChartState extends State<_CategoryBarChart> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -341,7 +341,7 @@ class _CategoryBarChartState extends State<_CategoryBarChart> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: activeColor.withOpacity(0.1),
+                  color: activeColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -418,7 +418,7 @@ class _CategoryBarChartState extends State<_CategoryBarChart> {
                                 boxShadow: isSelected
                                     ? [
                                         BoxShadow(
-                                          color: activeColor.withOpacity(0.35),
+                                          color: activeColor.withValues(alpha: 0.35),
                                           blurRadius: 8,
                                           offset: const Offset(0, 3),
                                         ),
@@ -500,3 +500,4 @@ class _CategoryBarChartState extends State<_CategoryBarChart> {
     );
   }
 }
+

@@ -58,7 +58,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Text(
                   'Ubah Foto Profil',
-                  style: GoogleFonts.outfit(
+                  style: GoogleFonts.plusJakartaSans(
                     fontWeight: FontWeight.w700,
                     fontSize: 18,
                     color: const Color(0xFF0F172A),
@@ -78,7 +78,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 title: Text(
                   'Ambil dari Kamera',
-                  style: GoogleFonts.outfit(
+                  style: GoogleFonts.plusJakartaSans(
                     fontWeight: FontWeight.w600,
                     fontSize: 15,
                     color: const Color(0xFF0F172A),
@@ -86,7 +86,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 subtitle: Text(
                   'Gunakan kamera langsung ponsel',
-                  style: GoogleFonts.outfit(fontSize: 12, color: const Color(0xFF64748B)),
+                  style: GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFF64748B)),
                 ),
                 onTap: () => Navigator.pop(context, ImageSource.camera),
               ),
@@ -101,7 +101,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 title: Text(
                   'Pilih dari Galeri',
-                  style: GoogleFonts.outfit(
+                  style: GoogleFonts.plusJakartaSans(
                     fontWeight: FontWeight.w600,
                     fontSize: 15,
                     color: const Color(0xFF0F172A),
@@ -109,7 +109,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 subtitle: Text(
                   'Pilih gambar dari album foto',
-                  style: GoogleFonts.outfit(fontSize: 12, color: const Color(0xFF64748B)),
+                  style: GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFF64748B)),
                 ),
                 onTap: () => Navigator.pop(context, ImageSource.gallery),
               ),
@@ -132,7 +132,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             SnackBar(
               content: Text(
                 'Foto profil berhasil diperbarui',
-                style: GoogleFonts.outfit(fontWeight: FontWeight.w600),
+                style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
               ),
               backgroundColor: primaryTeal,
               behavior: SnackBarBehavior.floating,
@@ -154,7 +154,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         title: Text(
           'Keluar Akun?',
-          style: GoogleFonts.outfit(
+          style: GoogleFonts.plusJakartaSans(
             fontWeight: FontWeight.w700,
             fontSize: 20,
             color: const Color(0xFF0F172A),
@@ -162,7 +162,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         content: Text(
           'Anda akan keluar dari sesi aplikasi e-PKK Kabupaten Tasikmalaya.',
-          style: GoogleFonts.outfit(
+          style: GoogleFonts.plusJakartaSans(
             fontSize: 14,
             color: const Color(0xFF64748B),
             height: 1.45,
@@ -174,7 +174,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onPressed: () => Navigator.pop(context, false),
             child: Text(
               'Batal',
-              style: GoogleFonts.outfit(
+              style: GoogleFonts.plusJakartaSans(
                 color: const Color(0xFF64748B),
                 fontWeight: FontWeight.w600,
               ),
@@ -191,7 +191,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             child: Text(
               'Keluar',
-              style: GoogleFonts.outfit(
+              style: GoogleFonts.plusJakartaSans(
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -219,7 +219,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
         title: Text(
           title,
-          style: GoogleFonts.outfit(
+          style: GoogleFonts.plusJakartaSans(
             fontWeight: FontWeight.w700,
             fontSize: 18,
             color: const Color(0xFF0F172A),
@@ -227,7 +227,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         content: Text(
           message,
-          style: GoogleFonts.outfit(
+          style: GoogleFonts.plusJakartaSans(
             fontSize: 14,
             color: const Color(0xFF475569),
             height: 1.5,
@@ -238,7 +238,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onPressed: () => Navigator.pop(ctx),
             child: Text(
               'Tutup',
-              style: GoogleFonts.outfit(
+              style: GoogleFonts.plusJakartaSans(
                 fontWeight: FontWeight.w700,
                 color: primaryTeal,
               ),
@@ -258,7 +258,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           : AppBar(
               title: Text(
                 'Profil Kader',
-                style: GoogleFonts.outfit(
+                style: GoogleFonts.plusJakartaSans(
                   fontWeight: FontWeight.w700,
                   fontSize: 18,
                   color: Colors.white,
@@ -286,7 +286,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 12),
                   Text(
                     'Gagal memuat profil',
-                    style: GoogleFonts.outfit(
+                    style: GoogleFonts.plusJakartaSans(
                       color: const Color(0xFF64748B),
                       fontWeight: FontWeight.w600,
                     ),
@@ -294,7 +294,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 8),
                   Text(
                     snapshot.error.toString().replaceFirst('Exception: ', ''),
-                    style: GoogleFonts.outfit(fontSize: 12, color: const Color(0xFF94A3B8)),
+                    style: GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFF94A3B8)),
                   ),
                 ],
               ),
@@ -398,7 +398,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                       label: Text(
                         _loggingOut ? 'Memproses...' : 'Keluar Akun',
-                        style: GoogleFonts.outfit(
+                        style: GoogleFonts.plusJakartaSans(
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
                           color: const Color(0xFFEF4444),
@@ -418,7 +418,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(height: 18),
                 Text(
                   'TP PKK Kabupaten Tasikmalaya • v1.0.0',
-                  style: GoogleFonts.outfit(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
                     color: const Color(0xFF94A3B8),
                     fontWeight: FontWeight.w400,
@@ -460,7 +460,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: primaryTeal.withOpacity(0.35),
+                      color: primaryTeal.withValues(alpha: 0.35),
                       width: 2.5,
                     ),
                   ),
@@ -474,7 +474,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             user.nama.isNotEmpty
                                 ? user.nama[0].toUpperCase()
                                 : 'K',
-                            style: GoogleFonts.outfit(
+                            style: GoogleFonts.plusJakartaSans(
                               fontSize: 34,
                               fontWeight: FontWeight.w700,
                               color: primaryTeal,
@@ -494,7 +494,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       border: Border.all(color: Colors.white, width: 2),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.12),
+                          color: Colors.black.withValues(alpha: 0.12),
                           blurRadius: 6,
                           offset: const Offset(0, 2),
                         ),
@@ -516,7 +516,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Text(
             user.nama,
             textAlign: TextAlign.center,
-            style: GoogleFonts.outfit(
+            style: GoogleFonts.plusJakartaSans(
               fontSize: 21,
               fontWeight: FontWeight.w700,
               color: const Color(0xFF0F172A),
@@ -528,7 +528,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           // Email
           Text(
             user.email,
-            style: GoogleFonts.outfit(
+            style: GoogleFonts.plusJakartaSans(
               fontSize: 13,
               color: const Color(0xFF64748B),
               fontWeight: FontWeight.w400,
@@ -558,7 +558,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(width: 6),
                 Text(
                   '${user.jabatan} • TP PKK',
-                  style: GoogleFonts.outfit(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: darkTeal,
@@ -582,7 +582,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -611,7 +611,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(width: 6),
             Text(
               count,
-              style: GoogleFonts.outfit(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
                 color: const Color(0xFF0F172A),
@@ -622,7 +622,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         const SizedBox(height: 3),
         Text(
           label,
-          style: GoogleFonts.outfit(
+          style: GoogleFonts.plusJakartaSans(
             fontSize: 11,
             color: const Color(0xFF64748B),
             fontWeight: FontWeight.w500,
@@ -646,7 +646,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.02),
+            color: Colors.black.withValues(alpha: 0.02),
             blurRadius: 10,
             offset: const Offset(0, 3),
           ),
@@ -669,7 +669,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(width: 10),
               Text(
                 title,
-                style: GoogleFonts.outfit(
+                style: GoogleFonts.plusJakartaSans(
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
                   color: const Color(0xFF0F172A),
@@ -703,7 +703,7 @@ class _InfoRow extends StatelessWidget {
         children: [
           Text(
             label,
-            style: GoogleFonts.outfit(
+            style: GoogleFonts.plusJakartaSans(
               fontSize: 13,
               color: const Color(0xFF64748B),
               fontWeight: FontWeight.w400,
@@ -713,7 +713,7 @@ class _InfoRow extends StatelessWidget {
             child: Text(
               value,
               textAlign: TextAlign.end,
-              style: GoogleFonts.outfit(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: isSuccess ? const Color(0xFF059669) : const Color(0xFF0F172A),
@@ -747,7 +747,7 @@ class _ActionRow extends StatelessWidget {
             Expanded(
               child: Text(
                 title,
-                style: GoogleFonts.outfit(
+                style: GoogleFonts.plusJakartaSans(
                   fontSize: 13.5,
                   fontWeight: FontWeight.w500,
                   color: const Color(0xFF1E293B),
@@ -765,3 +765,4 @@ class _ActionRow extends StatelessWidget {
     );
   }
 }
+

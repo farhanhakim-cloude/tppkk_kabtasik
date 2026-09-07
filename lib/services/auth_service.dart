@@ -179,3 +179,4 @@ class AuthService {
     _client.close();
   }
 }
+

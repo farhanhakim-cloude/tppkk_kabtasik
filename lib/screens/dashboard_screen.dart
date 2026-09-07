@@ -17,6 +17,9 @@ import 'berita_screen.dart';
 import 'berita_form_screen.dart';
 import 'statistik_screen.dart';
 import 'galeri_agenda_screen.dart';
+import 'rekap_ibu_anak_list_screen.dart';
+import 'data_keluarga_dasawisma_list_screen.dart';
+import 'kriteria_rumah_list_screen.dart';
 import '../models/user.dart';
 import '../services/auth_service.dart';
 
@@ -108,58 +111,71 @@ class _BottomNavBar extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 24,
+            color: const Color(0xFF0F172A).withValues(alpha: 0.06),
+            blurRadius: 16,
             offset: const Offset(0, -4),
           ),
         ],
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        border: const Border(
+          top: BorderSide(color: Color(0xFFF1F5F9), width: 1),
+        ),
       ),
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: List.generate(items.length, (i) {
               final isActive = i == currentIndex;
               final item = items[i];
-              return GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () => onTap(i),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  curve: Curves.easeOutCubic,
-                  padding: EdgeInsets.symmetric(
-                    horizontal: isActive ? 16 : 8,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isActive ? primary.withOpacity(0.12) : Colors.transparent,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        item.icon,
-                        color: isActive ? primary : Colors.grey[400],
-                        size: 22,
-                      ),
-                      if (isActive) ...[
-                        const SizedBox(width: 6),
-                        Text(
-                          item.label,
+              return Expanded(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => onTap(i),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeInOut,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isActive
+                                ? primary.withValues(alpha: 0.12)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Icon(
+                            item.icon,
+                            color: isActive ? primary : const Color(0xFF94A3B8),
+                            size: 22,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        AnimatedDefaultTextStyle(
+                          duration: const Duration(milliseconds: 200),
                           style: GoogleFonts.plusJakartaSans(
-                            color: primary,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 13,
+                            fontSize: 11,
+                            fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+                            color: isActive ? primary : const Color(0xFF64748B),
+                            letterSpacing: -0.1,
+                          ),
+                          child: Text(
+                            item.label,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],
-                    ],
+                    ),
                   ),
                 ),
               );
@@ -240,7 +256,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                   children: [
                     Text(
                       'Pemberitahuan',
-                      style: GoogleFonts.outfit(
+                      style: GoogleFonts.plusJakartaSans(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
                         color: const Color(0xFF0F172A),
@@ -248,7 +264,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                     ),
                     Text(
                       'Semua data Posyandu tersinkronisasi',
-                      style: GoogleFonts.outfit(
+                      style: GoogleFonts.plusJakartaSans(
                         fontSize: 13,
                         color: const Color(0xFF64748B),
                       ),
@@ -272,7 +288,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                   Expanded(
                     child: Text(
                       'Tidak ada agenda mendesak hari ini. Tetap semangat melayani masyarakat!',
-                      style: GoogleFonts.outfit(
+                      style: GoogleFonts.plusJakartaSans(
                         fontSize: 13,
                         color: const Color(0xFF334155),
                       ),
@@ -315,7 +331,7 @@ class _BerandaPageState extends State<_BerandaPage> {
             const SizedBox(height: 20),
             Text(
               'Menu Navigasi',
-              style: GoogleFonts.outfit(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 19,
                 fontWeight: FontWeight.w700,
                 color: const Color(0xFF0F172A),
@@ -327,13 +343,67 @@ class _BerandaPageState extends State<_BerandaPage> {
               leading: Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
+                  color: const Color(0xFFFEF3C7),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.holiday_village_rounded, color: Color(0xFFD97706)),
+              ),
+              title: Text('Data Keluarga Dasawisma', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, fontSize: 15)),
+              subtitle: Text('Formulir rekap anggota & kriteria rumah sehat', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFF64748B))),
+              trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFF94A3B8)),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const DataKeluargaDasawismaListScreen()));
+              },
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF0FDF4),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.child_care_rounded, color: Color(0xFF16A34A)),
+              ),
+              title: Text('Data Ibu & Anak Dasa Wisma', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, fontSize: 15)),
+              subtitle: Text('Buku catatan bumil, kelahiran & kematian', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFF64748B))),
+              trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFF94A3B8)),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const RekapIbuAnakListScreen()));
+              },
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFECFDF5),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(Icons.home_work_rounded, color: Color(0xFF059669)),
+              ),
+              title: Text('Kriteria Rumah Layak Huni', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, fontSize: 15)),
+              subtitle: Text('Penilaian kriteria layak & tidak layak huni', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFF64748B))),
+              trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFF94A3B8)),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const KriteriaRumahListScreen()));
+              },
+            ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
                   color: const Color(0xFFF0FDFA),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(Icons.calendar_month_rounded, color: Color(0xFF0D9488)),
               ),
-              title: Text('Agenda Kegiatan', style: GoogleFonts.outfit(fontWeight: FontWeight.w600, fontSize: 15)),
-              subtitle: Text('Jadwal & dokumentasi kegiatan', style: GoogleFonts.outfit(fontSize: 12, color: const Color(0xFF64748B))),
+              title: Text('Agenda Kegiatan', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, fontSize: 15)),
+              subtitle: Text('Jadwal & dokumentasi kegiatan', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFF64748B))),
               trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFF94A3B8)),
               onTap: () {
                 Navigator.pop(context);
@@ -350,8 +420,8 @@ class _BerandaPageState extends State<_BerandaPage> {
                 ),
                 child: const Icon(Icons.newspaper_rounded, color: Color(0xFF2563EB)),
               ),
-              title: Text('Berita & Informasi PKK', style: GoogleFonts.outfit(fontWeight: FontWeight.w600, fontSize: 15)),
-              subtitle: Text('Kumpulan artikel dan pengumuman', style: GoogleFonts.outfit(fontSize: 12, color: const Color(0xFF64748B))),
+              title: Text('Berita & Informasi PKK', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, fontSize: 15)),
+              subtitle: Text('Kumpulan artikel dan pengumuman', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFF64748B))),
               trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFF94A3B8)),
               onTap: () {
                 Navigator.pop(context);
@@ -369,8 +439,8 @@ class _BerandaPageState extends State<_BerandaPage> {
                 ),
                 child: const Icon(Icons.person_rounded, color: Color(0xFF475569)),
               ),
-              title: Text('Profil Kader', style: GoogleFonts.outfit(fontWeight: FontWeight.w600, fontSize: 15)),
-              subtitle: Text('Informasi akun dan data diri', style: GoogleFonts.outfit(fontSize: 12, color: const Color(0xFF64748B))),
+              title: Text('Profil Kader', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, fontSize: 15)),
+              subtitle: Text('Informasi akun dan data diri', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFF64748B))),
               trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFF94A3B8)),
               onTap: () {
                 Navigator.pop(context);
@@ -468,14 +538,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(36),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.04),
-                                  blurRadius: 12,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
-                              border: Border.all(color: const Color(0xFFF1F5F9), width: 1.2),
+                              border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
@@ -538,7 +601,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                             children: [
                               Text(
                                 greeting,
-                                style: GoogleFonts.outfit(
+                                style: GoogleFonts.plusJakartaSans(
                                   fontSize: 21,
                                   fontWeight: FontWeight.w400,
                                   color: const Color(0xFF475569),
@@ -548,7 +611,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                               const SizedBox(height: 4),
                               Text(
                                 displayName,
-                                style: GoogleFonts.outfit(
+                                style: GoogleFonts.plusJakartaSans(
                                   fontSize: 30,
                                   fontWeight: FontWeight.w700,
                                   color: const Color(0xFF0F172A),
@@ -582,7 +645,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                         children: [
                           Text(
                             'Rekap Terkini',
-                            style: GoogleFonts.outfit(
+                            style: GoogleFonts.plusJakartaSans(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
                               color: const Color(0xFF0F172A),
@@ -592,7 +655,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                           const SizedBox(height: 2),
                           Text(
                             'Pantau data keluarga & gizi binaan',
-                            style: GoogleFonts.outfit(
+                            style: GoogleFonts.plusJakartaSans(
                               fontSize: 12.5,
                               color: const Color(0xFF64748B),
                               fontWeight: FontWeight.w400,
@@ -613,7 +676,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                             const SizedBox(width: 5),
                             Text(
                               'Data Valid',
-                              style: GoogleFonts.outfit(
+                              style: GoogleFonts.plusJakartaSans(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
                                 color: const Color(0xFF475569),
@@ -732,7 +795,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                           decoration: BoxDecoration(
-                            color: primary.withOpacity(0.1),
+                            color: primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Row(
@@ -809,7 +872,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                               margin: const EdgeInsets.only(right: 8),
                               decoration: BoxDecoration(
-                                color: primary.withOpacity(0.09),
+                                color: primary.withValues(alpha: 0.09),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Row(
@@ -842,14 +905,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: Colors.grey.withOpacity(0.12)),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.04),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
+                                border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
                               ),
                               child: Row(
                                 children: [
@@ -979,11 +1035,12 @@ class _NutritionChart extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 14,
             offset: const Offset(0, 4),
           ),
         ],
+        border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
       ),
       padding: const EdgeInsets.fromLTRB(16, 16, 18, 16),
       child: Column(
@@ -1020,7 +1077,7 @@ class _NutritionChart extends StatelessWidget {
                     width: 10,
                     height: 10,
                     decoration: BoxDecoration(
-                      color: shadowBlue.withOpacity(0.35),
+                      color: shadowBlue.withValues(alpha: 0.35),
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -1166,8 +1223,8 @@ class _AreaWaveChartPainter extends CustomPainter {
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          backgroundColor.withOpacity(0.25),
-          backgroundColor.withOpacity(0.04),
+          backgroundColor.withValues(alpha: 0.25),
+          backgroundColor.withValues(alpha: 0.04),
         ],
       ).createShader(Rect.fromLTWH(0, 0, w, h))
       ..style = PaintingStyle.fill;
@@ -1175,7 +1232,7 @@ class _AreaWaveChartPainter extends CustomPainter {
     canvas.drawPath(bgPath, bgFillPaint);
 
     final bgStrokePaint = Paint()
-      ..color = backgroundColor.withOpacity(0.4)
+      ..color = backgroundColor.withValues(alpha: 0.4)
       ..strokeWidth = 1.5
       ..style = PaintingStyle.stroke;
 
@@ -1220,7 +1277,7 @@ class _AreaWaveChartPainter extends CustomPainter {
         end: Alignment.bottomCenter,
         colors: [
           foregroundColor,
-          foregroundColor.withOpacity(0.92),
+          foregroundColor.withValues(alpha: 0.92),
         ],
       ).createShader(Rect.fromLTWH(0, 0, w, h))
       ..style = PaintingStyle.fill;
@@ -1292,14 +1349,7 @@ class _StatCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFFE2E8F0), width: 1.1),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x06000000),
-                blurRadius: 12,
-                offset: Offset(0, 4),
-              ),
-            ],
+            border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
           ),
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -1312,7 +1362,7 @@ class _StatCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(9),
                     decoration: BoxDecoration(
-                      color: color.withOpacity(0.12),
+                      color: color.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(icon, color: color, size: 20),
@@ -1321,13 +1371,13 @@ class _StatCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: color.withOpacity(0.08),
+                        color: color.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: color.withOpacity(0.2), width: 1),
+                        border: Border.all(color: color.withValues(alpha: 0.2), width: 1),
                       ),
                       child: Text(
                         trend,
-                        style: GoogleFonts.outfit(
+                        style: GoogleFonts.plusJakartaSans(
                           fontSize: 10.5,
                           fontWeight: FontWeight.w600,
                           color: color,
@@ -1341,7 +1391,7 @@ class _StatCard extends StatelessWidget {
               // Nilai angka metrik
               Text(
                 value,
-                style: GoogleFonts.outfit(
+                style: GoogleFonts.plusJakartaSans(
                   fontSize: 28,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFF0F172A),
@@ -1354,7 +1404,7 @@ class _StatCard extends StatelessWidget {
               // Judul kartu
               Text(
                 label,
-                style: GoogleFonts.outfit(
+                style: GoogleFonts.plusJakartaSans(
                   fontSize: 13.5,
                   fontWeight: FontWeight.w600,
                   color: const Color(0xFF1E293B),
@@ -1377,7 +1427,7 @@ class _StatCard extends StatelessWidget {
                         sublabel,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.outfit(
+                        style: GoogleFonts.plusJakartaSans(
                           fontSize: 11,
                           color: const Color(0xFF64748B),
                           fontWeight: FontWeight.w400,
@@ -1454,16 +1504,10 @@ class _BeritaCard extends StatelessWidget {
     final hasImage = berita.gambar != null && berita.gambar!.isNotEmpty;
 
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.07),
-            blurRadius: 14,
-            offset: const Offset(0, 5),
-          ),
-        ],
+        borderRadius: BorderRadius.all(Radius.circular(16)),
+        border: Border.fromBorderSide(BorderSide(color: Color(0xFFF1F5F9), width: 1.5)),
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(18),
@@ -1509,7 +1553,7 @@ class _BeritaCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                         decoration: BoxDecoration(
-                          color: primary.withOpacity(0.08),
+                          color: primary.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
@@ -1578,12 +1622,14 @@ class _ImageFallback extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [primary, primary.withOpacity(0.7)],
+          colors: [primary, primary.withValues(alpha: 0.7)],
         ),
       ),
       child: Center(
-        child: Icon(Icons.article_rounded, color: Colors.white.withOpacity(0.6), size: 36),
+        child: Icon(Icons.article_rounded, color: Colors.white.withValues(alpha: 0.6), size: 36),
       ),
     );
   }
 }
+
+

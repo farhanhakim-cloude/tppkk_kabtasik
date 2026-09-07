@@ -64,3 +64,4 @@ class Pokja1Response {
     );
   }
 }
+

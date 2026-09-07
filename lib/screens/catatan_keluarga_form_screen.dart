@@ -10,3 +10,4 @@ class CatatanKeluargaFormScreen extends StatelessWidget {
     return const CatatanKegiatanFormScreen();
   }
 }
+
