@@ -105,7 +105,6 @@ class CatatanKegiatanService {
       print('⚠️ Error get laporan API: $e');
     }
 
-    // Jika API kosong atau gagal, gunakan data lokal
     if (list.isEmpty) {
       list = List<CatatanKegiatan>.from(_data);
     }
@@ -144,7 +143,7 @@ class CatatanKegiatanService {
   }
 
   // ============================================================
-  // KIRIM LAPORAN
+  // 🔥 KIRIM LAPORAN - FIX DESA_KELURAHAN
   // ============================================================
   Future<void> kirim(CatatanKegiatan catatan) async {
     // Simpan ke data lokal agar langsung muncul
@@ -160,7 +159,6 @@ class CatatanKegiatanService {
     print('🔍 TOKEN SAAT SUBMIT: "$token"');
 
     if (token == null || token.isEmpty) {
-      // Jika belum ada token, simpan di data lokal saja
       return;
     }
 
@@ -174,14 +172,21 @@ class CatatanKegiatanService {
     request.headers['Authorization'] = 'Bearer $token';
     request.headers['Accept'] = 'application/json';
 
-    // FIELD WAJIB
+    // 🔥 FIELD WAJIB - PASTIKAN DESA_KELURAHAN TERKIRIM
+    final String desaFinal = (catatan.desa != null && catatan.desa!.isNotEmpty) 
+        ? catatan.desa! 
+        : catatan.kecamatan;
+
     request.fields['judul'] = catatan.judul;
     request.fields['deskripsi'] = catatan.ceritaSingkat;
     request.fields['kategori_pokja'] = _kodePokja(catatan.kategori);
     request.fields['kecamatan'] = catatan.kecamatan;
-    if (catatan.desa != null && catatan.desa!.isNotEmpty) {
-      request.fields['desa'] = catatan.desa!;
-    }
+    request.fields['desa_kelurahan'] = desaFinal; // 🔥 FIX: INI YANG PENTING!
+
+    print('📤 SEND DATA:');
+    print('  - Judul: ${catatan.judul}');
+    print('  - Kecamatan: ${catatan.kecamatan}');
+    print('  - Desa: $desaFinal');
 
     // KONVERSI DATA_ANGKA
     Map<String, dynamic> validDataAngka = {};
@@ -217,6 +222,7 @@ class CatatanKegiatanService {
       print('📡 Response body: ${response.body}');
 
       if (response.statusCode == 201 || response.statusCode == 200) {
+        print('✅ Berhasil mengirim catatan kegiatan!');
         return;
       }
 

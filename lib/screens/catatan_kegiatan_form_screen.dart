@@ -478,6 +478,17 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
   Future<void> _simpan() async {
     if (!_formKey.currentState!.validate()) return;
 
+    // 🔥 VALIDASI DESA WAJIB DIISI
+    if (_desaController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('⚠️ Desa/Kelurahan wajib diisi!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     setState(() => _isSaving = true);
     HapticFeedback.mediumImpact();
 
@@ -488,6 +499,9 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
         if (val != null) dataAngka[entry.key] = val;
       }
 
+      // 🔥 PASTIKAN DESA TIDAK NULL
+      final String finalDesa = _desaController.text.trim();
+
       final item = CatatanKegiatan(
         id: widget.catatan?.id ?? 0,
         judul: _judulController.text.trim(),
@@ -495,7 +509,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
         kategori: _kategori,
         dataAngka: dataAngka,
         kecamatan: _selectedKecamatan,
-        desa: _desaController.text.trim().isEmpty ? null : _desaController.text.trim(),
+        desa: finalDesa, // 🔥 WAJIB TERISI!
         fotoPath: _fotoFile?.path,
         tanggal: _tanggal,
       );
@@ -512,7 +526,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Catatan kegiatan ${_kategori.shortLabel} berhasil disimpan',
+                    'Catatan kegiatan ${_kategori.shortLabel} berhasil disimpan ($finalDesa)',
                     style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
                   ),
                 ),
@@ -531,7 +545,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Gagal: ${e.toString().replaceFirst('Exception: ', '')}',
+              '❌ Gagal: ${e.toString().replaceFirst('Exception: ', '')}',
               style: GoogleFonts.plusJakartaSans(),
             ),
             backgroundColor: const Color(0xFFEF4444),
@@ -1266,9 +1280,15 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                 Expanded(
                   child: TextFormField(
                     controller: _desaController,
+                    validator: (v) {
+                      if (v == null || v.trim().isEmpty) {
+                        return 'Desa wajib diisi';
+                      }
+                      return null;
+                    },
                     style: GoogleFonts.plusJakartaSans(fontSize: 13),
                     decoration: InputDecoration(
-                      labelText: 'Desa / Kelurahan',
+                      labelText: 'Desa / Kelurahan *',
                       hintText: 'Cth: Cipakat',
                       isDense: true,
                       filled: true,
