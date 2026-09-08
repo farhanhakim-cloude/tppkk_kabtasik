@@ -240,10 +240,8 @@ class CatatanKegiatanService {
 
       throw Exception(pesan);
     } catch (e) {
-      // Jika request offline, data lokal sudah tersimpan
-      if (e is Exception && e.toString().contains('Gagal mengirim catatan')) {
-        rethrow;
-      }
+      print('⚠️ Error kirim catatan kegiatan: $e');
+      rethrow;
     }
   }
 }

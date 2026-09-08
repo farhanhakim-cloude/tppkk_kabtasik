@@ -59,27 +59,29 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
     setState(() => _saving = true);
     HapticFeedback.mediumImpact();
 
-    final isChild = _kategori == KategoriKesehatan.balita || _kategori == KategoriKesehatan.anak;
+    try {
+      final isChild = _kategori == KategoriKesehatan.balita || _kategori == KategoriKesehatan.anak;
 
-    final data = DataKesehatan(
-      id: widget.data?.id ?? 0,
-      namaIbu: _namaIbuController.text.trim(),
-      namaAnak: isChild ? _namaAnakController.text.trim() : '',
-      kategori: _kategori,
-      usiaKehamilanAtauAnak: _usiaController.text.trim(),
-      statusGizi: isChild ? _statusGizi : '-',
-      rt: _rtController.text.trim(),
-      rw: _rwController.text.trim(),
-    );
+      final data = DataKesehatan(
+        id: widget.data?.id ?? 0,
+        namaIbu: _namaIbuController.text.trim(),
+        namaAnak: isChild ? _namaAnakController.text.trim() : '',
+        kategori: _kategori,
+        usiaKehamilanAtauAnak: _usiaController.text.trim(),
+        statusGizi: isChild ? _statusGizi : '-',
+        rt: _rtController.text.trim(),
+        rw: _rwController.text.trim(),
+      );
 
-    if (_isEdit) {
-      await _service.update(data);
-    } else {
-      await _service.add(data);
-    }
+      if (_isEdit) {
+        await _service.update(data);
+      } else {
+        await _service.add(data);
+      }
 
-    setState(() => _saving = false);
-    if (mounted) {
+      if (!mounted) return;
+      setState(() => _saving = false);
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -92,6 +94,20 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
         ),
       );
       Navigator.pop(context, true);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _saving = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Gagal menyimpan data: $e',
+            style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
+          ),
+          backgroundColor: const Color(0xFFEF4444),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+      );
     }
   }
 
@@ -123,9 +139,20 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
       ),
     );
 
-    if (confirm == true) {
-      await _service.delete(widget.data!.id);
-      if (mounted) Navigator.pop(context, true);
+    if (confirm == true && widget.data != null) {
+      try {
+        await _service.delete(widget.data!.id);
+        if (mounted) Navigator.pop(context, true);
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Gagal menghapus data: $e'),
+              backgroundColor: const Color(0xFFEF4444),
+            ),
+          );
+        }
+      }
     }
   }
 

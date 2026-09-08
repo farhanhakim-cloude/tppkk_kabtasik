@@ -320,102 +320,6 @@ class _BeritaScreenState extends State<BeritaScreen>
             onPressed: _openTulisBerita,
           ),
         ],
-<<<<<<< HEAD
-      ),
-      body: FutureBuilder<List<Berita>>(
-        future: _future,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const _ShimmerList();
-          }
-
-          if (snapshot.hasError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.wifi_off_rounded, size: 48, color: Colors.grey[300]),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Gagal memuat berita',
-                    style: GoogleFonts.plusJakartaSans(color: Colors.grey[500]),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    snapshot.error.toString().replaceFirst('Exception: ', ''),
-                    style: GoogleFonts.plusJakartaSans(
-                      color: Colors.grey[400],
-                      fontSize: 12,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: _reload,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primary,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text('Coba Lagi'),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          final data = snapshot.data ?? [];
-
-          if (data.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: primary.withValues(alpha: 0.06),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.campaign_rounded,
-                      size: 48,
-                      color: primary.withValues(alpha: 0.4),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Belum Ada Berita',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 17,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    'Berita terbaru akan muncul di sini',
-                    style: GoogleFonts.plusJakartaSans(
-                      color: Colors.grey[500],
-                      fontSize: 13,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          return ListView.builder(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-            itemCount: data.length,
-            itemBuilder: (context, index) {
-              final berita = data[index];
-              return _FadeIn(
-                delay: Duration(milliseconds: 80 * index),
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 14),
-                  child: _BeritaCard(berita: berita),
-=======
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(56),
           child: Padding(
@@ -437,7 +341,6 @@ class _BeritaScreenState extends State<BeritaScreen>
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
->>>>>>> 10b8cf888e7207a81704b95a4286d76e8ec2cdea
                 ),
                 filled: true,
                 fillColor: Colors.grey[100],

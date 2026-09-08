@@ -76,7 +76,7 @@ class _StatistikScreenState extends State<StatistikScreen> {
                 physics: const NeverScrollableScrollPhysics(),
                 mainAxisSpacing: 12,
                 crossAxisSpacing: 12,
-                childAspectRatio: 1.4,
+                childAspectRatio: 1.25,
                 children: [
                   _SummaryCard(label: 'Total Keluarga', value: '${data.totalKeluarga}', icon: Icons.home_rounded, color: const Color(0xFF2563EB)),
                   _SummaryCard(label: 'Total Anggota', value: '${data.totalAnggota}', icon: Icons.people_rounded, color: const Color(0xFF3F51B5)),
@@ -198,18 +198,30 @@ class _SummaryCard extends StatelessWidget {
           BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 12, offset: const Offset(0, 4)),
         ],
       ),
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(7),
             decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
-            child: Icon(icon, color: color, size: 20),
+            child: Icon(icon, color: color, size: 18),
           ),
-          const Spacer(),
-          Text(value, style: GoogleFonts.plusJakartaSans(fontSize: 22, fontWeight: FontWeight.w800)),
-          Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: Colors.grey[600])),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(value, style: GoogleFonts.plusJakartaSans(fontSize: 22, fontWeight: FontWeight.w800)),
+              ),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: Colors.grey[600])),
+              ),
+            ],
+          ),
         ],
       ),
     );

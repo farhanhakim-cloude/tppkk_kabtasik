@@ -7,8 +7,6 @@ import 'rekap_ibu_anak_list_screen.dart';
 import 'rekap_ibu_anak_form_screen.dart';
 import 'data_keluarga_dasawisma_list_screen.dart';
 import 'data_keluarga_dasawisma_form_screen.dart';
-import 'kriteria_rumah_list_screen.dart';
-import 'kriteria_rumah_form_screen.dart';
 
 class KeluargaListScreen extends StatefulWidget {
   final bool embedded;
@@ -23,7 +21,7 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
   final _searchController = TextEditingController();
   late Future<List<Keluarga>> _future;
 
-  int _subTabIndex = 0; // 0 = Data Dasawisma, 1 = Daftar Warga (KK), 2 = Ibu & Anak, 3 = Kriteria Rumah
+  int _subTabIndex = 0; // 0 = Data Dasawisma, 1 = Daftar Warga (KK), 2 = Ibu & Anak
 
   @override
   void initState() {
@@ -56,16 +54,10 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
         MaterialPageRoute(builder: (context) => KeluargaFormScreen(keluarga: keluarga)),
       );
       if (result == true) _reload();
-    } else if (_subTabIndex == 2) {
-      final result = await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const RekapIbuAnakFormScreen()),
-      );
-      if (result == true) _reload();
     } else {
       final result = await Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const KriteriaRumahFormScreen()),
+        MaterialPageRoute(builder: (context) => const RekapIbuAnakFormScreen()),
       );
       if (result == true) _reload();
     }
@@ -79,8 +71,6 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
         return 'Daftar Warga TP PKK';
       case 2:
         return 'Data Ibu & Anak Dasa Wisma';
-      case 3:
-        return 'Kriteria Rumah';
       default:
         return 'Data Dasawisma';
     }
@@ -94,8 +84,6 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
         return 'Tambah Warga';
       case 2:
         return 'Catat Ibu & Anak';
-      case 3:
-        return 'Nilai Rumah';
       default:
         return 'Tambah Data';
     }
@@ -152,7 +140,7 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
               ),
             ),
 
-          // ── SEGMENTED 4-SUB-TAB TOGGLE ──
+          // ── SEGMENTED 3-SUB-TAB TOGGLE ──
           Container(
             margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             padding: const EdgeInsets.all(4),
@@ -165,7 +153,6 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
                 _buildSubTabItem(0, 'Dasawisma', Icons.holiday_village_rounded, primary),
                 _buildSubTabItem(1, 'Daftar Warga', Icons.badge_rounded, primary),
                 _buildSubTabItem(2, 'Ibu & Anak', Icons.child_care_rounded, primary),
-                _buildSubTabItem(3, 'Kriteria Rumah', Icons.home_work_rounded, primary),
               ],
             ),
           ),
@@ -329,9 +316,6 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
 
                 // SUB-TAB 2: REKAP IBU & ANAK DASA WISMA
                 const RekapIbuAnakListScreen(embedded: true),
-
-                // SUB-TAB 3: KRITERIA RUMAH LAYAK/TIDAK LAYAK HUNI
-                const KriteriaRumahListScreen(embedded: true),
               ],
             ),
           ),

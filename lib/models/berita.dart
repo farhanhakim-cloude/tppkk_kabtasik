@@ -175,10 +175,6 @@ class Berita {
   String get tanggal => tanggalFormatted ?? createdAt ?? 'Tanggal tidak tersedia';
   String get ringkasan => deskripsi ?? konten ?? 'Klik untuk membaca selengkapnya';
   String? get gambar => fotoUrl;
-<<<<<<< HEAD
-}
-
-=======
 
   // 🔥 GETTER UNTUK STATUS
   bool get isPending => status == 'pending';
@@ -275,4 +271,3 @@ class BeritaInput {
     };
   }
 }
->>>>>>> 10b8cf888e7207a81704b95a4286d76e8ec2cdea

@@ -372,27 +372,6 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
         key: _formKey,
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 40),
-<<<<<<< HEAD
-          children: [
-            // ── FOTO BERITA BANNER ──
-            GestureDetector(
-              onTap: _showImagePickerSheet,
-              child: Container(
-                height: 190,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(
-                    color: _fotoFile != null ? primary.withValues(alpha: 0.4) : const Color(0xFFE2E8F0),
-                    width: 1.5,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
-                      blurRadius: 10,
-                      offset: const Offset(0, 3),
-=======
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -410,7 +389,6 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                           ? primary.withOpacity(0.4)
                           : const Color(0xFFE2E8F0),
                       width: 1.5,
->>>>>>> 10b8cf888e7207a81704b95a4286d76e8ec2cdea
                     ),
                     boxShadow: [
                       BoxShadow(
@@ -425,75 +403,6 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                           children: [
                             ClipRRect(
                               borderRadius: BorderRadius.circular(17),
-<<<<<<< HEAD
-                              gradient: LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Colors.black.withValues(alpha: 0.1),
-                                  Colors.black.withValues(alpha: 0.55),
-                                ],
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 12,
-                            right: 12,
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.9),
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(Icons.edit_rounded, size: 14, color: primary),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        'Ganti Foto',
-                                        style: GoogleFonts.plusJakartaSans(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w700,
-                                          color: primary,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                GestureDetector(
-                                  onTap: () {
-                                    HapticFeedback.lightImpact();
-                                    setState(() => _fotoFile = null);
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.all(6),
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xFFEF4444),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(Icons.close_rounded, size: 16, color: Colors.white),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                    : Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(14),
-                            decoration: BoxDecoration(
-                              color: primary.withValues(alpha: 0.08),
-                              shape: BoxShape.circle,
-=======
-                              // 🔥 FIX: Image.memory (bekerja di web &
-                              // native) menggantikan Image.file (yang
-                              // butuh dart:io, cuma jalan di native).
                               child: Image.memory(
                                 _fotoBytes!,
                                 width: double.infinity,
@@ -593,7 +502,6 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                                 fontWeight: FontWeight.w700,
                                 color: const Color(0xFF1E293B),
                               ),
->>>>>>> 10b8cf888e7207a81704b95a4286d76e8ec2cdea
                             ),
                             const SizedBox(height: 4),
                             Text(
@@ -652,14 +560,6 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                           borderSide: BorderSide(color: primary, width: 1.8),
                         ),
                       ),
-<<<<<<< HEAD
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primary,
-                  foregroundColor: Colors.white,
-                  elevation: 3,
-                  shadowColor: primary.withValues(alpha: 0.35),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-=======
                       items: _kecamatanList.map((kec) {
                         return DropdownMenuItem(
                           value: kec,
@@ -688,7 +588,6 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                   fontSize: 13.5,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFF0F172A),
->>>>>>> 10b8cf888e7207a81704b95a4286d76e8ec2cdea
                 ),
               ),
               const SizedBox(height: 8),
@@ -938,10 +837,6 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
       ),
     );
   }
-<<<<<<< HEAD
-}
-
-=======
 
   // 🔥 DIALOG DISCARD
   void _showDiscardDialog() {
@@ -986,4 +881,3 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
     );
   }
 }
->>>>>>> 10b8cf888e7207a81704b95a4286d76e8ec2cdea

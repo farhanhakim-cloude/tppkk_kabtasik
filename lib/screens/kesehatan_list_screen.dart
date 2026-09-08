@@ -7,7 +7,12 @@ import 'kesehatan_form_screen.dart';
 
 class KesehatanListScreen extends StatefulWidget {
   final bool embedded;
-  const KesehatanListScreen({super.key, this.embedded = false});
+  final bool showHeader;
+  const KesehatanListScreen({
+    super.key,
+    this.embedded = false,
+    this.showHeader = true,
+  });
 
   @override
   State<KesehatanListScreen> createState() => _KesehatanListScreenState();
@@ -108,7 +113,7 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
       body: Column(
         children: [
           // ── HEADER HERO ──
-          if (widget.embedded)
+          if (widget.embedded && widget.showHeader)
             SafeArea(
               bottom: false,
               child: Padding(
@@ -178,6 +183,7 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
               indicatorColor: Colors.transparent,
               dividerColor: Colors.transparent,
               labelPadding: const EdgeInsets.only(right: 8),
+              onTap: (_) => _reload(),
               tabs: _kategoriList.map((kat) {
                 final isSelected = kat == currentKategori;
                 return Tab(

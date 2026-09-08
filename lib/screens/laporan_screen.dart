@@ -1,13 +1,9 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/kesehatan.dart';
-import '../models/catatan_kegiatan.dart';
 import '../services/keluarga_service.dart';
 import '../services/kesehatan_service.dart';
-import '../services/catatan_kegiatan_service.dart';
-import 'catatan_kegiatan_form_screen.dart';
 
 class LaporanScreen extends StatefulWidget {
   final bool embedded;
@@ -17,42 +13,26 @@ class LaporanScreen extends StatefulWidget {
   State<LaporanScreen> createState() => _LaporanScreenState();
 }
 
-class _LaporanScreenState extends State<LaporanScreen>
-    with SingleTickerProviderStateMixin {
+class _LaporanScreenState extends State<LaporanScreen> {
   final _keluargaService = KeluargaService();
   final _kesehatanService = KesehatanService();
-  final _catatanService = CatatanKegiatanService();
 
-  late TabController _tabController;
   String _periode = 'Agustus 2026';
   late Future<_LaporanData> _laporanFuture;
-  late Future<List<CatatanKegiatan>> _catatanFuture;
-  PokjaKategori? _filterPokja;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-    _tabController.addListener(() {
-      if (!_tabController.indexIsChanging) {
-        setState(() {});
-      }
-    });
     _reloadAll();
   }
 
   void _reloadAll() {
     setState(() {
       _laporanFuture = _loadData();
-      _catatanFuture = _catatanService.getAll(kategori: _filterPokja);
     });
   }
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
+
 
   Future<_LaporanData> _loadData() async {
     final keluarga = await _keluargaService.getAll();
@@ -70,13 +50,7 @@ class _LaporanScreenState extends State<LaporanScreen>
     );
   }
 
-  Future<void> _openCatatanForm({CatatanKegiatan? catatan}) async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => CatatanKegiatanFormScreen(catatan: catatan)),
-    );
-    if (result == true) _reloadAll();
-  }
+
 
   void _exportPdf() {
     HapticFeedback.lightImpact();
@@ -91,18 +65,7 @@ class _LaporanScreenState extends State<LaporanScreen>
     );
   }
 
-  Color _getPokjaColor(PokjaKategori pokja) {
-    switch (pokja) {
-      case PokjaKategori.pokja1:
-        return const Color(0xFF3B82F6);
-      case PokjaKategori.pokja2:
-        return const Color(0xFF8B5CF6);
-      case PokjaKategori.pokja3:
-        return const Color(0xFF10B981);
-      case PokjaKategori.pokja4:
-        return const Color(0xFFF59E0B);
-    }
-  }
+
 
   // ── TAB 1: REKAP LAPORAN ──
   Widget _buildLaporanTab(Color primary) {
@@ -266,237 +229,6 @@ class _LaporanScreenState extends State<LaporanScreen>
     );
   }
 
-  // ── TAB 2: CATATAN KEGIATAN POKJA ──
-  Widget _buildCatatanPokjaTab(Color primary) {
-    return Column(
-      children: [
-        // Pokja Filter Chips
-        Container(
-          height: 44,
-          margin: const EdgeInsets.symmetric(vertical: 6),
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: FilterChip(
-                  label: const Text('Semua Pokja'),
-                  selected: _filterPokja == null,
-                  onSelected: (_) {
-                    setState(() => _filterPokja = null);
-                    _reloadAll();
-                  },
-                  backgroundColor: Colors.white,
-                  selectedColor: primary.withValues(alpha: 0.15),
-                  labelStyle: GoogleFonts.plusJakartaSans(
-                    fontSize: 12,
-                    fontWeight: _filterPokja == null ? FontWeight.w700 : FontWeight.w500,
-                    color: _filterPokja == null ? primary : Colors.grey[700],
-                  ),
-                ),
-              ),
-              ...PokjaKategori.values.map((pokja) {
-                final isSelected = _filterPokja == pokja;
-                final color = _getPokjaColor(pokja);
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: FilterChip(
-                    label: Text(pokja.shortLabel),
-                    selected: isSelected,
-                    onSelected: (_) {
-                      setState(() => _filterPokja = isSelected ? null : pokja);
-                      _reloadAll();
-                    },
-                    backgroundColor: Colors.white,
-                    selectedColor: color.withValues(alpha: 0.15),
-                    labelStyle: GoogleFonts.plusJakartaSans(
-                      fontSize: 12,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                      color: isSelected ? color : Colors.grey[700],
-                    ),
-                  ),
-                );
-              }),
-            ],
-          ),
-        ),
-
-        // List of Activities
-        Expanded(
-          child: FutureBuilder<List<CatatanKegiatan>>(
-            future: _catatanFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (snapshot.hasError) {
-                return Center(
-                  child: Text('Gagal memuat catatan: ${snapshot.error}',
-                      style: GoogleFonts.plusJakartaSans()),
-                );
-              }
-
-              final list = snapshot.data ?? [];
-              if (list.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.assignment_outlined, size: 56, color: Colors.grey[300]),
-                      const SizedBox(height: 12),
-                      Text('Belum ada catatan kegiatan Pokja',
-                          style: GoogleFonts.plusJakartaSans(color: Colors.grey[500])),
-                      const SizedBox(height: 12),
-                      ElevatedButton.icon(
-                        onPressed: () => _openCatatanForm(),
-                        icon: const Icon(Icons.add, size: 18),
-                        label: const Text('Tambah Catatan Pokja'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: primary,
-                          foregroundColor: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }
-
-              return ListView.builder(
-                padding: const EdgeInsets.fromLTRB(16, 4, 16, 90),
-                itemCount: list.length,
-                itemBuilder: (context, index) {
-                  final c = list[index];
-                  final pokjaColor = _getPokjaColor(c.kategori);
-                  final hasPhoto = c.fotoPath != null && c.fotoPath!.isNotEmpty;
-
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 14),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.04),
-                          blurRadius: 10,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(16),
-                      onTap: () => _openCatatanForm(catatan: c),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (hasPhoto)
-                            ClipRRect(
-                              borderRadius:
-                                  const BorderRadius.vertical(top: Radius.circular(16)),
-                              child: SizedBox(
-                                height: 130,
-                                width: double.infinity,
-                                child: Image.file(
-                                  File(c.fotoPath!),
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
-                                ),
-                              ),
-                            ),
-                          Padding(
-                            padding: const EdgeInsets.all(14),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 3),
-                                      decoration: BoxDecoration(
-                                        color: pokjaColor.withValues(alpha: 0.12),
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
-                                      child: Text(
-                                        c.kategori.shortLabel,
-                                        style: GoogleFonts.plusJakartaSans(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w800,
-                                          color: pokjaColor,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 3),
-                                      decoration: BoxDecoration(
-                                        color: const Color(0xFFF1F5F9),
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          const Icon(Icons.location_on,
-                                              size: 11, color: Color(0xFF64748B)),
-                                          const SizedBox(width: 3),
-                                          Text(
-                                            'Kec. ${c.kecamatan}',
-                                            style: GoogleFonts.plusJakartaSans(
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.w700,
-                                              color: const Color(0xFF475569),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const Spacer(),
-                                    Text(
-                                      '${c.tanggal.day}/${c.tanggal.month}/${c.tanggal.year}',
-                                      style: GoogleFonts.plusJakartaSans(
-                                        fontSize: 11,
-                                        color: Colors.grey[400],
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  c.judul,
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 15,
-                                    color: const Color(0xFF0F172A),
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  c.deskripsiSingkat,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 12.5,
-                                    color: Colors.grey[600],
-                                    height: 1.4,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final primary = Theme.of(context).colorScheme.primary;
@@ -506,23 +238,11 @@ class _LaporanScreenState extends State<LaporanScreen>
       appBar: widget.embedded
           ? null
           : AppBar(
-              title: Text('Laporan & Catatan',
-                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
-            ),
-      floatingActionButton: _tabController.index == 1
-          ? FloatingActionButton.extended(
-              onPressed: () => _openCatatanForm(),
-              backgroundColor: primary,
-              icon: const Icon(Icons.add, color: Colors.white),
-              label: Text(
-                'Catat Kegiatan',
-                style: GoogleFonts.plusJakartaSans(
-                  fontWeight: FontWeight.w700,
-                  color: Colors.white,
-                ),
+              title: Text(
+                'Laporan Rekapitulasi',
+                style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700),
               ),
-            )
-          : null,
+            ),
       body: Column(
         children: [
           if (widget.embedded)
@@ -534,7 +254,7 @@ class _LaporanScreenState extends State<LaporanScreen>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      'Laporan & Kegiatan',
+                      'Laporan Rekapitulasi',
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 22,
                         fontWeight: FontWeight.w800,
@@ -546,52 +266,8 @@ class _LaporanScreenState extends State<LaporanScreen>
                 ),
               ),
             ),
-
-          // Dual Tab Switcher (1. Laporan | 2. Catatan Kegiatan/Pokja)
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            padding: const EdgeInsets.all(3),
-            decoration: BoxDecoration(
-              color: const Color(0xFFE2E8F0),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: TabBar(
-              controller: _tabController,
-              indicator: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              indicatorSize: TabBarIndicatorSize.tab,
-              labelColor: const Color(0xFF0F172A),
-              unselectedLabelColor: const Color(0xFF64748B),
-              labelStyle: GoogleFonts.plusJakartaSans(
-                fontWeight: FontWeight.w700,
-                fontSize: 13,
-              ),
-              dividerColor: Colors.transparent,
-              tabs: const [
-                Tab(text: '1. Laporan'),
-                Tab(text: '2. Catatan Kegiatan / Pokja'),
-              ],
-            ),
-          ),
-
-          // Tab Views
           Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildLaporanTab(primary),
-                _buildCatatanPokjaTab(primary),
-              ],
-            ),
+            child: _buildLaporanTab(primary),
           ),
         ],
       ),
