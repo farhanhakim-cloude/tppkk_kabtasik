@@ -265,6 +265,17 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
   Future<void> _simpan() async {
     if (!_formKey.currentState!.validate()) return;
 
+    // 🔥 VALIDASI DESA WAJIB DIISI
+    if (_desaController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('⚠️ Desa/Kelurahan wajib diisi!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     setState(() => _isSaving = true);
     HapticFeedback.mediumImpact();
 
@@ -276,6 +287,9 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
         if (val != null) dataAngka[entry.key] = val;
       }
 
+      // 🔥 PASTIKAN DESA TIDAK NULL
+      final String finalDesa = _desaController.text.trim();
+
       final item = CatatanKegiatan(
         id: widget.catatan?.id ?? 0,
         judul: _judulController.text.trim(),
@@ -283,7 +297,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
         kategori: _kategori,
         dataAngka: dataAngka,
         kecamatan: _selectedKecamatan,
-        desa: _desaController.text.trim().isEmpty ? null : _desaController.text.trim(),
+        desa: finalDesa, // 🔥 WAJIB TERISI!
         fotoPath: _fotoFile?.path,
         tanggal: _tanggal,
       );
@@ -298,9 +312,11 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
               children: [
                 const Icon(Icons.check_circle, color: Colors.white, size: 20),
                 const SizedBox(width: 10),
-                Text(
-                  'Catatan kegiatan Pokja berhasil disimpan',
-                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
+                Expanded(
+                  child: Text(
+                    '✅ Catatan kegiatan Pokja berhasil disimpan! Desa: $finalDesa',
+                    style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
+                  ),
                 ),
               ],
             ),
@@ -317,7 +333,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Gagal: ${e.toString().replaceFirst('Exception: ', '')}',
+              '❌ Gagal: ${e.toString().replaceFirst('Exception: ', '')}',
               style: GoogleFonts.plusJakartaSans(),
             ),
             backgroundColor: Colors.red,
@@ -406,7 +422,6 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ── Judul seksi ──
         Text(
           'Kegiatan ${_kategori.shortLabel}',
           style: GoogleFonts.plusJakartaSans(
@@ -484,7 +499,6 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Judul kegiatan terpilih
                 Row(
                   children: [
                     Container(
@@ -512,7 +526,6 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                   ],
                 ),
                 const SizedBox(height: 14),
-                // Input fields
                 ...selectedGroup.fields.map((field) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12),
@@ -922,12 +935,12 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
             ),
             const SizedBox(height: 14),
 
-            // Optional Desa
+            // 🔥 FIELD DESA - WAJIB DIISI
             TextFormField(
               controller: _desaController,
               style: GoogleFonts.plusJakartaSans(fontSize: 14),
               decoration: InputDecoration(
-                labelText: 'Desa / Kelurahan (Opsional)',
+                labelText: 'Desa / Kelurahan (Wajib Diisi) ⚠️',
                 hintText: 'Contoh: Desa Cipakat',
                 prefixIcon: const Icon(Icons.holiday_village_outlined, size: 20),
                 labelStyle: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[600]),
@@ -943,7 +956,17 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                   borderRadius: BorderRadius.circular(14),
                   borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
                 ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide(color: Colors.red, width: 2),
+                ),
               ),
+              validator: (v) {
+                if (v == null || v.trim().isEmpty) {
+                  return '⚠️ Desa/Kelurahan wajib diisi';
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 22),
 
