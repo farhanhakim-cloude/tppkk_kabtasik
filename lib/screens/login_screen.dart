@@ -68,13 +68,30 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     const primaryTeal = Color(0xFF0D9488);
     const deepTeal = Color(0xFF0F766E);
-    final screenHeight = MediaQuery.of(context).size.height;
-    final headerHeight = (screenHeight * 0.38).clamp(240.0, 320.0);
+
+    // ============================================================
+    // 🔧 FIX OVERFLOW (REVISI FINAL)
+    // ------------------------------------------------------------
+    // Percobaan sebelumnya (menghitung headerHeight dari
+    // MediaQuery.size.height + resizeToAvoidBottomInset: false)
+    // ternyata masih rapuh karena perilaku MediaQuery saat keyboard
+    // muncul bisa berbeda-beda tergantung device/OS.
+    //
+    // Solusi final: header TIDAK LAGI diberi tinggi tetap (height)
+    // sama sekali. Tinggi header sekarang mengikuti tinggi kontennya
+    // sendiri (mainAxisSize.min + SizedBox tetap, bukan Spacer()).
+    // Dengan begini, header tidak akan PERNAH overflow, apa pun yang
+    // terjadi pada ukuran layar atau keyboard.
+    // ============================================================
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
 
     return Scaffold(
       backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: false, // 👈 FIX: cegah layout resize saat keyboard muncul
       body: SingleChildScrollView(
         physics: const ClampingScrollPhysics(),
+        // 👈 FIX: kompensasi manual supaya field tidak ketutup keyboard
+        padding: EdgeInsets.only(bottom: bottomInset),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -84,7 +101,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ClipPath(
               clipper: HeaderWaveClipper(),
               child: Container(
-                height: headerHeight,
                 width: double.infinity,
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
@@ -154,6 +170,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
                         child: Column(
+                          mainAxisSize: MainAxisSize.min, // 👈 FIX: tinggi mengikuti konten, bukan memaksa mengisi parent
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 8),
@@ -181,7 +198,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                             ),
-                            const Spacer(),
+                            const SizedBox(height: 24), // 👈 FIX: pengganti Spacer() yang rawan overflow
 
                             // 🌟 LOGO PERSIS DI ATAS TEKS
                             Image.asset(
@@ -568,4 +585,3 @@ class HeaderWaveClipper extends CustomClipper<Path> {
   @override
   bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }
-

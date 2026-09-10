@@ -74,24 +74,23 @@ extension PokjaKategoriLabel on PokjaKategori {
         ];
       case PokjaKategori.pokja2:
         return [
-          'pendidikan_l', 'pendidikan_p',
-          'keterampilan_l', 'keterampilan_p',
-          'koperasi_l', 'koperasi_p',
-          'kader_pokja2_l', 'kader_pokja2_p',
+          'warga_buta_l', 'warga_buta_p',
+          'kelompok_belajar_paket_a', 'kelompok_belajar_paket_b', 'kelompok_belajar_paket_c',
+          'kf', 'paud', 'koperasi_berbadan_hukum'
         ];
       case PokjaKategori.pokja3:
         return [
-          'pangan_l', 'pangan_p',
-          'sandang_l', 'sandang_p',
-          'perumahan_l', 'perumahan_p',
-          'kader_pokja3_l', 'kader_pokja3_p',
+          'rumah_sehat',
+          'rumah_tidak_sehat',
+          'pemanfaatan_pekarangan',
+          'industri_rumah_tangga'
         ];
       case PokjaKategori.pokja4:
         return [
-          'kesehatan_l', 'kesehatan_p',
-          'lingkungan_l', 'lingkungan_p',
-          'perencanaan_l', 'perencanaan_p',
-          'kader_pokja4_l', 'kader_pokja4_p',
+          'posyandu',
+          'akseptor_kb',
+          'phbs',
+          'jamban'
         ];
     }
   }
@@ -412,14 +411,10 @@ class CatatanKegiatan {
       'kategori': 'Pokja III',
       'kecamatan': kecamatan,
       'nama_kecamatan': namaKecamatan,
-      'pangan_l': panganL ?? 0,
-      'pangan_p': panganP ?? 0,
-      'sandang_l': sandangL ?? 0,
-      'sandang_p': sandangP ?? 0,
-      'perumahan_l': perumahanL ?? 0,
-      'perumahan_p': perumahanP ?? 0,
-      'kader_pokja3_l': kaderPokja3L ?? 0,
-      'kader_pokja3_p': kaderPokja3P ?? 0,
+      'rumah_sehat': panganL ?? 0, // Fallback if old variables are passed
+      'rumah_tidak_sehat': panganP ?? 0,
+      'pemanfaatan_pekarangan': sandangL ?? 0,
+      'industri_rumah_tangga': sandangP ?? 0,
     };
 
     final response = await http.post(
@@ -466,14 +461,10 @@ class CatatanKegiatan {
       'kategori': 'Pokja IV',
       'kecamatan': kecamatan,
       'nama_kecamatan': namaKecamatan,
-      'kesehatan_l': kesehatanL ?? 0,
-      'kesehatan_p': kesehatanP ?? 0,
-      'lingkungan_l': lingkunganL ?? 0,
-      'lingkungan_p': lingkunganP ?? 0,
-      'perencanaan_l': perencanaanL ?? 0,
-      'perencanaan_p': perencanaanP ?? 0,
-      'kader_pokja4_l': kaderPokja4L ?? 0,
-      'kader_pokja4_p': kaderPokja4P ?? 0,
+      'posyandu': kesehatanL ?? 0, // Fallback if old variables are passed
+      'akseptor_kb': kesehatanP ?? 0,
+      'phbs': lingkunganL ?? 0,
+      'jamban': lingkunganP ?? 0,
     };
 
     final response = await http.post(

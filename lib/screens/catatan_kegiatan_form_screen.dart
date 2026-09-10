@@ -205,96 +205,89 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
       case PokjaKategori.pokja2:
         return [
           _PokjaSubItem(
-            title: 'Pendidikan',
-            deskripsi: 'Warga Belajar & Keaksaraan',
-            fieldL: 'pendidikan_l',
-            fieldP: 'pendidikan_p',
+            title: 'Warga Buta Aksara',
+            deskripsi: 'Jumlah warga buta aksara Laki-laki & Perempuan',
+            fieldL: 'warga_buta_l',
+            fieldP: 'warga_buta_p',
             icon: Icons.menu_book_rounded,
           ),
           _PokjaSubItem(
-            title: 'Keterampilan',
-            deskripsi: 'Pelatihan Keterampilan & Kursus Warga',
-            fieldL: 'keterampilan_l',
-            fieldP: 'keterampilan_p',
-            icon: Icons.handyman_rounded,
+            title: 'Kelompok Belajar',
+            deskripsi: 'Jumlah kelompok belajar Paket A, B, C',
+            fieldL: 'kelompok_belajar_paket_a',
+            fieldP: 'kelompok_belajar_paket_b',
+            icon: Icons.school_rounded,
           ),
           _PokjaSubItem(
-            title: 'Koperasi & UP2K',
-            deskripsi: 'Kelompok UP2K & Usaha Koperasi',
-            fieldL: 'koperasi_l',
-            fieldP: 'koperasi_p',
+            title: 'KF & PAUD',
+            deskripsi: 'Keaksaraan Fungsional & PAUD/Sejenis',
+            fieldL: 'kf',
+            fieldP: 'paud',
+            icon: Icons.child_care_rounded,
+          ),
+          _PokjaSubItem(
+            title: 'Koperasi',
+            deskripsi: 'Koperasi Berbadan Hukum',
+            fieldL: 'koperasi_berbadan_hukum',
+            fieldP: '',
             icon: Icons.storefront_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Kader Pokja II',
-            deskripsi: 'Jumlah Kader Pembina Pokja II',
-            fieldL: 'kader_pokja2_l',
-            fieldP: 'kader_pokja2_p',
-            icon: Icons.badge_rounded,
           ),
         ];
 
       case PokjaKategori.pokja3:
         return [
           _PokjaSubItem(
-            title: 'Pangan / HATINYA',
-            deskripsi: 'Pemanfaatan Pekarangan & Tanaman Pangan',
-            fieldL: 'pangan_l',
-            fieldP: 'pangan_p',
+            title: 'Rumah Sehat',
+            deskripsi: 'Jumlah Rumah Sehat & Tidak Sehat',
+            fieldL: 'rumah_sehat',
+            fieldP: 'rumah_tidak_sehat',
+            icon: Icons.house_rounded,
+          ),
+          _PokjaSubItem(
+            title: 'Pekarangan',
+            deskripsi: 'Pemanfaatan Pekarangan',
+            fieldL: 'pemanfaatan_pekarangan',
+            fieldP: '',
             icon: Icons.grass_rounded,
           ),
           _PokjaSubItem(
-            title: 'Sandang',
-            deskripsi: 'Pemanfaatan Kain & Pelatihan Busana',
-            fieldL: 'sandang_l',
-            fieldP: 'sandang_p',
-            icon: Icons.checkroom_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Perumahan',
-            deskripsi: 'Rumah Layak Huni & Tata Laksana Rumah',
-            fieldL: 'perumahan_l',
-            fieldP: 'perumahan_p',
-            icon: Icons.roofing_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Kader Pokja III',
-            deskripsi: 'Jumlah Kader Pembina Pokja III',
-            fieldL: 'kader_pokja3_l',
-            fieldP: 'kader_pokja3_p',
-            icon: Icons.badge_rounded,
+            title: 'Industri RT',
+            deskripsi: 'Industri Rumah Tangga',
+            fieldL: 'industri_rumah_tangga',
+            fieldP: '',
+            icon: Icons.store_rounded,
           ),
         ];
-
+        
       case PokjaKategori.pokja4:
         return [
           _PokjaSubItem(
-            title: 'Kesehatan & Posyandu',
-            deskripsi: 'Posyandu, Imunisasi, Ibu & Balita Sehat',
-            fieldL: 'kesehatan_l',
-            fieldP: 'kesehatan_p',
+            title: 'Posyandu',
+            deskripsi: 'Jumlah Posyandu',
+            fieldL: 'posyandu',
+            fieldP: '',
             icon: Icons.local_hospital_rounded,
           ),
           _PokjaSubItem(
-            title: 'Lingkungan Hidup',
-            deskripsi: 'Sanitasi, Jamban Sehat, Air Bersih, PHBS',
-            fieldL: 'lingkungan_l',
-            fieldP: 'lingkungan_p',
-            icon: Icons.eco_rounded,
+            title: 'Akseptor KB',
+            deskripsi: 'Jumlah Akseptor KB',
+            fieldL: 'akseptor_kb',
+            fieldP: '',
+            icon: Icons.family_restroom_rounded,
           ),
           _PokjaSubItem(
-            title: 'Perencanaan Sehat / KB',
-            deskripsi: 'Penyuluhan KB & Tabungan Keluarga',
-            fieldL: 'perencanaan_l',
-            fieldP: 'perencanaan_p',
-            icon: Icons.savings_rounded,
+            title: 'PHBS',
+            deskripsi: 'Perilaku Hidup Bersih & Sehat',
+            fieldL: 'phbs',
+            fieldP: '',
+            icon: Icons.health_and_safety_rounded,
           ),
           _PokjaSubItem(
-            title: 'Kader Pokja IV',
-            deskripsi: 'Jumlah Kader Posyandu & Pokja IV',
-            fieldL: 'kader_pokja4_l',
-            fieldP: 'kader_pokja4_p',
-            icon: Icons.badge_rounded,
+            title: 'Jamban',
+            deskripsi: 'Jumlah Jamban',
+            fieldL: 'jamban',
+            fieldP: '',
+            icon: Icons.wc_rounded,
           ),
         ];
     }
@@ -1120,20 +1113,59 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                       const Divider(height: 1),
                       const SizedBox(height: 14),
 
-                      // Input Laki-laki
-                      _buildNumberField(
-                        label: 'Jumlah Peserta / Warga Laki-laki (L)',
-                        fieldKey: activeSub.fieldL,
-                        color: color,
-                      ),
-                      const SizedBox(height: 12),
-
-                      // Input Perempuan
-                      _buildNumberField(
-                        label: 'Jumlah Peserta / Warga Perempuan (P)',
-                        fieldKey: activeSub.fieldP,
-                        color: color,
-                      ),
+                      if (_kategori == PokjaKategori.pokja2) ...[
+                        if (safeIdx == 0) ...[
+                          _buildNumberField(label: 'Warga Buta Aksara (Laki-laki)', fieldKey: 'warga_buta_l', color: color),
+                          const SizedBox(height: 12),
+                          _buildNumberField(label: 'Warga Buta Aksara (Perempuan)', fieldKey: 'warga_buta_p', color: color),
+                        ] else if (safeIdx == 1) ...[
+                          _buildNumberField(label: 'Kelompok Belajar Paket A', fieldKey: 'kelompok_belajar_paket_a', color: color),
+                          const SizedBox(height: 12),
+                          _buildNumberField(label: 'Kelompok Belajar Paket B', fieldKey: 'kelompok_belajar_paket_b', color: color),
+                          const SizedBox(height: 12),
+                          _buildNumberField(label: 'Kelompok Belajar Paket C', fieldKey: 'kelompok_belajar_paket_c', color: color),
+                        ] else if (safeIdx == 2) ...[
+                          _buildNumberField(label: 'Keaksaraan Fungsional (KF)', fieldKey: 'kf', color: color),
+                          const SizedBox(height: 12),
+                          _buildNumberField(label: 'PAUD / Sejenis', fieldKey: 'paud', color: color),
+                        ] else if (safeIdx == 3) ...[
+                          _buildNumberField(label: 'Koperasi Berbadan Hukum', fieldKey: 'koperasi_berbadan_hukum', color: color),
+                        ]
+                      ] else if (_kategori == PokjaKategori.pokja3) ...[
+                        if (safeIdx == 0) ...[
+                          _buildNumberField(label: 'Rumah Sehat', fieldKey: 'rumah_sehat', color: color),
+                          const SizedBox(height: 12),
+                          _buildNumberField(label: 'Rumah Tidak Sehat', fieldKey: 'rumah_tidak_sehat', color: color),
+                        ] else if (safeIdx == 1) ...[
+                          _buildNumberField(label: 'Pemanfaatan Pekarangan', fieldKey: 'pemanfaatan_pekarangan', color: color),
+                        ] else if (safeIdx == 2) ...[
+                          _buildNumberField(label: 'Industri Rumah Tangga', fieldKey: 'industri_rumah_tangga', color: color),
+                        ]
+                      ] else if (_kategori == PokjaKategori.pokja4) ...[
+                        if (safeIdx == 0) ...[
+                          _buildNumberField(label: 'Posyandu', fieldKey: 'posyandu', color: color),
+                        ] else if (safeIdx == 1) ...[
+                          _buildNumberField(label: 'Akseptor KB', fieldKey: 'akseptor_kb', color: color),
+                        ] else if (safeIdx == 2) ...[
+                          _buildNumberField(label: 'PHBS', fieldKey: 'phbs', color: color),
+                        ] else if (safeIdx == 3) ...[
+                          _buildNumberField(label: 'Jamban', fieldKey: 'jamban', color: color),
+                        ]
+                      ] else ...[
+                        // Input Laki-laki
+                        _buildNumberField(
+                          label: 'Jumlah Peserta / Warga Laki-laki (L)',
+                          fieldKey: activeSub.fieldL,
+                          color: color,
+                        ),
+                        const SizedBox(height: 12),
+                        // Input Perempuan
+                        _buildNumberField(
+                          label: 'Jumlah Peserta / Warga Perempuan (P)',
+                          fieldKey: activeSub.fieldP,
+                          color: color,
+                        ),
+                      ]
                     ],
                   ),
                 );

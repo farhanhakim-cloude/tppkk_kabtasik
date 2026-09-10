@@ -25,6 +25,7 @@ import 'kesehatan_keibuan_screen.dart';
 import 'data_keluarga_dasawisma_list_screen.dart';
 import 'kriteria_rumah_list_screen.dart';
 import 'industri_rumah_tangga_list_screen.dart';
+import 'pokja2_form_screen.dart';
 import '../models/user.dart';
 import '../services/auth_service.dart';
 
@@ -932,6 +933,25 @@ class _BerandaPageState extends State<_BerandaPage> {
                           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const IndustriRumahTanggaListScreen())),
                         ),
                       ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  // Row 3: 1 kolom tambahan untuk Pokja II
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _MenuNavCard(
+                          imagePath: null,
+                          icon: Icons.school_rounded,
+                          label: 'Input Data\nPokja II',
+                          color: const Color(0xFF059669), // Emerald
+                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const Pokja2FormScreen())),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      const Spacer(),
+                      const SizedBox(width: 10),
+                      const Spacer(),
                     ],
                   ),
                 ],
