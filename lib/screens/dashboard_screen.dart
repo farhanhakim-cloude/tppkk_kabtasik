@@ -25,7 +25,6 @@ import 'kesehatan_keibuan_screen.dart';
 import 'data_keluarga_dasawisma_list_screen.dart';
 import 'kriteria_rumah_list_screen.dart';
 import 'industri_rumah_tangga_list_screen.dart';
-import 'pokja2_form_screen.dart';
 import '../models/user.dart';
 import '../services/auth_service.dart';
 
@@ -70,18 +69,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
+      extendBody: true,
       body: IndexedStack(
         index: _currentIndex,
         children: List.generate(4, (i) => _buildPage(i)),
       ),
-      bottomNavigationBar: _BottomNavBar(
-        currentIndex: _currentIndex,
-        primary: primary,
-        items: _navItems,
-        onTap: (i) {
-          HapticFeedback.selectionClick();
-          setState(() => _currentIndex = i);
-        },
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: _BottomNavBar(
+          currentIndex: _currentIndex,
+          primary: primary,
+          items: _navItems,
+          onTap: (i) {
+            HapticFeedback.selectionClick();
+            setState(() => _currentIndex = i);
+          },
+        ),
       ),
     );
   }
@@ -94,7 +97,7 @@ class _NavItem {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// PREMIUM BOTTOM NAV BAR
+// FLOATING OBSIDIAN CAPSULE BOTTOM NAV BAR (Sesuai Referensi Gambar)
 // ─────────────────────────────────────────────────────────────────────────────
 class _BottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -112,79 +115,62 @@ class _BottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        color: const Color(0xFF1E232A), // Dark obsidian navy
+        borderRadius: BorderRadius.circular(36),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0F172A).withValues(alpha: 0.06),
-            blurRadius: 16,
-            offset: const Offset(0, -4),
+            color: const Color(0xFF0F172A).withValues(alpha: 0.25),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
           ),
         ],
-        border: const Border(
-          top: BorderSide(color: Color(0xFFF1F5F9), width: 1),
-        ),
       ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-          child: Row(
-            children: List.generate(items.length, (i) {
-              final isActive = i == currentIndex;
-              final item = items[i];
-              return Expanded(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () => onTap(i),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          curve: Curves.easeInOut,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: isActive
-                                ? primary.withValues(alpha: 0.12)
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Icon(
-                            item.icon,
-                            color: isActive ? primary : const Color(0xFF94A3B8),
-                            size: 22,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        AnimatedDefaultTextStyle(
-                          duration: const Duration(milliseconds: 200),
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 11,
-                            fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
-                            color: isActive ? primary : const Color(0xFF64748B),
-                            letterSpacing: -0.1,
-                          ),
-                          child: Text(
-                            item.label,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: List.generate(items.length, (i) {
+          final isActive = i == currentIndex;
+          final item = items[i];
+
+          if (isActive) {
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeInOut,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(28),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(item.icon, color: const Color(0xFF1E232A), size: 19),
+                  const SizedBox(width: 8),
+                  Text(
+                    item.label,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF1E232A),
                     ),
                   ),
-                ),
-              );
-            }),
-          ),
-        ),
+                ],
+              ),
+            );
+          }
+
+          return IconButton(
+            onPressed: () => onTap(i),
+            icon: Icon(
+              item.icon,
+              color: Colors.white.withValues(alpha: 0.65),
+              size: 22,
+            ),
+            splashRadius: 24,
+          );
+        }),
       ),
     );
   }
@@ -373,19 +359,19 @@ class _MenuNavCard extends StatelessWidget {
           HapticFeedback.selectionClick();
           onTap();
         },
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         child: Container(
-          constraints: const BoxConstraints(minHeight: 105),
-          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+          constraints: const BoxConstraints(minHeight: 104),
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 6),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: const Color(0xFFF1F5F9), width: 1.2),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.03),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
+                color: const Color(0xFF0F172A).withValues(alpha: 0.03),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
               ),
             ],
           ),
@@ -394,20 +380,19 @@ class _MenuNavCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: 48,
-                height: 48,
+                width: 46,
+                height: 46,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF8FAFC),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
+                  color: color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: Center(
                   child: imagePath != null
                       ? ClipRRect(
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(16),
                           child: Image.asset(imagePath!, fit: BoxFit.cover),
                         )
-                      : Icon(icon, color: color, size: 26),
+                      : Icon(icon, color: color, size: 24),
                 ),
               ),
               const SizedBox(height: 10),
@@ -419,7 +404,7 @@ class _MenuNavCard extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: GoogleFonts.plusJakartaSans(
-                    fontSize: 11.5,
+                    fontSize: 12,
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFF1E293B),
                     height: 1.25,
@@ -457,6 +442,16 @@ class _BerandaPageState extends State<_BerandaPage> {
   final PageController _beritaPageController = PageController(viewportFraction: 0.88);
   final ScrollController _scrollController = ScrollController();
   int _currentBeritaPage = 0;
+
+  String _getDayName(int weekday) {
+    const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+    return days[(weekday - 1) % 7];
+  }
+
+  String _getMonthName(int month) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    return months[(month - 1) % 12];
+  }
 
   String _getGreeting() {
     final hour = DateTime.now().hour;
@@ -596,53 +591,66 @@ class _BerandaPageState extends State<_BerandaPage> {
         controller: _scrollController,
         physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
         slivers: [
-          // ── HEADER TOP BAR (Sesuai Referensi Pengguna) ──
+          // ── HEADER TOP BAR (Sesuai Referensi Gambar: Tanpa Notif di Atas) ──
           SliverToBoxAdapter(
             child: Container(
               color: const Color(0xFFF8FAFC),
               child: SafeArea(
                 bottom: false,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 6),
+                  padding: const EdgeInsets.fromLTRB(20, 14, 20, 4),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // Sapaan & Nama User di Kiri
+                      // Sapaan & Lokasi (Kab. Tasikmalaya)
                       Expanded(
                         child: FutureBuilder<User>(
                           future: _userFuture,
                           builder: (context, snapshot) {
                             final user = snapshot.data;
                             final displayName = (user != null && user.nama.trim().isNotEmpty)
-                                ? user.nama
-                                : 'Kader PKK';
-                            final greeting = _getGreeting();
+                                ? user.nama.trim().split(' ').first
+                                : 'Kader';
 
                             return Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  greeting,
+                                  'Hello, $displayName',
                                   style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                    color: const Color(0xFF64748B),
-                                    letterSpacing: -0.1,
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  displayName,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 20,
+                                    fontSize: 21,
                                     fontWeight: FontWeight.w800,
                                     color: const Color(0xFF0F172A),
                                     letterSpacing: -0.4,
                                   ),
+                                ),
+                                const SizedBox(height: 3),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(
+                                      Icons.location_on_rounded,
+                                      size: 14,
+                                      color: Color(0xFF0D9488),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      'Kab. Tasikmalaya',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 12.5,
+                                        fontWeight: FontWeight.w600,
+                                        color: const Color(0xFF64748B),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 2),
+                                    const Icon(
+                                      Icons.keyboard_arrow_down_rounded,
+                                      size: 16,
+                                      color: Color(0xFF64748B),
+                                    ),
+                                  ],
                                 ),
                               ],
                             );
@@ -651,7 +659,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                       ),
                       const SizedBox(width: 12),
 
-                      // Foto Profil di Kanan Atas (Gantikan Posisi Notifikasi)
+                      // Avatar Profil Saja (Tanpa Ikon Notifikasi sesuai Permintaan)
                       GestureDetector(
                         onTap: () {
                           HapticFeedback.lightImpact();
@@ -667,20 +675,19 @@ class _BerandaPageState extends State<_BerandaPage> {
                             border: Border.all(color: const Color(0xFFE2E8F0), width: 1.5),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFF0F172A).withValues(alpha: 0.05),
+                                color: const Color(0xFF0F172A).withValues(alpha: 0.06),
                                 blurRadius: 8,
                                 offset: const Offset(0, 2),
                               ),
                             ],
                           ),
-                          child: CircleAvatar(
+                          child: const CircleAvatar(
                             radius: 22,
-                            backgroundColor: const Color(0xFFE2E8F0),
-                            backgroundImage: const NetworkImage(
+                            backgroundColor: Color(0xFFE2E8F0),
+                            backgroundImage: NetworkImage(
                               'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
                             ),
-                            onBackgroundImageError: (_, __) {},
-                            child: const Icon(Icons.person_rounded, color: Color(0xFF64748B), size: 24),
+                            child: Icon(Icons.person_rounded, color: Color(0xFF64748B), size: 24),
                           ),
                         ),
                       ),
@@ -691,160 +698,373 @@ class _BerandaPageState extends State<_BerandaPage> {
             ),
           ),
 
-          // ── REKAP TERKINI ──
+          // ── SEARCH BAR PILL (Sesuai Referensi Gambar) ──
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Rekap Terkini',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w700,
-                              color: const Color(0xFF0F172A),
-                              letterSpacing: -0.3,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'Pantau data rumah & keluarga binaan',
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 12.5,
-                              color: const Color(0xFF64748B),
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF1F5F9),
-                          borderRadius: BorderRadius.circular(12),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF0F172A).withValues(alpha: 0.03),
+                      blurRadius: 10,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.search_rounded, size: 20, color: Color(0xFF94A3B8)),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'Cari data keluarga, kegiatan, berita...',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 13,
+                          color: const Color(0xFF94A3B8),
+                          fontWeight: FontWeight.w400,
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.check_circle_rounded, size: 12, color: Color(0xFF0D9488)),
-                            const SizedBox(width: 5),
-                            Text(
-                              'Data Valid',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: const Color(0xFF475569),
-                              ),
-                            ),
-                          ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // ── MENU KATEGORI 2x3 (Sesuai Grid Gambar Referensi) ──
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
+                  // Baris 1: 3 Menu
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _MenuNavCard(
+                          icon: Icons.roofing_rounded,
+                          label: 'Data Rumah',
+                          color: const Color(0xFFFF6B35),
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const KriteriaRumahListScreen()),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _MenuNavCard(
+                          icon: Icons.people_alt_rounded,
+                          label: 'Data Keluarga',
+                          color: const Color(0xFF10B981),
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const KeluargaListScreen()),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _MenuNavCard(
+                          icon: Icons.assignment_rounded,
+                          label: 'Catatan Kegiatan',
+                          color: const Color(0xFF2563EB),
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const CatatanKegiatanFormScreen()),
+                          ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 14),
-                  FutureBuilder<({int rumah, int keluarga})>(
-                    future: _statFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Row(
-                          children: [
-                            Expanded(child: _StatShimmer()),
-                            SizedBox(width: 12),
-                            Expanded(child: _StatShimmer()),
-                          ],
-                        );
-                      }
-                      final data = snapshot.data;
-                      return Row(
-                        children: [
-                          Expanded(
-                            child: _StatCard(
-                              label: 'Data Rumah',
-                              value: '${data?.rumah ?? 0}',
-                              sublabel: 'Kriteria Kelayakan',
-                              icon: Icons.house_rounded,
-                              color: const Color(0xFFFF6B35),
-                              trend: 'Dasawisma',
-                              onTap: () {
-                                HapticFeedback.selectionClick();
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const KriteriaRumahListScreen(),
-                                  ),
-                                );
-                              },
-                            ),
+                  const SizedBox(height: 10),
+                  // Baris 2: 3 Menu
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _MenuNavCard(
+                          icon: Icons.eco_rounded,
+                          label: 'Pekarangan',
+                          color: const Color(0xFF84CC16),
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const DataKeluargaDasawismaListScreen()),
                           ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _StatCard(
-                              label: 'Data KK',
-                              value: '${data?.keluarga ?? 0}',
-                              sublabel: 'Binaan Dasawisma',
-                              icon: Icons.family_restroom_rounded,
-                              color: const Color(0xFF0D9488),
-                              trend: '+3 Bln ini',
-                              onTap: () {
-                                HapticFeedback.selectionClick();
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const KeluargaListScreen(),
-                                  ),
-                                );
-                              },
-                            ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _MenuNavCard(
+                          icon: Icons.favorite_rounded,
+                          label: 'Kesehatan',
+                          color: const Color(0xFFF43F5E),
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const KesehatanKeibuanScreen()),
                           ),
-                        ],
-                      );
-                    },
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: _MenuNavCard(
+                          icon: Icons.storefront_rounded,
+                          label: 'Industri RT',
+                          color: const Color(0xFF8B5CF6),
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const IndustriRumahTanggaListScreen()),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
           ),
 
-          // ── MENU NAVIGASI UTAMA (Di bawah Rekap Terkini) ──
+          // ── KARTU TANGGAL HIJAU & REKAP DASAWISMA (Sesuai Referensi Gambar) ──
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
+              child: Row(
+                children: [
+                  // Kartu Tanggal Hijau (Kiri)
+                  Container(
+                    width: 105,
+                    height: 108,
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFF0D9488), Color(0xFF10B981)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF0D9488).withValues(alpha: 0.25),
+                          blurRadius: 14,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          _getDayName(DateTime.now().weekday),
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white.withValues(alpha: 0.9),
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          '${DateTime.now().day}',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                            height: 1.1,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          _getMonthName(DateTime.now().month),
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white.withValues(alpha: 0.9),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+
+                  // Kartu Ringkasan Binaan Dasawisma (Kanan)
+                  Expanded(
+                    child: Container(
+                      height: 108,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF0F172A).withValues(alpha: 0.03),
+                            blurRadius: 10,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: FutureBuilder<({int rumah, int keluarga})>(
+                        future: _statFuture,
+                        builder: (context, snapshot) {
+                          final data = snapshot.data;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(4),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFF1F5F9),
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        child: const Icon(
+                                          Icons.verified_rounded,
+                                          size: 14,
+                                          color: Color(0xFF0D9488),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        'Dasawisma Aktif',
+                                        style: GoogleFonts.plusJakartaSans(
+                                          fontSize: 11.5,
+                                          fontWeight: FontWeight.w700,
+                                          color: const Color(0xFF334155),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFFECFDF5),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        const Icon(Icons.star_rounded, size: 12, color: Color(0xFFF59E0B)),
+                                        const SizedBox(width: 2),
+                                        Text(
+                                          '4.9',
+                                          style: GoogleFonts.plusJakartaSans(
+                                            fontSize: 10.5,
+                                            fontWeight: FontWeight.w800,
+                                            color: const Color(0xFF065F46),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: GestureDetector(
+                                      onTap: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (_) => const KriteriaRumahListScreen()),
+                                      ),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFFFF7ED),
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '${data?.rumah ?? 0}',
+                                              style: GoogleFonts.plusJakartaSans(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w800,
+                                                color: const Color(0xFFEA580C),
+                                              ),
+                                            ),
+                                            Text(
+                                              'Rumah',
+                                              style: GoogleFonts.plusJakartaSans(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w600,
+                                                color: const Color(0xFF9A3412),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: GestureDetector(
+                                      onTap: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (_) => const KeluargaListScreen()),
+                                      ),
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFF0FDF4),
+                                          borderRadius: BorderRadius.circular(10),
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              '${data?.keluarga ?? 0}',
+                                              style: GoogleFonts.plusJakartaSans(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w800,
+                                                color: const Color(0xFF16A34A),
+                                              ),
+                                            ),
+                                            Text(
+                                              'Kepala Keluarga',
+                                              style: GoogleFonts.plusJakartaSans(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w600,
+                                                color: const Color(0xFF166534),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // ── UPCOMING APPOINTMENTS / AGENDA KEGIATAN PKK ──
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 6),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Color(0xFF0D9488), Color(0xFF0284C7)],
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                          ),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          'MENU',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                            letterSpacing: 1,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
                       Text(
-                        'Menu Pencatatan Data',
+                        'Agenda & Kegiatan PKK',
                         style: GoogleFonts.plusJakartaSans(
                           fontSize: 17,
                           fontWeight: FontWeight.w800,
@@ -852,107 +1072,163 @@ class _BerandaPageState extends State<_BerandaPage> {
                           letterSpacing: -0.3,
                         ),
                       ),
+                      GestureDetector(
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const GaleriAgendaScreen()),
+                        ),
+                        child: Text(
+                          'Lihat Semua >',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF0D9488),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
-                  const SizedBox(height: 2),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 2),
-                    child: Text(
-                      'Pilih menu untuk mencatat data kegiatan PKK',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 12.5,
-                        color: Colors.grey[500],
-                      ),
+                  const SizedBox(height: 10),
+                  // Kartu Floating Appointment Card (Sesuai Referensi Gambar)
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF0F172A).withValues(alpha: 0.04),
+                          blurRadius: 14,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  // Row 1: 3 kolom
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _MenuNavCard(
-                          imagePath: null,
-                          icon: Icons.house_rounded,
-                          label: 'Data Rumah\nTinggal',
-                          color: const Color(0xFFFF6B35),
-                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const KriteriaRumahListScreen())),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              width: 44,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFECFDF5),
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: const Icon(
+                                Icons.medical_services_outlined,
+                                color: Color(0xFF0D9488),
+                                size: 22,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Pemeriksaan Balita & Ibu Hamil',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 14.5,
+                                      fontWeight: FontWeight.w700,
+                                      color: const Color(0xFF0F172A),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFECFDF5),
+                                          borderRadius: BorderRadius.circular(6),
+                                        ),
+                                        child: Text(
+                                          '● Terjadwal',
+                                          style: GoogleFonts.plusJakartaSans(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w700,
+                                            color: const Color(0xFF059669),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        'Posyandu Melati',
+                                        style: GoogleFonts.plusJakartaSans(
+                                          fontSize: 11.5,
+                                          color: const Color(0xFF64748B),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(
+                              Icons.more_vert_rounded,
+                              size: 20,
+                              color: Color(0xFF94A3B8),
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: _MenuNavCard(
-                          imagePath: null,
-                          icon: Icons.family_restroom_rounded,
-                          label: 'Data\nKeluarga',
-                          color: const Color(0xFF4CAF50),
-                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const KeluargaListScreen())),
+                        const SizedBox(height: 14),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF8FAFC),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(color: const Color(0xFFF1F5F9)),
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.calendar_today_rounded, size: 14, color: Color(0xFF64748B)),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      '${DateTime.now().day} ${_getMonthName(DateTime.now().month)}, ${DateTime.now().year}',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 11.5,
+                                        fontWeight: FontWeight.w600,
+                                        color: const Color(0xFF334155),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF8FAFC),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(color: const Color(0xFFF1F5F9)),
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.access_time_rounded, size: 14, color: Color(0xFF64748B)),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      '08:30 WIB',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 11.5,
+                                        fontWeight: FontWeight.w600,
+                                        color: const Color(0xFF334155),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: _MenuNavCard(
-                          imagePath: null,
-                          icon: Icons.assignment_rounded,
-                          label: 'Catatan\nKegiatan',
-                          color: const Color(0xFF2196F3),
-                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CatatanKegiatanFormScreen())),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  // Row 2: 3 kolom
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _MenuNavCard(
-                          imagePath: null,
-                          icon: Icons.eco_rounded,
-                          label: 'Pekarangan\nRumah',
-                          color: const Color(0xFF8BC34A),
-                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DataKeluargaDasawismaListScreen())),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: _MenuNavCard(
-                          imagePath: null,
-                          icon: Icons.favorite_rounded,
-                          label: 'Kesehatan\n& Keibuan',
-                          color: const Color(0xFFE91E63),
-                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const KesehatanKeibuanScreen())),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: _MenuNavCard(
-                          imagePath: null,
-                          icon: Icons.storefront_rounded,
-                          label: 'Industri\nRumah Tangga',
-                          color: const Color(0xFF7C3AED),
-                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const IndustriRumahTanggaListScreen())),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  // Row 3: 1 kolom tambahan untuk Pokja II
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _MenuNavCard(
-                          imagePath: null,
-                          icon: Icons.school_rounded,
-                          label: 'Input Data\nPokja II',
-                          color: const Color(0xFF059669), // Emerald
-                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const Pokja2FormScreen())),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      const Spacer(),
-                      const SizedBox(width: 10),
-                      const Spacer(),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -1219,7 +1495,7 @@ class _BerandaPageState extends State<_BerandaPage> {
 
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 95),
               child: Center(
                 child: Text(
                   'TP PKK Kabupaten Tasikmalaya • v1.0.0',
