@@ -82,6 +82,19 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> _handleDemoAdminLogin() async {
+    setState(() {
+      _loading = true;
+      _errorMessage = '';
+    });
+    
+    await _authService.loginDemoAdmin();
+    
+    if (mounted) {
+      Navigator.pushReplacementNamed(context, '/dashboard');
+    }
+  }
+
   void _showForgotPasswordSheet() {
     showModalBottomSheet(
       context: context,
@@ -701,6 +714,31 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                               ),
                             ),
+                            const SizedBox(height: 12),
+                            
+                            // Tombol: Login Demo Admin
+                            SizedBox(
+                              width: double.infinity,
+                              height: 50,
+                              child: OutlinedButton(
+                                onPressed: _loading ? null : _handleDemoAdminLogin,
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: const Color(0xFF0D9488),
+                                  side: const BorderSide(color: Color(0xFF0D9488), width: 1.5),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                child: Text(
+                                  'Login sebagai Admin (Demo)',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            
                             const SizedBox(height: 22),
 
                             // Footer Keamanan SSL

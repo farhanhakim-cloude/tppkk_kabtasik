@@ -49,6 +49,23 @@ class AuthService {
   }
 
   // ============================================================
+  // LOGIN DEMO ADMIN (Bypass API)
+  // ============================================================
+  Future<void> loginDemoAdmin() async {
+    final prefs = await SharedPreferences.getInstance();
+    final dummyAdmin = {
+      'id': 999,
+      'name': 'Super Admin',
+      'username': 'admin',
+      'email': 'admin@demo.com',
+      'roles': ['admin'],
+    };
+    await prefs.setString(AppConstants.tokenKey, 'demo_admin_token');
+    await prefs.setString(AppConstants.userKey, jsonEncode(dummyAdmin));
+    await prefs.setBool('isLoggedIn', true);
+  }
+
+  // ============================================================
   // CEK STATUS LOGIN
   // ============================================================
   Future<bool> isLoggedIn() async {

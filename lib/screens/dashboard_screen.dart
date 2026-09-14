@@ -27,6 +27,7 @@ import 'kriteria_rumah_list_screen.dart';
 import 'industri_rumah_tangga_list_screen.dart';
 import '../models/user.dart';
 import '../services/auth_service.dart';
+import 'admin/admin_dashboard_screen.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MAIN SHELL with Bottom Navigation
@@ -41,6 +42,21 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int _currentIndex = 0;
 
+  late Future<bool> _isAdminFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _isAdminFuture = _checkIfAdmin();
+  }
+
+  Future<bool> _checkIfAdmin() async {
+    final authService = AuthService();
+    final user = await authService.getCurrentUser();
+    // Usually admin role is 'admin', 'Super Admin', etc.
+    return user.roles.any((r) => r.toLowerCase().contains('admin') || r.toLowerCase().contains('super'));
+  }
+
   static const _navItems = [
     _NavItem(icon: Icons.home_rounded, label: 'Beranda'),
     _NavItem(icon: Icons.notifications_rounded, label: 'Notifikasi'),
@@ -48,18 +64,43 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _NavItem(icon: Icons.person_rounded, label: 'Profil'),
   ];
 
-  Widget _buildPage(int index) {
-    switch (index) {
-      case 0:
-        return const _BerandaPage();
-      case 1:
-        return const _NotifikasiPage();
-      case 2:
-        return const LaporanScreen(embedded: true);
-      case 3:
-        return const ProfileScreen(embedded: true);
-      default:
-        return const _BerandaPage();
+  static const _adminNavItems = [
+    _NavItem(icon: Icons.home_rounded, label: 'Beranda'),
+    _NavItem(icon: Icons.notifications_rounded, label: 'Notifikasi'),
+    _NavItem(icon: Icons.admin_panel_settings_rounded, label: 'Admin'),
+    _NavItem(icon: Icons.description_rounded, label: 'Laporan'),
+    _NavItem(icon: Icons.person_rounded, label: 'Profil'),
+  ];
+
+  Widget _buildPage(int index, bool isAdmin) {
+    if (isAdmin) {
+      switch (index) {
+        case 0:
+          return const _BerandaPage();
+        case 1:
+          return const _NotifikasiPage();
+        case 2:
+          return const AdminDashboardScreen();
+        case 3:
+          return const LaporanScreen(embedded: true);
+        case 4:
+          return const ProfileScreen(embedded: true);
+        default:
+          return const _BerandaPage();
+      }
+    } else {
+      switch (index) {
+        case 0:
+          return const _BerandaPage();
+        case 1:
+          return const _NotifikasiPage();
+        case 2:
+          return const LaporanScreen(embedded: true);
+        case 3:
+          return const ProfileScreen(embedded: true);
+        default:
+          return const _BerandaPage();
+      }
     }
   }
 
@@ -67,25 +108,39 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     final primary = Theme.of(context).colorScheme.primary;
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      extendBody: true,
-      body: IndexedStack(
-        index: _currentIndex,
-        children: List.generate(4, (i) => _buildPage(i)),
-      ),
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: _BottomNavBar(
-          currentIndex: _currentIndex,
-          primary: primary,
-          items: _navItems,
-          onTap: (i) {
-            HapticFeedback.selectionClick();
-            setState(() => _currentIndex = i);
-          },
-        ),
-      ),
+    return FutureBuilder<bool>(
+      future: _isAdminFuture,
+      builder: (context, snapshot) {
+        final isAdmin = snapshot.data ?? false;
+        final currentItems = isAdmin ? _adminNavItems : _navItems;
+        final numPages = currentItems.length;
+
+        // Prevent index out of bounds if switching states
+        if (_currentIndex >= numPages) {
+          _currentIndex = 0;
+        }
+
+        return Scaffold(
+          backgroundColor: const Color(0xFFF8FAFC),
+          extendBody: true,
+          body: IndexedStack(
+            index: _currentIndex,
+            children: List.generate(numPages, (i) => _buildPage(i, isAdmin)),
+          ),
+          bottomNavigationBar: SafeArea(
+            top: false,
+            child: _BottomNavBar(
+              currentIndex: _currentIndex,
+              primary: primary,
+              items: currentItems,
+              onTap: (i) {
+                HapticFeedback.selectionClick();
+                setState(() => _currentIndex = i);
+              },
+            ),
+          ),
+        );
+      }
     );
   }
 }
