@@ -131,7 +131,7 @@ class AdminDashboardScreen extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const BeritaFormScreen()),
+                          MaterialPageRoute(builder: (_) => const BeritaFormScreen(isAdminMode: true)),
                         );
                       },
                     ),

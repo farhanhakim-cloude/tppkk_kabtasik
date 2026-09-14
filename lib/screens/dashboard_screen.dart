@@ -65,10 +65,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   ];
 
   static const _adminNavItems = [
-    _NavItem(icon: Icons.home_rounded, label: 'Beranda'),
-    _NavItem(icon: Icons.notifications_rounded, label: 'Notifikasi'),
     _NavItem(icon: Icons.admin_panel_settings_rounded, label: 'Admin'),
-    _NavItem(icon: Icons.description_rounded, label: 'Laporan'),
     _NavItem(icon: Icons.person_rounded, label: 'Profil'),
   ];
 
@@ -76,17 +73,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (isAdmin) {
       switch (index) {
         case 0:
-          return const _BerandaPage();
-        case 1:
-          return const _NotifikasiPage();
-        case 2:
           return const AdminDashboardScreen();
-        case 3:
-          return const LaporanScreen(embedded: true);
-        case 4:
+        case 1:
           return const ProfileScreen(embedded: true);
         default:
-          return const _BerandaPage();
+          return const AdminDashboardScreen();
       }
     } else {
       switch (index) {

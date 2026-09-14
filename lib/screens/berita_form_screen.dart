@@ -11,7 +11,9 @@ import '../models/berita.dart';
 
 class BeritaFormScreen extends StatefulWidget {
   final Berita? berita;
-  const BeritaFormScreen({super.key, this.berita});
+  final bool isAdminMode;
+
+  const BeritaFormScreen({super.key, this.berita, this.isAdminMode = false});
 
   @override
   State<BeritaFormScreen> createState() => _BeritaFormScreenState();
@@ -249,7 +251,7 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
       return;
     }
 
-    if (_selectedKecamatan == null || _selectedKecamatan!.isEmpty) {
+    if (!widget.isAdminMode && (_selectedKecamatan == null || _selectedKecamatan!.isEmpty)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -531,68 +533,70 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
               const SizedBox(height: 20),
 
               // ── KECAMATAN ──
-              Row(
-                children: [
-                  Text(
-                    'Kecamatan',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF0F172A),
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  const Text(
-                    '*',
-                    style: TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              _isLoadingKecamatan
-                  ? const Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : DropdownButtonFormField<String>(
-                      value: _selectedKecamatan,
-                      decoration: InputDecoration(
-                        hintText: 'Pilih Kecamatan',
-                        prefixIcon: Icon(Icons.location_on_rounded, color: primary),
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(14),
-                          borderSide: BorderSide(color: primary, width: 1.8),
-                        ),
+              if (!widget.isAdminMode) ...[
+                Row(
+                  children: [
+                    Text(
+                      'Kecamatan',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF0F172A),
                       ),
-                      items: _kecamatanList.map((kec) {
-                        return DropdownMenuItem(
-                          value: kec,
-                          child: Text(
-                            kec,
-                            style: GoogleFonts.plusJakartaSans(),
-                          ),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        setState(() => _selectedKecamatan = value);
-                      },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Pilih kecamatan terlebih dahulu';
-                        }
-                        return null;
-                      },
                     ),
-              const SizedBox(height: 16),
+                    const SizedBox(width: 4),
+                    const Text(
+                      '*',
+                      style: TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                _isLoadingKecamatan
+                    ? const Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : DropdownButtonFormField<String>(
+                        value: _selectedKecamatan,
+                        decoration: InputDecoration(
+                          hintText: 'Pilih Kecamatan',
+                          prefixIcon: Icon(Icons.location_on_rounded, color: primary),
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                            borderSide: BorderSide(color: primary, width: 1.8),
+                          ),
+                        ),
+                        items: _kecamatanList.map((kec) {
+                          return DropdownMenuItem(
+                            value: kec,
+                            child: Text(
+                              kec,
+                              style: GoogleFonts.plusJakartaSans(),
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() => _selectedKecamatan = value);
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Pilih kecamatan terlebih dahulu';
+                          }
+                          return null;
+                        },
+                      ),
+                const SizedBox(height: 16),
+              ],
 
               // ── KATEGORI CHIPS ──
               Text(
