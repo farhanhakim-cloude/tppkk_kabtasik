@@ -7,8 +7,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/berita_service.dart';
 
+import '../models/berita.dart';
+
 class BeritaFormScreen extends StatefulWidget {
-  const BeritaFormScreen({super.key});
+  final Berita? berita;
+  const BeritaFormScreen({super.key, this.berita});
 
   @override
   State<BeritaFormScreen> createState() => _BeritaFormScreenState();
@@ -87,6 +90,16 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
   @override
   void initState() {
     super.initState();
+    if (widget.berita != null) {
+      _judulController.text = widget.berita!.judul;
+      _kontenController.text = widget.berita!.konten ?? widget.berita!.deskripsi ?? '';
+      if (widget.berita!.kategori != null && _kategoriList.contains(widget.berita!.kategori)) {
+        _selectedKategori = widget.berita!.kategori!;
+      }
+      if (widget.berita!.kecamatan != null && _kecamatanList.contains(widget.berita!.kecamatan)) {
+        _selectedKecamatan = widget.berita!.kecamatan;
+      }
+    }
     _loadDefaultKecamatan();
   }
 

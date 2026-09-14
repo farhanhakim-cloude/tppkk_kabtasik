@@ -66,6 +66,23 @@ class AuthService {
   }
 
   // ============================================================
+  // LOGIN DEMO KADER (Bypass API)
+  // ============================================================
+  Future<void> loginDemoKader() async {
+    final prefs = await SharedPreferences.getInstance();
+    final dummyKader = {
+      'id': 998,
+      'name': 'Kader PKK',
+      'username': 'kader',
+      'email': 'kader@demo.com',
+      'roles': ['kader'],
+    };
+    await prefs.setString(AppConstants.tokenKey, 'demo_kader_token');
+    await prefs.setString(AppConstants.userKey, jsonEncode(dummyKader));
+    await prefs.setBool('isLoggedIn', true);
+  }
+
+  // ============================================================
   // CEK STATUS LOGIN
   // ============================================================
   Future<bool> isLoggedIn() async {
