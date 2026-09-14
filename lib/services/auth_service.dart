@@ -12,22 +12,30 @@ class AuthService {
   // ============================================================
   // LOGIN - KONEK KE API LARAVEL
   // ============================================================
-  Future<Map<String, dynamic>> login(String email, String password) async {
+  Future<Map<String, dynamic>> login(String username, String password) async {
     try {
       final response = await _client.post(
         Uri.parse('${AppConstants.baseUrl}${AppConstants.login}'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': email, 'password': password}),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode({
+          'username': username,
+          'password': password,
+        }),
       );
+
+      print('🔍 LOGIN RESPONSE [${response.statusCode}]: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
-        // 🔥 AMBIL TOKEN & USER DARI RESPONSE (data wrapper)
-        print('🔍 LOGIN RESPONSE: ${response.body}');
+        // Ambil token & user dari response
         final token = data['data']['token'] ?? '';
-        print('🔍 TOKEN SAVED: "$token"');
         final userData = data['data']['user'] ?? {};
+
+        print('🔍 TOKEN SAVED: "$token"');
 
         // Simpan token dan user data ke SharedPreferences
         final prefs = await SharedPreferences.getInstance();
@@ -36,10 +44,16 @@ class AuthService {
         await prefs.setBool('isLoggedIn', true);
 
         return data;
-      } else if (response.statusCode == 401) {
-        throw Exception('Email atau password salah');
+      } else if (response.statusCode == 401 || response.statusCode == 403) {
+        // Coba ambil pesan error dari response
+        try {
+          final err = jsonDecode(response.body);
+          throw Exception(err['message'] ?? 'Username atau password salah');
+        } catch (_) {
+          throw Exception('Username atau password salah');
+        }
       } else if (response.statusCode == 422) {
-        throw Exception('Email atau password salah');
+        throw Exception('Validasi gagal. Cek username & password.');
       } else {
         throw Exception('Login gagal: ${response.statusCode}');
       }
@@ -49,37 +63,17 @@ class AuthService {
   }
 
   // ============================================================
-  // LOGIN DEMO ADMIN (Bypass API)
+  // LOGIN DEMO ADMIN (Nembak API — adminpkk / password123)
   // ============================================================
   Future<void> loginDemoAdmin() async {
-    final prefs = await SharedPreferences.getInstance();
-    final dummyAdmin = {
-      'id': 999,
-      'name': 'Super Admin',
-      'username': 'admin',
-      'email': 'admin@demo.com',
-      'roles': ['admin'],
-    };
-    await prefs.setString(AppConstants.tokenKey, 'demo_admin_token');
-    await prefs.setString(AppConstants.userKey, jsonEncode(dummyAdmin));
-    await prefs.setBool('isLoggedIn', true);
+    await login('adminpkk', 'password123');
   }
 
   // ============================================================
-  // LOGIN DEMO KADER (Bypass API)
+  // LOGIN DEMO KADER (Nembak API — user_dasawisma / password123)
   // ============================================================
   Future<void> loginDemoKader() async {
-    final prefs = await SharedPreferences.getInstance();
-    final dummyKader = {
-      'id': 998,
-      'name': 'Kader PKK',
-      'username': 'kader',
-      'email': 'kader@demo.com',
-      'roles': ['kader'],
-    };
-    await prefs.setString(AppConstants.tokenKey, 'demo_kader_token');
-    await prefs.setString(AppConstants.userKey, jsonEncode(dummyKader));
-    await prefs.setBool('isLoggedIn', true);
+    await login('user_dasawisma', 'password123');
   }
 
   // ============================================================
@@ -92,11 +86,12 @@ class AuthService {
 
       if (token == null || token.isEmpty) return false;
 
-      // Cek token ke server (opsional)
+      // Cek token ke server
       final response = await _client.get(
         Uri.parse('${AppConstants.baseUrl}${AppConstants.me}'),
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
           'Authorization': 'Bearer $token',
         },
       );
@@ -129,6 +124,7 @@ class AuthService {
         Uri.parse('${AppConstants.baseUrl}${AppConstants.me}'),
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
           'Authorization': 'Bearer $token',
         },
       );
@@ -170,6 +166,7 @@ class AuthService {
           Uri.parse('${AppConstants.baseUrl}${AppConstants.logout}'),
           headers: {
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
             'Authorization': 'Bearer $token',
           },
         );
@@ -213,4 +210,3 @@ class AuthService {
     _client.close();
   }
 }
-

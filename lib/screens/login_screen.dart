@@ -48,6 +48,49 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (_) {}
   }
 
+  // ============================================================
+  // 🔥 HELPER: Redirect berdasarkan role user
+  // ============================================================
+  Future<void> _redirectByRole() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userData = prefs.getString('user_data') ?? '{}';
+
+      final String rolesStr = userData;
+      String primaryRole = 'dasawisma';
+
+      if (rolesStr.contains('"admin"')) {
+        primaryRole = 'admin';
+      } else if (rolesStr.contains('"pkk"')) {
+        primaryRole = 'pkk';
+      } else if (rolesStr.contains('"kader_dasawisma"')) {
+        primaryRole = 'kader_dasawisma';
+      } else if (rolesStr.contains('"dasawisma"')) {
+        primaryRole = 'dasawisma';
+      } else if (rolesStr.contains('"user"')) {
+        primaryRole = 'user';
+      }
+
+      print('🎯 REDIRECT: role=$primaryRole');
+
+      if (!mounted) return;
+
+      if (primaryRole == 'admin') {
+        Navigator.pushReplacementNamed(context, '/dashboard');
+      } else {
+        Navigator.pushReplacementNamed(context, '/kader');
+      }
+    } catch (e) {
+      print('❌ Redirect error: $e');
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/kader');
+      }
+    }
+  }
+
+  // ============================================================
+  // 🔥 LOGIN MANUAL
+  // ============================================================
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -71,40 +114,12 @@ class _LoginScreenState extends State<LoginScreen> {
         await prefs.setBool('remember_me', false);
       }
 
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, '/dashboard');
-      }
+      await _redirectByRole();
     } catch (e) {
       setState(() {
         _errorMessage = e.toString().replaceFirst('Exception: ', '');
         _loading = false;
       });
-    }
-  }
-
-  Future<void> _handleDemoAdminLogin() async {
-    setState(() {
-      _loading = true;
-      _errorMessage = '';
-    });
-    
-    await _authService.loginDemoAdmin();
-    
-    if (mounted) {
-      Navigator.pushReplacementNamed(context, '/dashboard');
-    }
-  }
-
-  Future<void> _handleDemoKaderLogin() async {
-    setState(() {
-      _loading = true;
-      _errorMessage = '';
-    });
-
-    await _authService.loginDemoKader();
-
-    if (mounted) {
-      Navigator.pushReplacementNamed(context, '/kader');
     }
   }
 
@@ -208,7 +223,7 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: const Color(0xFFF8FAFC),
       body: Stack(
         children: [
-          // Background Dekoratif (Aksen Gradasi Halus ala Web)
+          // Background Dekoratif
           Positioned.fill(
             child: Container(
               decoration: const BoxDecoration(
@@ -216,8 +231,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Color(0xFFE8F9F5), // Halus mint di atas
-                    Color(0xFFF1F5F9), // Slate sangat lembut
+                    Color(0xFFE8F9F5),
+                    Color(0xFFF1F5F9),
                     Color(0xFFF8FAFC),
                   ],
                   stops: [0.0, 0.45, 1.0],
@@ -226,7 +241,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
 
-          // Lingkaran ornamen di latar belakang atas
+          // Lingkaran ornamen
           Positioned(
             top: -60,
             right: -40,
@@ -252,7 +267,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
 
-          // Konten Utama Scrollable
+          // Konten Utama
           SafeArea(
             child: Center(
               child: SingleChildScrollView(
@@ -261,7 +276,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Tombol Kembali (jika dapat di-pop)
                     if (Navigator.canPop(context))
                       Align(
                         alignment: Alignment.centerLeft,
@@ -291,9 +305,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
 
-                    // ==========================================
-                    // 🌟 HEADER: LOGO PKK & SELAMAT DATANG
-                    // ==========================================
+                    // HEADER
                     Image.asset(
                       'assets/images/logo.png',
                       width: 80,
@@ -307,7 +319,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 14),
 
-                    // Badge Tim Penggerak PKK
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                       decoration: BoxDecoration(
@@ -343,7 +354,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 8),
 
-                    // Teks Selamat Datang
                     Text(
                       'Selamat Datang',
                       textAlign: TextAlign.center,
@@ -366,9 +376,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 20),
 
-                    // ==========================================
-                    // 📋 KARTU FORM LOGIN (VERSI MOBILE DARI WEB)
-                    // ==========================================
+                    // KARTU FORM
                     Container(
                       width: double.infinity,
                       decoration: BoxDecoration(
@@ -389,7 +397,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Judul Kartu: Masuk ke Akun
                             Text(
                               'Masuk ke Akun',
                               style: GoogleFonts.plusJakartaSans(
@@ -401,7 +408,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Gunakan username dan password resmi Anda',
+                              'Gunakan username atau email resmi Anda',
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 13,
                                 color: const Color(0xFF64748B),
@@ -410,7 +417,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             const SizedBox(height: 20),
 
-                            // Pesan Error jika Login Gagal
+                            // Error message
                             if (_errorMessage.isNotEmpty) ...[
                               Container(
                                 padding: const EdgeInsets.symmetric(
@@ -446,9 +453,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               const SizedBox(height: 16),
                             ],
 
-                            // Label Username / NIP
+                            // Username / Email
                             Text(
-                              'Username / NIP',
+                              'Username / Email',
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 13.5,
                                 fontWeight: FontWeight.w700,
@@ -457,10 +464,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             const SizedBox(height: 8),
 
-                            // Input Field: Username
                             TextFormField(
                               controller: _usernameController,
-                              keyboardType: TextInputType.text,
+                              keyboardType: TextInputType.emailAddress,
                               textInputAction: TextInputAction.next,
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 14,
@@ -470,7 +476,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               decoration: InputDecoration(
                                 filled: true,
                                 fillColor: Colors.white,
-                                hintText: 'Masukkan username Anda',
+                                hintText: 'Masukkan username atau email',
                                 hintStyle: GoogleFonts.plusJakartaSans(
                                   fontSize: 13.5,
                                   color: const Color(0xFF94A3B8),
@@ -522,14 +528,14 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               validator: (value) {
                                 if (value == null || value.trim().isEmpty) {
-                                  return 'Username atau NIP tidak boleh kosong';
+                                  return 'Username atau email tidak boleh kosong';
                                 }
                                 return null;
                               },
                             ),
                             const SizedBox(height: 18),
 
-                            // Label Password + Lupa Password?
+                            // Password
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -556,7 +562,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             const SizedBox(height: 8),
 
-                            // Input Field: Password
                             TextFormField(
                               controller: _passwordController,
                               obscureText: _obscurePassword,
@@ -644,7 +649,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             const SizedBox(height: 14),
 
-                            // Checkbox: Ingat saya di perangkat ini
+                            // Remember me
                             Row(
                               children: [
                                 SizedBox(
@@ -683,7 +688,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             const SizedBox(height: 22),
 
-                            // Tombol: Masuk ke Dashboard →
+                            // Tombol Masuk
                             SizedBox(
                               width: double.infinity,
                               height: 50,
@@ -727,58 +732,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                               ),
                             ),
-                            const SizedBox(height: 12),
-                            
-                            // Tombol: Login Demo Admin
-                            SizedBox(
-                              width: double.infinity,
-                              height: 50,
-                              child: OutlinedButton(
-                                onPressed: _loading ? null : _handleDemoAdminLogin,
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: const Color(0xFF0D9488),
-                                  side: const BorderSide(color: Color(0xFF0D9488), width: 1.5),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                                child: Text(
-                                  'Login sebagai Admin (Demo)',
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
 
-                            // Tombol: Login Demo Kader
-                            SizedBox(
-                              width: double.infinity,
-                              height: 50,
-                              child: OutlinedButton(
-                                onPressed: _loading ? null : _handleDemoKaderLogin,
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: const Color(0xFF0D9488),
-                                  side: const BorderSide(color: Color(0xFF0D9488), width: 1.5),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                                child: Text(
-                                  'Login sebagai Kader (Demo)',
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            
                             const SizedBox(height: 22),
 
-                            // Footer Keamanan SSL
+                            // Footer SSL
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -807,7 +764,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     const SizedBox(height: 24),
 
-                    // Copyright Bawah
                     Text(
                       '© 2026 TP PKK Kabupaten Tasikmalaya',
                       style: GoogleFonts.plusJakartaSans(

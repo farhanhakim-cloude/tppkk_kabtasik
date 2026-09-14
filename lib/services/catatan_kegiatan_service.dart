@@ -79,6 +79,24 @@ class CatatanKegiatanService {
   }
 
   // ============================================================
+  // 🔥 HELPER: Extract list dari response (handle pagination)
+  // ============================================================
+  List<dynamic> _extractList(dynamic rawData) {
+    if (rawData == null) return [];
+
+    // Kalau langsung List
+    if (rawData is List) return rawData;
+
+    // Kalau Map (pagination)
+    if (rawData is Map) {
+      final nested = rawData['data'];
+      if (nested is List) return nested;
+    }
+
+    return [];
+  }
+
+  // ============================================================
   // GET ALL LAPORAN
   // ============================================================
   Future<List<CatatanKegiatan>> getAll({String? query, PokjaKategori? kategori}) async {
@@ -97,8 +115,12 @@ class CatatanKegiatanService {
 
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);
-          final List<dynamic> apiList = data['data'] ?? [];
+
+          // 🔥 FIX: Handle pagination dengan helper
+          final List<dynamic> apiList = _extractList(data['data']);
           list = apiList.map((item) => CatatanKegiatan.fromJson(item)).toList();
+
+          print('📥 Loaded ${list.length} laporan dari API');
         }
       }
     } catch (e) {
@@ -143,7 +165,7 @@ class CatatanKegiatanService {
   }
 
   // ============================================================
-  // 🔥 KIRIM LAPORAN - FIX DESA_KELURAHAN
+  // 🔥 KIRIM LAPORAN
   // ============================================================
   Future<void> kirim(CatatanKegiatan catatan) async {
     // Simpan ke data lokal agar langsung muncul
@@ -151,7 +173,9 @@ class CatatanKegiatanService {
     if (index >= 0) {
       _data[index] = catatan;
     } else {
-      final newId = _data.isEmpty ? 1 : _data.map((c) => c.id).reduce((a, b) => a > b ? a : b) + 1;
+      final newId = _data.isEmpty
+          ? 1
+          : _data.map((c) => c.id).reduce((a, b) => a > b ? a : b) + 1;
       _data.insert(0, catatan.copyWith(id: catatan.id == 0 ? newId : catatan.id));
     }
 
@@ -172,16 +196,16 @@ class CatatanKegiatanService {
     request.headers['Authorization'] = 'Bearer $token';
     request.headers['Accept'] = 'application/json';
 
-    // 🔥 FIELD WAJIB - PASTIKAN DESA_KELURAHAN TERKIRIM
-    final String desaFinal = (catatan.desa != null && catatan.desa!.isNotEmpty) 
-        ? catatan.desa! 
+    // FIELD WAJIB
+    final String desaFinal = (catatan.desa != null && catatan.desa!.isNotEmpty)
+        ? catatan.desa!
         : catatan.kecamatan;
 
     request.fields['judul'] = catatan.judul;
     request.fields['deskripsi'] = catatan.ceritaSingkat;
     request.fields['kategori_pokja'] = _kodePokja(catatan.kategori);
     request.fields['kecamatan'] = catatan.kecamatan;
-    request.fields['desa_kelurahan'] = desaFinal; // 🔥 FIX: INI YANG PENTING!
+    request.fields['desa_kelurahan'] = desaFinal;
 
     print('📤 SEND DATA:');
     print('  - Judul: ${catatan.judul}');
@@ -251,4 +275,3 @@ class CatatanKegiatanService {
     }
   }
 }
-

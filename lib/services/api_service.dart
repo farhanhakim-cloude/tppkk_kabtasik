@@ -17,6 +17,26 @@ class ApiService {
   final http.Client _client = http.Client();
 
   // ============================================================
+  // HELPER: Handle pagination response
+  // Laravel paginate() return: { data: { data: [...], current_page, ... } }
+  // ============================================================
+  List<dynamic> _extractList(dynamic rawData) {
+    // Kalau null / bukan Map/List → return empty
+    if (rawData == null) return [];
+
+    // Kalau langsung List → return
+    if (rawData is List) return rawData;
+
+    // Kalau Map (pagination) → ambil 'data'-nya
+    if (rawData is Map) {
+      final nested = rawData['data'];
+      if (nested is List) return nested;
+    }
+
+    return [];
+  }
+
+  // ============================================================
   // AUTH
   // ============================================================
   Future<Map<String, dynamic>> login(String username, String password) async {
@@ -127,7 +147,8 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final List<dynamic> list = data['data']?['data'] ?? data['data'] ?? [];
+        // 🔥 FIX: pakai helper
+        final list = _extractList(data['data']);
         return list.map((item) => Berita.fromJson(item)).toList();
       } else {
         throw Exception('Gagal load berita: ${response.statusCode}');
@@ -145,7 +166,8 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final List<dynamic> list = data['data'] ?? [];
+        // 🔥 FIX: pakai helper
+        final list = _extractList(data['data']);
         return list.map((item) => Berita.fromJson(item)).toList();
       } else {
         throw Exception('Gagal load berita terbaru: ${response.statusCode}');
@@ -173,7 +195,7 @@ class ApiService {
   }
 
   // ============================================================
-  // 🔥 SUBMIT BERITA - FIX VERSION
+  // 🔥 SUBMIT BERITA
   // ============================================================
   Future<Berita> submitBerita({
     required String judul,
@@ -186,8 +208,6 @@ class ApiService {
   }) async {
     try {
       final beritaService = BeritaService();
-
-      // 🔥 PASTIKAN KONTEN TIDAK NULL
       final kontenFinal = konten ?? ringkasan;
 
       final result = await beritaService.submitBerita(
@@ -199,7 +219,6 @@ class ApiService {
         fotoBase64: fotoBase64,
       );
 
-      // 🔥 CEK HASIL
       if (result.id == 0) {
         throw Exception('Berita gagal disimpan, data tidak valid');
       }
@@ -216,8 +235,6 @@ class ApiService {
   // ============================================================
   Future<List<Berita>> getMyBerita(String token) async {
     try {
-      // ✅ FIX: koma yang hilang setelah Uri.parse(...) sudah ditambahkan,
-      // dan endpoint diarahkan ke "berita/saya" (bukan cuma "berita")
       final response = await _client.get(
         Uri.parse('${AppConstants.baseUrl}berita/saya'),
         headers: {
@@ -228,7 +245,8 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final List<dynamic> list = data['data'] ?? [];
+        // 🔥 FIX: pakai helper untuk handle pagination
+        final list = _extractList(data['data']);
         return list.map((item) => Berita.fromJson(item)).toList();
       } else {
         throw Exception('Gagal load berita saya: ${response.statusCode}');
@@ -243,15 +261,14 @@ class ApiService {
   // ============================================================
   Future<List<dynamic>> getGaleri() async {
     try {
-      // ✅ FIX: dikembalikan ke endpoint galeri yang benar
-      // (sebelumnya salah tertukar memanggil "berita/saya")
       final response = await _client.get(
         Uri.parse('${AppConstants.baseUrl}${AppConstants.galeri}'),
       ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return data['data'] ?? [];
+        // 🔥 FIX: pakai helper
+        return _extractList(data['data']);
       } else {
         throw Exception('Gagal load galeri: ${response.statusCode}');
       }
@@ -271,7 +288,8 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return data['data'] ?? [];
+        // 🔥 FIX: pakai helper
+        return _extractList(data['data']);
       } else {
         throw Exception('Gagal load agenda: ${response.statusCode}');
       }
@@ -291,7 +309,8 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        return data['data'] ?? [];
+        // 🔥 FIX: pakai helper untuk handle pagination
+        return _extractList(data['data']);
       } else {
         throw Exception('Gagal load laporan kegiatan: ${response.statusCode}');
       }
@@ -300,7 +319,8 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> createLaporanKegiatan(Map<String, dynamic> data, String token) async {
+  Future<Map<String, dynamic>> createLaporanKegiatan(
+      Map<String, dynamic> data, String token) async {
     try {
       final response = await _client.post(
         Uri.parse('${AppConstants.baseUrl}${AppConstants.laporanKegiatan}'),
@@ -373,4 +393,3 @@ class ApiService {
     _client.close();
   }
 }
-

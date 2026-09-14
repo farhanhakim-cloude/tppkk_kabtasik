@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import '../../models/berita.dart';
-import '../../services/berita_service.dart';
+import '../../constants/app_constants.dart';
 
 class VerifikasiBeritaScreen extends StatefulWidget {
   const VerifikasiBeritaScreen({super.key});
@@ -12,7 +15,6 @@ class VerifikasiBeritaScreen extends StatefulWidget {
 }
 
 class _VerifikasiBeritaScreenState extends State<VerifikasiBeritaScreen> {
-  final BeritaService _beritaService = BeritaService();
   bool _isLoading = true;
   List<Berita> _pendingBerita = [];
 
@@ -22,16 +24,52 @@ class _VerifikasiBeritaScreenState extends State<VerifikasiBeritaScreen> {
     _loadPendingBerita();
   }
 
+  Future<String?> _getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(AppConstants.tokenKey);
+  }
+
+  // ============================================================
+  // 🔥 LOAD PENDING BERITA DARI ENDPOINT KHUSUS
+  // ============================================================
   Future<void> _loadPendingBerita() async {
     setState(() => _isLoading = true);
     try {
-      // Mocking fetch all berita then filter pending.
-      // Replace with specific endpoint if backend provides one.
-      final allBerita = await _beritaService.getBerita();
-      setState(() {
-        _pendingBerita = allBerita.where((b) => b.isPending).toList();
-      });
+      final token = await _getToken();
+      if (token == null || token.isEmpty) {
+        throw Exception('Token tidak ditemukan');
+      }
+
+      final response = await http.get(
+        Uri.parse('${AppConstants.baseUrl}admin/berita/pending'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      ).timeout(const Duration(seconds: 10));
+
+      print('🔍 PENDING BERITA [${response.statusCode}]: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final rawData = data['data'];
+
+        List<dynamic> list = [];
+        if (rawData is List) {
+          list = rawData;
+        } else if (rawData is Map && rawData['data'] is List) {
+          list = rawData['data'] as List;
+        }
+
+        setState(() {
+          _pendingBerita = list.map((item) => Berita.fromJson(item)).toList();
+        });
+      } else {
+        throw Exception('Gagal load: ${response.statusCode}');
+      }
     } catch (e) {
+      print('❌ Error load pending berita: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Gagal memuat berita: $e')),
@@ -44,14 +82,18 @@ class _VerifikasiBeritaScreenState extends State<VerifikasiBeritaScreen> {
     }
   }
 
+  // ============================================================
+  // 🔥 APPROVE / REJECT BERITA
+  // ============================================================
   Future<void> _handleAction(Berita berita, bool isApprove) async {
     HapticFeedback.mediumImpact();
-    // Tampilkan dialog konfirmasi
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(isApprove ? 'Setujui Berita?' : 'Tolak Berita?'),
-        content: Text('Apakah Anda yakin ingin ${isApprove ? 'menyetujui' : 'menolak'} "${berita.judul}"?'),
+        content: Text(
+          'Apakah Anda yakin ingin ${isApprove ? 'menyetujui' : 'menolak'} "${berita.judul}"?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -71,19 +113,42 @@ class _VerifikasiBeritaScreenState extends State<VerifikasiBeritaScreen> {
     if (confirm != true) return;
 
     try {
-      // Panggil endpoint persetujuan. (Harus diimplementasikan di service)
-      await _beritaService.approveBerita(berita.id, isApprove);
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(isApprove ? 'Berita disetujui!' : 'Berita ditolak!'),
-            backgroundColor: isApprove ? Colors.green : Colors.red,
-          ),
-        );
+      final token = await _getToken();
+      if (token == null || token.isEmpty) {
+        throw Exception('Token tidak ditemukan');
       }
-      _loadPendingBerita(); // Reload data
+
+      // 🔥 Endpoint approve/reject
+      final endpoint = isApprove
+          ? 'admin/berita/${berita.id}/approve'
+          : 'admin/berita/${berita.id}/reject';
+
+      final response = await http.put(
+        Uri.parse('${AppConstants.baseUrl}$endpoint'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      ).timeout(const Duration(seconds: 10));
+
+      print('📡 APPROVE RESPONSE [${response.statusCode}]: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(isApprove ? 'Berita disetujui!' : 'Berita ditolak!'),
+              backgroundColor: isApprove ? Colors.green : Colors.red,
+            ),
+          );
+        }
+        _loadPendingBerita();
+      } else {
+        throw Exception('Gagal: ${response.statusCode}');
+      }
     } catch (e) {
+      print('❌ Error approve berita: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
@@ -120,10 +185,7 @@ class _VerifikasiBeritaScreenState extends State<VerifikasiBeritaScreen> {
                     padding: const EdgeInsets.all(16),
                     itemCount: _pendingBerita.length,
                     separatorBuilder: (context, index) => const SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      final berita = _pendingBerita[index];
-                      return _buildBeritaCard(berita);
-                    },
+                    itemBuilder: (context, index) => _buildBeritaCard(_pendingBerita[index]),
                   ),
                 ),
     );
