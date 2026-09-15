@@ -45,9 +45,9 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
         throw Exception('Token tidak ditemukan. Silakan login ulang.');
       }
 
-      // 🔥 FIX: Ganti endpoint dari 'laporan-kegiatan' → 'admin/laporan-kegiatan'
+      // 🔥 FIX: Endpoint laporan-kegiatan (tanpa prefix admin)
       final response = await http.get(
-        Uri.parse('${AppConstants.baseUrl}admin/laporan-kegiatan'),
+        Uri.parse('${AppConstants.baseUrl}laporan-kegiatan'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
