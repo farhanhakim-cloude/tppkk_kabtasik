@@ -143,7 +143,7 @@ class _NavItem {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// FLOATING OBSIDIAN CAPSULE BOTTOM NAV BAR (Sesuai Referensi Gambar)
+// FLOATING PILL NAV — ala contoh Home/Tracker/Habits/Settings (icon atas, label bawah)
 // ─────────────────────────────────────────────────────────────────────────────
 class _BottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -158,63 +158,76 @@ class _BottomNavBar extends StatelessWidget {
     required this.onTap,
   });
 
+  IconData _filledIcon(IconData icon) {
+    // mapping outline -> filled biar lebih menarik saat active
+    if (icon == Icons.home_rounded) return Icons.home_rounded;
+    if (icon == Icons.notifications_rounded) return Icons.notifications_rounded;
+    if (icon == Icons.description_rounded) return Icons.description_rounded;
+    if (icon == Icons.person_rounded) return Icons.person_rounded;
+    if (icon == Icons.admin_panel_settings_rounded) return Icons.admin_panel_settings_rounded;
+    return icon;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(20, 0, 20, 12),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 14),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E232A), // Dark obsidian navy
-        borderRadius: BorderRadius.circular(36),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0F172A).withValues(alpha: 0.25),
+            color: const Color(0xFF0F172A).withValues(alpha: 0.08),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
         ],
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: List.generate(items.length, (i) {
           final isActive = i == currentIndex;
           final item = items[i];
-
-          if (isActive) {
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
-              curve: Curves.easeInOut,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(28),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(item.icon, color: const Color(0xFF1E232A), size: 19),
-                  const SizedBox(width: 8),
-                  Text(
-                    item.label,
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF1E232A),
+          return Expanded(
+            child: InkWell(
+              onTap: () {
+                HapticFeedback.selectionClick();
+                onTap(i);
+              },
+              borderRadius: BorderRadius.circular(20),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeOut,
+                padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 4),
+                decoration: BoxDecoration(
+                  color: isActive ? primary.withValues(alpha: 0.12) : Colors.transparent,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      isActive ? _filledIcon(item.icon) : item.icon,
+                      size: 22,
+                      color: isActive ? primary : const Color(0xFF94A3B8),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 3),
+                    Text(
+                      item.label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 10.5,
+                        fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
+                        color: isActive ? primary : const Color(0xFF64748B),
+                        letterSpacing: 0.1,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            );
-          }
-
-          return IconButton(
-            onPressed: () => onTap(i),
-            icon: Icon(
-              item.icon,
-              color: Colors.white.withValues(alpha: 0.65),
-              size: 22,
             ),
-            splashRadius: 24,
           );
         }),
       ),

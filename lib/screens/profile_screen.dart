@@ -1,5 +1,4 @@
-// lib/screens/profile_screen.dart
-
+// lib/screens/profile_screen.dart — diperbarui: selaras kader/admin, tidak ramai, pill & soft
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,18 +24,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late Future<User> _future;
   File? _profileImage;
   bool _loggingOut = false;
+  bool _isKaderDark = true;
 
+  // selaras palet kader/admin
+  static const primaryMint = Color(0xFF2ED9C3);
   static const primaryTeal = Color(0xFF0D9488);
   static const darkTeal = Color(0xFF0F766E);
-  static const softTealBg = Color(0xFFF0FDFA);
-  
-  // Neon Green untuk admin compatibility kalau perlu
-  static const _kNeonGreen = Color(0xFF00FF88);
 
   @override
   void initState() {
     super.initState();
     _future = _authService.getCurrentUser();
+    _loadKaderTheme();
+  }
+
+  Future<void> _loadKaderTheme() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final kd = prefs.getBool('kader_dark_mode');
+      final md = prefs.getBool('isDarkMode');
+      final val = kd ?? md ?? true;
+      if (mounted) setState(() => _isKaderDark = val);
+      // sinkronkan themeNotifier agar dashboard & profile selaras
+      themeNotifier.value = val ? ThemeMode.dark : ThemeMode.light;
+    } catch (_) {}
   }
 
   @override
@@ -47,764 +58,319 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _pilihFotoProfil() async {
     HapticFeedback.lightImpact();
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+    final isDark = _isDark(context);
+    final sheetBg = isDark ? const Color(0xFF1E242D) : Colors.white;
     final sumber = await showModalBottomSheet<ImageSource>(
       context: context,
-      backgroundColor: isDark ? const Color(0xFF252540) : Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-          child: Wrap(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Text(
-                  'Ubah Foto Profil',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                    color: isDark ? Colors.white : const Color(0xFF0F172A),
-                  ),
-                ),
-              ),
-              Divider(height: 1, color: isDark ? const Color(0xFF2E2E4A) : const Color(0xFFE2E8F0)),
+      backgroundColor: Colors.transparent,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (_) => Container(
+        decoration: BoxDecoration(color: sheetBg, borderRadius: const BorderRadius.vertical(top: Radius.circular(24))),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              Container(width: 36, height: 4, decoration: BoxDecoration(color: const Color(0xFFE2E8F0), borderRadius: BorderRadius.circular(10))),
+              const SizedBox(height: 16),
+              Text('Ubah Foto Profil', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 16, color: isDark ? Colors.white : const Color(0xFF0F172A))),
+              const SizedBox(height: 12),
+              Divider(height: 1, color: isDark ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFE2E8F0)),
+              const SizedBox(height: 12),
+              _sheetTile(icon: Icons.camera_alt_rounded, title: 'Ambil dari Kamera', subtitle: 'Gunakan kamera ponsel', color: primaryTeal, isDark: isDark, onTap: () => Navigator.pop(context, ImageSource.camera)),
               const SizedBox(height: 8),
-              ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: isDark ? _kNeonGreen.withOpacity(0.15) : softTealBg,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(Icons.camera_alt_rounded, color: isDark ? _kNeonGreen : primaryTeal),
-                ),
-                title: Text(
-                  'Ambil dari Kamera',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15,
-                    color: isDark ? Colors.white : const Color(0xFF0F172A),
-                  ),
-                ),
-                subtitle: Text(
-                  'Gunakan kamera langsung ponsel',
-                  style: GoogleFonts.plusJakartaSans(fontSize: 12, color: isDark ? Colors.white60 : const Color(0xFF64748B)),
-                ),
-                onTap: () => Navigator.pop(context, ImageSource.camera),
-              ),
-              ListTile(
-                leading: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: isDark ? _kNeonGreen.withOpacity(0.15) : softTealBg,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(Icons.photo_library_rounded, color: isDark ? _kNeonGreen : primaryTeal),
-                ),
-                title: Text(
-                  'Pilih dari Galeri',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 15,
-                    color: isDark ? Colors.white : const Color(0xFF0F172A),
-                  ),
-                ),
-                subtitle: Text(
-                  'Pilih gambar dari album foto',
-                  style: GoogleFonts.plusJakartaSans(fontSize: 12, color: isDark ? Colors.white60 : const Color(0xFF64748B)),
-                ),
-                onTap: () => Navigator.pop(context, ImageSource.gallery),
-              ),
-            ],
+              _sheetTile(icon: Icons.photo_library_rounded, title: 'Pilih dari Galeri', subtitle: 'Pilih dari album foto', color: primaryMint, isDark: isDark, onTap: () => Navigator.pop(context, ImageSource.gallery)),
+            ]),
           ),
         ),
       ),
     );
-
     if (sumber == null) return;
-
     try {
       final img = await _picker.pickImage(source: sumber, imageQuality: 80, maxWidth: 600);
       if (img != null) {
-        setState(() {
-          _profileImage = File(img.path);
-        });
+        setState(() => _profileImage = File(img.path));
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Foto profil berhasil diperbarui',
-                style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, color: isDark ? const Color(0xFF0F172A) : Colors.white),
-              ),
-              backgroundColor: isDark ? _kNeonGreen : primaryTeal,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-          );
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Foto profil diperbarui', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, color: Colors.white)),
+            backgroundColor: primaryTeal,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            margin: const EdgeInsets.all(16),
+          ));
         }
       }
-    } catch (_) {
-      // Fallback
-    }
+    } catch (_) {}
+  }
+
+  Widget _sheetTile({required IconData icon, required String title, required String subtitle, required Color color, required bool isDark, required VoidCallback onTap}) {
+    return Material(
+      color: isDark ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFF8FAFC),
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          child: Row(children: [
+            Container(padding: const EdgeInsets.all(9), decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(11)), child: Icon(icon, size: 18, color: color)),
+            const SizedBox(width: 12),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(title, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13, color: isDark ? Colors.white : const Color(0xFF0F172A))),
+              Text(subtitle, style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: isDark ? Colors.white60 : const Color(0xFF64748B))),
+            ])),
+            Icon(Icons.chevron_right_rounded, size: 18, color: isDark ? Colors.white24 : const Color(0xFF94A3B8)),
+          ]),
+        ),
+      ),
+    );
   }
 
   Future<void> _handleLogout() async {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = _isDark(context);
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: isDark ? const Color(0xFF252540) : Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Text(
-          'Keluar Akun?',
-          style: GoogleFonts.plusJakartaSans(
-            fontWeight: FontWeight.w700,
-            fontSize: 20,
-            color: isDark ? Colors.white : const Color(0xFF0F172A),
-          ),
-        ),
-        content: Text(
-          'Anda akan keluar dari sesi aplikasi e-PKK Kabupaten Tasikmalaya.',
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 14,
-            color: isDark ? Colors.white70 : const Color(0xFF64748B),
-            height: 1.45,
-          ),
-        ),
+      builder: (_) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF1E242D) : Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text('Keluar Akun?', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 18, color: isDark ? Colors.white : const Color(0xFF0F172A))),
+        content: Text('Anda akan keluar dari sesi e-PKK Kab. Tasikmalaya.', style: GoogleFonts.plusJakartaSans(fontSize: 13.5, color: isDark ? Colors.white70 : const Color(0xFF64748B), height: 1.5)),
         actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(
-              'Batal',
-              style: GoogleFonts.plusJakartaSans(
-                color: isDark ? Colors.white60 : const Color(0xFF64748B),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Batal', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, color: isDark ? Colors.white60 : const Color(0xFF64748B)))),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFEF4444),
-              foregroundColor: Colors.white,
-              elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            ),
-            child: Text(
-              'Keluar',
-              style: GoogleFonts.plusJakartaSans(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFEF4444), foregroundColor: Colors.white, elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+            child: Text('Keluar', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
           ),
         ],
       ),
     );
-
     if (confirmed == true) {
       setState(() => _loggingOut = true);
       await _authService.logout();
       if (mounted) {
         setState(() => _loggingOut = false);
-        Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+        Navigator.pushNamedAndRemoveUntil(context, '/login', (r) => false);
       }
     }
   }
 
-  void _showInfoDialog(String title, String message) {
+  void _showInfo(String title, String msg) {
     HapticFeedback.selectionClick();
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = _isDark(context);
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: isDark ? const Color(0xFF252540) : Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
-        title: Text(
-          title,
-          style: GoogleFonts.plusJakartaSans(
-            fontWeight: FontWeight.w700,
-            fontSize: 18,
-            color: isDark ? Colors.white : const Color(0xFF0F172A),
-          ),
-        ),
-        content: Text(
-          message,
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 14,
-            color: isDark ? Colors.white70 : const Color(0xFF475569),
-            height: 1.5,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(
-              'Tutup',
-              style: GoogleFonts.plusJakartaSans(
-                fontWeight: FontWeight.w700,
-                color: isDark ? _kNeonGreen : primaryTeal,
-              ),
-            ),
-          ),
-        ],
+      builder: (_) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF1E242D) : Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(title, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 16, color: isDark ? Colors.white : const Color(0xFF0F172A))),
+        content: Text(msg, style: GoogleFonts.plusJakartaSans(fontSize: 13.5, color: isDark ? Colors.white70 : const Color(0xFF475569), height: 1.5)),
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text('Tutup', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, color: primaryTeal)))],
       ),
     );
   }
 
+  bool _isDark(BuildContext ctx) => _isKaderDark;
+
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+    final isDark = _isDark(context);
+    final bg = isDark ? const Color(0xFF14181F) : const Color(0xFFF8FAFC);
+    final cardBg = isDark ? const Color(0xFF1E242D) : Colors.white;
+    final border = isDark ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFE2E8F0);
+    final sub = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
+    final primary = isDark ? primaryMint : primaryTeal;
+
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF1A1A2E) : const Color(0xFFF8FAFC),
+      backgroundColor: bg,
       appBar: widget.embedded
           ? null
           : AppBar(
-              title: Text(
-                'Profil Kader',
-                style: GoogleFonts.plusJakartaSans(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 18,
-                  color: isDark ? const Color(0xFF0F172A) : Colors.white,
-                ),
-              ),
-              backgroundColor: isDark ? _kNeonGreen : primaryTeal,
+              backgroundColor: isDark ? const Color(0xFF1A1F28) : Colors.white,
               elevation: 0,
+              surfaceTintColor: Colors.transparent,
+              leading: IconButton(icon: Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: isDark ? Colors.white : const Color(0xFF0F172A)), onPressed: () => Navigator.pop(context)),
+              title: Text('Profil', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 16, color: isDark ? Colors.white : const Color(0xFF0F172A))),
               centerTitle: true,
             ),
       body: FutureBuilder<User>(
         future: _future,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(color: isDark ? _kNeonGreen : primaryTeal),
-            );
+        builder: (ctx, snap) {
+          if (snap.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator(color: primary, strokeWidth: 2.5));
+          if (snap.hasError) {
+            return Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Icon(Icons.error_outline_rounded, size: 44, color: sub),
+              const SizedBox(height: 10),
+              Text('Gagal memuat profil', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, color: sub)),
+              const SizedBox(height: 6),
+              Text(snap.error.toString().replaceFirst('Exception: ', ''), style: GoogleFonts.plusJakartaSans(fontSize: 11, color: sub)),
+            ]));
           }
-
-          if (snapshot.hasError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline_rounded, size: 48, color: Color(0xFF94A3B8)),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Gagal memuat profil',
-                    style: GoogleFonts.plusJakartaSans(
-                      color: isDark ? Colors.white60 : const Color(0xFF64748B),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    snapshot.error.toString().replaceFirst('Exception: ', ''),
-                    style: GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFF94A3B8)),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          final user = snapshot.data!;
-
+          final user = snap.data!;
           return SingleChildScrollView(
             physics: const ClampingScrollPhysics(),
-            padding: const EdgeInsets.only(bottom: 36),
-            child: Column(
-              children: [
-                // ── 1. HEADER PROFIL TIMELESS & CLEAN ──
-                _buildProfileHeader(user, isDark),
-
-                // ── 2. STATISTIK KONTRIBUSI MINIMALIS ──
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-                  child: _buildStatsCapsule(isDark),
-                ),
-
-                // ── 3. INFORMASI WILAYAH & TUGAS ──
-                _buildSectionCard(
-                  title: 'Wilayah Tugas & Dasawisma',
-                  icon: Icons.location_on_outlined,
-                  isDark: isDark,
-                  items: [
-                    _InfoRow(label: 'Kabupaten', value: 'Kabupaten Tasikmalaya', isDark: isDark),
-                    _InfoRow(label: 'Kecamatan', value: 'Kecamatan Singaparna', isDark: isDark),
-                    _InfoRow(label: 'Desa / Kelurahan', value: 'Desa Cipakat', isDark: isDark),
-                    _InfoRow(label: 'Kelompok Dasawisma', value: 'Dasawisma Mawar 02', isDark: isDark),
-                    _InfoRow(label: 'Wilayah RT / RW', value: 'RT 02 / RW 05', isDark: isDark),
-                  ],
-                ),
-
-                // ── 4. PENGATURAN & BANTUAN ──
-                _buildSectionCard(
-                  title: 'Informasi & Pengaturan',
-                  icon: Icons.tune_rounded,
-                  isDark: isDark,
-                  items: [
-                    _ActionRow(
-                      icon: Icons.auto_stories_outlined,
-                      title: 'Buku Panduan 10 Program Pokok PKK',
-                      isDark: isDark,
-                      onTap: () => _showInfoDialog(
-                        '10 Program Pokok PKK',
-                        '1. Penghayatan dan Pengamalan Pancasila\n'
-                        '2. Gotong Royong\n'
-                        '3. Pangan\n'
-                        '4. Sandang\n'
-                        '5. Perumahan dan Tata Laksana Rumah Tangga\n'
-                        '6. Pendidikan dan Keterampilan\n'
-                        '7. Kesehatan\n'
-                        '8. Pengembangan Kehidupan Berkoperasi\n'
-                        '9. Kelestarian Lingkungan Hidup\n'
-                        '10. Perencanaan Sehat',
-                      ),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+            child: Column(children: [
+              // Header — ala admin tapi soft, tidak ramai
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
+                decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(22), border: Border.all(color: border)),
+                child: Column(children: [
+                  Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                    InkWell(
+                      onTap: () async {
+                        HapticFeedback.selectionClick();
+                        final newVal = !isDark;
+                        setState(() => _isKaderDark = newVal);
+                        themeNotifier.value = newVal ? ThemeMode.dark : ThemeMode.light;
+                        final prefs = await SharedPreferences.getInstance();
+                        await prefs.setBool('kader_dark_mode', newVal);
+                        await prefs.setBool('isDarkMode', newVal);
+                      },
+                      borderRadius: BorderRadius.circular(20),
+                      child: Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6), decoration: BoxDecoration(color: isDark ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(20)), child: Row(mainAxisSize: MainAxisSize.min, children: [
+                        Icon(isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded, size: 14, color: isDark ? const Color(0xFFFCD34D) : primaryTeal),
+                        const SizedBox(width: 6),
+                        Text(isDark ? 'Terang' : 'Gelap', style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w700, color: isDark ? Colors.white : const Color(0xFF334155))),
+                      ])),
                     ),
-                    _ActionRow(
-                      icon: Icons.lock_outline_rounded,
-                      title: 'Ubah Kata Sandi Akun',
-                      isDark: isDark,
-                      onTap: () => _showInfoDialog(
-                        'Ubah Kata Sandi',
-                        'Untuk mengatur ulang atau mengganti kata sandi akun kader, silakan hubungi Pengurus TP PKK setempat.',
-                      ),
-                    ),
-                    _ActionRow(
-                      icon: Icons.info_outline_rounded,
-                      title: 'Tentang Aplikasi e-PKK Tasikmalaya',
-                      isDark: isDark,
-                      onTap: () => _showInfoDialog(
-                        'Tentang Aplikasi',
-                        'e-PKK Kabupaten Tasikmalaya\nVersi 1.0.0 (Build 2026)\n\n'
-                        'Platform sistem informasi digitalisasi pendataan kader Dasawisma dan kegiatan Pokja TP PKK Kabupaten Tasikmalaya.',
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 24),
-
-                // ── 5. TOMBOL KELUAR ──
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: OutlinedButton.icon(
-                      onPressed: _loggingOut ? null : _handleLogout,
-                      icon: _loggingOut
-                          ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Color(0xFFEF4444),
-                              ),
-                            )
-                          : const Icon(
-                              Icons.logout_rounded,
-                              color: Color(0xFFEF4444),
-                              size: 19,
-                            ),
-                      label: Text(
-                        _loggingOut ? 'Memproses...' : 'Keluar Akun',
-                        style: GoogleFonts.plusJakartaSans(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14,
-                          color: const Color(0xFFEF4444),
+                  ]),
+                  const SizedBox(height: 6),
+                  GestureDetector(
+                    onTap: _pilihFotoProfil,
+                    child: Stack(children: [
+                      Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: primary.withValues(alpha: 0.18), width: 2)),
+                        child: CircleAvatar(
+                          radius: 42,
+                          backgroundColor: primary.withValues(alpha: 0.10),
+                          backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
+                          child: _profileImage == null
+                              ? Text(user.nama.isNotEmpty ? user.nama[0].toUpperCase() : 'K', style: GoogleFonts.plusJakartaSans(fontSize: 30, fontWeight: FontWeight.w800, color: primary))
+                              : null,
                         ),
                       ),
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Color(0xFFFCA5A5), width: 1.2),
-                        backgroundColor: isDark ? const Color(0xFFEF4444).withOpacity(0.1) : const Color(0xFFFEF2F2),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
-                        ),
+                      Positioned(
+                        bottom: 2, right: 2,
+                        child: Container(padding: const EdgeInsets.all(5), decoration: BoxDecoration(color: primary, shape: BoxShape.circle, border: Border.all(color: cardBg, width: 2)), child: const Icon(Icons.camera_alt_rounded, size: 12, color: Colors.white)),
                       ),
-                    ),
+                    ]),
                   ),
-                ),
-
-                const SizedBox(height: 18),
-                Text(
-                  'TP PKK Kabupaten Tasikmalaya • v1.0.0',
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 12,
-                    color: const Color(0xFF94A3B8),
-                    fontWeight: FontWeight.w400,
+                  const SizedBox(height: 12),
+                  Text(user.nama, textAlign: TextAlign.center, style: GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.w800, color: isDark ? Colors.white : const Color(0xFF0F172A), letterSpacing: -0.3)),
+                  const SizedBox(height: 4),
+                  Text(user.email, style: GoogleFonts.plusJakartaSans(fontSize: 12.5, color: sub)),
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(color: primary.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(20), border: Border.all(color: primary.withValues(alpha: 0.18))),
+                    child: Row(mainAxisSize: MainAxisSize.min, children: [
+                      Icon(Icons.verified_rounded, size: 14, color: primary),
+                      const SizedBox(width: 6),
+                      Text('${user.jabatan} • TP PKK', style: GoogleFonts.plusJakartaSans(fontSize: 11.5, fontWeight: FontWeight.w700, color: primary)),
+                    ]),
                   ),
+                ]),
+              ),
+              const SizedBox(height: 14),
+              // Stats — minimalis pill
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+                decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(20), border: Border.all(color: border)),
+                child: Row(children: [
+                  _stat('24', 'Keluarga', Icons.home_rounded, isDark, primary, sub),
+                  _divider(isDark),
+                  _stat('18', 'KIA & Gizi', Icons.child_care_rounded, isDark, primary, sub),
+                  _divider(isDark),
+                  _stat('12', 'Lap. Pokja', Icons.assignment_rounded, isDark, primary, sub),
+                ]),
+              ),
+              const SizedBox(height: 14),
+              // Wilayah — tidak ramai: 4 baris saja
+              _sectionCard(
+                title: 'Wilayah Tugas',
+                icon: Icons.location_on_rounded,
+                isDark: isDark, cardBg: cardBg, border: border, sub: sub, primary: primary, items: [
+                  _infoRow('Kabupaten', 'Kab. Tasikmalaya', isDark),
+                  _infoRow('Kecamatan', 'Singaparna', isDark),
+                  _infoRow('Desa', 'Cipakat', isDark),
+                  _infoRow('Dasawisma', 'Mawar 02 • RT 02/RW 05', isDark),
+                ]),
+              const SizedBox(height: 12),
+              // Menu seperti admin Input Langsung — tapi untuk kader
+              _sectionCard(
+                title: 'Menu',
+                icon: Icons.grid_view_rounded,
+                isDark: isDark, cardBg: cardBg, border: border, sub: sub, primary: primary, items: [
+                  _actionRow(icon: Icons.assignment_outlined, title: 'Riwayat Catatan Pokja', subtitle: 'Lihat laporan yang pernah dikirim', isDark: isDark, onTap: () => _showInfo('Riwayat', 'Fitur riwayat catatan akan menampilkan semua laporan yang telah Anda kirim.')),
+                  _actionRow(icon: Icons.shield_outlined, title: 'Keamanan Akun', subtitle: 'Ubah kata sandi', isDark: isDark, onTap: () => _showInfo('Keamanan', 'Hubungi pengurus TP PKK untuk ubah kata sandi.')),
+                  _actionRow(icon: Icons.info_outline_rounded, title: 'Tentang e-PKK', subtitle: 'Versi 1.0.0 • Kab. Tasikmalaya', isDark: isDark, onTap: () => _showInfo('Tentang', 'e-PKK Kab. Tasikmalaya\nVersi 1.0.0 (2026)\nDigitalisasi pendataan Dasawisma & Pokja.')),
+                ]),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity, height: 48,
+                child: OutlinedButton.icon(
+                  onPressed: _loggingOut ? null : _handleLogout,
+                  icon: _loggingOut ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFFEF4444))) : const Icon(Icons.logout_rounded, size: 18, color: Color(0xFFEF4444)),
+                  label: Text(_loggingOut ? 'Memproses...' : 'Keluar Akun', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13, color: const Color(0xFFEF4444))),
+                  style: OutlinedButton.styleFrom(side: const BorderSide(color: Color(0xFFFECACA)), backgroundColor: isDark ? const Color(0xFFEF4444).withValues(alpha: 0.08) : const Color(0xFFFEF2F2), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24))),
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 12),
+              Text('TP PKK Kab. Tasikmalaya • v1.0.0', style: GoogleFonts.plusJakartaSans(fontSize: 11, color: sub)),
+            ]),
           );
         },
       ),
     );
   }
 
-  // ── HEADER DENGAN GAYA TIMELESS & ORGANIK ──
-  Widget _buildProfileHeader(User user, bool isDark) {
+  Widget _stat(String v, String label, IconData icon, bool isDark, Color primary, Color sub) => Expanded(child: Column(children: [
+    Row(mainAxisSize: MainAxisSize.min, children: [Icon(icon, size: 14, color: primary), const SizedBox(width: 5), Text(v, style: GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.w800, color: isDark ? Colors.white : const Color(0xFF0F172A)))]),
+    const SizedBox(height: 3), Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 10.5, color: sub, fontWeight: FontWeight.w600)),
+  ]));
+  Widget _divider(bool isDark) => Container(height: 28, width: 1, color: isDark ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFE2E8F0));
+
+  Widget _sectionCard({required String title, required IconData icon, required bool isDark, required Color cardBg, required Color border, required Color sub, required Color primary, required List<Widget> items}) {
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF252540) : Colors.white,
-        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)),
-        boxShadow: [
-          BoxShadow(
-            color: isDark ? Colors.black.withOpacity(0.3) : const Color(0x06000000),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
-      child: Stack(
-        children: [
-          // Tombol Toggle Dark/Light Mode di kanan atas
-          Positioned(
-            top: 0,
-            right: 0,
-            child: IconButton(
-              onPressed: () async {
-                HapticFeedback.selectionClick();
-                final prefs = await SharedPreferences.getInstance();
-                final isCurrentlyDark = themeNotifier.value == ThemeMode.dark;
-                themeNotifier.value = isCurrentlyDark ? ThemeMode.light : ThemeMode.dark;
-                await prefs.setBool('isDarkMode', !isCurrentlyDark);
-              },
-              icon: Icon(
-                isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
-                color: isDark ? const Color(0xFFFCD34D) : primaryTeal,
-              ),
-              tooltip: 'Ganti Tema',
-            ),
-          ),
-          Column(
-            children: [
-              // Avatar dengan border halus dan tombol kamera
-              GestureDetector(
-                onTap: _pilihFotoProfil,
-                child: Stack(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(3),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: (isDark ? _kNeonGreen : primaryTeal).withOpacity(0.35),
-                          width: 2.5,
-                        ),
-                      ),
-                      child: CircleAvatar(
-                        radius: 46,
-                        backgroundColor: isDark ? _kNeonGreen.withOpacity(0.1) : softTealBg,
-                        backgroundImage:
-                            _profileImage != null ? FileImage(_profileImage!) : null,
-                        child: _profileImage == null
-                            ? Text(
-                                user.nama.isNotEmpty
-                                    ? user.nama[0].toUpperCase()
-                                    : 'K',
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 34,
-                                  fontWeight: FontWeight.w700,
-                                  color: isDark ? _kNeonGreen : primaryTeal,
-                                ),
-                              )
-                            : null,
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 2,
-                      right: 2,
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: isDark ? _kNeonGreen : primaryTeal,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: isDark ? const Color(0xFF252540) : Colors.white, width: 2),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.12),
-                              blurRadius: 6,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          Icons.camera_alt_rounded,
-                          size: 14,
-                          color: isDark ? const Color(0xFF0F172A) : Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 14),
-
-              // Nama Kader
-              Text(
-                user.nama,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 21,
-                  fontWeight: FontWeight.w700,
-                  color: isDark ? Colors.white : const Color(0xFF0F172A),
-                  letterSpacing: -0.3,
-                ),
-              ),
-              const SizedBox(height: 4),
-
-              // Email
-              Text(
-                user.email,
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 13,
-                  color: isDark ? Colors.white60 : const Color(0xFF64748B),
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
-              const SizedBox(height: 10),
-
-              // Badge Jabatan Elegan
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-                decoration: BoxDecoration(
-                  color: isDark ? _kNeonGreen.withOpacity(0.15) : softTealBg,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: isDark ? _kNeonGreen.withOpacity(0.3) : const Color(0xFFCCFBF1),
-                    width: 1.2,
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.verified_rounded,
-                      size: 14,
-                      color: isDark ? _kNeonGreen : primaryTeal,
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      '${user.jabatan} • TP PKK',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: isDark ? _kNeonGreen : darkTeal,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(20), border: Border.all(color: border)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Container(padding: const EdgeInsets.all(7), decoration: BoxDecoration(color: primary.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(10)), child: Icon(icon, size: 15, color: primary)),
+          const SizedBox(width: 10), Text(title, style: GoogleFonts.plusJakartaSans(fontSize: 13.5, fontWeight: FontWeight.w800, color: isDark ? Colors.white : const Color(0xFF0F172A))),
+        ]),
+        const SizedBox(height: 10), Divider(height: 1, color: isDark ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFF1F5F9)), const SizedBox(height: 6),
+        ...items,
+      ]),
     );
   }
 
-  // ── STATS CAPSULE MINIMALIS & TIMELESS ──
-  Widget _buildStatsCapsule(bool isDark) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF252540) : Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: isDark ? const Color(0xFF2E2E4A) : const Color(0xFFE2E8F0), width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: isDark ? Colors.black.withOpacity(0.3) : Colors.black.withOpacity(0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildStatItem('24', 'Keluarga', Icons.home_rounded, isDark),
-          Container(height: 28, width: 1, color: isDark ? const Color(0xFF2E2E4A) : const Color(0xFFE2E8F0)),
-          _buildStatItem('18', 'KIA & Gizi', Icons.child_care_rounded, isDark),
-          Container(height: 28, width: 1, color: isDark ? const Color(0xFF2E2E4A) : const Color(0xFFE2E8F0)),
-          _buildStatItem('12', 'Lap. Pokja', Icons.assignment_rounded, isDark),
-        ],
-      ),
-    );
-  }
+  Widget _infoRow(String label, String value, bool isDark) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 7),
+    child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+      Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 12.5, color: isDark ? Colors.white60 : const Color(0xFF64748B))),
+      Flexible(child: Text(value, textAlign: TextAlign.end, style: GoogleFonts.plusJakartaSans(fontSize: 12.5, fontWeight: FontWeight.w700, color: isDark ? Colors.white : const Color(0xFF0F172A)))),
+    ]),
+  );
 
-  Widget _buildStatItem(String count, String label, IconData icon, bool isDark) {
-    return Column(
-      children: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 16, color: isDark ? _kNeonGreen : primaryTeal),
-            const SizedBox(width: 6),
-            Text(
-              count,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 16,
-                fontWeight: FontWeight.w700,
-                color: isDark ? Colors.white : const Color(0xFF0F172A),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 3),
-        Text(
-          label,
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 11,
-            color: isDark ? Colors.white60 : const Color(0xFF64748B),
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
-    );
-  }
-
-  // ── KARTU BAGIAN DENGAN BORDER HALUS & TIDAK KAKU ──
-  Widget _buildSectionCard({
-    required String title,
-    required IconData icon,
-    required List<Widget> items,
-    required bool isDark,
-  }) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(20, 12, 20, 4),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF252540) : Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: isDark ? const Color(0xFF2E2E4A) : const Color(0xFFE2E8F0), width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: isDark ? Colors.black.withOpacity(0.3) : Colors.black.withOpacity(0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.all(18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(7),
-                decoration: BoxDecoration(
-                  color: isDark ? _kNeonGreen.withOpacity(0.15) : softTealBg,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(icon, size: 16, color: isDark ? _kNeonGreen : primaryTeal),
-              ),
-              const SizedBox(width: 10),
-              Text(
-                title,
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: isDark ? Colors.white : const Color(0xFF0F172A),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Divider(height: 1, color: isDark ? const Color(0xFF2E2E4A) : const Color(0xFFF1F5F9)),
-          const SizedBox(height: 6),
-          ...items,
-        ],
-      ),
-    );
-  }
-}
-
-class _InfoRow extends StatelessWidget {
-  final String label;
-  final String value;
-  final bool isSuccess;
-  final bool isDark;
-
-  const _InfoRow({required this.label, required this.value, this.isSuccess = false, required this.isDark});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 13,
-              color: isDark ? Colors.white60 : const Color(0xFF64748B),
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-          Flexible(
-            child: Text(
-              value,
-              textAlign: TextAlign.end,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: isSuccess
-                    ? (isDark ? const Color(0xFF00FF88) : const Color(0xFF059669))
-                    : (isDark ? Colors.white : const Color(0xFF0F172A)),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ActionRow extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final VoidCallback onTap;
-  final bool isDark;
-
-  const _ActionRow({required this.icon, required this.title, required this.onTap, required this.isDark});
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
+  Widget _actionRow({required IconData icon, required String title, required String subtitle, required bool isDark, required VoidCallback onTap}) => Material(
+    color: Colors.transparent,
+    child: InkWell(
       borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-        child: Row(
-          children: [
-            Icon(icon, size: 18, color: isDark ? Colors.white54 : const Color(0xFF64748B)),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                title,
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 13.5,
-                  fontWeight: FontWeight.w500,
-                  color: isDark ? Colors.white : const Color(0xFF1E293B),
-                ),
-              ),
-            ),
-            Icon(
-              Icons.chevron_right_rounded,
-              size: 18,
-              color: isDark ? Colors.white24 : const Color(0xFF94A3B8),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+      onTap: onTap,
+      child: Padding(padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 2), child: Row(children: [
+        Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: isDark ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(10)), child: Icon(icon, size: 16, color: isDark ? Colors.white70 : const Color(0xFF64748B))),
+        const SizedBox(width: 12),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(title, style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w600, color: isDark ? Colors.white : const Color(0xFF1E293B))),
+          const SizedBox(height: 1), Text(subtitle, style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: isDark ? Colors.white60 : const Color(0xFF64748B))),
+        ])),
+        Icon(Icons.chevron_right_rounded, size: 18, color: isDark ? Colors.white24 : const Color(0xFFCBD5E1)),
+      ])),
+    ),
+  );
 }
