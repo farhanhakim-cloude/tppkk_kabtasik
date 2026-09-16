@@ -31,10 +31,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   static const primaryTeal = Color(0xFF0D9488);
   static const darkTeal = Color(0xFF0F766E);
 
+  void _onThemeChanged() {
+    final isDark = themeNotifier.value == ThemeMode.dark;
+    if (mounted && _isKaderDark != isDark) setState(() => _isKaderDark = isDark);
+  }
+
   @override
   void initState() {
     super.initState();
     _future = _authService.getCurrentUser();
+    _isKaderDark = themeNotifier.value == ThemeMode.dark;
+    themeNotifier.addListener(_onThemeChanged);
     _loadKaderTheme();
   }
 
@@ -43,15 +50,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final prefs = await SharedPreferences.getInstance();
       final kd = prefs.getBool('kader_dark_mode');
       final md = prefs.getBool('isDarkMode');
-      final val = kd ?? md ?? true;
-      if (mounted) setState(() => _isKaderDark = val);
+      final val = kd ?? md ?? (themeNotifier.value == ThemeMode.dark);
+      if (mounted && _isKaderDark != val) setState(() => _isKaderDark = val);
       // sinkronkan themeNotifier agar dashboard & profile selaras
-      themeNotifier.value = val ? ThemeMode.dark : ThemeMode.light;
+      if (themeNotifier.value != (val ? ThemeMode.dark : ThemeMode.light)) {
+        themeNotifier.value = val ? ThemeMode.dark : ThemeMode.light;
+      }
     } catch (_) {}
   }
 
   @override
   void dispose() {
+    themeNotifier.removeListener(_onThemeChanged);
     _authService.dispose();
     super.dispose();
   }
@@ -230,9 +240,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       },
                       borderRadius: BorderRadius.circular(20),
                       child: Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6), decoration: BoxDecoration(color: isDark ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(20)), child: Row(mainAxisSize: MainAxisSize.min, children: [
-                        Icon(isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded, size: 14, color: isDark ? const Color(0xFFFCD34D) : primaryTeal),
+                        Icon(isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded, size: 14, color: isDark ? const Color(0xFF94A3B8) : const Color(0xFFF59E0B)),
                         const SizedBox(width: 6),
-                        Text(isDark ? 'Terang' : 'Gelap', style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w700, color: isDark ? Colors.white : const Color(0xFF334155))),
+                        Text(isDark ? 'Gelap' : 'Terang', style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w700, color: isDark ? Colors.white : const Color(0xFF334155))),
                       ])),
                     ),
                   ]),

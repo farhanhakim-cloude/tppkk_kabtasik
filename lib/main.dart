@@ -12,9 +12,9 @@ final themeNotifier = ValueNotifier<ThemeMode>(ThemeMode.light);
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Muat preferensi tema yang tersimpan
+  // Muat preferensi tema yang tersimpan — cek kedua key untuk sinkron kader/admin
   final prefs = await SharedPreferences.getInstance();
-  final isDark = prefs.getBool('isDarkMode') ?? false;
+  final isDark = prefs.getBool('kader_dark_mode') ?? prefs.getBool('isDarkMode') ?? false;
   themeNotifier.value = isDark ? ThemeMode.dark : ThemeMode.light;
   runApp(const MyApp());
 }

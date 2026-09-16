@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import '../../main.dart';
 
 import '../../models/catatan_kegiatan.dart';
 import '../../services/catatan_kegiatan_service.dart';
@@ -41,32 +42,23 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
     'Pokja IV',
   ];
 
+  void _onThemeChanged() {
+    final isDark = themeNotifier.value == ThemeMode.dark;
+    if (mounted && _isDarkMode != isDark) setState(() => _isDarkMode = isDark);
+  }
+
   @override
   void initState() {
     super.initState();
+    _isDarkMode = themeNotifier.value == ThemeMode.dark;
+    themeNotifier.addListener(_onThemeChanged);
     _loadUserInfo();
-    _loadThemePreference();
   }
 
-  Future<void> _loadThemePreference() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final isDark = prefs.getBool('kader_dark_mode') ?? true;
-      setState(() {
-        _isDarkMode = isDark;
-      });
-    } catch (_) {}
-  }
-
-  // ignore: unused_element
-  Future<void> _toggleTheme() async {
-    setState(() {
-      _isDarkMode = !_isDarkMode;
-    });
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('kader_dark_mode', _isDarkMode);
-    } catch (_) {}
+  @override
+  void dispose() {
+    themeNotifier.removeListener(_onThemeChanged);
+    super.dispose();
   }
 
   Future<void> _loadUserInfo() async {
@@ -823,7 +815,6 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
                     context,
                     MaterialPageRoute(builder: (_) => const ProfileScreen()),
                   ).then((_) {
-                    _loadThemePreference();
                     _loadUserInfo();
                     if (mounted) setState(() => _selectedBottomNavIndex = 0);
                   });

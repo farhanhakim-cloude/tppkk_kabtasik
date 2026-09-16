@@ -10,6 +10,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/catatan_kegiatan.dart';
 import '../services/catatan_kegiatan_service.dart';
+import '../main.dart';
 
 class CatatanKegiatanFormScreen extends StatefulWidget {
   final CatatanKegiatan? catatan;
@@ -46,6 +47,8 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
   @override
   void initState() {
     super.initState();
+    _isDarkMode = themeNotifier.value == ThemeMode.dark;
+    themeNotifier.addListener(_onThemeChanged);
     _loadTheme();
     final allFields = [
       ...PokjaKategori.pokja1.fieldAngka,
@@ -85,6 +88,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
 
   @override
   void dispose() {
+    themeNotifier.removeListener(_onThemeChanged);
     _judulController.dispose();
     _deskripsiController.dispose();
     _desaController.dispose();
@@ -92,12 +96,26 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
     super.dispose();
   }
 
+  void _onThemeChanged() {
+    final isDark = themeNotifier.value == ThemeMode.dark;
+    if (mounted && _isDarkMode != isDark) setState(() => _isDarkMode = isDark);
+  }
+
   Future<void> _loadTheme() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final isDark = prefs.getBool('kader_dark_mode') ?? true;
-      if (mounted) setState(() => _isDarkMode = isDark);
+      final isDark = prefs.getBool('kader_dark_mode') ?? prefs.getBool('isDarkMode') ?? (themeNotifier.value == ThemeMode.dark);
+      if (mounted && _isDarkMode != isDark) setState(() => _isDarkMode = isDark);
+      if (themeNotifier.value != (isDark ? ThemeMode.dark : ThemeMode.light)) themeNotifier.value = isDark ? ThemeMode.dark : ThemeMode.light;
     } catch (_) {}
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Sinkron sekali saat pertama build dengan Theme global
+    final isDark = themeNotifier.value == ThemeMode.dark;
+    if (_isDarkMode != isDark) _isDarkMode = isDark;
   }
 
   Color _getPokjaColor(PokjaKategori p) {
@@ -727,10 +745,25 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
             ),
             const SizedBox(height: 20),
 
-            _sectionLabel('Rincian peserta', '01', c, sub),
-            const SizedBox(height: 2),
-            Text('Ketuk kartu untuk mengisi jumlah peserta — seperti pilih kecamatan', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: sub)),
-            const SizedBox(height: 12),
+            // ── 01 Rincian peserta — desain baru: simple, lega, jelas ──
+            Row(
+              children: [
+                Expanded(child: _sectionLabel('Rincian peserta', '01', c, sub)),
+                const SizedBox(width: 10),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: _countFilled() > 0 ? c.withValues(alpha: 0.12) : inputFill,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: _countFilled() > 0 ? c.withValues(alpha: 0.18) : border),
+                  ),
+                  child: Text('${_countFilled()}/${subItems.length} terisi', style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w800, color: _countFilled() > 0 ? c : sub)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text('Pilih kartu untuk isi angka peserta', style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: sub, fontWeight: FontWeight.w500)),
+            const SizedBox(height: 14),
 
             ...subItems.asMap().entries.map((e) {
               final idx = e.key;
@@ -739,49 +772,62 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
               if (_angkaCtrl[s.fieldL]?.text.isNotEmpty == true) sum += int.tryParse(_angkaCtrl[s.fieldL]!.text) ?? 0;
               if (s.fieldP.isNotEmpty && _angkaCtrl[s.fieldP]?.text.isNotEmpty == true) sum += int.tryParse(_angkaCtrl[s.fieldP]!.text) ?? 0;
               final hasValue = sum > 0;
-              String ringkas = '';
+              String ringkas;
               if (hasValue) {
                 if (s.fieldP.isEmpty) {
-                  ringkas = '$sum terisi';
+                  ringkas = '$sum';
                 } else {
                   final l = int.tryParse(_angkaCtrl[s.fieldL]?.text ?? '') ?? 0;
                   final p = int.tryParse(_angkaCtrl[s.fieldP]?.text ?? '') ?? 0;
                   ringkas = 'L $l • P $p';
                 }
               } else {
-                ringkas = 'Belum diisi';
+                ringkas = 'Isi';
               }
               return Padding(
                 padding: const EdgeInsets.only(bottom: 10),
                 child: Material(
-                  color: cardBg,
-                  borderRadius: BorderRadius.circular(18),
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(16),
                   child: InkWell(
-                    borderRadius: BorderRadius.circular(18),
+                    borderRadius: BorderRadius.circular(16),
                     onTap: () => _showKegiatanInputSheet(s, idx),
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(18), border: Border.all(color: hasValue ? c.withValues(alpha: 0.22) : border)),
+                      decoration: BoxDecoration(
+                        color: cardBg,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: hasValue ? c.withValues(alpha: 0.18) : border, width: 1),
+                        boxShadow: [
+                          if (!_isDarkMode) BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 8, offset: const Offset(0, 2)),
+                        ],
+                      ),
                       child: Row(children: [
-                        Container(width: 38, height: 38, decoration: BoxDecoration(color: hasValue ? c.withValues(alpha: 0.12) : inputFill, borderRadius: BorderRadius.circular(11)), child: Icon(s.icon, size: 18, color: hasValue ? c : const Color(0xFF64748B))),
+                        Container(
+                          width: 42, height: 42,
+                          decoration: BoxDecoration(color: hasValue ? c.withValues(alpha: 0.12) : inputFill, borderRadius: BorderRadius.circular(12)),
+                          child: Icon(s.icon, size: 20, color: hasValue ? c : const Color(0xFF94A3B8)),
+                        ),
                         const SizedBox(width: 12),
                         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Row(children: [
-                            Flexible(child: Text(s.title, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13.5, color: hasValue ? c : text))),
-                            if (hasValue) ...[
-                              const SizedBox(width: 8),
-                              Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), decoration: BoxDecoration(color: const Color(0xFFECFDF5), borderRadius: BorderRadius.circular(20)), child: Text('$sum', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 11, color: const Color(0xFF059669)))),
-                            ],
-                          ]),
-                          const SizedBox(height: 1),
-                          Text(s.deskripsi, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: sub)),
+                          Text(s.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13.5, color: text)),
+                          const SizedBox(height: 2),
+                          Text(s.deskripsi, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: sub, fontWeight: FontWeight.w500)),
                         ])),
-                        const SizedBox(width: 8),
-                        Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                          Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), decoration: BoxDecoration(color: hasValue ? const Color(0xFFECFDF5) : inputFill, borderRadius: BorderRadius.circular(20)), child: Text(ringkas, style: GoogleFonts.plusJakartaSans(fontSize: 10.5, fontWeight: FontWeight.w700, color: hasValue ? const Color(0xFF059669) : sub))),
-                          const SizedBox(height: 4),
-                          Icon(Icons.keyboard_arrow_right_rounded, size: 16, color: hasValue ? c : sub),
-                        ]),
+                        const SizedBox(width: 10),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: hasValue ? c.withValues(alpha: 0.12) : Colors.transparent,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: hasValue ? Colors.transparent : border),
+                          ),
+                          child: Row(mainAxisSize: MainAxisSize.min, children: [
+                            Text(ringkas, style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w800, color: hasValue ? c : sub)),
+                            const SizedBox(width: 4),
+                            Icon(hasValue ? Icons.check_circle_rounded : Icons.chevron_right_rounded, size: 14, color: hasValue ? c : sub.withValues(alpha: 0.7)),
+                          ]),
+                        ),
                       ]),
                     ),
                   ),
