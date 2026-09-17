@@ -241,6 +241,14 @@ class CatatanKegiatanService {
     await _saveLocal();
   }
 
+  Future<void> updateStatus(int id, StatusKegiatan status) async {
+    final idx = _data.indexWhere((c) => c.id == id);
+    if (idx >= 0) {
+      _data[idx] = _data[idx].copyWith(status: status);
+      await _saveLocal();
+    }
+  }
+
   // ============================================================
   // 🔥 KIRIM LAPORAN — simpan lokal dulu, API jangan bikin gagal lokal
   // ============================================================

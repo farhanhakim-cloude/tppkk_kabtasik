@@ -49,34 +49,32 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   // ============================================================
-  // 🔥 HELPER: Redirect berdasarkan role user
+  // 🔥 HELPER: Redirect berdasarkan role user (3 role)
   // ============================================================
   Future<void> _redirectByRole() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final userData = prefs.getString('user_data') ?? '{}';
+      final lower = userData.toLowerCase();
 
-      final String rolesStr = userData;
-      String primaryRole = 'dasawisma';
-
-      if (rolesStr.contains('"admin"')) {
+      String primaryRole = 'kader';
+      if (lower.contains('"admin"') || lower.contains('super admin') || lower.contains('super_admin')) {
         primaryRole = 'admin';
-      } else if (rolesStr.contains('"pkk"')) {
-        primaryRole = 'pkk';
-      } else if (rolesStr.contains('"kader_dasawisma"')) {
-        primaryRole = 'kader_dasawisma';
-      } else if (rolesStr.contains('"dasawisma"')) {
+      } else if (lower.contains('"dasawisma"') || lower.contains('dasawisma')) {
+        // dasawisma murni atau kader_dasawisma → arahkan ke dasawisma dashboard baru
         primaryRole = 'dasawisma';
-      } else if (rolesStr.contains('"user"')) {
-        primaryRole = 'user';
+      } else if (lower.contains('"kader"') || lower.contains('kader_dasawisma') || lower.contains('"pkk"') || lower.contains('"user"')) {
+        primaryRole = 'kader';
       }
 
-      print('🎯 REDIRECT: role=$primaryRole');
+      print('🎯 REDIRECT: role=$primaryRole raw=$userData');
 
       if (!mounted) return;
 
       if (primaryRole == 'admin') {
         Navigator.pushReplacementNamed(context, '/dashboard');
+      } else if (primaryRole == 'dasawisma') {
+        Navigator.pushReplacementNamed(context, '/dasawisma');
       } else {
         Navigator.pushReplacementNamed(context, '/kader');
       }
@@ -733,7 +731,41 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
 
-                            const SizedBox(height: 22),
+                            const SizedBox(height: 12),
+
+                            // Tombol dummy Dasawisma (Opsi A - langsung tanpa backend)
+                            SizedBox(
+                              width: double.infinity,
+                              height: 48,
+                              child: OutlinedButton.icon(
+                                onPressed: () async {
+                                  HapticFeedback.selectionClick();
+                                  final prefs = await SharedPreferences.getInstance();
+                                  await prefs.setString('user_data', '{"name":"Dasawisma Demo","username":"dasawisma_demo","email":"dasawisma@demo.id","roles":["dasawisma"]}');
+                                  await prefs.setString('auth_token', 'dummy_dasawisma_token');
+                                  await prefs.setBool('isLoggedIn', true);
+                                  if (context.mounted) {
+                                    Navigator.pushReplacementNamed(context, '/dasawisma');
+                                  }
+                                },
+                                icon: const Icon(Icons.groups_rounded, size: 18, color: Color(0xFF0D9488)),
+                                label: Text(
+                                  'Masuk sebagai Dasawisma (Demo)',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 13.5,
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(0xFF0D9488),
+                                  ),
+                                ),
+                                style: OutlinedButton.styleFrom(
+                                  side: const BorderSide(color: Color(0xFF0D9488), width: 1.5),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  backgroundColor: const Color(0xFF0D9488).withValues(alpha: 0.06),
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 16),
 
                             // Footer SSL
                             Row(

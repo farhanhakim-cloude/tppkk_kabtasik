@@ -108,10 +108,29 @@ class _SplashScreenState extends State<SplashScreen>
     final isLoggedIn = await _authService.isLoggedIn();
     if (!mounted) return;
 
-    if (isLoggedIn) {
-      Navigator.pushReplacementNamed(context, '/dashboard');
-    } else {
+    if (!isLoggedIn) {
       Navigator.pushReplacementNamed(context, '/login');
+      return;
+    }
+
+    // Sudah login → arahkan sesuai role (3 role)
+    try {
+      final user = await _authService.getCurrentUser();
+      final rolesLower = user.roles.map((r) => r.toLowerCase()).toList();
+      final isAdmin = rolesLower.any((r) => r.contains('admin') || r.contains('super'));
+      final isDasawisma = rolesLower.any((r) => r.contains('dasawisma'));
+
+      if (!mounted) return;
+      if (isAdmin) {
+        Navigator.pushReplacementNamed(context, '/dashboard');
+      } else if (isDasawisma) {
+        Navigator.pushReplacementNamed(context, '/dasawisma');
+      } else {
+        Navigator.pushReplacementNamed(context, '/kader');
+      }
+    } catch (_) {
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, '/dashboard');
     }
   }
 

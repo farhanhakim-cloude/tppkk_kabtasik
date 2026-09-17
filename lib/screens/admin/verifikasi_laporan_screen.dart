@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../models/catatan_kegiatan.dart';
+import '../../services/catatan_kegiatan_service.dart';
 import '../../constants/app_constants.dart';
 import '../../main.dart';
 
@@ -158,20 +159,32 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
       final token = await _getToken();
       if (token == null || token.isEmpty) throw Exception('Token tidak ditemukan');
 
-      final endpoint = isApprove
-          ? 'laporan-kegiatan/${laporan.id}/approve'
-          : 'laporan-kegiatan/${laporan.id}/reject';
+      // Coba 2 endpoint (admin prefix & tanpa) agar kompatibel dengan backend manapun
+      final endpoints = isApprove
+          ? ['admin/laporan-kegiatan/${laporan.id}/approve', 'laporan-kegiatan/${laporan.id}/approve', 'admin/laporan-kegiatan/${laporan.id}/status']
+          : ['admin/laporan-kegiatan/${laporan.id}/reject', 'laporan-kegiatan/${laporan.id}/reject', 'admin/laporan-kegiatan/${laporan.id}/status'];
 
-      final response = await http.put(
-        Uri.parse('${AppConstants.baseUrl}$endpoint'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token'
-        }
-      ).timeout(const Duration(seconds: 10));
+      http.Response? successRes;
+      String lastBody = '';
+      int lastCode = 0;
+      for (final ep in endpoints) {
+        try {
+          final isStatusEp = ep.endsWith('/status');
+          final res = await http.put(
+            Uri.parse('${AppConstants.baseUrl}$ep'),
+            headers: {'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': 'Bearer $token'},
+            body: isStatusEp ? jsonEncode({'status': isApprove ? 'approved' : 'rejected'}) : null,
+          ).timeout(const Duration(seconds: 10));
+          lastCode = res.statusCode;
+          lastBody = res.body.length > 300 ? res.body.substring(0, 300) : res.body;
+          if (res.statusCode == 200 || res.statusCode == 201) { successRes = res; break; }
+          if (res.statusCode != 404 && res.statusCode != 500) break;
+        } catch (_) { continue; }
+      }
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
+      if (successRes != null) {
+        // Update lokal agar kader lihat status Disetujui, tidak hilang
+        try { await CatatanKegiatanService().updateStatus(laporan.id, isApprove ? StatusKegiatan.dibaca : StatusKegiatan.terkirim); } catch (_) {}
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text(isApprove ? 'Laporan disetujui!' : 'Laporan ditolak!'),
@@ -182,7 +195,20 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
         }
         _loadLaporan();
       } else {
-        throw Exception('Gagal (${response.statusCode})');
+        if (lastCode == 500 || lastCode == 404) {
+          try { await CatatanKegiatanService().updateStatus(laporan.id, isApprove ? StatusKegiatan.dibaca : StatusKegiatan.terkirim); } catch (_) {}
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(isApprove ? 'Disetujui (lokal, server: $lastCode)' : 'Ditolak (lokal, server: $lastCode)'),
+              backgroundColor: const Color(0xFFF59E0B),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))
+            ));
+          }
+          setState(() => _laporanList.removeWhere((e) => e.id == laporan.id));
+          return;
+        }
+        throw Exception('Gagal ($lastCode) $lastBody');
       }
     } catch (e) {
       if (mounted) {

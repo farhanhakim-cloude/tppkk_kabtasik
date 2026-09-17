@@ -115,7 +115,7 @@ class Weather {
       return [const Color(0xFF38BDF8), const Color(0xFF0EA5E9)]; // cerah biru
     }
     if ([2, 3, 45, 48].contains(weatherCode)) {
-      return [const Color(0xFF94A3B8), const Color(0xFF64748B)]; // mendung abu
+      return [const Color(0xFF2ED9C3), const Color(0xFF1FBFA8)]; // mendung → selaras admin/kader teal
     }
     if ([51, 53, 55, 56, 57, 61, 63, 65, 80, 81, 82].contains(weatherCode)) {
       return [const Color(0xFF60A5FA), const Color(0xFF2563EB)]; // hujan biru tua

@@ -25,13 +25,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       secondaryIcon: Icons.favorite_rounded,
     ),
     OnboardingItem(
-      title: 'Pendataan Pokja Terpadu',
+      title: 'Pendataan Dasawisma Lengkap',
       description:
-          'Pencatatan data kegiatan Pokja I hingga IV, Posyandu, dan Dasawisma secara praktis, cepat, dan digital.',
-      icon: Icons.assignment_turned_in_rounded,
-      badgeText: 'Pokja I - IV',
+          'Input 8 form Dasawisma (Data Keluarga, Catatan Keluarga, Kegiatan Warga, Pemanfaatan Tanah, Industri, Ibu & Anak) secara praktis dan langsung rekap otomatis ke RT/RW/Desa.',
+      icon: Icons.groups_rounded,
+      badgeText: '8 Form Dasawisma',
       gradientColors: [Color(0xFF0284C7), Color(0xFF38BDF8)],
-      secondaryIcon: Icons.insights_rounded,
+      secondaryIcon: Icons.table_chart_rounded,
     ),
     OnboardingItem(
       title: 'Laporan Cepat & Akurat',

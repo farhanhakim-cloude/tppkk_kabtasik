@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../models/keluarga.dart';
-import '../services/keluarga_service.dart';
+import '../../models/keluarga.dart';
+import '../../services/keluarga_service.dart';
 import 'keluarga_form_screen.dart';
 import 'rekap_ibu_anak_list_screen.dart';
 import 'rekap_ibu_anak_form_screen.dart';
@@ -729,16 +729,21 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
                                       final hasLocation = k.latitude != null && k.longitude != null;
 
                                       return Container(
-                                        margin: const EdgeInsets.only(bottom: 12),
+                                        margin: const EdgeInsets.only(bottom: 10),
                                         decoration: BoxDecoration(
                                           color: Colors.white,
                                           borderRadius: BorderRadius.circular(18),
-                                          border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
+                                          border: Border(
+                                            left: const BorderSide(color: Color(0xFF0D9488), width: 3.5),
+                                            top: const BorderSide(color: Color(0xFFE2E8F0), width: 1.1),
+                                            right: const BorderSide(color: Color(0xFFE2E8F0), width: 1.1),
+                                            bottom: const BorderSide(color: Color(0xFFE2E8F0), width: 1.1),
+                                          ),
                                           boxShadow: [
                                             BoxShadow(
-                                              color: const Color(0xFF0F172A).withValues(alpha: 0.03),
+                                              color: const Color(0xFF0F172A).withValues(alpha: 0.04),
                                               blurRadius: 10,
-                                              offset: const Offset(0, 3),
+                                              offset: const Offset(0, 2),
                                             ),
                                           ],
                                         ),

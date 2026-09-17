@@ -419,7 +419,11 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
   Widget _buildCatatanCard(CatatanKegiatan item, Color cardBg, Color textColor,
       Color subtextColor, Color borderColor, Color accentColor) {
     final color = _getPokjaColor(item.kategori);
-    // DEBUG: versi super simpel agar pasti terlihat — pakai warna solid, tanpa withValues
+    // Status badge selaras verifikasi: Menunggu Verifikasi (orange) / Disetujui (green)
+    final isApproved = item.status == StatusKegiatan.dibaca;
+    final statusLabel = isApproved ? 'Disetujui' : 'Menunggu Verifikasi';
+    final statusColor = isApproved ? const Color(0xFF10B981) : const Color(0xFFD97706);
+    final statusBg = isApproved ? const Color(0xFFECFDF5) : const Color(0xFFFFF7ED);
     return Container(
       margin: const EdgeInsets.only(bottom: 2),
       decoration: BoxDecoration(
@@ -436,31 +440,30 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(20)),
-                    child: Text(item.kategori.shortLabel, style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w800, color: color)),
-                  ),
-                  const Spacer(),
-                  Text('${item.tanggal.day}/${item.tanggal.month}/${item.tanggal.year}',
-                      style: GoogleFonts.plusJakartaSans(fontSize: 11, color: subtextColor, fontWeight: FontWeight.w600)),
-                ],
+              // Status badge (seperti Image: Menunggu Verifikasi oren)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(color: statusBg, borderRadius: BorderRadius.circular(20)),
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  Container(width: 6, height: 6, decoration: BoxDecoration(color: statusColor, shape: BoxShape.circle)),
+                  const SizedBox(width: 6),
+                  Text(statusLabel, style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w700, color: statusColor)),
+                ]),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               Text(item.judul.isNotEmpty ? item.judul : 'Tanpa judul #${item.id}',
                   style: GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.w800, color: const Color(0xFF0F172A))),
               const SizedBox(height: 4),
-              Text('${item.kecamatan} • ${item.desa ?? "-"} • ID:${item.id}',
-                  style: GoogleFonts.plusJakartaSans(fontSize: 11, color: const Color(0xFF64748B), fontWeight: FontWeight.w600)),
-              const SizedBox(height: 6),
               Text(item.deskripsiSingkat.isNotEmpty ? item.deskripsiSingkat : 'Ketuk untuk lihat detail',
-                  maxLines: 2, overflow: TextOverflow.ellipsis, style: GoogleFonts.plusJakartaSans(fontSize: 12.5, color: const Color(0xFF475569), height: 1.4)),
-              const SizedBox(height: 8),
-              // debug raw: tampilkan kategori index agar ketahuan kalau enum salah
-              Text('DEBUG kategori=${item.kategori.index} ${item.kategori.name} | status=${item.status.name} | dataAngka=${item.dataAngka.length} keys',
-                  style: const TextStyle(fontSize: 10, color: Colors.red)),
+                  maxLines: 2, overflow: TextOverflow.ellipsis, style: GoogleFonts.plusJakartaSans(fontSize: 13, color: const Color(0xFF475569), height: 1.4)),
+              const SizedBox(height: 10),
+              Row(children: [
+                const Icon(Icons.tag_rounded, size: 14, color: Color(0xFF64748B)),
+                const SizedBox(width: 4),
+                Text(item.kategori.shortLabel, style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFF0D9488))),
+                const Spacer(),
+                Text('Ketuk untuk edit', style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w600, color: const Color(0xFF2563EB))),
+              ]),
             ],
           ),
         ),

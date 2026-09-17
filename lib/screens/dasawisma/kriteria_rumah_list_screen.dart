@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../models/kriteria_rumah.dart';
-import '../services/kriteria_rumah_service.dart';
+import '../../models/kriteria_rumah.dart';
+import '../../services/kriteria_rumah_service.dart';
 import 'kriteria_rumah_form_screen.dart';
 
 class KriteriaRumahListScreen extends StatefulWidget {

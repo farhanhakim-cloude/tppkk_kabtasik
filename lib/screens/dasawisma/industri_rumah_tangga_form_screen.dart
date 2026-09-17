@@ -3,8 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../models/industri_rumah_tangga.dart';
-import '../services/industri_rumah_tangga_service.dart';
+import '../../models/industri_rumah_tangga.dart';
+import '../../services/industri_rumah_tangga_service.dart';
 
 class IndustriRumahTanggaFormScreen extends StatefulWidget {
   final IndustriRumahTangga? data;

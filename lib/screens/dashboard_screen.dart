@@ -12,23 +12,24 @@ import '../services/kesehatan_service.dart';
 import '../services/kriteria_rumah_service.dart';
 import '../services/rekap_ibu_anak_service.dart';
 import 'catatan_kegiatan_form_screen.dart';
-import 'keluarga_list_screen.dart';
-import 'kesehatan_list_screen.dart';
+import 'dasawisma/keluarga_list_screen.dart';
+import 'dasawisma/kesehatan_list_screen.dart';
 import 'laporan_screen.dart';
 import 'profile_screen.dart';
 import 'berita_screen.dart';
 import 'berita_form_screen.dart';
-import 'statistik_screen.dart';
 import 'galeri_agenda_screen.dart';
-import 'rekap_ibu_anak_list_screen.dart';
-import 'kesehatan_keibuan_screen.dart';
-import 'data_keluarga_dasawisma_list_screen.dart';
-import 'kriteria_rumah_list_screen.dart';
-import 'industri_rumah_tangga_list_screen.dart';
+import 'dasawisma/rekap_ibu_anak_list_screen.dart';
+import 'dasawisma/kesehatan_keibuan_screen.dart';
+import 'dasawisma/data_keluarga_dasawisma_list_screen.dart';
+import 'dasawisma/kriteria_rumah_list_screen.dart';
+import 'dasawisma/industri_rumah_tangga_list_screen.dart';
 import '../models/user.dart';
 import '../services/auth_service.dart';
 import '../widgets/weather_card.dart';
 import 'admin/admin_dashboard_screen.dart';
+import 'kader/kader_dashboard_screen.dart';
+import 'dasawisma/dasawisma_dashboard_screen.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // MAIN SHELL with Bottom Navigation
@@ -43,19 +44,23 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int _currentIndex = 0;
 
-  late Future<bool> _isAdminFuture;
+  late Future<String> _roleFuture;
 
   @override
   void initState() {
     super.initState();
-    _isAdminFuture = _checkIfAdmin();
+    _roleFuture = _getRole();
   }
 
-  Future<bool> _checkIfAdmin() async {
+  Future<String> _getRole() async {
     final authService = AuthService();
     final user = await authService.getCurrentUser();
-    // Usually admin role is 'admin', 'Super Admin', etc.
-    return user.roles.any((r) => r.toLowerCase().contains('admin') || r.toLowerCase().contains('super'));
+    final rolesLower = user.roles.map((r) => r.toLowerCase()).toList();
+    final isAdmin = rolesLower.any((r) => r.contains('admin') || r.contains('super'));
+    if (isAdmin) return 'admin';
+    final isDasawisma = rolesLower.any((r) => r.contains('dasawisma'));
+    if (isDasawisma) return 'dasawisma';
+    return 'kader';
   }
 
   static const _navItems = [
@@ -100,24 +105,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     final primary = Theme.of(context).colorScheme.primary;
 
-    return FutureBuilder<bool>(
-      future: _isAdminFuture,
+    return FutureBuilder<String>(
+      future: _roleFuture,
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(
-                color: Color(0xFF0D9488),
-              ),
-            ),
-          );
+        final role = snapshot.data ?? 'loading';
+        // Jika bukan admin, langsung arahkan ke dashboard masing-masing tanpa pakai _BerandaPage
+        // _BerandaPage (Hello Kader) jadi orphan — tidak dibawa kemana-mana sesuai request
+        if (role == 'dasawisma') {
+          return const DasawismaDashboardScreen();
         }
-
-        final isAdmin = snapshot.data ?? false;
-        final currentItems = isAdmin ? _adminNavItems : _navItems;
+        if (role == 'kader') {
+          return const KaderDashboardScreen();
+        }
+        if (role == 'loading') {
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        }
+        // role == admin → tampilkan shell admin saja
+        final isAdmin = true;
+        final currentItems = _adminNavItems;
         final numPages = currentItems.length;
 
-        // Prevent index out of bounds if switching states
         if (_currentIndex >= numPages) {
           _currentIndex = 0;
         }

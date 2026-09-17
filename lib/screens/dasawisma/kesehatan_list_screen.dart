@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../models/kesehatan.dart';
-import '../services/kesehatan_service.dart';
+import '../../models/kesehatan.dart';
+import '../../services/kesehatan_service.dart';
 import 'kesehatan_form_screen.dart';
 
 class KesehatanListScreen extends StatefulWidget {

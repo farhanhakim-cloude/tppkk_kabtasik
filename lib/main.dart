@@ -6,6 +6,7 @@ import 'screens/dashboard_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/kader/kader_dashboard_screen.dart';
+import 'screens/dasawisma/dasawisma_dashboard_screen.dart';
 
 // 🌙 Global ThemeMode notifier — dapat diakses dari mana saja
 final themeNotifier = ValueNotifier<ThemeMode>(ThemeMode.light);
@@ -220,6 +221,7 @@ class MyApp extends StatelessWidget {
             '/login': (context) => const LoginScreen(),
             '/dashboard': (context) => const DashboardScreen(),
             '/kader': (context) => const KaderDashboardScreen(),
+            '/dasawisma': (context) => const DasawismaDashboardScreen(),
           },
         );
       },
