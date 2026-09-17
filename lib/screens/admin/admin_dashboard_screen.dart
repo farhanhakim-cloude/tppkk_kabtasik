@@ -1,5 +1,5 @@
+// ignore_for_file: curly_braces_in_flow_control_structures, avoid_print, unnecessary_import, prefer_final_fields
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'verifikasi_berita_screen.dart';
@@ -79,8 +79,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         final humidity = (current['relative_humidity_2m'] as num).round();
         final code = current['weather_code'] as int;
         String condition;
-        if (code == 0) condition = 'Cerah';
-        else if (code <= 3) condition = 'Berawan';
+        if (code == 0) {
+          condition = 'Cerah';
+        } else if (code <= 3) condition = 'Berawan';
         else if (code <= 48) condition = 'Berkabut';
         else if (code <= 67) condition = 'Hujan';
         else if (code <= 77) condition = 'Salju';
@@ -121,8 +122,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       if (beritaRes.statusCode == 200) {
         final data = jsonDecode(beritaRes.body);
         final rawData = data['data'];
-        if (rawData is List) beritaCount = rawData.length;
-        else if (rawData is Map && rawData['data'] is List) beritaCount = (rawData['data'] as List).length;
+        if (rawData is List) {
+          beritaCount = rawData.length;
+        } else if (rawData is Map && rawData['data'] is List) beritaCount = (rawData['data'] as List).length;
         else if (data['count'] != null) beritaCount = data['count'] as int;
       }
 
@@ -138,8 +140,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         final data = jsonDecode(laporanRes.body);
         final rawData = data['data'];
         List<dynamic> list = [];
-        if (rawData is List) list = rawData;
-        else if (rawData is Map && rawData['data'] is List) list = rawData['data'] as List;
+        if (rawData is List) {
+          list = rawData;
+        } else if (rawData is Map && rawData['data'] is List) list = rawData['data'] as List;
 
         // Filter pending
         final pending = list.where((item) {
@@ -155,8 +158,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           final kode = (item['kategori_pokja']?.toString() ?? item['kategori']?.toString() ?? '').toString().trim().toUpperCase();
           final kategoriRaw = (item['kategori']?.toString() ?? '').toString().toLowerCase();
           PokjaKategori? kat;
-          if (kode == 'I' || kategoriRaw.contains('pokja1') || kategoriRaw.contains('pokja 1')) kat = PokjaKategori.pokja1;
-          else if (kode == 'II' || kategoriRaw.contains('pokja2') || kategoriRaw.contains('pokja 2')) kat = PokjaKategori.pokja2;
+          if (kode == 'I' || kategoriRaw.contains('pokja1') || kategoriRaw.contains('pokja 1')) {
+            kat = PokjaKategori.pokja1;
+          } else if (kode == 'II' || kategoriRaw.contains('pokja2') || kategoriRaw.contains('pokja 2')) kat = PokjaKategori.pokja2;
           else if (kode == 'III' || kategoriRaw.contains('pokja3') || kategoriRaw.contains('pokja 3')) kat = PokjaKategori.pokja3;
           else if (kode == 'IV' || kategoriRaw.contains('pokja4') || kategoriRaw.contains('pokja 4')) kat = PokjaKategori.pokja4;
           else {

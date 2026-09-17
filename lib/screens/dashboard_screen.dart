@@ -1,3 +1,4 @@
+// ignore_for_file: unused_import, unused_field, unused_element, unused_element_parameter
 // lib/screens/dashboard_screen.dart
 
 import 'dart:io';
@@ -2055,7 +2056,7 @@ class _StatShimmerState extends State<_StatShimmer> with SingleTickerProviderSta
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _ctrl,
-      builder: (_, __) => Container(
+      builder: (_, _) => Container(
         height: 118,
         decoration: BoxDecoration(
           color: Color.lerp(const Color(0xFFE2E8F0), const Color(0xFFF1F5F9), _ctrl.value)!,
@@ -2107,13 +2108,13 @@ class _BeritaCard extends StatelessWidget {
                         ? Image.network(
                             berita.gambar!,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => _ImageFallback(primary: primary),
+                            errorBuilder: (_, _, _) => _ImageFallback(primary: primary),
                           )
                         : (File(berita.gambar!).existsSync()
                             ? Image.file(
                                 File(berita.gambar!),
                                 fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => _ImageFallback(primary: primary),
+                                errorBuilder: (_, _, _) => _ImageFallback(primary: primary),
                               )
                             : _ImageFallback(primary: primary)))
                     : _ImageFallback(primary: primary),

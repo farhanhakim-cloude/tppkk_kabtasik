@@ -1,3 +1,4 @@
+// ignore_for_file: unused_local_variable, unused_element
 // lib/screens/dasawisma/dasawisma_dashboard_screen.dart
 // Dashboard Dasawisma — selaras dengan Admin & Kader (cuaca + API)
 

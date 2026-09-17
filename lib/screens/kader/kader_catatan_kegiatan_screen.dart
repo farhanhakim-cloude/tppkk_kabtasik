@@ -1,5 +1,6 @@
 // lib/screens/kader/kader_catatan_kegiatan_screen.dart
 
+// ignore_for_file: unused_local_variable
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -378,7 +379,7 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                         child: ListView.separated(
                           padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
                           itemCount: filteredList.length,
-                          separatorBuilder: (_, __) => const SizedBox(height: 12),
+                          separatorBuilder: (_, _) => const SizedBox(height: 12),
                           itemBuilder: (context, index) {
                             try {
                               return _buildCatatanCard(

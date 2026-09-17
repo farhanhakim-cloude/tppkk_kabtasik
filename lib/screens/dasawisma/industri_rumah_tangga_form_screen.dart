@@ -113,7 +113,9 @@ class _IndustriRumahTanggaFormScreenState
     _rwCtrl.dispose();
     _dasaWismaCtrl.dispose();
     _catatanCtrl.dispose();
-    for (final item in _items) item.dispose();
+    for (final item in _items) {
+      item.dispose();
+    }
     super.dispose();
   }
 
@@ -833,7 +835,7 @@ class _IndustriRumahTanggaFormScreenState
       ),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
       child: DropdownButtonFormField<String>(
-        value: value,
+        initialValue: value,
         isExpanded: true,
         icon: const Icon(Icons.keyboard_arrow_down_rounded,
             color: Color(0xFF64748B)),

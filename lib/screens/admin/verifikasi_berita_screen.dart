@@ -1,3 +1,4 @@
+// ignore_for_file: curly_braces_in_flow_control_structures
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -57,8 +58,9 @@ class _VerifikasiBeritaScreenState extends State<VerifikasiBeritaScreen> {
         final data = jsonDecode(response.body);
         final rawData = data['data'];
         List<dynamic> list = [];
-        if (rawData is List) list = rawData;
-        else if (rawData is Map && rawData['data'] is List) list = rawData['data'] as List;
+        if (rawData is List) {
+          list = rawData;
+        } else if (rawData is Map && rawData['data'] is List) list = rawData['data'] as List;
         setState(() => _pendingBerita = list.map((item) => Berita.fromJson(item)).toList());
       } else {
         throw Exception('Gagal load: ${response.statusCode}');
@@ -149,7 +151,7 @@ class _VerifikasiBeritaScreenState extends State<VerifikasiBeritaScreen> {
                   child: ListView.separated(
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
                     itemCount: _pendingBerita.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
+                    separatorBuilder: (_, _) => const SizedBox(height: 12),
                     itemBuilder: (context, index) => _buildBeritaCard(_pendingBerita[index]),
                   ),
                 ),

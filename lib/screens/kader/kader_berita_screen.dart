@@ -126,7 +126,7 @@ class _KaderBeritaScreenState extends State<KaderBeritaScreen> {
                       child: ListView.separated(
                         padding: const EdgeInsets.all(16),
                         itemCount: _myNews.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 12),
+                        separatorBuilder: (_, _) => const SizedBox(height: 12),
                         itemBuilder: (context, index) {
                           final item = _myNews[index];
                           final statusColor = _getStatusColor(item.status);

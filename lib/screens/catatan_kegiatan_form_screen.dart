@@ -92,7 +92,9 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
     _judulController.dispose();
     _deskripsiController.dispose();
     _desaController.dispose();
-    for (final c in _angkaCtrl.values) c.dispose();
+    for (final c in _angkaCtrl.values) {
+      c.dispose();
+    }
     super.dispose();
   }
 
@@ -302,7 +304,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                 Expanded(
                   child: ListView.separated(
                     itemCount: filtered.length,
-                    separatorBuilder: (_, __) => const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                    separatorBuilder: (_, _) => const Divider(height: 1, color: Color(0xFFF1F5F9)),
                     itemBuilder: (_, i) {
                       final kec = filtered[i];
                       final sel = kec == _selectedKecamatan;

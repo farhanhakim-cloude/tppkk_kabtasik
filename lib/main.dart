@@ -207,7 +207,7 @@ class MyApp extends StatelessWidget {
 
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: themeNotifier,
-      builder: (_, mode, __) {
+      builder: (_, mode, _) {
         return MaterialApp(
           title: 'TP PKK Kab. Tasikmalaya',
           debugShowCheckedModeBanner: false,

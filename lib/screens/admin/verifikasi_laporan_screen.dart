@@ -1,3 +1,4 @@
+// ignore_for_file: curly_braces_in_flow_control_structures
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -67,8 +68,9 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
         final data = jsonDecode(response.body);
         final rawData = data['data'];
         List<dynamic> list = [];
-        if (rawData is List) list = rawData;
-        else if (rawData is Map && rawData['data'] is List) list = rawData['data'] as List;
+        if (rawData is List) {
+          list = rawData;
+        } else if (rawData is Map && rawData['data'] is List) list = rawData['data'] as List;
 
         final pendingRaw = list.where((item) {
           final status = (item['status']?.toString() ?? '').toLowerCase().trim();
@@ -363,7 +365,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
         child: ListView.separated(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
           itemCount: list.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 12),
+          separatorBuilder: (_, _) => const SizedBox(height: 12),
           itemBuilder: (context, index) => _buildLaporanCard(list[index])
         )
       ))

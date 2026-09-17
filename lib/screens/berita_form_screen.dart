@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:typed_data';
+// ignore_for_file: avoid_print, deprecated_member_use, unnecessary_import, unnecessary_null_comparison, dead_code, dead_null_aware_expression
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -570,7 +570,7 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                         child: CircularProgressIndicator(),
                       )
                     : DropdownButtonFormField<String>(
-                        value: _selectedKecamatan,
+                        initialValue: _selectedKecamatan,
                         dropdownColor: cardBg,
                         style: GoogleFonts.plusJakartaSans(
                           color: textColor,

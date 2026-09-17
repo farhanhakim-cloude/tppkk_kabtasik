@@ -186,7 +186,11 @@ class _DataKeluargaDasawismaFormScreenState extends State<DataKeluargaDasawismaF
                       pekerjaan: pekerjaanCtrl.text.trim(),
                     );
                     setState(() {
-                      if (editIndex != null) _anggotaList[editIndex] = newItem; else _anggotaList.add(newItem);
+                      if (editIndex != null) {
+                        _anggotaList[editIndex] = newItem;
+                      } else {
+                        _anggotaList.add(newItem);
+                      }
                     });
                     Navigator.pop(context);
                   },
@@ -223,7 +227,7 @@ class _DataKeluargaDasawismaFormScreenState extends State<DataKeluargaDasawismaF
       );
 
   Widget _sheetDropdown(String label, String value, List<String> items, ValueChanged<String?> onChanged) => DropdownButtonFormField<String>(
-        value: value,
+        initialValue: value,
         decoration: _inputDeco(label, ''),
         items: items.map((s) => DropdownMenuItem(value: s, child: Text(s, style: GoogleFonts.plusJakartaSans(fontSize: 13)))).toList(),
         onChanged: onChanged,

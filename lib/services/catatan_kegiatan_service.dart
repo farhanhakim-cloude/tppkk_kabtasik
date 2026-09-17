@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_print, no_leading_underscores_for_local_identifiers
 // lib/services/catatan_kegiatan_service.dart
 
 import 'dart:convert';

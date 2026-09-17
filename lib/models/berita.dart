@@ -1,3 +1,4 @@
+// ignore_for_file: unnecessary_null_comparison, dead_code, dead_null_aware_expression
 // lib/models/berita.dart
 
 class Berita {

@@ -39,7 +39,9 @@ class _PemanfaatanTanahFormScreenState extends State<PemanfaatanTanahFormScreen>
     if(d!=null && d.items.isNotEmpty){ for(final it in d.items){ _items.add(_ItemState(kategori:it.kategori, komoditi:it.komoditi, jumlah:it.jumlah)); } } else { _items.add(_ItemState()); }
   }
   @override
-  void dispose(){ _dasaWismaCtrl.dispose(); _rtCtrl.dispose(); _rwCtrl.dispose(); _dusunCtrl.dispose(); _desaCtrl.dispose(); _kecCtrl.dispose(); _catatanCtrl.dispose(); for(final it in _items) it.dispose(); super.dispose(); }
+  void dispose(){ _dasaWismaCtrl.dispose(); _rtCtrl.dispose(); _rwCtrl.dispose(); _dusunCtrl.dispose(); _desaCtrl.dispose(); _kecCtrl.dispose(); _catatanCtrl.dispose(); for(final it in _items) {
+    it.dispose();
+  } super.dispose(); }
 
   void _tambah(){ HapticFeedback.selectionClick(); setState(()=>_items.add(_ItemState())); }
   void _hapus(int i){ if(_items.length<=1) return; HapticFeedback.selectionClick(); setState((){_items[i].dispose(); _items.removeAt(i);}); }
@@ -52,7 +54,11 @@ class _PemanfaatanTanahFormScreenState extends State<PemanfaatanTanahFormScreen>
     try{
       final list=valid.map((it)=> PemanfaatanItem(kategori: it.kategori!, komoditi: it.komoditiCtrl.text.trim(), jumlah: it.jumlahCtrl.text.trim())).toList();
       final payload=PemanfaatanTanah(id: widget.data?.id ?? '0', dasaWisma: _dasaWismaCtrl.text.trim(), rt: _rtCtrl.text.trim(), rw: _rwCtrl.text.trim(), dusun: _dusunCtrl.text.trim(), desa: _desaCtrl.text.trim(), kecamatan: _kecCtrl.text.trim(), tahun: _tahun, items: list, catatan: _catatanCtrl.text.trim());
-      if(_isEdit) await _service.update(payload); else await _service.add(payload);
+      if(_isEdit) {
+        await _service.update(payload);
+      } else {
+        await _service.add(payload);
+      }
       if(!mounted) return; setState(()=>_saving=false); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_isEdit?'Data diperbarui':'Data berhasil disimpan', style: GoogleFonts.plusJakartaSans(fontWeight:FontWeight.w600)), backgroundColor: const Color(0xFF10B981), behavior: SnackBarBehavior.floating, shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)))); Navigator.pop(context,true);
     }catch(e){ if(!mounted) return; setState(()=>_saving=false); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Gagal menyimpan: $e', style: GoogleFonts.plusJakartaSans()), backgroundColor: Colors.red[700], behavior: SnackBarBehavior.floating)); }
   }
@@ -89,7 +95,7 @@ class _PemanfaatanTanahFormScreenState extends State<PemanfaatanTanahFormScreen>
   Widget _label(String t)=> Text(t, style:GoogleFonts.plusJakartaSans(fontSize:13,fontWeight:FontWeight.w700,color:const Color(0xFF374151)));
   Widget _section(IconData icon,String title,String sub){ return Row(children:[Container(padding: const EdgeInsets.all(9), decoration:BoxDecoration(color:_primaryLight,borderRadius:BorderRadius.circular(12)), child: Icon(icon,size:18,color:_primary)), const SizedBox(width:12), Column(crossAxisAlignment:CrossAxisAlignment.start, children:[Text(title, style:GoogleFonts.plusJakartaSans(fontSize:15,fontWeight:FontWeight.w800,color:const Color(0xFF0F172A))), Text(sub, style:GoogleFonts.plusJakartaSans(fontSize:11.5,color:const Color(0xFF64748B)))])]); }
   Widget _field({required TextEditingController ctrl,required String label,required String hint,required IconData icon, String? Function(String?)? validator, int maxLines=1, TextInputType keyboardType=TextInputType.text})=> Container(decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(12),border:Border.all(color:const Color(0xFFE2E8F0))), child: TextFormField(controller:ctrl, validator:validator, keyboardType:keyboardType, maxLines:maxLines, style:GoogleFonts.plusJakartaSans(fontSize:14), decoration:InputDecoration(labelText:label,hintText:hint,prefixIcon:Icon(icon,size:18,color:_primary), hintStyle:GoogleFonts.plusJakartaSans(fontSize:13,color:Colors.grey[400]), labelStyle:GoogleFonts.plusJakartaSans(fontSize:13,color:const Color(0xFF64748B)), border:InputBorder.none,enabledBorder:InputBorder.none,focusedBorder:InputBorder.none, contentPadding: const EdgeInsets.symmetric(horizontal:14,vertical:14))));
-  Widget _dropdown({required String label,required String value,required List<String> items,required ValueChanged<String?> onChanged,required IconData icon})=> Container(decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(12),border:Border.all(color:const Color(0xFFE2E8F0))), padding: const EdgeInsets.symmetric(horizontal:14,vertical:2), child: DropdownButtonFormField<String>(value:value,isExpanded:true,icon:const Icon(Icons.keyboard_arrow_down_rounded,color:Color(0xFF64748B)), decoration:InputDecoration(labelText:label,prefixIcon:Icon(icon,size:18,color:_primary), labelStyle:GoogleFonts.plusJakartaSans(fontSize:13,color:const Color(0xFF64748B)), border:InputBorder.none,enabledBorder:InputBorder.none,focusedBorder:InputBorder.none, contentPadding:EdgeInsets.zero), items:items.map((i)=>DropdownMenuItem(value:i, child: Text(i, style:GoogleFonts.plusJakartaSans(fontSize:13.5)))).toList(), onChanged:onChanged));
+  Widget _dropdown({required String label,required String value,required List<String> items,required ValueChanged<String?> onChanged,required IconData icon})=> Container(decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(12),border:Border.all(color:const Color(0xFFE2E8F0))), padding: const EdgeInsets.symmetric(horizontal:14,vertical:2), child: DropdownButtonFormField<String>(initialValue:value,isExpanded:true,icon:const Icon(Icons.keyboard_arrow_down_rounded,color:Color(0xFF64748B)), decoration:InputDecoration(labelText:label,prefixIcon:Icon(icon,size:18,color:_primary), labelStyle:GoogleFonts.plusJakartaSans(fontSize:13,color:const Color(0xFF64748B)), border:InputBorder.none,enabledBorder:InputBorder.none,focusedBorder:InputBorder.none, contentPadding:EdgeInsets.zero), items:items.map((i)=>DropdownMenuItem(value:i, child: Text(i, style:GoogleFonts.plusJakartaSans(fontSize:13.5)))).toList(), onChanged:onChanged));
 }
 
 class _ItemState{

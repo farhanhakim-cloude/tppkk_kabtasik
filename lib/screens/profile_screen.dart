@@ -1,5 +1,6 @@
 // lib/screens/profile_screen.dart — diperbarui: selaras kader/admin, tidak ramai, pill & soft
 import 'dart:io';
+// ignore_for_file: unused_field
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';

@@ -1,6 +1,7 @@
 // lib/screens/berita_screen.dart
 
 import 'dart:io';
+// ignore_for_file: avoid_print, deprecated_member_use, unnecessary_underscores, dead_code, dead_null_aware_expression, unnecessary_null_comparison
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -195,7 +196,7 @@ class _BeritaScreenState extends State<BeritaScreen>
 
             // 🔥 Filter Kecamatan
             DropdownButtonFormField<String>(
-              value: _selectedKecamatan,
+              initialValue: _selectedKecamatan,
               decoration: InputDecoration(
                 labelText: 'Kecamatan',
                 border: OutlineInputBorder(
@@ -218,7 +219,7 @@ class _BeritaScreenState extends State<BeritaScreen>
 
             // 🔥 Filter Status
             DropdownButtonFormField<String>(
-              value: _selectedStatus,
+              initialValue: _selectedStatus,
               decoration: InputDecoration(
                 labelText: 'Status',
                 border: OutlineInputBorder(
@@ -929,7 +930,7 @@ Widget _buildBeritaImage(String pathOrUrl, Color primary) {
           ),
         );
       },
-      errorBuilder: (_, __, ___) => _buildFallbackImage(primary),
+      errorBuilder: (_, _, _) => _buildFallbackImage(primary),
     );
   }
   try {
@@ -938,7 +939,7 @@ Widget _buildBeritaImage(String pathOrUrl, Color primary) {
       return Image.file(
         file,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => _buildFallbackImage(primary),
+        errorBuilder: (_, _, _) => _buildFallbackImage(primary),
       );
     }
   } catch (_) {}
@@ -968,8 +969,8 @@ class _ShimmerList extends StatelessWidget {
       child: ListView.separated(
         padding: const EdgeInsets.all(16),
         itemCount: 3,
-        separatorBuilder: (_, __) => const SizedBox(height: 14),
-        itemBuilder: (_, __) => Container(
+        separatorBuilder: (_, _) => const SizedBox(height: 14),
+        itemBuilder: (_, _) => Container(
           height: 140,
           decoration: BoxDecoration(
             color: Colors.white,

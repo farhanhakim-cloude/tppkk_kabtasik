@@ -1,3 +1,4 @@
+// ignore_for_file: curly_braces_in_flow_control_structures
 // lib/services/rekapitulasi_service.dart
 // Opsi A Tanpa ACC: agregasi otomatis dari semua service input Darawisma
 // Data dasar dari dasawisma -> auto roll-up ke RT/RW/Dusun/Desa/Kecamatan/Kabupaten berdasarkan filter wilayah
@@ -201,7 +202,9 @@ class RekapitulasiService {
   Future<RekapTotal> getTotalSheet7({String? rt, String? rw, String? dusun, String? desa, String? kecamatan, String? tahun}) async {
     final rows = await getRekapSheet7(rt: rt, rw: rw, dusun: dusun, desa: desa, kecamatan: kecamatan, tahun: tahun);
     final total = RekapTotal();
-    for (final r in rows) total.add(r);
+    for (final r in rows) {
+      total.add(r);
+    }
     return total;
   }
 
@@ -220,17 +223,31 @@ class RekapitulasiService {
     int hamil=0, melahirkan=0, nifas=0, bayiL=0, bayiP=0, aktaAda=0, aktaTidak=0, ibuMeninggal=0, bayiML=0, bayiMP=0, balitaM=0;
     for (final e in filtered) {
       final s = e.statusIbu.toLowerCase();
-      if (s.contains('hamil')) hamil++;
-      else if (s.contains('lahir')) melahirkan++;
+      if (s.contains('hamil')) {
+        hamil++;
+      } else if (s.contains('lahir')) melahirkan++;
       else if (s.contains('nifas')) nifas++;
       if (e.adaKelahiran) {
-        if (e.jenisKelaminBayi == 'L') bayiL++; else bayiP++;
-        if (e.hasAktaKelahiran) aktaAda++; else aktaTidak++;
+        if (e.jenisKelaminBayi == 'L') {
+          bayiL++;
+        } else {
+          bayiP++;
+        }
+        if (e.hasAktaKelahiran) {
+          aktaAda++;
+        } else {
+          aktaTidak++;
+        }
       }
       if (e.adaKematian) {
         final sk = e.statusMeninggal.toLowerCase();
-        if (sk.contains('ibu')) ibuMeninggal++;
-        else if (sk.contains('bayi')) { if (e.jenisKelaminMeninggal=='L') bayiML++; else bayiMP++; }
+        if (sk.contains('ibu')) {
+          ibuMeninggal++;
+        } else if (sk.contains('bayi')) { if (e.jenisKelaminMeninggal=='L') {
+          bayiML++;
+        } else {
+          bayiMP++;
+        } }
         else if (sk.contains('balita')) balitaM++;
       }
     }

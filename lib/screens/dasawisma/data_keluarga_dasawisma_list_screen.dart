@@ -175,7 +175,7 @@ class _DataKeluargaDasawismaListScreenState extends State<DataKeluargaDasawismaL
                           physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                           padding: const EdgeInsets.fromLTRB(16, 12, 16, 90),
                           itemCount: list.length,
-                          separatorBuilder: (_, __) => const SizedBox(height: 10),
+                          separatorBuilder: (_, _) => const SizedBox(height: 10),
                           itemBuilder: (context, index) => _DasawismaCard(item: list[index], onTap: () => _openForm(item: list[index]), primary: primary),
                         ),
                       ),
