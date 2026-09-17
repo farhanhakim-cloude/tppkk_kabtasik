@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../main.dart';
 import '../../models/catatan_kegiatan.dart';
 import '../../services/catatan_kegiatan_service.dart';
 import '../catatan_kegiatan_form_screen.dart';
@@ -21,15 +22,22 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
   final _service = CatatanKegiatanService();
   PokjaKategori? _selectedFilter;
   String _searchQuery = '';
-  bool _isDarkMode = true;
+  bool _isDarkMode = false;
   late AnimationController _fabAnim;
   late Future<List<CatatanKegiatan>> _future;
+
+  void _onThemeChanged() {
+    final isDark = themeNotifier.value == ThemeMode.dark;
+    if (mounted && _isDarkMode != isDark) setState(() => _isDarkMode = isDark);
+  }
 
   @override
   void initState() {
     super.initState();
     _selectedFilter = widget.pokjaDefault;
     _future = _service.getAll();
+    _isDarkMode = themeNotifier.value == ThemeMode.dark;
+    themeNotifier.addListener(_onThemeChanged);
     _loadTheme();
     _fabAnim = AnimationController(vsync: this, duration: const Duration(milliseconds: 400))
       ..forward();
@@ -41,6 +49,7 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
 
   @override
   void dispose() {
+    themeNotifier.removeListener(_onThemeChanged);
     _fabAnim.dispose();
     super.dispose();
   }
@@ -48,8 +57,11 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
   Future<void> _loadTheme() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final isDark = prefs.getBool('kader_dark_mode') ?? true;
-      if (mounted) setState(() => _isDarkMode = isDark);
+      final isDark = prefs.getBool('kader_dark_mode') ?? prefs.getBool('isDarkMode') ?? (themeNotifier.value == ThemeMode.dark);
+      if (mounted && _isDarkMode != isDark) setState(() => _isDarkMode = isDark);
+      if (themeNotifier.value != (isDark ? ThemeMode.dark : ThemeMode.light)) {
+        themeNotifier.value = isDark ? ThemeMode.dark : ThemeMode.light;
+      }
     } catch (_) {}
   }
 
@@ -299,27 +311,90 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator(color: primaryAccent, strokeWidth: 2.5));
                 }
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                        Icon(Icons.error_outline_rounded, size: 44, color: Colors.red[300]),
+                        const SizedBox(height: 10),
+                        Text('Gagal memuat', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, color: textColor)),
+                        const SizedBox(height: 6),
+                        Text(snapshot.error.toString(), textAlign: TextAlign.center, style: GoogleFonts.plusJakartaSans(fontSize: 11, color: subtextColor)),
+                        const SizedBox(height: 12),
+                        ElevatedButton(onPressed: _reload, style: ElevatedButton.styleFrom(backgroundColor: primaryAccent, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))), child: Text('Coba lagi', style: GoogleFonts.plusJakartaSans(color: Colors.white))),
+                      ]),
+                    ),
+                  );
+                }
                 final allList = snapshot.data ?? [];
+                // debug: kalau snapshot.data null tapi error tidak ada, tetap coba tampilkan dummy
                 final filteredList = allList.where((item) {
                   if (_selectedFilter != null && item.kategori != _selectedFilter) return false;
                   if (_searchQuery.isNotEmpty) {
                     final q = _searchQuery.toLowerCase();
                     return item.judul.toLowerCase().contains(q) ||
                         (item.desa ?? '').toLowerCase().contains(q) ||
-                        item.kecamatan.toLowerCase().contains(q);
+                        item.kecamatan.toLowerCase().contains(q) ||
+                        item.deskripsiSingkat.toLowerCase().contains(q);
                   }
                   return true;
                 }).toList();
 
                 if (filteredList.isEmpty) {
+                  if (allList.isNotEmpty) {
+                    // filtered kosong karena filter/search, bukan data kosong
+                    return Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                          Icon(Icons.search_off_rounded, size: 44, color: subtextColor.withValues(alpha: 0.5)),
+                          const SizedBox(height: 10),
+                          Text('Tidak ada hasil filter', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, color: textColor)),
+                          const SizedBox(height: 6),
+                          Text('Coba ubah filter Pokja atau kata kunci pencarian.\nTotal dimuat: ${allList.length}', textAlign: TextAlign.center, style: GoogleFonts.plusJakartaSans(fontSize: 12, color: subtextColor)),
+                          const SizedBox(height: 12),
+                          OutlinedButton(onPressed: () => setState(() { _selectedFilter = null; _searchQuery = ''; }), child: Text('Reset filter')),
+                        ]),
+                      ),
+                    );
+                  }
                   return _buildEmptyState(primaryAccent, textColor, subtextColor);
                 }
-                return ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
-                  itemCount: filteredList.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) => _buildCatatanCard(
-                      filteredList[index], cardBg, textColor, subtextColor, borderColor, primaryAccent),
+                return Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      color: cardBg,
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: Text('${filteredList.length} kegiatan dimuat • ${allList.length} total • ketuk untuk lihat/edit',
+                          style: GoogleFonts.plusJakartaSans(fontSize: 11, color: subtextColor, fontWeight: FontWeight.w600)),
+                    ),
+                    Divider(height: 1, color: borderColor),
+                    Expanded(
+                      child: RefreshIndicator(
+                        onRefresh: () async => _reload(),
+                        color: primaryAccent,
+                        child: ListView.separated(
+                          padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
+                          itemCount: filteredList.length,
+                          separatorBuilder: (_, __) => const SizedBox(height: 12),
+                          itemBuilder: (context, index) {
+                            try {
+                              return _buildCatatanCard(
+                                  filteredList[index], cardBg, textColor, subtextColor, borderColor, primaryAccent);
+                            } catch (e) {
+                              return Container(
+                                padding: const EdgeInsets.all(14),
+                                decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(16), border: Border.all(color: borderColor)),
+                                child: Text('Error render: $e\nData: ${filteredList[index].toJson()}', style: GoogleFonts.plusJakartaSans(fontSize: 11, color: Colors.red)),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
                 );
               },
             ),
@@ -344,90 +419,49 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
   Widget _buildCatatanCard(CatatanKegiatan item, Color cardBg, Color textColor,
       Color subtextColor, Color borderColor, Color accentColor) {
     final color = _getPokjaColor(item.kategori);
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: Material(
-        color: cardBg,
-        child: InkWell(
-          onTap: () => _openForm(catatan: item),
-          splashColor: color.withValues(alpha: 0.06),
-          highlightColor: color.withValues(alpha: 0.03),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              border: Border(
-                left: BorderSide(color: color, width: 4),
-                top: BorderSide(color: borderColor, width: 1),
-                right: BorderSide(color: borderColor, width: 1),
-                bottom: BorderSide(color: borderColor, width: 1),
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 14, 14, 14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    // DEBUG: versi super simpel agar pasti terlihat — pakai warna solid, tanpa withValues
+    return Container(
+      margin: const EdgeInsets.only(bottom: 2),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 6, offset: const Offset(0, 2))],
+      ),
+      child: InkWell(
+        onTap: () => _openForm(catatan: item),
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-                        decoration: BoxDecoration(
-                          color: color.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(_getPokjaIcon(item.kategori), size: 12, color: color),
-                            const SizedBox(width: 5),
-                            Text(item.kategori.shortLabel,
-                                style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w800, color: color)),
-                          ],
-                        ),
-                      ),
-                      const Spacer(),
-                      Text(
-                        '${item.tanggal.day}/${item.tanggal.month}/${item.tanggal.year}',
-                        style: GoogleFonts.plusJakartaSans(fontSize: 11, color: subtextColor, fontWeight: FontWeight.w600),
-                      ),
-                    ],
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(20)),
+                    child: Text(item.kategori.shortLabel, style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w800, color: color)),
                   ),
-                  const SizedBox(height: 10),
-                  Text(item.judul.isNotEmpty ? item.judul : 'Tanpa judul',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.plusJakartaSans(fontSize: 14.5, fontWeight: FontWeight.w800, color: textColor, height: 1.2)),
-                  const SizedBox(height: 6),
-                  Text(item.deskripsiSingkat.isNotEmpty ? item.deskripsiSingkat : 'Tidak ada uraian',
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.plusJakartaSans(fontSize: 12.5, color: subtextColor, height: 1.5)),
-                  const SizedBox(height: 12),
-                  Container(height: 1, color: borderColor.withValues(alpha: 0.6)),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(color: accentColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(8)),
-                        child: Icon(Icons.location_on_rounded, size: 12, color: accentColor),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text('${item.desa?.isNotEmpty == true ? item.desa : "-"}, Kec. ${item.kecamatan}',
-                            maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.plusJakartaSans(fontSize: 12, color: subtextColor, fontWeight: FontWeight.w500)),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        width: 26, height: 26,
-                        decoration: BoxDecoration(color: _isDarkMode ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFF8FAFC), shape: BoxShape.circle, border: Border.all(color: borderColor)),
-                        child: Icon(Icons.chevron_right_rounded, size: 16, color: subtextColor),
-                      ),
-                    ],
-                  ),
+                  const Spacer(),
+                  Text('${item.tanggal.day}/${item.tanggal.month}/${item.tanggal.year}',
+                      style: GoogleFonts.plusJakartaSans(fontSize: 11, color: subtextColor, fontWeight: FontWeight.w600)),
                 ],
               ),
-            ),
+              const SizedBox(height: 8),
+              Text(item.judul.isNotEmpty ? item.judul : 'Tanpa judul #${item.id}',
+                  style: GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.w800, color: const Color(0xFF0F172A))),
+              const SizedBox(height: 4),
+              Text('${item.kecamatan} • ${item.desa ?? "-"} • ID:${item.id}',
+                  style: GoogleFonts.plusJakartaSans(fontSize: 11, color: const Color(0xFF64748B), fontWeight: FontWeight.w600)),
+              const SizedBox(height: 6),
+              Text(item.deskripsiSingkat.isNotEmpty ? item.deskripsiSingkat : 'Ketuk untuk lihat detail',
+                  maxLines: 2, overflow: TextOverflow.ellipsis, style: GoogleFonts.plusJakartaSans(fontSize: 12.5, color: const Color(0xFF475569), height: 1.4)),
+              const SizedBox(height: 8),
+              // debug raw: tampilkan kategori index agar ketahuan kalau enum salah
+              Text('DEBUG kategori=${item.kategori.index} ${item.kategori.name} | status=${item.status.name} | dataAngka=${item.dataAngka.length} keys',
+                  style: const TextStyle(fontSize: 10, color: Colors.red)),
+            ],
           ),
         ),
       ),

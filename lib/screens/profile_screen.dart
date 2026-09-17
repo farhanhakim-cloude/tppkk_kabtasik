@@ -24,7 +24,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late Future<User> _future;
   File? _profileImage;
   bool _loggingOut = false;
-  bool _isKaderDark = true;
+  bool _isKaderDark = false;
 
   // selaras palet kader/admin
   static const primaryMint = Color(0xFF2ED9C3);

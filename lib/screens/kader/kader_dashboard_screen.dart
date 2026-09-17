@@ -31,7 +31,7 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
   String _desaKecamatan = 'Kab. Tasikmalaya';
   int _selectedCategoryIndex = 0; // 0: Semua, 1: Pokja I, 2: Pokja II, 3: Pokja III, 4: Pokja IV
   int _selectedBottomNavIndex = 0;
-  bool _isDarkMode = true; // Mode default dark sesuai referensi
+  bool _isDarkMode = false; // ikut global themeNotifier (default light)
 
   // ignore: unused_field
   final List<String> _categories = const [

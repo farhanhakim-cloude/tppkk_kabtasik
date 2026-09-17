@@ -23,34 +23,90 @@ class BeritaService {
     return prefs.getString('default_kecamatan');
   }
 
+  static const String _myBeritaLocalKey = 'berita_my_local';
+
+  Future<void> _saveMyBeritaLocal(Berita b) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_myBeritaLocalKey);
+      List list = raw != null ? jsonDecode(raw) as List : [];
+      list.insert(0, b.toJson());
+      // simpan max 20
+      if (list.length > 20) list = list.sublist(0, 20);
+      await prefs.setString(_myBeritaLocalKey, jsonEncode(list));
+    } catch (_) {}
+  }
+
+  Future<List<Berita>> _loadMyBeritaLocal() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString(_myBeritaLocalKey);
+      if (raw == null) return [];
+      final List decoded = jsonDecode(raw);
+      return decoded.map((e) => Berita.fromJson(e as Map<String, dynamic>)).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  List<dynamic> _extractList(dynamic rawData) {
+    if (rawData == null) return [];
+    if (rawData is List) return rawData;
+    if (rawData is Map) {
+      final nested = rawData['data'];
+      if (nested is List) return nested;
+      // kadang backend bungkus 2 level: {data:{data:[...]}}
+      if (nested is Map && nested['data'] is List) return nested['data'] as List;
+    }
+    return [];
+  }
+
   // ============================================================
-  // 🔥 GET MY BERITA (Berita yang dikirim sendiri)
+  // 🔥 GET MY BERITA (Berita yang dikirim sendiri) — handle pagination + merge lokal
   // ============================================================
   Future<List<Berita>> getMyBerita() async {
+    List<Berita> apiList = [];
     try {
       final token = await _getToken();
       if (token == null || token.isEmpty) {
-        return [];
-      }
+        print('⚠️ getMyBerita: token kosong');
+      } else {
+        final response = await http.get(
+          Uri.parse('${AppConstants.baseUrl}berita/saya'),
+          headers: {
+            'Accept': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        ).timeout(const Duration(seconds: 10));
 
-      // ✅ FIX: baseUrl sudah mengandung "/api/", jadi jangan tambahkan "/api/" lagi
-      final response = await http.get(
-        Uri.parse('${AppConstants.baseUrl}berita/saya'),
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-      ).timeout(const Duration(seconds: 8));
+        print('📥 getMyBerita status: ${response.statusCode}');
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final List<dynamic> list = data['data'] ?? [];
-        return list.map((item) => Berita.fromJson(item)).toList();
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+          final List<dynamic> list = _extractList(data['data']);
+          final finalList = list.isNotEmpty ? list : _extractList(data);
+          print('📥 getMyBerita parsed ${finalList.length} item');
+          apiList = finalList.map((item) => Berita.fromJson(item as Map<String, dynamic>)).toList();
+        } else {
+          print('⚠️ getMyBerita gagal status ${response.statusCode}: ${response.body.substring(0, response.body.length > 300 ? 300 : response.body.length)}');
+        }
       }
     } catch (e) {
       print('⚠️ Gagal mengambil berita saya: $e');
     }
-    return [];
+
+    // merge dengan cache lokal agar setelah submit tetap muncul walau API belum sync
+    final localList = await _loadMyBeritaLocal();
+    if (apiList.isEmpty) {
+      return localList;
+    }
+    if (localList.isNotEmpty) {
+      final apiIds = apiList.map((e) => e.id).toSet();
+      final apiJuduls = apiList.map((e) => e.judul).toSet();
+      final onlyLocal = localList.where((l) => !apiIds.contains(l.id) && !apiJuduls.contains(l.judul)).toList();
+      return [...onlyLocal, ...apiList];
+    }
+    return apiList;
   }
 
   // ============================================================
@@ -72,18 +128,18 @@ class BeritaService {
         queryParams['kecamatan'] = kecamatan;
       }
 
-      // ✅ FIX
       final uri = Uri.parse('${AppConstants.baseUrl}berita')
           .replace(queryParameters: queryParams);
 
       final response = await http.get(uri, headers: headers).timeout(
-        const Duration(seconds: 8),
+        const Duration(seconds: 10),
       );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final List<dynamic> list = data['data']?['data'] ?? data['data'] ?? [];
-        return list.map((item) => Berita.fromJson(item)).toList();
+        final List<dynamic> list = _extractList(data['data']);
+        final finalList = list.isNotEmpty ? list : _extractList(data);
+        return finalList.map((item) => Berita.fromJson(item as Map<String, dynamic>)).toList();
       }
     } catch (e) {
       print('⚠️ Gagal mengambil berita: $e');
@@ -195,6 +251,7 @@ class BeritaService {
           throw Exception('Berita gagal disimpan, data tidak valid');
         }
         print('✅ Berita berhasil dikirim! ID: ${berita.id}');
+        await _saveMyBeritaLocal(berita);
         return berita;
       } else {
         final error = jsonDecode(response.body);
@@ -306,16 +363,16 @@ class BeritaService {
   // ============================================================
   Future<List<Berita>> getLatestBerita({int limit = 6}) async {
     try {
-      // ✅ FIX
       final response = await http.get(
         Uri.parse('${AppConstants.baseUrl}berita/latest?limit=$limit'),
         headers: {'Accept': 'application/json'},
-      ).timeout(const Duration(seconds: 8));
+      ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final List<dynamic> list = data['data'] ?? [];
-        return list.map((item) => Berita.fromJson(item)).toList();
+        final List<dynamic> list = _extractList(data['data']);
+        final finalList = list.isNotEmpty ? list : _extractList(data);
+        return finalList.map((item) => Berita.fromJson(item as Map<String, dynamic>)).toList();
       }
     } catch (e) {
       print('⚠️ Gagal mengambil berita terbaru: $e');

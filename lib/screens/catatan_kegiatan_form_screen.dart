@@ -42,7 +42,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
   DateTime _tanggal = DateTime.now();
   bool _isSaving = false;
 
-  bool _isDarkMode = true;
+  bool _isDarkMode = false;
 
   @override
   void initState() {

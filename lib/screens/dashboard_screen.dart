@@ -27,6 +27,7 @@ import 'kriteria_rumah_list_screen.dart';
 import 'industri_rumah_tangga_list_screen.dart';
 import '../models/user.dart';
 import '../services/auth_service.dart';
+import '../widgets/weather_card.dart';
 import 'admin/admin_dashboard_screen.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -501,6 +502,7 @@ class _BerandaPageState extends State<_BerandaPage> {
   final PageController _beritaPageController = PageController(viewportFraction: 0.88);
   final ScrollController _scrollController = ScrollController();
   int _currentBeritaPage = 0;
+  int _weatherVersion = 0;
 
   String _getDayName(int weekday) {
     const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
@@ -628,7 +630,10 @@ class _BerandaPageState extends State<_BerandaPage> {
   }
 
   Future<void> _onRefresh() async {
-    setState(() => _loadAll());
+    setState(() {
+      _loadAll();
+      _weatherVersion++;
+    });
     await Future.wait([_beritaFuture, _statFuture, _userFuture]);
   }
 
@@ -792,6 +797,14 @@ class _BerandaPageState extends State<_BerandaPage> {
                   ],
                 ),
               ),
+            ),
+          ),
+
+          // ── CUACA KAB. TASIKMALAYA (Open-Meteo API) ──
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: WeatherCard(key: ValueKey(_weatherVersion)),
             ),
           ),
 

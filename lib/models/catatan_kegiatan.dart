@@ -633,16 +633,27 @@ class CatatanKegiatan {
 
     return CatatanKegiatan(
       id: json['id'] is int ? json['id'] : (int.tryParse(json['id']?.toString() ?? '0') ?? 0),
-      judul: json['judul']?.toString() ?? '',
+      judul: json['judul']?.toString() ??
+          json['judul_kegiatan']?.toString() ??
+          json['title']?.toString() ??
+          '',
       deskripsiSingkat: json['deskripsi']?.toString() ??
           json['cerita_singkat']?.toString() ??
           json['deskripsi_singkat']?.toString() ??
+          json['keterangan']?.toString() ??
+          json['content']?.toString() ??
           '',
-      kategori: parseKategori(json['kategori_pokja'] ?? json['kategori'] ?? 'I'),
+      kategori: parseKategori(json['kategori_pokja'] ?? json['kategori'] ?? json['kategori_pokja_label'] ?? 'I'),
       dataAngka: dataAngka,
-      kecamatan: json['kecamatan']?.toString() ?? '',
-      desa: json['desa']?.toString(),
-      fotoPath: json['foto']?.toString() ?? json['foto_path']?.toString(),
+      kecamatan: json['kecamatan']?.toString() ??
+          json['nama_kecamatan']?.toString() ??
+          json['kec']?.toString() ??
+          '',
+      desa: json['desa']?.toString() ??
+          json['desa_kelurahan']?.toString() ??
+          json['kelurahan']?.toString() ??
+          json['desa_kel']?.toString(),
+      fotoPath: json['foto']?.toString() ?? json['foto_path']?.toString() ?? json['foto_url']?.toString() ?? json['image']?.toString(),
       tanggal: parsedTanggal,
       status: json['status'] == 'dibaca' || json['status'] == 1
           ? StatusKegiatan.dibaca
