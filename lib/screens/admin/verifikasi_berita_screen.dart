@@ -18,7 +18,7 @@ class VerifikasiBeritaScreen extends StatefulWidget {
 class _VerifikasiBeritaScreenState extends State<VerifikasiBeritaScreen> {
   bool _isLoading = true;
   List<Berita> _pendingBerita = [];
-  bool _isDarkMode = true;
+  bool _isDarkMode = false;
 
   void _onThemeChanged() {
     final isDark = themeNotifier.value == ThemeMode.dark;
@@ -78,7 +78,7 @@ class _VerifikasiBeritaScreenState extends State<VerifikasiBeritaScreen> {
       builder: (context) => AlertDialog(
         backgroundColor: isDark ? const Color(0xFF1E242D) : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text(isApprove ? 'Setujui Berita?' : 'Tolak Berita?', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 16, color: isDark ? Colors.white : const Color(0xFF0F172A))),
+        title: Text(isApprove ? 'Setujui Berita?' : 'Tolak Berita?', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 16, color: isDark ? Colors.white : const Color(0xFF14181D))),
         content: Text('Apakah Anda yakin ingin ${isApprove ? 'menyetujui' : 'menolak'} "${berita.judul}"?', style: GoogleFonts.plusJakartaSans(fontSize: 13.5, color: isDark ? Colors.white70 : const Color(0xFF475569), height: 1.5)),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Batal', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, color: isDark ? Colors.white60 : const Color(0xFF64748B)))),
@@ -107,7 +107,7 @@ class _VerifikasiBeritaScreenState extends State<VerifikasiBeritaScreen> {
   Widget build(BuildContext context) {
     final bgColor = _isDarkMode ? const Color(0xFF14181F) : const Color(0xFFF3F5F7);
     final appBarBg = _isDarkMode ? const Color(0xFF1A1F28) : Colors.white;
-    final textColor = _isDarkMode ? Colors.white : const Color(0xFF0F172A);
+    final textColor = _isDarkMode ? Colors.white : const Color(0xFF14181D);
     final subtextColor = _isDarkMode ? const Color(0xFF8E9BAE) : const Color(0xFF64748B);
     final primaryAccent = _isDarkMode ? const Color(0xFF2ED9C3) : const Color(0xFF0D9488);
 
@@ -156,8 +156,10 @@ class _VerifikasiBeritaScreenState extends State<VerifikasiBeritaScreen> {
 
   Widget _buildBeritaCard(Berita berita) {
     final cardBg = _isDarkMode ? const Color(0xFF1E242D) : Colors.white;
-    final borderColor = _isDarkMode ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFE2E8F0);
-    final textColor = _isDarkMode ? Colors.white : const Color(0xFF0F172A);
+    final borderColor = _isDarkMode
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.black.withValues(alpha: 0.06);
+    final textColor = _isDarkMode ? Colors.white : const Color(0xFF14181D);
     final subtextColor = _isDarkMode ? const Color(0xFF8E9BAE) : const Color(0xFF64748B);
     const statusColor = Color(0xFFD97706);
 

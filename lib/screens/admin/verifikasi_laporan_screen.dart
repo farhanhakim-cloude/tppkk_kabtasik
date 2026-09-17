@@ -9,7 +9,8 @@ import '../../constants/app_constants.dart';
 import '../../main.dart';
 
 class VerifikasiLaporanScreen extends StatefulWidget {
-  const VerifikasiLaporanScreen({super.key});
+  final PokjaKategori? pokjaDefault;
+  const VerifikasiLaporanScreen({super.key, this.pokjaDefault});
   @override State<VerifikasiLaporanScreen> createState() => _VerifikasiLaporanScreenState();
 }
 
@@ -17,7 +18,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
   bool _isLoading = true;
   List<CatatanKegiatan> _laporanList = [];
   String? _errorMessage;
-  bool _isDarkMode = true;
+  bool _isDarkMode = false;
   PokjaKategori? _filterPokja;
 
   void _onThemeChanged() {
@@ -29,6 +30,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
   void initState() {
     super.initState();
     _isDarkMode = themeNotifier.value == ThemeMode.dark;
+    _filterPokja = widget.pokjaDefault;
     themeNotifier.addListener(_onThemeChanged);
     _loadLaporan();
   }
@@ -114,7 +116,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
             isApprove ? 'Setujui Laporan?' : 'Tolak Laporan?',
             style: GoogleFonts.plusJakartaSans(
               fontSize: 16, fontWeight: FontWeight.w700,
-              color: isDark ? Colors.white : const Color(0xFF0F172A)
+              color: isDark ? Colors.white : const Color(0xFF14181D)
             )
           ))
         ]),
@@ -198,7 +200,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
   Widget build(BuildContext context) {
     final bgColor = _isDarkMode ? const Color(0xFF14181F) : const Color(0xFFF3F5F7);
     final appBarBg = _isDarkMode ? const Color(0xFF1A1F28) : Colors.white;
-    final textColor = _isDarkMode ? Colors.white : const Color(0xFF0F172A);
+    final textColor = _isDarkMode ? Colors.white : const Color(0xFF14181D);
     final subtextColor = _isDarkMode ? const Color(0xFF8E9BAE) : const Color(0xFF64748B);
     final primaryAccent = _isDarkMode ? const Color(0xFF2ED9C3) : const Color(0xFF0D9488);
 
@@ -281,7 +283,12 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
         decoration: BoxDecoration(
           color: bg,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: selected ? accent : (_isDarkMode ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFE2E8F0)))
+          border: Border.all(
+              color: selected
+                  ? accent
+                  : (_isDarkMode
+                      ? Colors.white.withValues(alpha: 0.08)
+                      : Colors.black.withValues(alpha: 0.06)))
         ),
         child: Row(mainAxisSize: MainAxisSize.min, children: [
           Text(label, style: GoogleFonts.plusJakartaSans(
@@ -338,7 +345,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
   }
 
   Widget _buildErrorState() {
-    final textColor = _isDarkMode ? Colors.white : const Color(0xFF0F172A);
+    final textColor = _isDarkMode ? Colors.white : const Color(0xFF14181D);
     final subtextColor = _isDarkMode ? const Color(0xFF8E9BAE) : const Color(0xFF64748B);
     final primaryAccent = _isDarkMode ? const Color(0xFF2ED9C3) : const Color(0xFF0D9488);
 
@@ -379,7 +386,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
   }
 
   Widget _buildEmptyState() {
-    final textColor = _isDarkMode ? Colors.white : const Color(0xFF0F172A);
+    final textColor = _isDarkMode ? Colors.white : const Color(0xFF14181D);
     final subtextColor = _isDarkMode ? const Color(0xFF8E9BAE) : const Color(0xFF64748B);
     final accent = _isDarkMode ? const Color(0xFF2ED9C3) : const Color(0xFF0D9488);
 
@@ -406,8 +413,10 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
 
   Widget _buildLaporanCard(CatatanKegiatan laporan) {
     final cardBg = _isDarkMode ? const Color(0xFF1E242D) : Colors.white;
-    final borderColor = _isDarkMode ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFE2E8F0);
-    final textColor = _isDarkMode ? Colors.white : const Color(0xFF0F172A);
+    final borderColor = _isDarkMode
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.black.withValues(alpha: 0.06);
+    final textColor = _isDarkMode ? Colors.white : const Color(0xFF14181D);
     final subtextColor = _isDarkMode ? const Color(0xFF8E9BAE) : const Color(0xFF64748B);
     final accent = _pokjaColor(laporan.kategori);
 

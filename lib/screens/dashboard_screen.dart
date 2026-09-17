@@ -103,6 +103,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return FutureBuilder<bool>(
       future: _isAdminFuture,
       builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(
+                color: Color(0xFF0D9488),
+              ),
+            ),
+          );
+        }
+
         final isAdmin = snapshot.data ?? false;
         final currentItems = isAdmin ? _adminNavItems : _navItems;
         final numPages = currentItems.length;

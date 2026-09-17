@@ -163,9 +163,14 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
 
   void _showImagePickerSheet() {
     HapticFeedback.lightImpact();
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final sheetBg = isDarkMode ? const Color(0xFF1E242D) : Colors.white;
+    final textColor = isDarkMode ? Colors.white : const Color(0xFF0F172A);
+    final subtextColor = isDarkMode ? Colors.white70 : Colors.grey[500];
+    
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: sheetBg,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -179,7 +184,7 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                 width: 36,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: isDarkMode ? Colors.white24 : Colors.grey[300],
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -189,7 +194,7 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                 style: GoogleFonts.plusJakartaSans(
                   fontWeight: FontWeight.w800,
                   fontSize: 16,
-                  color: const Color(0xFF0F172A),
+                  color: textColor,
                 ),
               ),
               const SizedBox(height: 12),
@@ -204,11 +209,11 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                 ),
                 title: Text(
                   'Ambil dari Kamera',
-                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700),
+                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, color: textColor),
                 ),
                 subtitle: Text(
                   'Gunakan kamera HP untuk foto langsung',
-                  style: GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.grey[500]),
+                  style: GoogleFonts.plusJakartaSans(fontSize: 12, color: subtextColor),
                 ),
                 onTap: () {
                   Navigator.pop(ctx);
@@ -226,11 +231,11 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                 ),
                 title: Text(
                   'Pilih dari Galeri',
-                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700),
+                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, color: textColor),
                 ),
                 subtitle: Text(
                   'Unggah gambar dokumentasi yang sudah ada',
-                  style: GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.grey[500]),
+                  style: GoogleFonts.plusJakartaSans(fontSize: 12, color: subtextColor),
                 ),
                 onTap: () {
                   Navigator.pop(ctx);
@@ -326,15 +331,22 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
   @override
   Widget build(BuildContext context) {
     final primary = Theme.of(context).colorScheme.primary;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    
+    final bgColor = isDarkMode ? const Color(0xFF14181F) : const Color(0xFFF8FAFC);
+    final cardBg = isDarkMode ? const Color(0xFF1E242D) : Colors.white;
+    final textColor = isDarkMode ? Colors.white : const Color(0xFF0F172A);
+    final subtextColor = isDarkMode ? Colors.white70 : const Color(0xFF475569);
+    final borderColor = isDarkMode ? Colors.white.withOpacity(0.1) : const Color(0xFFCBD5E1);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: cardBg,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF0F172A)),
+          icon: Icon(Icons.arrow_back, color: textColor),
           onPressed: () {
             if (_judulController.text.isNotEmpty ||
                 _kontenController.text.isNotEmpty ||
@@ -350,7 +362,7 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
           style: GoogleFonts.plusJakartaSans(
             fontWeight: FontWeight.w800,
             fontSize: 18,
-            color: const Color(0xFF0F172A),
+            color: textColor,
           ),
         ),
         centerTitle: false,
@@ -360,12 +372,12 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
             child: TextButton.icon(
               onPressed: _isPublishing ? null : _handleSubmit,
               icon: _isPublishing
-                  ? const SizedBox(
+                  ? SizedBox(
                       width: 16,
                       height: 16,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: Color(0xFF0D9488),
+                        color: primary,
                       ),
                     )
                   : const Icon(Icons.send_rounded, size: 16),
@@ -397,20 +409,21 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                   height: 190,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: cardBg,
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(
                       color: _fotoBytes != null
                           ? primary.withOpacity(0.4)
-                          : const Color(0xFFE2E8F0),
+                          : borderColor,
                       width: 1.5,
                     ),
                     boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.03),
-                        blurRadius: 10,
-                        offset: const Offset(0, 3),
-                      ),
+                      if (!isDarkMode)
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.03),
+                          blurRadius: 10,
+                          offset: const Offset(0, 3),
+                        ),
                     ],
                   ),
                   child: _fotoBytes != null
@@ -515,7 +528,7 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
-                                color: const Color(0xFF1E293B),
+                                color: textColor,
                               ),
                             ),
                             const SizedBox(height: 4),
@@ -523,7 +536,7 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                               'Format JPG atau PNG (Opsional)',
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 12,
-                                color: Colors.grey[400],
+                                color: subtextColor,
                               ),
                             ),
                           ],
@@ -541,7 +554,7 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 13.5,
                         fontWeight: FontWeight.w800,
-                        color: const Color(0xFF0F172A),
+                        color: textColor,
                       ),
                     ),
                     const SizedBox(width: 4),
@@ -558,18 +571,23 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                       )
                     : DropdownButtonFormField<String>(
                         value: _selectedKecamatan,
+                        dropdownColor: cardBg,
+                        style: GoogleFonts.plusJakartaSans(
+                          color: textColor,
+                        ),
                         decoration: InputDecoration(
                           hintText: 'Pilih Kecamatan',
+                          hintStyle: GoogleFonts.plusJakartaSans(color: subtextColor),
                           prefixIcon: Icon(Icons.location_on_rounded, color: primary),
                           filled: true,
-                          fillColor: Colors.white,
+                          fillColor: cardBg,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(14),
-                            borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                            borderSide: BorderSide(color: borderColor),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(14),
-                            borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                            borderSide: BorderSide(color: borderColor),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(14),
@@ -604,7 +622,7 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 13.5,
                   fontWeight: FontWeight.w800,
-                  color: const Color(0xFF0F172A),
+                  color: textColor,
                 ),
               ),
               const SizedBox(height: 8),
@@ -617,14 +635,14 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                     label: Text(kat),
                     selected: isSelected,
                     selectedColor: primary,
-                    backgroundColor: Colors.white,
+                    backgroundColor: cardBg,
                     labelStyle: GoogleFonts.plusJakartaSans(
                       fontSize: 12,
                       fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                      color: isSelected ? Colors.white : const Color(0xFF475569),
+                      color: isSelected ? Colors.white : subtextColor,
                     ),
                     side: BorderSide(
-                      color: isSelected ? primary : const Color(0xFFCBD5E1),
+                      color: isSelected ? primary : borderColor,
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
@@ -648,7 +666,7 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 13.5,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFF0F172A),
+                      color: textColor,
                     ),
                   ),
                   const SizedBox(width: 4),
@@ -665,24 +683,25 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
+                  color: textColor,
                 ),
                 decoration: InputDecoration(
                   hintText: 'Contoh: Pelaksanaan Posyandu Mawar Bulan September',
                   hintStyle: GoogleFonts.plusJakartaSans(
                     fontSize: 13,
-                    color: Colors.grey[400],
+                    color: subtextColor,
                   ),
                   prefixIcon: Icon(Icons.title_rounded, size: 20, color: primary),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: cardBg,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                    borderSide: BorderSide(color: borderColor),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                    borderSide: BorderSide(color: borderColor),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -709,7 +728,7 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 13.5,
                       fontWeight: FontWeight.w800,
-                      color: const Color(0xFF0F172A),
+                      color: textColor,
                     ),
                   ),
                   const SizedBox(width: 4),
@@ -727,24 +746,25 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 13.5,
                   height: 1.5,
+                  color: textColor,
                 ),
                 decoration: InputDecoration(
                   hintText:
                       'Tuliskan narasi lengkap kegiatan, pihak yang terlibat, lokasi, dan hasil yang dicapai...',
                   hintStyle: GoogleFonts.plusJakartaSans(
                     fontSize: 13,
-                    color: Colors.grey[400],
+                    color: subtextColor,
                   ),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: cardBg,
                   contentPadding: const EdgeInsets.all(14),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                    borderSide: BorderSide(color: borderColor),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
-                    borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                    borderSide: BorderSide(color: borderColor),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
@@ -767,9 +787,9 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF0FDF4),
+                  color: isDarkMode ? primary.withOpacity(0.1) : const Color(0xFFF0FDF4),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFFBBF7D0)),
+                  border: Border.all(color: isDarkMode ? primary.withOpacity(0.2) : const Color(0xFFBBF7D0)),
                 ),
                 child: Row(
                   children: [
@@ -795,7 +815,7 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 13,
                               fontWeight: FontWeight.w800,
-                              color: const Color(0xFF166534),
+                              color: isDarkMode ? Colors.white : const Color(0xFF166534),
                             ),
                           ),
                           const SizedBox(height: 2),
@@ -803,7 +823,7 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                             'Berita akan diverifikasi oleh admin sebelum tampil di publik.',
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 11.5,
-                              color: const Color(0xFF15803D),
+                              color: isDarkMode ? Colors.white70 : const Color(0xFF15803D),
                             ),
                           ),
                         ],
@@ -857,17 +877,23 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
 
   // 🔥 DIALOG DISCARD
   void _showDiscardDialog() {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final dialogBg = isDarkMode ? const Color(0xFF1E242D) : Colors.white;
+    final textColor = isDarkMode ? Colors.white : const Color(0xFF0F172A);
+    final subtextColor = isDarkMode ? Colors.white70 : const Color(0xFF475569);
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
+        backgroundColor: dialogBg,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(
           'Batalkan Penulisan?',
-          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800),
+          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, color: textColor),
         ),
         content: Text(
           'Anda memiliki perubahan yang belum disimpan. Yakin ingin keluar?',
-          style: GoogleFonts.plusJakartaSans(),
+          style: GoogleFonts.plusJakartaSans(color: subtextColor),
         ),
         actions: [
           TextButton(
@@ -876,7 +902,7 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
               'Lanjut Menulis',
               style: GoogleFonts.plusJakartaSans(
                 fontWeight: FontWeight.w700,
-                color: const Color(0xFF0F172A),
+                color: textColor,
               ),
             ),
           ),
