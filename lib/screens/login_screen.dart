@@ -1,4 +1,5 @@
 // ignore_for_file: avoid_print
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -50,25 +51,30 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   // ============================================================
-  // 🔥 HELPER: Redirect berdasarkan role user (3 role)
+  // 🔥 HELPER: Redirect berdasarkan role user
+  // ✅ FIX: Parse JSON — cek cuma field 'roles'
   // ============================================================
   Future<void> _redirectByRole() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final userData = prefs.getString('user_data') ?? '{}';
-      final lower = userData.toLowerCase();
+
+      // ✅ Parse JSON — bukan cek string mentah
+      final Map<String, dynamic> parsed = jsonDecode(userData);
+      final List<String> roles = List<String>.from(parsed['roles'] ?? []);
 
       String primaryRole = 'kader';
-      if (lower.contains('"admin"') || lower.contains('super admin') || lower.contains('super_admin')) {
+      if (roles.contains('admin') || roles.contains('super_admin')) {
         primaryRole = 'admin';
-      } else if (lower.contains('"dasawisma"') || lower.contains('dasawisma')) {
-        // dasawisma murni atau kader_dasawisma → arahkan ke dasawisma dashboard baru
+      } else if (roles.contains('dasawisma')) {
         primaryRole = 'dasawisma';
-      } else if (lower.contains('"kader"') || lower.contains('kader_dasawisma') || lower.contains('"pkk"') || lower.contains('"user"')) {
+      } else if (roles.contains('pokja')) {
+        primaryRole = 'pokja';
+      } else if (roles.contains('kader') || roles.contains('kader_dasawisma')) {
         primaryRole = 'kader';
       }
 
-      print('🎯 REDIRECT: role=$primaryRole raw=$userData');
+      print('🎯 REDIRECT: role=$primaryRole roles=$roles');
 
       if (!mounted) return;
 
@@ -76,6 +82,8 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pushReplacementNamed(context, '/dashboard');
       } else if (primaryRole == 'dasawisma') {
         Navigator.pushReplacementNamed(context, '/dasawisma');
+      } else if (primaryRole == 'pokja') {
+        Navigator.pushReplacementNamed(context, '/kader');
       } else {
         Navigator.pushReplacementNamed(context, '/kader');
       }
@@ -729,40 +737,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ),
                                         ],
                                       ),
-                              ),
-                            ),
-
-                            const SizedBox(height: 12),
-
-                            // Tombol dummy Dasawisma (Opsi A - langsung tanpa backend)
-                            SizedBox(
-                              width: double.infinity,
-                              height: 48,
-                              child: OutlinedButton.icon(
-                                onPressed: () async {
-                                  HapticFeedback.selectionClick();
-                                  final prefs = await SharedPreferences.getInstance();
-                                  await prefs.setString('user_data', '{"name":"Dasawisma Demo","username":"dasawisma_demo","email":"dasawisma@demo.id","roles":["dasawisma"]}');
-                                  await prefs.setString('auth_token', 'dummy_dasawisma_token');
-                                  await prefs.setBool('isLoggedIn', true);
-                                  if (context.mounted) {
-                                    Navigator.pushReplacementNamed(context, '/dasawisma');
-                                  }
-                                },
-                                icon: const Icon(Icons.groups_rounded, size: 18, color: Color(0xFF0D9488)),
-                                label: Text(
-                                  'Masuk sebagai Dasawisma (Demo)',
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 13.5,
-                                    fontWeight: FontWeight.w700,
-                                    color: Color(0xFF0D9488),
-                                  ),
-                                ),
-                                style: OutlinedButton.styleFrom(
-                                  side: const BorderSide(color: Color(0xFF0D9488), width: 1.5),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                  backgroundColor: const Color(0xFF0D9488).withValues(alpha: 0.06),
-                                ),
                               ),
                             ),
 

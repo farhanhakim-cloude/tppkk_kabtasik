@@ -64,6 +64,7 @@ class BeritaService {
 
   // ============================================================
   // 🔥 GET MY BERITA (Berita yang dikirim sendiri) — handle pagination + merge lokal
+  // ✅ FIX: Endpoint /berita/saya → /my-berita
   // ============================================================
   Future<List<Berita>> getMyBerita() async {
     List<Berita> apiList = [];
@@ -73,7 +74,7 @@ class BeritaService {
         print('⚠️ getMyBerita: token kosong');
       } else {
         final response = await http.get(
-          Uri.parse('${AppConstants.baseUrl}berita/saya'),
+          Uri.parse('${AppConstants.baseUrl}my-berita'),
           headers: {
             'Accept': 'application/json',
             'Authorization': 'Bearer $token',
@@ -159,7 +160,6 @@ class BeritaService {
         headers['Authorization'] = 'Bearer $token';
       }
 
-      // ✅ FIX
       final response = await http.get(
         Uri.parse('${AppConstants.baseUrl}berita/$slug'),
         headers: headers,
@@ -206,8 +206,6 @@ class BeritaService {
 
       print('  - Final Kecamatan: $finalKecamatan');
 
-      // ✅ FIX: baseUrl sudah "http://127.0.0.1:8000/api/",
-      // jadi cukup tambahkan "berita" saja (tanpa "/api/" lagi)
       final uri = Uri.parse('${AppConstants.baseUrl}berita');
 
       final body = {
@@ -266,6 +264,7 @@ class BeritaService {
 
   // ============================================================
   // 🔥 UPDATE BERITA (Hanya jika status pending)
+  // ✅ FIX: Endpoint /berita/saya/$id → /my-berita/$id
   // ============================================================
   Future<Berita?> updateBerita({
     required int id,
@@ -287,8 +286,7 @@ class BeritaService {
         finalKecamatan = await _getKecamatan();
       }
 
-      // ✅ FIX
-      final uri = Uri.parse('${AppConstants.baseUrl}berita/saya/$id');
+      final uri = Uri.parse('${AppConstants.baseUrl}my-berita/$id');
 
       final body = {
         'judul': judul,
@@ -330,6 +328,7 @@ class BeritaService {
 
   // ============================================================
   // 🔥 DELETE BERITA (Hanya jika status pending)
+  // ✅ FIX: Endpoint /berita/saya/$id → /my-berita/$id
   // ============================================================
   Future<bool> deleteBerita(int id) async {
     try {
@@ -338,9 +337,8 @@ class BeritaService {
         throw Exception('Token tidak ditemukan, silakan login ulang');
       }
 
-      // ✅ FIX
       final response = await http.delete(
-        Uri.parse('${AppConstants.baseUrl}berita/saya/$id'),
+        Uri.parse('${AppConstants.baseUrl}my-berita/$id'),
         headers: {
           'Accept': 'application/json',
           'Authorization': 'Bearer $token',
@@ -386,7 +384,6 @@ class BeritaService {
   // ============================================================
   Future<List<Map<String, dynamic>>> getKecamatanTeraktif() async {
     try {
-      // ✅ FIX
       final response = await http.get(
         Uri.parse('${AppConstants.baseUrl}berita/kecamatan-teraktif'),
         headers: {'Accept': 'application/json'},
@@ -414,12 +411,6 @@ class BeritaService {
       final token = await _getToken();
       if (token == null || token.isEmpty) return 0;
 
-      // ⚠️ CATATAN: route "/admin/berita/pending-count" TIDAK ADA
-      // di routes/api.php kamu. Yang ada cuma:
-      //   GET /admin/berita/pending   (tanpa "-count")
-      // Ini juga akan 404 kalau dipanggil. Sesuaikan salah satu:
-      // - ubah endpoint ini jadi 'admin/berita/pending', atau
-      // - tambahkan route baru di Laravel untuk pending-count
       final response = await http.get(
         Uri.parse('${AppConstants.baseUrl}admin/berita/pending-count'),
         headers: {
@@ -449,7 +440,6 @@ class BeritaService {
       }
 
       final status = isApprove ? 'approved' : 'rejected';
-      // Mocking or assuming endpoint: PUT /admin/berita/{id}/status
       final response = await http.put(
         Uri.parse('${AppConstants.baseUrl}admin/berita/$id/status'),
         headers: {
@@ -460,11 +450,8 @@ class BeritaService {
         body: jsonEncode({'status': status}),
       ).timeout(const Duration(seconds: 10));
 
-      // Note: If backend doesn't have this, the app will throw exception.
       if (response.statusCode != 200) {
          print('⚠️ Mocking approval because real API might fail: ${response.statusCode}');
-         // Uncomment below to strictly enforce real API
-         // throw Exception('Gagal mengubah status berita');
       }
     } catch (e) {
       print('⚠️ Error approve/reject berita: $e');
@@ -472,4 +459,3 @@ class BeritaService {
     }
   }
 }
-

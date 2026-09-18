@@ -233,11 +233,12 @@ class ApiService {
 
   // ============================================================
   // 🔥 MY BERITA
+  // ✅ FIX: Endpoint /berita/saya → /my-berita
   // ============================================================
   Future<List<Berita>> getMyBerita(String token) async {
     try {
       final response = await _client.get(
-        Uri.parse('${AppConstants.baseUrl}berita/saya'),
+        Uri.parse('${AppConstants.baseUrl}my-berita'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
