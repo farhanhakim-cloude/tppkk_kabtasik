@@ -44,8 +44,12 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
       ..forward();
   }
 
-  void _reload() {
-    setState(() => _future = _service.getAll());
+  // ✅ FIX: _reload jadi Future<void>, sinkron di dalam setState
+  Future<void> _reload() async {
+    if (!mounted) return;
+    setState(() {
+      _future = _service.getAll();
+    });
   }
 
   @override
@@ -66,6 +70,9 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
     } catch (_) {}
   }
 
+  // ============================================================
+  // FIX: switch mencakup semua 7 nilai PokjaKategori
+  // ============================================================
   Color _getPokjaColor(PokjaKategori pokja) {
     switch (pokja) {
       case PokjaKategori.pokja1:
@@ -76,6 +83,12 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
         return const Color(0xFFF59E0B);
       case PokjaKategori.pokja4:
         return const Color(0xFFEF4444);
+      case PokjaKategori.pokja4Pyd:
+        return const Color(0xFF8B5CF6);
+      case PokjaKategori.pokja4Posyandu:
+        return const Color(0xFF06B6D4);
+      case PokjaKategori.pokja4Rekap:
+        return const Color(0xFFEC4899);
     }
   }
 
@@ -89,10 +102,17 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
         return Icons.cottage_rounded;
       case PokjaKategori.pokja4:
         return Icons.health_and_safety_rounded;
+      case PokjaKategori.pokja4Pyd:
+        return Icons.child_friendly_rounded;
+      case PokjaKategori.pokja4Posyandu:
+        return Icons.local_hospital_rounded;
+      case PokjaKategori.pokja4Rekap:
+        return Icons.assignment_rounded;
     }
   }
 
-  void _openForm({CatatanKegiatan? catatan, PokjaKategori? pokjaAwal}) async {
+  // ✅ FIX: _openForm jadi Future<void>
+  Future<void> _openForm({CatatanKegiatan? catatan, PokjaKategori? pokjaAwal}) async {
     await Navigator.push(
       context,
       MaterialPageRoute(
@@ -103,7 +123,7 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
       ),
     );
     if (!mounted) return;
-    _reload();
+    await _reload();
   }
 
   void _showFilterSheet() {
@@ -111,8 +131,10 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (ctx) => Container(
+        constraints: BoxConstraints(maxHeight: MediaQuery.of(ctx).size.height * 0.88),
         decoration: BoxDecoration(color: sheetBg, borderRadius: const BorderRadius.vertical(top: Radius.circular(24))),
         child: SafeArea(
           child: Padding(
@@ -129,17 +151,29 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                 ]),
               ]),
               const SizedBox(height: 16),
-              _buildFilterSheetItem(null, 'Semua Pokja', 'Tampilkan semua kategori', Icons.apps_rounded, const Color(0xFF0D9488), ctx),
-              const SizedBox(height: 8),
-              ...PokjaKategori.values.map((p) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: _buildFilterSheetItem(p, p.label, _pokjaSubtitle(p), _getPokjaIcon(p), _getPokjaColor(p), ctx),
-              )),
+              Flexible(
+                child: ListView(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.zero,
+                  children: [
+                    _buildFilterSheetItem(null, 'Semua Pokja', 'Tampilkan semua kategori', Icons.apps_rounded, const Color(0xFF0D9488), ctx),
+                    const SizedBox(height: 8),
+                    ...PokjaKategori.values.map((p) => Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: _buildFilterSheetItem(p, p.label, _pokjaSubtitle(p), _getPokjaIcon(p), _getPokjaColor(p), ctx),
+                        )),
+                  ],
+                ),
+              ),
               const SizedBox(height: 8),
               SizedBox(
-                width: double.infinity, height: 46,
+                width: double.infinity,
+                height: 46,
                 child: OutlinedButton(
-                  onPressed: () { setState(() => _selectedFilter = null); Navigator.pop(ctx); },
+                  onPressed: () {
+                    setState(() => _selectedFilter = null);
+                    Navigator.pop(ctx);
+                  },
                   style: OutlinedButton.styleFrom(foregroundColor: const Color(0xFF64748B), side: const BorderSide(color: Color(0xFFE2E8F0)), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
                   child: Text('Reset filter', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13)),
                 ),
@@ -158,7 +192,10 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
       borderRadius: BorderRadius.circular(14),
       child: InkWell(
         borderRadius: BorderRadius.circular(14),
-        onTap: () { setState(() => _selectedFilter = pokja); Navigator.pop(sheetCtx); },
+        onTap: () {
+          setState(() => _selectedFilter = pokja);
+          Navigator.pop(sheetCtx);
+        },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(14), border: Border.all(color: isSel ? color.withValues(alpha: 0.22) : Colors.transparent)),
@@ -170,7 +207,7 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
               Text(subtitle, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: const Color(0xFF64748B))),
             ])),
             const SizedBox(width: 8),
-            if (isSel) Icon(Icons.check_circle_rounded, size: 20, color: color) else Icon(Icons.circle_outlined, size: 20, color: const Color(0xFFCBD5E1)),
+            if (isSel) Icon(Icons.check_circle_rounded, size: 20, color: color) else const Icon(Icons.circle_outlined, size: 20, color: Color(0xFFCBD5E1)),
           ]),
         ),
       ),
@@ -179,10 +216,20 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
 
   String _pokjaSubtitle(PokjaKategori p) {
     switch (p) {
-      case PokjaKategori.pokja1: return 'Gotong Royong & Pembinaan Karakter';
-      case PokjaKategori.pokja2: return 'Pendidikan & Ekonomi Keluarga';
-      case PokjaKategori.pokja3: return 'Pangan, Sandang & Papan';
-      case PokjaKategori.pokja4: return 'Kesehatan & Lingkungan';
+      case PokjaKategori.pokja1:
+        return 'Gotong Royong & Pembinaan Karakter';
+      case PokjaKategori.pokja2:
+        return 'Pendidikan & Ekonomi Keluarga';
+      case PokjaKategori.pokja3:
+        return 'Pangan, Sandang & Papan';
+      case PokjaKategori.pokja4:
+        return 'Kesehatan & Lingkungan';
+      case PokjaKategori.pokja4Pyd:
+        return 'Data Kunjungan PYD per Bulan';
+      case PokjaKategori.pokja4Posyandu:
+        return 'Data Kegiatan Posyandu per Bulan';
+      case PokjaKategori.pokja4Rekap:
+        return 'Rekap Ibu Hamil, Melahirkan & Nifas';
     }
   }
 
@@ -261,7 +308,8 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                     borderRadius: BorderRadius.circular(14),
                     onTap: _showFilterSheet,
                     child: Container(
-                      width: 46, height: 46,
+                      width: 46,
+                      height: 46,
                       decoration: BoxDecoration(borderRadius: BorderRadius.circular(14), border: Border.all(color: _selectedFilter == null ? borderColor : primaryAccent)),
                       child: Stack(
                         alignment: Alignment.center,
@@ -277,7 +325,6 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
               ],
             ),
           ),
-          // subtle active filter hint — hanya muncul kalau filter aktif / search ada
           if (_selectedFilter != null || _searchQuery.isNotEmpty)
             Container(
               width: double.infinity,
@@ -329,7 +376,6 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                   );
                 }
                 final allList = snapshot.data ?? [];
-                // debug: kalau snapshot.data null tapi error tidak ada, tetap coba tampilkan dummy
                 final filteredList = allList.where((item) {
                   if (_selectedFilter != null && item.kategori != _selectedFilter) return false;
                   if (_searchQuery.isNotEmpty) {
@@ -344,7 +390,6 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
 
                 if (filteredList.isEmpty) {
                   if (allList.isNotEmpty) {
-                    // filtered kosong karena filter/search, bukan data kosong
                     return Center(
                       child: Padding(
                         padding: const EdgeInsets.all(24),
@@ -355,7 +400,13 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                           const SizedBox(height: 6),
                           Text('Coba ubah filter Pokja atau kata kunci pencarian.\nTotal dimuat: ${allList.length}', textAlign: TextAlign.center, style: GoogleFonts.plusJakartaSans(fontSize: 12, color: subtextColor)),
                           const SizedBox(height: 12),
-                          OutlinedButton(onPressed: () => setState(() { _selectedFilter = null; _searchQuery = ''; }), child: Text('Reset filter')),
+                          OutlinedButton(
+                            onPressed: () => setState(() {
+                              _selectedFilter = null;
+                              _searchQuery = '';
+                            }),
+                            child: const Text('Reset filter'),
+                          ),
                         ]),
                       ),
                     );
@@ -374,12 +425,13 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                     Divider(height: 1, color: borderColor),
                     Expanded(
                       child: RefreshIndicator(
-                        onRefresh: () async => _reload(),
+                        // ✅ FIX: onRefresh langsung panggil _reload (Future<void>)
+                        onRefresh: _reload,
                         color: primaryAccent,
                         child: ListView.separated(
                           padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
                           itemCount: filteredList.length,
-                          separatorBuilder: (_, _) => const SizedBox(height: 12),
+                          separatorBuilder: (_, __) => const SizedBox(height: 12),
                           itemBuilder: (context, index) {
                             try {
                               return _buildCatatanCard(
@@ -420,7 +472,6 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
   Widget _buildCatatanCard(CatatanKegiatan item, Color cardBg, Color textColor,
       Color subtextColor, Color borderColor, Color accentColor) {
     final color = _getPokjaColor(item.kategori);
-    // Status badge selaras verifikasi: Menunggu Verifikasi (orange) / Disetujui (green)
     final isApproved = item.status == StatusKegiatan.dibaca;
     final statusLabel = isApproved ? 'Disetujui' : 'Menunggu Verifikasi';
     final statusColor = isApproved ? const Color(0xFF10B981) : const Color(0xFFD97706);
@@ -441,7 +492,6 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Status badge (seperti Image: Menunggu Verifikasi oren)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(color: statusBg, borderRadius: BorderRadius.circular(20)),
@@ -459,9 +509,9 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                   maxLines: 2, overflow: TextOverflow.ellipsis, style: GoogleFonts.plusJakartaSans(fontSize: 13, color: const Color(0xFF475569), height: 1.4)),
               const SizedBox(height: 10),
               Row(children: [
-                const Icon(Icons.tag_rounded, size: 14, color: Color(0xFF64748B)),
+                Icon(Icons.tag_rounded, size: 14, color: color),
                 const SizedBox(width: 4),
-                Text(item.kategori.shortLabel, style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFF0D9488))),
+                Text(item.kategori.shortLabel, style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w700, color: color)),
                 const Spacer(),
                 Text('Ketuk untuk edit', style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w600, color: const Color(0xFF2563EB))),
               ]),

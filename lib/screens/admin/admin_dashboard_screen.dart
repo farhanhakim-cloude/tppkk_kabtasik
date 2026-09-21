@@ -21,11 +21,10 @@ class AdminDashboardScreen extends StatefulWidget {
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   int _pendingBeritaCount = 0;
   int _pendingLaporanCount = 0;
+
+  // Semua nilai enum diinisialisasi 0 (otomatis ikut kalau enum bertambah lagi)
   Map<PokjaKategori, int> _pokjaPending = {
-    PokjaKategori.pokja1: 0,
-    PokjaKategori.pokja2: 0,
-    PokjaKategori.pokja3: 0,
-    PokjaKategori.pokja4: 0,
+    for (final k in PokjaKategori.values) k: 0,
   };
   bool _loadingCount = true;
 
@@ -129,11 +128,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       }
 
       int laporanCount = 0;
-      Map<PokjaKategori, int> pokjaMap = {
-        PokjaKategori.pokja1: 0,
-        PokjaKategori.pokja2: 0,
-        PokjaKategori.pokja3: 0,
-        PokjaKategori.pokja4: 0,
+      final Map<PokjaKategori, int> pokjaMap = {
+        for (final k in PokjaKategori.values) k: 0,
       };
 
       if (laporanRes.statusCode == 200) {
@@ -153,14 +149,19 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
         laporanCount = pending.length;
 
-        // Hitung per Pokja — sinkron dengan kategori_pokja yang dikirim kader (I,II,III,IV)
+        // Hitung per Pokja
         for (final item in pending) {
           final kode = (item['kategori_pokja']?.toString() ?? item['kategori']?.toString() ?? '').toString().trim().toUpperCase();
           final kategoriRaw = (item['kategori']?.toString() ?? '').toString().toLowerCase();
           PokjaKategori? kat;
-          if (kode == 'I' || kategoriRaw.contains('pokja1') || kategoriRaw.contains('pokja 1')) {
-            kat = PokjaKategori.pokja1;
-          } else if (kode == 'II' || kategoriRaw.contains('pokja2') || kategoriRaw.contains('pokja 2')) kat = PokjaKategori.pokja2;
+
+          // 3 sheet Pokja IV dicek dulu, supaya tidak ikut terhitung sebagai pokja4 biasa
+          if (kategoriRaw.contains('pyd')) {
+            kat = PokjaKategori.pokja4Pyd;
+          } else if (kategoriRaw.contains('posyandu')) kat = PokjaKategori.pokja4Posyandu;
+          else if (kategoriRaw.contains('rekap')) kat = PokjaKategori.pokja4Rekap;
+          else if (kode == 'I' || kategoriRaw.contains('pokja1') || kategoriRaw.contains('pokja 1')) kat = PokjaKategori.pokja1;
+          else if (kode == 'II' || kategoriRaw.contains('pokja2') || kategoriRaw.contains('pokja 2')) kat = PokjaKategori.pokja2;
           else if (kode == 'III' || kategoriRaw.contains('pokja3') || kategoriRaw.contains('pokja 3')) kat = PokjaKategori.pokja3;
           else if (kode == 'IV' || kategoriRaw.contains('pokja4') || kategoriRaw.contains('pokja 4')) kat = PokjaKategori.pokja4;
           else {
@@ -188,7 +189,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Sinkron dengan mode Gelap/Terang — gelap = bg gelap, terang = bg terang (SAMA SEPERTI KADER)
+    // Sinkron dengan mode Gelap/Terang
     final bgColor = _isDarkMode ? const Color(0xFF14181F) : const Color(0xFFF3F5F7);
     final cardBg = _isDarkMode ? const Color(0xFF1E242D) : Colors.white;
     const primaryMint = Color(0xFF2ED9C3);
@@ -210,7 +211,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              // Header — SAMA SEPERTI KADER
+              // Header
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 RichText(text: TextSpan(style: GoogleFonts.plusJakartaSans(fontSize: 19, fontWeight: FontWeight.w500, color: textColor), children: [const TextSpan(text: 'Hey, '), TextSpan(text: 'Admin', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, color: primaryMintAccent)), const TextSpan(text: '!')])),
                 const SizedBox(height: 3),
@@ -218,7 +219,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               ]),
               const SizedBox(height: 20),
 
-              // Banner — SAMA SEPERTI KADER (dengan badge "Admin Aktif")
+              // Banner
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
@@ -328,10 +329,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               ),
               const SizedBox(height: 16),
 
-              // 2 FITUR UTAMA ADMIN — SAMA STYLE SEPERTI KADER
+              // 2 FITUR UTAMA ADMIN
               Row(
                 children: [
-                  // Fitur 1: Verifikasi Berita (Aksen Mint / Teal)
+                  // Fitur 1: Verifikasi Berita
                   Expanded(
                     child: _buildMainFeatureTile(
                       title: 'Verifikasi Berita',
@@ -384,7 +385,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               ),
               const SizedBox(height: 24),
 
-              // Rincian Antrean Pokja — 4 kartu mini seperti gambar referensi
+              // Rincian Antrean Pokja
               _buildRincianAntreanCard(
                 cardBg: cardBg,
                 textColor: textColor,
@@ -661,6 +662,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
+  // ============================================================
+  // FIX: switch sekarang mencakup semua 7 nilai PokjaKategori
+  // ============================================================
   Color _pokjaColor(PokjaKategori p) {
     switch (p) {
       case PokjaKategori.pokja1:
@@ -671,6 +675,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         return const Color(0xFFF59E0B);
       case PokjaKategori.pokja4:
         return const Color(0xFFEF4444);
+      case PokjaKategori.pokja4Pyd:
+        return const Color(0xFF8B5CF6);
+      case PokjaKategori.pokja4Posyandu:
+        return const Color(0xFF06B6D4);
+      case PokjaKategori.pokja4Rekap:
+        return const Color(0xFFEC4899);
     }
   }
 
@@ -684,6 +694,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         return Icons.cottage_rounded;
       case PokjaKategori.pokja4:
         return Icons.health_and_safety_rounded;
+      case PokjaKategori.pokja4Pyd:
+        return Icons.child_friendly_rounded;
+      case PokjaKategori.pokja4Posyandu:
+        return Icons.local_hospital_rounded;
+      case PokjaKategori.pokja4Rekap:
+        return Icons.assignment_rounded;
     }
   }
 
@@ -694,6 +710,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     required Color borderColor,
     required Color primaryMintAccent,
   }) {
+    final all = PokjaKategori.values;
+    // Bagi jadi baris berisi maks 4 kartu supaya tidak sempit (4 + 3)
+    const perRow = 4;
+    final rows = <List<PokjaKategori>>[];
+    for (var i = 0; i < all.length; i += perRow) {
+      rows.add(all.sublist(i, i + perRow > all.length ? all.length : i + perRow));
+    }
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -742,18 +766,21 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          Row(
-            children: [
-              for (final p in PokjaKategori.values)
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                        right: p == PokjaKategori.pokja4 ? 0 : 8),
-                    child: _pokjaMiniCard(p),
+          for (var r = 0; r < rows.length; r++) ...[
+            if (r > 0) const SizedBox(height: 8),
+            Row(
+              children: [
+                for (var i = 0; i < perRow; i++) ...[
+                  if (i > 0) const SizedBox(width: 8),
+                  Expanded(
+                    child: i < rows[r].length
+                        ? _pokjaMiniCard(rows[r][i])
+                        : const SizedBox.shrink(),
                   ),
-                ),
-            ],
-          ),
+                ],
+              ],
+            ),
+          ],
         ],
       ),
     );
@@ -762,10 +789,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   Widget _pokjaMiniCard(PokjaKategori p) {
     final c = _pokjaColor(p);
     final count = _pokjaPending[p] ?? 0;
-    // Kartu mini selalu terang seperti di gambar referensi,
-    // jadi teks gelap agar terbaca di dark & light mode.
-    final miniBg =
-        _isDarkMode ? Colors.white : const Color(0xFFF8FAFC);
+    // Kartu mini selalu terang, jadi teks gelap agar terbaca di dark & light mode.
+    final miniBg = _isDarkMode ? Colors.white : const Color(0xFFF8FAFC);
     final miniBorder = _isDarkMode
         ? Colors.transparent
         : Colors.black.withValues(alpha: 0.06);

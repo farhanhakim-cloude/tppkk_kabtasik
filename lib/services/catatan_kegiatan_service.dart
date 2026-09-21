@@ -64,23 +64,15 @@ class CatatanKegiatanService {
   }
 
   // ============================================================
-  // KONVERSI POKJA KE ROMAWI
+  // ✅ KONVERSI POKJA KE KODE — pakai getter dari model
   // ============================================================
   String _kodePokja(PokjaKategori kategori) {
-    switch (kategori) {
-      case PokjaKategori.pokja1:
-        return 'I';
-      case PokjaKategori.pokja2:
-        return 'II';
-      case PokjaKategori.pokja3:
-        return 'III';
-      case PokjaKategori.pokja4:
-        return 'IV';
-    }
+    // Pakai getter `kategoriPokja` dari extension — otomatis handle 7 value
+    return kategori.kategoriPokja;
   }
 
   // ============================================================
-  // 🔥 PERSISTENCE: simpan/load lokal agar data input tidak hilang
+  // 🔥 PERSISTENCE
   // ============================================================
   static const String _localKey = 'catatan_kegiatan_local';
 
@@ -88,7 +80,6 @@ class CatatanKegiatanService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final jsonList = _data.map((e) => e.toJson()).toList();
-      // toJson simpan tanggal sebagai ISO, tapi kita perlu id/judul dll konsisten
       await prefs.setString(_localKey, jsonEncode(jsonList));
     } catch (_) {}
   }
@@ -100,8 +91,7 @@ class CatatanKegiatanService {
       if (raw == null || raw.isEmpty) return;
       final List decoded = jsonDecode(raw);
       if (decoded.isEmpty) return;
-      // hanya load jika _data masih dummy awal (biar tidak duplikat tiap getAll)
-      // cek apakah ada item local yang belum ada di _data (by id+judul)
+
       PokjaKategori _parseKategoriDynamic(dynamic v) {
         if (v is int) {
           if (v >= 0 && v < PokjaKategori.values.length) return PokjaKategori.values[v];
@@ -109,45 +99,52 @@ class CatatanKegiatanService {
         }
         return CatatanKegiatan.parseKategori(v);
       }
-      for (final item in decoded) {
-        if (item is Map<String, dynamic>) {
-          final restored = CatatanKegiatan(
-            id: item['id'] ?? 0,
-            judul: item['judul']?.toString() ?? '',
-            deskripsiSingkat: item['cerita_singkat']?.toString() ?? item['deskripsi']?.toString() ?? '',
-            kategori: _parseKategoriDynamic(item['kategori']),
-            dataAngka: (item['data_angka'] is Map) ? (item['data_angka'] as Map).map((k, v) => MapEntry(k.toString(), int.tryParse(v.toString()) ?? 0)) : {},
-            kecamatan: item['kecamatan']?.toString() ?? '',
-            desa: item['desa']?.toString(),
-            fotoPath: item['foto_path']?.toString(),
-            tanggal: DateTime.tryParse(item['tanggal']?.toString() ?? '') ?? DateTime.now(),
-            status: StatusKegiatan.terkirim,
-          );
-          final exists = _data.any((d) => d.id == restored.id && d.judul == restored.judul);
-          if (!exists) _data.add(restored);
-        } else if (item is Map) {
-          final m = item.cast<String, dynamic>();
-          final restored = CatatanKegiatan(
-            id: m['id'] ?? 0,
-            judul: m['judul']?.toString() ?? '',
-            deskripsiSingkat: m['cerita_singkat']?.toString() ?? m['deskripsi']?.toString() ?? '',
-            kategori: _parseKategoriDynamic(m['kategori']),
-            dataAngka: (m['data_angka'] is Map) ? (m['data_angka'] as Map).map((k, v) => MapEntry(k.toString(), int.tryParse(v.toString()) ?? 0)) : {},
-            kecamatan: m['kecamatan']?.toString() ?? '',
-            desa: m['desa']?.toString(),
-            fotoPath: m['foto_path']?.toString(),
-            tanggal: DateTime.tryParse(m['tanggal']?.toString() ?? '') ?? DateTime.now(),
-            status: StatusKegiatan.terkirim,
-          );
-          final exists = _data.any((d) => d.id == restored.id && d.judul == restored.judul);
-          if (!exists) _data.add(restored);
+
+      // ✅ Helper: decode dataAngka — jangan cast paksa ke int
+      Map<String, dynamic> _decodeDataAngka(dynamic raw) {
+        if (raw is Map) {
+          return Map<String, dynamic>.from(raw);
         }
+        if (raw is String) {
+          try {
+            final decoded = jsonDecode(raw);
+            if (decoded is Map) {
+              return Map<String, dynamic>.from(decoded);
+            }
+          } catch (_) {}
+        }
+        return {};
+      }
+
+      for (final item in decoded) {
+        Map<String, dynamic>? m;
+        if (item is Map<String, dynamic>) {
+          m = item;
+        } else if (item is Map) {
+          m = item.cast<String, dynamic>();
+        }
+        if (m == null) continue;
+
+        final restored = CatatanKegiatan(
+          id: m['id'] ?? 0,
+          judul: m['judul']?.toString() ?? '',
+          deskripsiSingkat: m['cerita_singkat']?.toString() ?? m['deskripsi']?.toString() ?? '',
+          kategori: _parseKategoriDynamic(m['kategori'] ?? m['kategori_pokja']),
+          dataAngka: _decodeDataAngka(m['data_angka']),
+          kecamatan: m['kecamatan']?.toString() ?? '',
+          desa: m['desa']?.toString() ?? m['desa_kelurahan']?.toString(),
+          fotoPath: m['foto_path']?.toString() ?? m['foto']?.toString(),
+          tanggal: DateTime.tryParse(m['tanggal']?.toString() ?? '') ?? DateTime.now(),
+          status: StatusKegiatan.terkirim,
+        );
+        final exists = _data.any((d) => d.id == restored.id && d.judul == restored.judul);
+        if (!exists) _data.add(restored);
       }
     } catch (_) {}
   }
 
   // ============================================================
-  // 🔥 HELPER: Extract list dari response (handle pagination)
+  // HELPER: Extract list dari response (handle pagination)
   // ============================================================
   List<dynamic> _extractList(dynamic rawData) {
     if (rawData == null) return [];
@@ -156,7 +153,6 @@ class CatatanKegiatanService {
       final nested = rawData['data'];
       if (nested is List) return nested;
       if (nested is Map && nested['data'] is List) return nested['data'] as List;
-      // kadang backend bungkus {data:{data:{data:[...]}}}
       if (nested is Map && nested['data'] is Map && (nested['data'] as Map)['data'] is List) {
         return (nested['data'] as Map)['data'] as List;
       }
@@ -165,10 +161,9 @@ class CatatanKegiatanService {
   }
 
   // ============================================================
-  // GET ALL LAPORAN — gabungkan API + lokal agar tidak hilang
+  // GET ALL LAPORAN
   // ============================================================
   Future<List<CatatanKegiatan>> getAll({String? query, PokjaKategori? kategori}) async {
-    // Pastikan local tersync dulu (agar input offline tetap muncul)
     await _loadLocal();
 
     List<CatatanKegiatan> apiList = [];
@@ -201,7 +196,6 @@ class CatatanKegiatanService {
     if (apiList.isEmpty) {
       list = List<CatatanKegiatan>.from(_data);
     } else {
-      // merge: API + local yang belum ada di API (by id+judul) agar input offline tetap tampil
       final apiIds = apiList.map((e) => e.id).toSet();
       final apiJuduls = apiList.map((e) => e.judul).toSet();
       final localOnly = _data.where((d) => !apiIds.contains(d.id) && !apiJuduls.contains(d.judul)).toList();
@@ -264,7 +258,6 @@ class CatatanKegiatanService {
           : _data.map((c) => c.id).reduce((a, b) => a > b ? a : b) + 1;
       _data.insert(0, catatan.copyWith(id: catatan.id == 0 ? newId : catatan.id));
     }
-    // persist agar survive restart
     await _saveLocal();
 
     final token = await _getToken();
@@ -281,7 +274,6 @@ class CatatanKegiatanService {
 
     final request = http.MultipartRequest('POST', uri);
 
-    // Headers
     request.headers['Authorization'] = 'Bearer $token';
     request.headers['Accept'] = 'application/json';
 
@@ -292,12 +284,14 @@ class CatatanKegiatanService {
 
     request.fields['judul'] = catatan.judul;
     request.fields['deskripsi'] = catatan.ceritaSingkat;
-    request.fields['kategori_pokja'] = _kodePokja(catatan.kategori);
+    // ✅ FIX: pakai `kategori.kategoriPokja` — handle IV-PYD, IV-POSYANDU, IV-REKAP
+    request.fields['kategori_pokja'] = catatan.kategori.kategoriPokja;
     request.fields['kecamatan'] = catatan.kecamatan;
     request.fields['desa_kelurahan'] = desaFinal;
 
     print('📤 SEND DATA:');
     print('  - Judul: ${catatan.judul}');
+    print('  - Kategori: ${catatan.kategori.kategoriPokja}');
     print('  - Kecamatan: ${catatan.kecamatan}');
     print('  - Desa: $desaFinal');
 
@@ -339,8 +333,6 @@ class CatatanKegiatanService {
         return;
       }
 
-      // Jika server gagal tapi lokal sudah tersimpan, jangan throw keras — anggap sukses offline
-      // Hanya throw jika memang validasi error yang perlu diperbaiki user
       String pesan = 'Gagal mengirim ke server (${response.statusCode}), tapi data tetap tersimpan lokal';
       try {
         final body = jsonDecode(response.body);
@@ -359,14 +351,12 @@ class CatatanKegiatanService {
         }
       } catch (_) {}
 
-      // Jika 422 validasi, baru throw agar user tahu perlu perbaiki input
       if (response.statusCode == 422) {
         throw Exception(pesan);
       }
       print('⚠️ $pesan — data lokal tetap disimpan, tidak throw');
       return;
     } catch (e) {
-      // Timeout / network error — jangan bikin form gagal, karena lokal sudah save
       if (e.toString().contains('Exception:') && e.toString().contains('422')) rethrow;
       print('⚠️ Error kirim catatan kegiatan (diabaikan, lokal tetap): $e');
       return;

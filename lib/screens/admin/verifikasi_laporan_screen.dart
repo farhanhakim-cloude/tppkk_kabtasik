@@ -54,7 +54,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
       final token = await _getToken();
       if (token == null || token.isEmpty) throw Exception('Token tidak ditemukan. Silakan login ulang.');
 
-      // 🔥 FIX: Ganti endpoint dari 'laporan-kegiatan' ke 'admin/laporan-kegiatan'
+      // FIX: endpoint 'admin/laporan-kegiatan'
       final response = await http.get(
         Uri.parse('${AppConstants.baseUrl}admin/laporan-kegiatan'),
         headers: {
@@ -161,7 +161,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
       final token = await _getToken();
       if (token == null || token.isEmpty) throw Exception('Token tidak ditemukan');
 
-      // Coba 2 endpoint (admin prefix & tanpa) agar kompatibel dengan backend manapun
+      // Coba beberapa endpoint (admin prefix & tanpa) agar kompatibel dengan backend manapun
       final endpoints = isApprove
           ? ['admin/laporan-kegiatan/${laporan.id}/approve', 'laporan-kegiatan/${laporan.id}/approve', 'admin/laporan-kegiatan/${laporan.id}/status']
           : ['admin/laporan-kegiatan/${laporan.id}/reject', 'laporan-kegiatan/${laporan.id}/reject', 'admin/laporan-kegiatan/${laporan.id}/status'];
@@ -268,12 +268,18 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
     return _laporanList.where((e) => e.kategori == _filterPokja).toList();
   }
 
+  // ============================================================
+  // FIX: switch mencakup semua 7 nilai PokjaKategori
+  // ============================================================
   Color _pokjaColor(PokjaKategori p) {
     switch (p) {
       case PokjaKategori.pokja1: return const Color(0xFF38BDF8);
       case PokjaKategori.pokja2: return const Color(0xFF10B981);
       case PokjaKategori.pokja3: return const Color(0xFFF59E0B);
       case PokjaKategori.pokja4: return const Color(0xFFEF4444);
+      case PokjaKategori.pokja4Pyd: return const Color(0xFF8B5CF6);
+      case PokjaKategori.pokja4Posyandu: return const Color(0xFF06B6D4);
+      case PokjaKategori.pokja4Rekap: return const Color(0xFFEC4899);
     }
   }
 
@@ -365,7 +371,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
         child: ListView.separated(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
           itemCount: list.length,
-          separatorBuilder: (_, _) => const SizedBox(height: 12),
+          separatorBuilder: (_, __) => const SizedBox(height: 12),
           itemBuilder: (context, index) => _buildLaporanCard(list[index])
         )
       ))
