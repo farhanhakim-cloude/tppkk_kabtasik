@@ -236,10 +236,6 @@ class _DataKeluargaDasawismaFormScreenState extends State<DataKeluargaDasawismaF
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_anggotaList.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Tambahkan minimal 1 anggota keluarga', style: GoogleFonts.plusJakartaSans()), backgroundColor: const Color(0xFFF59E0B)));
-      return;
-    }
     setState(() => _saving = true);
     HapticFeedback.mediumImpact();
     final record = DataKeluargaDasawisma(
@@ -379,8 +375,8 @@ class _DataKeluargaDasawismaFormScreenState extends State<DataKeluargaDasawismaF
                   child: Column(children: [
                     const Icon(Icons.people_outline_rounded, size: 36, color: Color(0xFF94A3B8)),
                     const SizedBox(height: 8),
-                    Text('Belum ada anggota', style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w700, color: const Color(0xFF475569))),
-                    Text('Ketuk Tambah untuk input anggota', style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: const Color(0xFF94A3B8))),
+                    Text('Belum ada rincian anggota (Opsional)', style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w700, color: const Color(0xFF475569))),
+                    Text('Jika tidak ada anak/anggota lain, bagian ini dapat dilewati', style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: const Color(0xFF94A3B8))),
                   ]),
                 )
               else
