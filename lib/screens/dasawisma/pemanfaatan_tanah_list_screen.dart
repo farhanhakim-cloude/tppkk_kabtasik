@@ -6,7 +6,8 @@ import '../../services/pemanfaatan_tanah_service.dart';
 import 'pemanfaatan_tanah_form_screen.dart';
 
 class PemanfaatanTanahListScreen extends StatefulWidget {
-  const PemanfaatanTanahListScreen({super.key});
+  final bool embedded;
+  const PemanfaatanTanahListScreen({super.key, this.embedded = false});
   @override
   State<PemanfaatanTanahListScreen> createState() => _PemanfaatanTanahListScreenState();
 }
@@ -64,7 +65,7 @@ class _PemanfaatanTanahListScreenState extends State<PemanfaatanTanahListScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(backgroundColor: Colors.white, elevation: 0, scrolledUnderElevation: 0, iconTheme: const IconThemeData(color: Color(0xFF0F172A)), title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('Pemanfaatan Tanah', style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w800, color: const Color(0xFF0F172A))), Text('AKU HATINYA PKK - Peternakan, Perikanan, TOGA', style: GoogleFonts.plusJakartaSans(fontSize: 11, color: const Color(0xFF64748B))) ])),
+      appBar: widget.embedded ? null : AppBar(backgroundColor: Colors.white, elevation: 0, scrolledUnderElevation: 0, iconTheme: const IconThemeData(color: Color(0xFF0F172A)), title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('Pemanfaatan Tanah', style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w800, color: const Color(0xFF0F172A))), Text('AKU HATINYA PKK - Peternakan, Perikanan, TOGA', style: GoogleFonts.plusJakartaSans(fontSize: 11, color: const Color(0xFF64748B))) ])),
       floatingActionButton: FloatingActionButton.extended(onPressed: () async { HapticFeedback.mediumImpact(); final r = await Navigator.push<bool>(context, MaterialPageRoute(builder: (_) => const PemanfaatanTanahFormScreen())); if (r == true) _loadData(); }, backgroundColor: _primary, foregroundColor: Colors.white, elevation: 3, icon: const Icon(Icons.add_rounded), label: Text('Tambah Data', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700))),
       body: Column(children: [
         FutureBuilder<Map<String, int>>(future: _service.getStatistik(), builder: (ctx, snap) {

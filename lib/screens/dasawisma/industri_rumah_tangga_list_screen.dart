@@ -8,7 +8,8 @@ import '../../services/industri_rumah_tangga_service.dart';
 import 'industri_rumah_tangga_form_screen.dart';
 
 class IndustriRumahTanggaListScreen extends StatefulWidget {
-  const IndustriRumahTanggaListScreen({super.key});
+  final bool embedded;
+  const IndustriRumahTanggaListScreen({super.key, this.embedded = false});
 
   @override
   State<IndustriRumahTanggaListScreen> createState() =>
@@ -104,11 +105,13 @@ class _IndustriRumahTanggaListScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        iconTheme: const IconThemeData(color: Color(0xFF0F172A)),
+      appBar: widget.embedded
+          ? null
+          : AppBar(
+              backgroundColor: Colors.white,
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              iconTheme: const IconThemeData(color: Color(0xFF0F172A)),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

@@ -6,7 +6,8 @@ import '../../services/dasawisma_catatan_keluarga_service.dart';
 import 'catatan_keluarga_form_screen.dart';
 
 class CatatanKeluargaListScreen extends StatefulWidget {
-  const CatatanKeluargaListScreen({super.key});
+  final bool embedded;
+  const CatatanKeluargaListScreen({super.key, this.embedded = false});
   @override
   State<CatatanKeluargaListScreen> createState() => _CatatanKeluargaListScreenState();
 }
@@ -38,7 +39,9 @@ class _CatatanKeluargaListScreenState extends State<CatatanKeluargaListScreen> w
 
   @override
   Widget build(BuildContext context){
-    return Scaffold(backgroundColor: const Color(0xFFF8FAFC), appBar: AppBar(backgroundColor:Colors.white,elevation:0,scrolledUnderElevation:0,iconTheme: const IconThemeData(color:Color(0xFF0F172A)), title: Column(crossAxisAlignment:CrossAxisAlignment.start, children:[Text('Catatan Keluarga', style:GoogleFonts.plusJakartaSans(fontSize:16,fontWeight:FontWeight.w800,color:const Color(0xFF0F172A))), Text('19 kolom + kegiatan PKK', style:GoogleFonts.plusJakartaSans(fontSize:11,color:const Color(0xFF64748B))) ])),
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8FAFC),
+      appBar: widget.embedded ? null : AppBar(backgroundColor:Colors.white,elevation:0,scrolledUnderElevation:0,iconTheme: const IconThemeData(color:Color(0xFF0F172A)), title: Column(crossAxisAlignment:CrossAxisAlignment.start, children:[Text('Catatan Keluarga', style:GoogleFonts.plusJakartaSans(fontSize:16,fontWeight:FontWeight.w800,color:const Color(0xFF0F172A))), Text('19 kolom + kegiatan PKK', style:GoogleFonts.plusJakartaSans(fontSize:11,color:const Color(0xFF64748B))) ])),
       floatingActionButton: FloatingActionButton.extended(onPressed:() async { HapticFeedback.mediumImpact(); final r= await Navigator.push<bool>(context, MaterialPageRoute(builder:(_)=> const CatatanKeluargaFormScreen())); if(r==true) _loadData(); }, backgroundColor:_primary,foregroundColor:Colors.white,elevation:3, icon: const Icon(Icons.add_rounded), label: Text('Tambah Data', style:GoogleFonts.plusJakartaSans(fontWeight:FontWeight.w700))),
       body: Column(children:[
         FutureBuilder<Map<String,int>>(future:_service.getStatistik(), builder:(ctx,snap){ final total=snap.data?['total']??0; final anggota=snap.data?['totalAnggota']??0; return Container(margin: const EdgeInsets.fromLTRB(16,12,16,0), padding: const EdgeInsets.all(16), decoration:BoxDecoration(gradient: const LinearGradient(colors:[Color(0xFFDC2626),Color(0xFFF87171)],begin:Alignment.topLeft,end:Alignment.bottomRight), borderRadius:BorderRadius.circular(16), boxShadow:[BoxShadow(color:_primary.withValues(alpha:0.3),blurRadius:12,offset:const Offset(0,4))]), child: Row(children:[Container(padding: const EdgeInsets.all(10), decoration:BoxDecoration(color:Colors.white.withValues(alpha:0.2),borderRadius:BorderRadius.circular(12)), child: const Icon(Icons.family_restroom_rounded,color:Colors.white,size:24)), const SizedBox(width:14), Expanded(child: Column(crossAxisAlignment:CrossAxisAlignment.start, children:[Text('Total Dokumen', style:GoogleFonts.plusJakartaSans(fontSize:12,color:Colors.white70)), Text('$total Dokumen', style:GoogleFonts.plusJakartaSans(fontSize:22,fontWeight:FontWeight.w900,color:Colors.white))])), Column(crossAxisAlignment:CrossAxisAlignment.end, children:[Text('$anggota', style:GoogleFonts.plusJakartaSans(fontSize:20,fontWeight:FontWeight.w900,color:Colors.white)), Text('Anggota', style:GoogleFonts.plusJakartaSans(fontSize:11,color:Colors.white70))])])); }),

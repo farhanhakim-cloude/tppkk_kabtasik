@@ -26,6 +26,8 @@ import 'pemanfaatan_tanah_list_screen.dart';
 import 'industri_rumah_tangga_list_screen.dart';
 import 'rekap_ibu_anak_list_screen.dart';
 import 'data_umum_dasawisma_screen.dart';
+import 'data_keluarga_main_screen.dart';
+import 'kegiatan_warga_main_screen.dart';
 import '../profile_screen.dart';
 
 class DasawismaDashboardScreen extends StatefulWidget {
@@ -237,21 +239,21 @@ class _DasawismaDashboardScreenState extends State<DasawismaDashboardScreen> {
 
             // 2 Fitur utama — selaras Kader/Admin (MainFeatureTile)
             FutureBuilder(
-              future: Future.wait([DataKeluargaDasawismaService().getAll(), RekapIbuAnakService().getAll()]),
+              future: Future.wait([DataKeluargaDasawismaService().getAll(), KegiatanWargaService().getAll()]),
               builder: (c, snap) {
                 final das = (snap.data?[0] as List?)?.length ?? 0;
-                final ibu = (snap.data?[1] as List?)?.length ?? 0;
+                final keg = (snap.data?[1] as List?)?.length ?? 0;
                 return Row(children: [
-                  Expanded(child: _buildMainFeatureTile(title: 'Input Data Binaan', subtitle: '$das data binaan', icon: Icons.assignment_outlined, badgeText: '9 Fitur', isMintTheme: true, primaryColor: primaryAccent, cardBg: cardBg, textColor: text, subtextColor: sub, borderColor: border, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DataKeluargaDasawismaListScreen())), onTapAction: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DataKeluargaDasawismaListScreen())), actionLabel: '+ Input')),
+                  Expanded(child: _buildMainFeatureTile(title: 'Data Keluarga', subtitle: '$das data binaan', icon: Icons.family_restroom_rounded, badgeText: '2 Tab', isMintTheme: true, primaryColor: primaryAccent, cardBg: cardBg, textColor: text, subtextColor: sub, borderColor: border, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DataKeluargaMainScreen())), onTapAction: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DataKeluargaMainScreen())), actionLabel: 'Buka')),
                   const SizedBox(width: 14),
-                  Expanded(child: _buildMainFeatureTile(title: 'Data Umum', subtitle: '$ibu ibu & kegiatan', icon: Icons.assignment_rounded, badgeText: '2 Form', isMintTheme: false, primaryColor: primaryAccent, cardBg: cardBg, textColor: text, subtextColor: sub, borderColor: border, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DataUmumDasawismaScreen())), onTapAction: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DataUmumDasawismaScreen())), actionLabel: 'Buka')),
+                  Expanded(child: _buildMainFeatureTile(title: 'Kegiatan Warga', subtitle: '$keg kegiatan', icon: Icons.diversity_3_rounded, badgeText: '5 Tab', isMintTheme: false, primaryColor: primaryAccent, cardBg: cardBg, textColor: text, subtextColor: sub, borderColor: border, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const KegiatanWargaMainScreen())), onTapAction: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const KegiatanWargaMainScreen())), actionLabel: 'Buka')),
                 ]);
               },
             ),
             const SizedBox(height: 18),
 
-            // Menu Dasawisma — grid 2 kolom selaras Kader (Akses Cepat)
-            Text('MENU DASAWISMA • 9 FITUR', style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 0.8, color: sub)),
+            // Menu Dasawisma — 3 Fitur Utama + Data Umum
+            Text('MENU UTAMA DASAWISMA', style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 0.8, color: sub)),
             const SizedBox(height: 10),
             _menuGrid(cardBg, border, text, sub),
             const SizedBox(height: 16),
@@ -296,15 +298,10 @@ class _DasawismaDashboardScreenState extends State<DasawismaDashboardScreen> {
 
   Widget _menuGrid(Color cardBg, Color border, Color text, Color sub) {
     final items = [
-      _GridItem('Keluarga Binaan', 'Data dasawisma & anggota', Icons.groups_rounded, const Color(0xFF10B981), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DataKeluargaDasawismaListScreen()))),
-      _GridItem('Kriteria Rumah', 'Sehat / tidak sehat', Icons.home_rounded, const Color(0xFFFF6B35), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const KriteriaRumahListScreen()))),
-      _GridItem('Data Keluarga', 'KK & anggota', Icons.family_restroom_rounded, const Color(0xFF3B82F6), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const KeluargaListScreen()))),
-      _GridItem('Catatan Keluarga', '19 kolom + 8 kegiatan', Icons.family_restroom_rounded, const Color(0xFFDC2626), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CatatanKeluargaListScreen()))),
-      _GridItem('Kegiatan Warga', '7 kegiatan Y/T', Icons.diversity_3_rounded, const Color(0xFF0EA5E9), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const KegiatanWargaListScreen()))),
-      _GridItem('Pemanfaatan Tanah', 'TOGA & ternak', Icons.grass_rounded, const Color(0xFF059669), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PemanfaatanTanahListScreen()))),
-      _GridItem('Industri RT', 'Pangan, sandang', Icons.storefront_rounded, const Color(0xFF7C3AED), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const IndustriRumahTanggaListScreen()))),
-      _GridItem('Rekap Ibu & Anak', 'Hamil & bayi', Icons.child_care_rounded, const Color(0xFFEC4899), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RekapIbuAnakListScreen()))),
-      _GridItem('Data Umum', 'Data warga & bumil', Icons.assignment_rounded, const Color(0xFF0F766E), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DataUmumDasawismaScreen()))),
+      _GridItem('Data Keluarga', 'Binaan & KK Warga', Icons.family_restroom_rounded, const Color(0xFF10B981), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DataKeluargaMainScreen()))),
+      _GridItem('Kegiatan Warga', '5 kegiatan & rumah', Icons.diversity_3_rounded, const Color(0xFF0EA5E9), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const KegiatanWargaMainScreen()))),
+      _GridItem('Rekap Ibu & Anak', 'Hamil, nifas, bayi', Icons.child_care_rounded, const Color(0xFFEC4899), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RekapIbuAnakListScreen()))),
+      _GridItem('Data Umum', 'Format desa & kec.', Icons.assignment_rounded, const Color(0xFF0F766E), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DataUmumDasawismaScreen()))),
     ];
     return GridView.builder(
       shrinkWrap: true,

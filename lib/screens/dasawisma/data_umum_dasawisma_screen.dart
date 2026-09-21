@@ -1,13 +1,15 @@
 // lib/screens/dasawisma/data_umum_dasawisma_screen.dart
 // Halaman Data Umum Dasawisma
-// Berisi 2 Tab Sesuai Format Gambar Excel Dasawisma:
+// Berisi 3 Tab Sesuai Format Gambar Excel Dasawisma:
 // Tab 1: Rekapitulasi Data & Kegiatan Warga Kelompok Dasa Wisma (Gambar 1 - 30 Kolom)
 // Tab 2: Rekapitulasi Data Ibu Hamil, Melahirkan, Nifas, Bayi & Kematian (Gambar 2 - 17 Kolom)
+// Tab 3: Data Umum PKK Tingkat Desa & Kecamatan (Gambar 1-2 - 20/21 Kolom)
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'rekap_ibu_anak_list_screen.dart';
 import 'data_keluarga_dasawisma_list_screen.dart';
+import 'data_umum_pkk_list_screen.dart';
 
 class DataUmumDasawismaScreen extends StatefulWidget {
   const DataUmumDasawismaScreen({super.key});
@@ -25,7 +27,7 @@ class _DataUmumDasawismaScreenState extends State<DataUmumDasawismaScreen> with 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -58,7 +60,7 @@ class _DataUmumDasawismaScreenState extends State<DataUmumDasawismaScreen> with 
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Data Umum Dasawisma',
+              'Data Umum',
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 17,
                 fontWeight: FontWeight.w800,
@@ -66,7 +68,7 @@ class _DataUmumDasawismaScreenState extends State<DataUmumDasawismaScreen> with 
               ),
             ),
             Text(
-              'Format Rekap Data Kegiatan Warga & Ibu Hamil Dasawisma',
+              'Rekap Kegiatan Warga, Ibu Hamil & Data Umum Desa/Kecamatan',
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 11.5,
                 fontWeight: FontWeight.w500,
@@ -77,15 +79,18 @@ class _DataUmumDasawismaScreenState extends State<DataUmumDasawismaScreen> with 
         ),
         bottom: TabBar(
           controller: _tabController,
-          labelStyle: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 13),
-          unselectedLabelStyle: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, fontSize: 13),
+          isScrollable: true,
+          labelStyle: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 12.5),
+          unselectedLabelStyle: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, fontSize: 12.5),
           labelColor: _primaryAccent,
           unselectedLabelColor: const Color(0xFF64748B),
           indicatorColor: _primaryAccent,
           indicatorWeight: 3,
+          tabAlignment: TabAlignment.start,
           tabs: const [
-            Tab(text: '1. Rekap Data & Kegiatan Warga'),
+            Tab(text: '1. Rekap Kegiatan Warga'),
             Tab(text: '2. Rekap Ibu Hamil & Bayi'),
+            Tab(text: '3. Data Umum Desa & Kec.'),
           ],
         ),
       ),
@@ -97,6 +102,9 @@ class _DataUmumDasawismaScreenState extends State<DataUmumDasawismaScreen> with 
 
           // TAB 2: Rekapitulasi Ibu Hamil, Melahirkan, Nifas, Bayi & Kematian (Gambar 2)
           const RekapIbuAnakListScreen(embedded: true),
+
+          // TAB 3: Data Umum PKK Tingkat Desa & Kecamatan (Gambar 1-2)
+          const DataUmumPkkListScreen(embedded: true),
         ],
       ),
     );
