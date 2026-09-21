@@ -52,33 +52,56 @@ class _DataKeluargaDasawismaListScreenState extends State<DataKeluargaDasawismaL
 
     final content = Column(
       children: [
-        // Header title when not embedded
-        if (!widget.embedded)
-          Container(
-            width: double.infinity,
-            color: Colors.white,
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-            child: Row(children: [
+        // Header bar with Tambah Data action
+        Container(
+          color: Colors.white,
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 10),
+          child: Row(
+            children: [
               Container(
                 padding: const EdgeInsets.all(9),
-                decoration: BoxDecoration(color: const Color(0xFF0D9488).withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0D9488).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: const Icon(Icons.holiday_village_rounded, color: Color(0xFF0D9488), size: 20),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text('Keluarga Binaan Dasawisma', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 16, color: const Color(0xFF0F172A))),
-                  const SizedBox(height: 2),
-                  Text('Rekap per RT/RW & anggota keluarga', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFF64748B))),
-                ]),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Data & Kegiatan Warga',
+                      style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 15, color: const Color(0xFF0F172A)),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Format Rekap Dasawisma (30 Kolom)',
+                      style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: const Color(0xFF64748B)),
+                    ),
+                  ],
+                ),
               ),
-            ]),
+              ElevatedButton.icon(
+                onPressed: () => _openForm(),
+                icon: const Icon(Icons.add_rounded, size: 18, color: Colors.white),
+                label: Text('Tambah Data', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 12.5, color: Colors.white)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primary,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                ),
+              ),
+            ],
           ),
+        ),
 
         // Search pill
         Container(
           color: Colors.white,
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
           child: Container(
             decoration: BoxDecoration(
               color: const Color(0xFFF1F5F9),
@@ -189,32 +212,32 @@ class _DataKeluargaDasawismaListScreenState extends State<DataKeluargaDasawismaL
       ],
     );
 
-    if (widget.embedded) return content;
-
     return Scaffold(
       backgroundColor: bg,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        surfaceTintColor: Colors.transparent,
-        leading: GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: Container(
-            margin: const EdgeInsets.all(9),
-            decoration: BoxDecoration(color: const Color(0xFFF8FAFC), shape: BoxShape.circle, border: Border.all(color: const Color(0xFFE2E8F0))),
-            child: const Icon(Icons.arrow_back_rounded, size: 20, color: Color(0xFF0F172A)),
-          ),
-        ),
-        title: Text('Data Dasawisma', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 17, color: const Color(0xFF0F172A))),
-        actions: [IconButton(icon: const Icon(Icons.refresh_rounded, color: Color(0xFF0D9488)), onPressed: _reload)],
-      ),
+      appBar: widget.embedded
+          ? null
+          : AppBar(
+              backgroundColor: Colors.white,
+              elevation: 0,
+              surfaceTintColor: Colors.transparent,
+              leading: GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Container(
+                  margin: const EdgeInsets.all(9),
+                  decoration: BoxDecoration(color: const Color(0xFFF8FAFC), shape: BoxShape.circle, border: Border.all(color: const Color(0xFFE2E8F0))),
+                  child: const Icon(Icons.arrow_back_rounded, size: 20, color: Color(0xFF0F172A)),
+                ),
+              ),
+              title: Text('Data Dasawisma', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 17, color: const Color(0xFF0F172A))),
+              actions: [IconButton(icon: const Icon(Icons.refresh_rounded, color: Color(0xFF0D9488)), onPressed: _reload)],
+            ),
       floatingActionButton: FloatingActionButton.extended(
         heroTag: 'fab_dasawisma_input',
         onPressed: () => _openForm(),
         backgroundColor: primary,
         elevation: 2,
         icon: const Icon(Icons.add_rounded, color: Colors.white, size: 20),
-        label: Text('Input Dasawisma', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, color: Colors.white, fontSize: 13.5)),
+        label: Text('Tambah Data Warga', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, color: Colors.white, fontSize: 13.5)),
       ),
       body: content,
     );

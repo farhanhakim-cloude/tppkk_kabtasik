@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
+import '../constants/kecamatan_options.dart';
 import '../models/berita.dart';
 import '../services/berita_service.dart';
 import 'berita_form_screen.dart';
@@ -33,48 +34,7 @@ class _BeritaScreenState extends State<BeritaScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
-  final List<String> _kecamatanList = [
-    'Semua',
-    'Bantarkalong',
-    'Bojongasih',
-    'Bojonggambir',
-    'Ciawi',
-    'Cibalong',
-    'Cigalontang',
-    'Cikalong',
-    'Cikatomas',
-    'Cineam',
-    'Cipatujah',
-    'Cisayong',
-    'Culamega',
-    'Gunungtanjung',
-    'Jamanis',
-    'Jatiwaras',
-    'Kadipaten',
-    'Karangjaya',
-    'Karangnunggal',
-    'Leuwisari',
-    'Mangunreja',
-    'Manonjaya',
-    'Padakembang',
-    'Pagerageung',
-    'Pancatengah',
-    'Parungponteng',
-    'Puspahiang',
-    'Rajapolah',
-    'Salawu',
-    'Salopa',
-    'Sariwangi',
-    'Singaparna',
-    'Sodonghilir',
-    'Sukahening',
-    'Sukaraja',
-    'Sukarame',
-    'Sukaratu',
-    'Sukaresik',
-    'Tanjungjaya',
-    'Taraju',
-  ];
+  final List<String> _kecamatanList = ['Semua', ...kKecamatanOptions];
 
   @override
   void initState() {

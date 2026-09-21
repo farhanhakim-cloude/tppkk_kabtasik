@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../models/data_keluarga_dasawisma.dart';
 import '../../services/data_keluarga_dasawisma_service.dart';
+import '../../widgets/kecamatan_dropdown_field.dart';
 
 class DataKeluargaDasawismaFormScreen extends StatefulWidget {
   final DataKeluargaDasawisma? data;
@@ -335,7 +336,7 @@ class _DataKeluargaDasawismaFormScreenState extends State<DataKeluargaDasawismaF
               const SizedBox(height: 10),
               Row(children: [Expanded(child: TextFormField(controller: _rtCtrl, style: GoogleFonts.plusJakartaSans(fontSize: 13.5), decoration: _inputDeco('RT', '01'))), const SizedBox(width: 10), Expanded(child: TextFormField(controller: _rwCtrl, style: GoogleFonts.plusJakartaSans(fontSize: 13.5), decoration: _inputDeco('RW', '05')))]),
               const SizedBox(height: 10),
-              Row(children: [Expanded(child: TextFormField(controller: _desaCtrl, style: GoogleFonts.plusJakartaSans(fontSize: 13.5), decoration: _inputDeco('Desa', 'Singaparna'))), const SizedBox(width: 10), Expanded(child: TextFormField(controller: _kecamatanCtrl, style: GoogleFonts.plusJakartaSans(fontSize: 13.5), decoration: _inputDeco('Kecamatan', 'Singaparna')))]),
+              Row(children: [Expanded(child: TextFormField(controller: _desaCtrl, style: GoogleFonts.plusJakartaSans(fontSize: 13.5), decoration: _inputDeco('Desa', 'Singaparna'))), const SizedBox(width: 10), Expanded(child: KecamatanDropdownField(controller: _kecamatanCtrl))]),
               const SizedBox(height: 10),
               TextFormField(controller: _namaKepalaRtCtrl, style: GoogleFonts.plusJakartaSans(fontSize: 13.5, fontWeight: FontWeight.w600), decoration: _inputDeco('Nama Kepala Rumah Tangga *', 'Nama lengkap'), validator: (v) => v!.trim().isEmpty ? 'Wajib' : null),
               const SizedBox(height: 10),

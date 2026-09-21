@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../models/dasawisma_catatan_keluarga.dart';
 import '../../services/dasawisma_catatan_keluarga_service.dart';
+import '../../widgets/kecamatan_dropdown_field.dart';
 
 class CatatanKeluargaFormScreen extends StatefulWidget {
   final DasawismaCatatanKeluarga? data;
@@ -87,7 +88,7 @@ class _CatatanKeluargaFormScreenState extends State<CatatanKeluargaFormScreen> {
         const SizedBox(height:10), _field(ctrl:_dasaWismaCtrl,label:'Anggota Kelompok Dasa Wisma',hint:'Mawar 01',icon:Icons.holiday_village_outlined, validator:(v)=> v==null||v.trim().isEmpty?'Wajib':null),
         const SizedBox(height:10), Row(children:[Expanded(child:_field(ctrl:_rtCtrl,label:'RT',hint:'01',icon:Icons.location_on_outlined)), const SizedBox(width:12), Expanded(child:_field(ctrl:_rwCtrl,label:'RW',hint:'05',icon:Icons.location_on_outlined)), const SizedBox(width:12), Expanded(child:_dropdown(label:'Tahun',value:_tahun,items:_tahunList,onChanged:(v)=>setState(()=>_tahun=v!),icon:Icons.calendar_today_outlined))]),
         const SizedBox(height:10), Row(children:[Expanded(child:_field(ctrl:_dusunCtrl,label:'Dusun',hint:'Cikunir',icon:Icons.landscape_outlined)), const SizedBox(width:12), Expanded(child:_field(ctrl:_desaCtrl,label:'Desa',hint:'Singaparna',icon:Icons.home_work_outlined, validator:(v)=> v==null||v.trim().isEmpty?'Wajib':null))]),
-        const SizedBox(height:10), Row(children:[Expanded(child:_field(ctrl:_kecCtrl,label:'Kecamatan',hint:'Singaparna',icon:Icons.map_outlined)), const SizedBox(width:12), Expanded(child:_dropdown(label:'Kriteria Rumah',value:_kriteria,items:['Sehat','Tidak Sehat'],onChanged:(v)=>setState(()=>_kriteria=v!),icon:Icons.home_outlined)),]),
+        const SizedBox(height:10), Row(children:[Expanded(child:KecamatanDropdownField(controller: _kecCtrl)), const SizedBox(width:12), Expanded(child:_dropdown(label:'Kriteria Rumah',value:_kriteria,items:['Sehat','Tidak Sehat'],onChanged:(v)=>setState(()=>_kriteria=v!),icon:Icons.home_outlined)),]),
         const SizedBox(height:10), Row(children:[Expanded(child:_dropdown(label:'Sumber Air',value:_sumberAir,items:['PDAM','Sumur','Sungai','DLL'],onChanged:(v)=>setState(()=>_sumberAir=v!),icon:Icons.water_drop_outlined)), const SizedBox(width:12), Expanded(child:_dropdown(label:'Tempat Sampah',value:_tempatSampah,items:['Ada','Tidak Ada'],onChanged:(v)=>setState(()=>_tempatSampah=v!),icon:Icons.delete_outline_rounded))]),
         const SizedBox(height:28), _section(Icons.family_restroom_rounded,'Daftar Anggota Keluarga','Isi 19 kolom per anggota'), const SizedBox(height:14),
         ...List.generate(_anggota.length, (i)=> _buildAnggota(i)),

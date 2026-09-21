@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../models/kriteria_rumah.dart';
 import '../../services/kriteria_rumah_service.dart';
+import '../../widgets/kecamatan_dropdown_field.dart';
 
 class KriteriaRumahFormScreen extends StatefulWidget {
   final KriteriaRumah? existing;
@@ -246,7 +247,7 @@ class _KriteriaRumahFormScreenState extends State<KriteriaRumahFormScreen> {
               ],
             ),
             _buildTextField(_desaCtrl, 'Desa/Kelurahan', Icons.apartment_rounded),
-            _buildTextField(_kecCtrl, 'Kecamatan', Icons.map_rounded),
+            KecamatanDropdownField(controller: _kecCtrl),
             _buildTextField(_kabCtrl, 'Kabupaten/Kota', Icons.location_city_rounded),
             GestureDetector(
               onTap: _pickDate,

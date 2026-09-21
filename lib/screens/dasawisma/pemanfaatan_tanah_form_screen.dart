@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../models/pemanfaatan_tanah.dart';
 import '../../services/pemanfaatan_tanah_service.dart';
+import '../../widgets/kecamatan_dropdown_field.dart';
 
 class PemanfaatanTanahFormScreen extends StatefulWidget {
   final PemanfaatanTanah? data;
@@ -71,7 +72,7 @@ class _PemanfaatanTanahFormScreenState extends State<PemanfaatanTanahFormScreen>
         _field(ctrl:_dasaWismaCtrl,label:'Dasa Wisma',hint:'Mawar 01',icon:Icons.holiday_village_outlined, validator:(v)=> v==null||v.trim().isEmpty?'Wajib':null),
         const SizedBox(height:10), Row(children:[Expanded(child: _field(ctrl:_rtCtrl,label:'RT',hint:'01',icon:Icons.location_on_outlined)), const SizedBox(width:12), Expanded(child: _field(ctrl:_rwCtrl,label:'RW',hint:'05',icon:Icons.location_on_outlined))]),
         const SizedBox(height:10), Row(children:[Expanded(child: _field(ctrl:_dusunCtrl,label:'Dusun',hint:'Cikunir',icon:Icons.landscape_outlined)), const SizedBox(width:12), Expanded(child: _field(ctrl:_desaCtrl,label:'Desa',hint:'Singaparna',icon:Icons.home_work_outlined, validator:(v)=> v==null||v.trim().isEmpty?'Wajib':null))]),
-        const SizedBox(height:10), Row(children:[Expanded(child: _field(ctrl:_kecCtrl,label:'Kecamatan',hint:'Singaparna',icon:Icons.map_outlined)), const SizedBox(width:12), Expanded(child: _dropdown(label:'Tahun',value:_tahun,items:_tahunList,onChanged:(v)=> setState(()=>_tahun=v!),icon:Icons.calendar_today_outlined))]),
+        const SizedBox(height:10), Row(children:[Expanded(child: KecamatanDropdownField(controller: _kecCtrl)), const SizedBox(width:12), Expanded(child: _dropdown(label:'Tahun',value:_tahun,items:_tahunList,onChanged:(v)=> setState(()=>_tahun=v!),icon:Icons.calendar_today_outlined))]),
         const SizedBox(height:28), _section(Icons.grass_rounded,'Daftar Pemanfaatan Tanah','Kategori, komoditi & jumlah'), const SizedBox(height:14),
         ...List.generate(_items.length, (i)=> _buildItem(i)), const SizedBox(height:10),
         OutlinedButton.icon(onPressed:_tambah, icon: const Icon(Icons.add_circle_outline_rounded,size:18), label: Text('Tambah Komoditi', style:GoogleFonts.plusJakartaSans(fontWeight:FontWeight.w700,fontSize:13.5)), style: OutlinedButton.styleFrom(foregroundColor:_primary, side: BorderSide(color:_primary.withValues(alpha:0.4),width:1.5), padding: const EdgeInsets.symmetric(vertical:14), shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)))),

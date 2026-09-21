@@ -28,7 +28,9 @@ class _WeatherCardState extends State<WeatherCard> {
   }
 
   void _refresh() {
-    setState(() => _future = _service.fetchCurrentWeather());
+    setState(() {
+      _future = _service.fetchCurrentWeather();
+    });
   }
 
   String _formatTime(String iso) {

@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../models/keluarga.dart';
 import '../../services/keluarga_service.dart';
+import '../../widgets/kecamatan_dropdown_field.dart';
 import 'map_picker_screen.dart';
 
 class KeluargaFormScreen extends StatefulWidget {
@@ -599,10 +600,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                           ),
                           const SizedBox(width: 12),
                           Expanded(
-                            child: TextFormField(
-                              controller: _kecamatanCtrl,
-                              decoration: const InputDecoration(labelText: 'Kecamatan'),
-                            ),
+                            child: KecamatanDropdownField(controller: _kecamatanCtrl),
                           ),
                         ],
                       ),

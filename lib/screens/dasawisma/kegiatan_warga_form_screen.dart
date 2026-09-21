@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../models/kegiatan_warga.dart';
 import '../../services/kegiatan_warga_service.dart';
+import '../../widgets/kecamatan_dropdown_field.dart';
 
 class KegiatanWargaFormScreen extends StatefulWidget {
   final KegiatanWarga? data;
@@ -61,7 +62,7 @@ class _KegiatanWargaFormScreenState extends State<KegiatanWargaFormScreen> {
         _field(ctrl:_dasaWismaCtrl,label:'Dasa Wisma',hint:'Mawar 01',icon:Icons.holiday_village_outlined, validator:(v)=> v==null||v.trim().isEmpty?'Wajib':null),
         const SizedBox(height:10), Row(children:[Expanded(child: _field(ctrl:_rtCtrl,label:'RT',hint:'01',icon:Icons.location_on_outlined)), const SizedBox(width:12), Expanded(child: _field(ctrl:_rwCtrl,label:'RW',hint:'05',icon:Icons.location_on_outlined))]),
         const SizedBox(height:10), Row(children:[Expanded(child: _field(ctrl:_dusunCtrl,label:'Dusun',hint:'Cikunir',icon:Icons.landscape_outlined)), const SizedBox(width:12), Expanded(child: _field(ctrl:_desaCtrl,label:'Desa',hint:'Singaparna',icon:Icons.home_work_outlined, validator:(v)=> v==null||v.trim().isEmpty?'Wajib':null))]),
-        const SizedBox(height:10), Row(children:[Expanded(child: _field(ctrl:_kecCtrl,label:'Kecamatan',hint:'Singaparna',icon:Icons.map_outlined)), const SizedBox(width:12), Expanded(child: _dropdown(label:'Tahun',value:_tahun,items:_tahunList,onChanged:(v)=> setState(()=>_tahun=v!),icon:Icons.calendar_today_outlined))]),
+        const SizedBox(height:10), Row(children:[Expanded(child: KecamatanDropdownField(controller: _kecCtrl)), const SizedBox(width:12), Expanded(child: _dropdown(label:'Tahun',value:_tahun,items:_tahunList,onChanged:(v)=> setState(()=>_tahun=v!),icon:Icons.calendar_today_outlined))]),
         const SizedBox(height:28), _section(Icons.diversity_3_rounded,'7 Kegiatan Warga','Toggle Y/T & isi keterangan'), const SizedBox(height:14),
         ...List.generate(_items.length, (i)=> _buildKegiatanCard(i)),
         const SizedBox(height:32), SizedBox(width:double.infinity, child: ElevatedButton(onPressed:_saving?null:_save, style: ElevatedButton.styleFrom(backgroundColor:_primary,foregroundColor:Colors.white, padding: const EdgeInsets.symmetric(vertical:16), shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)), elevation:2), child: _saving? const SizedBox(height:20,width:20, child: CircularProgressIndicator(strokeWidth:2.5,color:Colors.white)): Text(_isEdit?'Perbarui':'Simpan', style:GoogleFonts.plusJakartaSans(fontSize:15,fontWeight:FontWeight.w700))))

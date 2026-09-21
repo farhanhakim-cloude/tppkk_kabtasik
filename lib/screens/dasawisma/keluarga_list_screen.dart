@@ -4,10 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../models/keluarga.dart';
 import '../../services/keluarga_service.dart';
 import 'keluarga_form_screen.dart';
-import 'rekap_ibu_anak_list_screen.dart';
-import 'rekap_ibu_anak_form_screen.dart';
-import 'data_keluarga_dasawisma_list_screen.dart';
-import 'data_keluarga_dasawisma_form_screen.dart';
 
 class KeluargaListScreen extends StatefulWidget {
   final bool embedded;
@@ -28,13 +24,9 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
   final _searchController = TextEditingController();
   late Future<List<Keluarga>> _future;
 
-  // 0 = Daftar Warga (KK), 1 = Data Dasawisma, 2 = Ibu & Anak
-  late int _subTabIndex;
-
   @override
   void initState() {
     super.initState();
-    _subTabIndex = widget.initialIndex;
     _reload();
   }
 
@@ -52,25 +44,11 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
 
   Future<void> _openForm({Keluarga? keluarga}) async {
     HapticFeedback.selectionClick();
-    if (_subTabIndex == 0) {
-      final result = await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => KeluargaFormScreen(keluarga: keluarga)),
-      );
-      if (result == true) _reload();
-    } else if (_subTabIndex == 1) {
-      final result = await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const DataKeluargaDasawismaFormScreen()),
-      );
-      if (result == true) _reload();
-    } else {
-      final result = await Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const RekapIbuAnakFormScreen()),
-      );
-      if (result == true) _reload();
-    }
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => KeluargaFormScreen(keluarga: keluarga)),
+    );
+    if (result == true) _reload();
   }
 
   Future<void> _confirmDelete(Keluarga k) async {
@@ -392,32 +370,6 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
     );
   }
 
-  String get _appBarTitle {
-    switch (_subTabIndex) {
-      case 0:
-        return 'Daftar Warga (KK)';
-      case 1:
-        return 'Data Dasawisma';
-      case 2:
-        return 'Data Ibu & Anak';
-      default:
-        return 'Data Keluarga';
-    }
-  }
-
-  String get _fabLabel {
-    switch (_subTabIndex) {
-      case 0:
-        return 'Tambah Warga';
-      case 1:
-        return 'Catat Dasawisma';
-      case 2:
-        return 'Catat Ibu & Anak';
-      default:
-        return 'Tambah Data';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     const primary = Color(0xFF0D9488);
@@ -452,7 +404,7 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    _appBarTitle,
+                    'Data Keluarga (KK)',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 17.5,
                       fontWeight: FontWeight.w800,
@@ -486,7 +438,7 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         icon: const Icon(Icons.add_rounded, color: Colors.white, size: 20),
         label: Text(
-          _fabLabel,
+          'Tambah Warga',
           style: GoogleFonts.plusJakartaSans(
             fontWeight: FontWeight.w700,
             fontSize: 13.5,
@@ -518,85 +470,59 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
               ),
             ),
 
-          // ── SEGMENTED 3-SUB-TAB TOGGLE (Ultra Modern Pill) ──
-          Container(
-            margin: const EdgeInsets.fromLTRB(16, 10, 16, 8),
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF1F5F9),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: const Color(0xFFE2E8F0)),
-            ),
-            child: Row(
-              children: [
-                _buildSubTabItem(0, 'Daftar Warga', Icons.people_alt_rounded, primary),
-                _buildSubTabItem(1, 'Dasawisma', Icons.holiday_village_rounded, primary),
-                _buildSubTabItem(2, 'Ibu & Anak', Icons.child_care_rounded, primary),
-              ],
+          // Search Field (Pill Modern)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF0F172A).withValues(alpha: 0.03),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: TextField(
+                controller: _searchController,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 13.5,
+                  color: const Color(0xFF0F172A),
+                ),
+                onChanged: (_) => _reload(),
+                decoration: InputDecoration(
+                  hintText: 'Cari nama KK, NIK, alamat, RT/RW...',
+                  hintStyle: GoogleFonts.plusJakartaSans(
+                    fontSize: 13,
+                    color: const Color(0xFF94A3B8),
+                  ),
+                  prefixIcon: const Icon(
+                    Icons.search_rounded,
+                    size: 20,
+                    color: Color(0xFF94A3B8),
+                  ),
+                  suffixIcon: _searchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.close_rounded, size: 18, color: Color(0xFF94A3B8)),
+                          onPressed: () {
+                            _searchController.clear();
+                            _reload();
+                          },
+                        )
+                      : null,
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                ),
+              ),
             ),
           ),
 
-          // ── TAB CONTENT ──
+          // List of Warga
           Expanded(
-            child: IndexedStack(
-              index: _subTabIndex,
-              children: [
-                // SUB-TAB 0: DAFTAR WARGA (KK)
-                Column(
-                  children: [
-                    // Search Field (Pill Modern)
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFF0F172A).withValues(alpha: 0.03),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: TextField(
-                          controller: _searchController,
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 13.5,
-                            color: const Color(0xFF0F172A),
-                          ),
-                          onChanged: (_) => _reload(),
-                          decoration: InputDecoration(
-                            hintText: 'Cari nama KK, NIK, alamat, RT/RW...',
-                            hintStyle: GoogleFonts.plusJakartaSans(
-                              fontSize: 13,
-                              color: const Color(0xFF94A3B8),
-                            ),
-                            prefixIcon: const Icon(
-                              Icons.search_rounded,
-                              size: 20,
-                              color: Color(0xFF94A3B8),
-                            ),
-                            suffixIcon: _searchController.text.isNotEmpty
-                                ? IconButton(
-                                    icon: const Icon(Icons.close_rounded, size: 18, color: Color(0xFF94A3B8)),
-                                    onPressed: () {
-                                      _searchController.clear();
-                                      _reload();
-                                    },
-                                  )
-                                : null,
-                            border: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    // List of Warga
-                    Expanded(
-                      child: FutureBuilder<List<Keluarga>>(
+            child: FutureBuilder<List<Keluarga>>(
                         future: _future,
                         builder: (context, snapshot) {
                           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -957,71 +883,8 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
                           );
                         },
                       ),
-                    ),
-                  ],
-                ),
-
-                // SUB-TAB 1: DATA KELUARGA DASAWISMA
-                const DataKeluargaDasawismaListScreen(embedded: true),
-
-                // SUB-TAB 2: REKAP IBU & ANAK DASA WISMA
-                const RekapIbuAnakListScreen(embedded: true),
-              ],
-            ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildSubTabItem(int index, String title, IconData icon, Color primary) {
-    final isSelected = _subTabIndex == index;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          HapticFeedback.selectionClick();
-          setState(() => _subTabIndex = index);
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 9),
-          decoration: BoxDecoration(
-            color: isSelected ? Colors.white : Colors.transparent,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: const Color(0xFF0F172A).withValues(alpha: 0.06),
-                      blurRadius: 6,
-                      offset: const Offset(0, 2),
-                    ),
-                  ]
-                : [],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: 16,
-                color: isSelected ? primary : const Color(0xFF64748B),
-              ),
-              const SizedBox(width: 5),
-              Flexible(
-                child: Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.plusJakartaSans(
-                    fontSize: 12,
-                    fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                    color: isSelected ? primary : const Color(0xFF64748B),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

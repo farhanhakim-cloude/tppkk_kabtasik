@@ -25,7 +25,7 @@ import 'kegiatan_warga_list_screen.dart';
 import 'pemanfaatan_tanah_list_screen.dart';
 import 'industri_rumah_tangga_list_screen.dart';
 import 'rekap_ibu_anak_list_screen.dart';
-import 'rekapitulasi_screen.dart';
+import 'data_umum_dasawisma_screen.dart';
 import '../profile_screen.dart';
 
 class DasawismaDashboardScreen extends StatefulWidget {
@@ -242,25 +242,18 @@ class _DasawismaDashboardScreenState extends State<DasawismaDashboardScreen> {
                 final das = (snap.data?[0] as List?)?.length ?? 0;
                 final ibu = (snap.data?[1] as List?)?.length ?? 0;
                 return Row(children: [
-                  Expanded(child: _buildMainFeatureTile(title: 'Input Data Binaan', subtitle: '$das data binaan', icon: Icons.assignment_outlined, badgeText: '8 Form', isMintTheme: true, primaryColor: primaryAccent, cardBg: cardBg, textColor: text, subtextColor: sub, borderColor: border, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DataKeluargaDasawismaListScreen())), onTapAction: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DataKeluargaDasawismaListScreen())), actionLabel: '+ Input')),
+                  Expanded(child: _buildMainFeatureTile(title: 'Input Data Binaan', subtitle: '$das data binaan', icon: Icons.assignment_outlined, badgeText: '9 Fitur', isMintTheme: true, primaryColor: primaryAccent, cardBg: cardBg, textColor: text, subtextColor: sub, borderColor: border, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DataKeluargaDasawismaListScreen())), onTapAction: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DataKeluargaDasawismaListScreen())), actionLabel: '+ Input')),
                   const SizedBox(width: 14),
-                  Expanded(child: _buildMainFeatureTile(title: 'Rekap Berjenjang', subtitle: '$ibu ibu/bayi', icon: Icons.table_chart_rounded, badgeText: 'RT-Kab', isMintTheme: false, primaryColor: primaryAccent, cardBg: cardBg, textColor: text, subtextColor: sub, borderColor: border, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RekapitulasiScreen())), onTapAction: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RekapitulasiScreen())), actionLabel: 'Lihat')),
+                  Expanded(child: _buildMainFeatureTile(title: 'Data Umum', subtitle: '$ibu ibu & kegiatan', icon: Icons.assignment_rounded, badgeText: '2 Form', isMintTheme: false, primaryColor: primaryAccent, cardBg: cardBg, textColor: text, subtextColor: sub, borderColor: border, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DataUmumDasawismaScreen())), onTapAction: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DataUmumDasawismaScreen())), actionLabel: 'Buka')),
                 ]);
               },
             ),
             const SizedBox(height: 18),
 
             // Menu Dasawisma — grid 2 kolom selaras Kader (Akses Cepat)
-            Text('MENU DASAWISMA • 8 FORM', style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 0.8, color: sub)),
+            Text('MENU DASAWISMA • 9 FITUR', style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 0.8, color: sub)),
             const SizedBox(height: 10),
             _menuGrid(cardBg, border, text, sub),
-
-            const SizedBox(height: 14),
-            Container(height: 1, color: border),
-            const SizedBox(height: 14),
-            Text('REKAPITULASI OTOMATIS', style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 0.8, color: sub)),
-            const SizedBox(height: 10),
-            _menu(cardBg, border, text, sub, 'Rekapitulasi Berjenjang', 'RT/RW/Dusun/Desa/Kec/Kab - auto roll-up', Icons.table_chart_rounded, const Color(0xFF0F766E), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RekapitulasiScreen()))),
             const SizedBox(height: 16),
           ]),
         ),
@@ -311,6 +304,7 @@ class _DasawismaDashboardScreenState extends State<DasawismaDashboardScreen> {
       _GridItem('Pemanfaatan Tanah', 'TOGA & ternak', Icons.grass_rounded, const Color(0xFF059669), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PemanfaatanTanahListScreen()))),
       _GridItem('Industri RT', 'Pangan, sandang', Icons.storefront_rounded, const Color(0xFF7C3AED), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const IndustriRumahTanggaListScreen()))),
       _GridItem('Rekap Ibu & Anak', 'Hamil & bayi', Icons.child_care_rounded, const Color(0xFFEC4899), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RekapIbuAnakListScreen()))),
+      _GridItem('Data Umum', 'Data warga & bumil', Icons.assignment_rounded, const Color(0xFF0F766E), () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DataUmumDasawismaScreen()))),
     ];
     return GridView.builder(
       shrinkWrap: true,
