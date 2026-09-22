@@ -1,24 +1,28 @@
 // lib/screens/dasawisma/data_umum_dasawisma_screen.dart
-// Halaman Data Umum Dasawisma
-// Berisi 3 Tab Sesuai Format Gambar Excel Dasawisma:
-// Tab 1: Rekapitulasi Data & Kegiatan Warga Kelompok Dasa Wisma (Gambar 1 - 30 Kolom)
-// Tab 2: Rekapitulasi Data Ibu Hamil, Melahirkan, Nifas, Bayi & Kematian (Gambar 2 - 17 Kolom)
-// Tab 3: Data Umum PKK Tingkat Desa & Kecamatan (Gambar 1-2 - 20/21 Kolom)
+// Halaman Data Umum Dasawisma (Gabungan Data Keluarga + Data Umum)
+// Berisi 4 Tab:
+// Tab 1: Keluarga Binaan & Rekap Warga (DataKeluargaDasawismaListScreen)
+// Tab 2: Data Keluarga / KK & Anggota (KeluargaListScreen)
+// Tab 3: Rekap Ibu Hamil & Bayi (RekapIbuAnakListScreen)
+// Tab 4: Data Umum PKK Tingkat Desa & Kecamatan (DataUmumPkkListScreen)
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'rekap_ibu_anak_list_screen.dart';
 import 'data_keluarga_dasawisma_list_screen.dart';
 import 'data_umum_pkk_list_screen.dart';
+import 'keluarga_list_screen.dart';
 
 class DataUmumDasawismaScreen extends StatefulWidget {
-  const DataUmumDasawismaScreen({super.key});
+  /// Indeks tab awal, default 0 (Keluarga Binaan)
+  final int initialIndex;
+  const DataUmumDasawismaScreen({super.key, this.initialIndex = 0});
 
   @override
   State<DataUmumDasawismaScreen> createState() => _DataUmumDasawismaScreenState();
 }
 
-class _DataUmumDasawismaScreenState extends State<DataUmumDasawismaScreen> with SingleTickerProviderStateMixin {
+class _DataUmumDasawismaScreenState extends State<DataUmumDasawismaScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   static const Color _primaryAccent = Color(0xFF0D9488);
@@ -27,7 +31,11 @@ class _DataUmumDasawismaScreenState extends State<DataUmumDasawismaScreen> with 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(
+      length: 3,
+      vsync: this,
+      initialIndex: widget.initialIndex.clamp(0, 2),
+    );
   }
 
   @override
@@ -68,45 +76,82 @@ class _DataUmumDasawismaScreenState extends State<DataUmumDasawismaScreen> with 
               ),
             ),
             Text(
-              'Rekap Kegiatan Warga, Ibu Hamil & Data Umum Desa/Kecamatan',
+              'Keluarga Binaan, KK Warga & Data Umum Desa/Kec.',
               style: GoogleFonts.plusJakartaSans(
-                fontSize: 11.5,
+                fontSize: 11,
                 fontWeight: FontWeight.w500,
                 color: const Color(0xFF64748B),
               ),
             ),
           ],
         ),
-        bottom: TabBar(
-          controller: _tabController,
-          isScrollable: true,
-          labelStyle: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 12.5),
-          unselectedLabelStyle: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, fontSize: 12.5),
-          labelColor: _primaryAccent,
-          unselectedLabelColor: const Color(0xFF64748B),
-          indicatorColor: _primaryAccent,
-          indicatorWeight: 3,
-          tabAlignment: TabAlignment.start,
-          tabs: const [
-            Tab(text: '1. Rekap Kegiatan Warga'),
-            Tab(text: '2. Rekap Ibu Hamil & Bayi'),
-            Tab(text: '3. Data Umum Desa & Kec.'),
-          ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(52),
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0))),
+            ),
+            child: TabBar(
+              controller: _tabController,
+              isScrollable: true,
+              tabAlignment: TabAlignment.start,
+              indicatorColor: _primaryAccent,
+              indicatorWeight: 3,
+              labelColor: _primaryAccent,
+              unselectedLabelColor: const Color(0xFF64748B),
+              labelStyle: GoogleFonts.plusJakartaSans(
+                fontWeight: FontWeight.w800,
+                fontSize: 12,
+              ),
+              unselectedLabelStyle: GoogleFonts.plusJakartaSans(
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
+              tabs: const [
+                Tab(
+                  height: 48,
+                  child: Row(mainAxisSize: MainAxisSize.min, children: [
+                    Icon(Icons.groups_rounded, size: 15),
+                    SizedBox(width: 6),
+                    Text('Keluarga Binaan'),
+                  ]),
+                ),
+                Tab(
+                  height: 48,
+                  child: Row(mainAxisSize: MainAxisSize.min, children: [
+                    Icon(Icons.family_restroom_rounded, size: 15),
+                    SizedBox(width: 6),
+                    Text('Data KK'),
+                  ]),
+                ),
+                Tab(
+                  height: 48,
+                  child: Row(mainAxisSize: MainAxisSize.min, children: [
+                    Icon(Icons.assignment_rounded, size: 15),
+                    SizedBox(width: 6),
+                    Text('Data Umum PKK'),
+                  ]),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          // TAB 1: Rekapitulasi Catatan Data dan Kegiatan Warga Kelompok Dasa Wisma (Gambar 1)
-          const DataKeluargaDasawismaListScreen(embedded: true),
+        children: const [
+          // TAB 1: Keluarga Binaan Dasawisma + Rekap per Tingkat (Dasawisma → Kecamatan)
+          DataKeluargaDasawismaListScreen(embedded: true),
 
-          // TAB 2: Rekapitulasi Ibu Hamil, Melahirkan, Nifas, Bayi & Kematian (Gambar 2)
-          const RekapIbuAnakListScreen(embedded: true),
+          // TAB 2: Data Keluarga / KK & Anggota
+          KeluargaListScreen(embedded: true),
 
           // TAB 3: Data Umum PKK Tingkat Desa & Kecamatan (Gambar 1-2)
-          const DataUmumPkkListScreen(embedded: true),
+          DataUmumPkkListScreen(embedded: true),
         ],
       ),
     );
   }
 }
+

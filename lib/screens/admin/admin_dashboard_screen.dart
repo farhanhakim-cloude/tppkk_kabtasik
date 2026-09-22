@@ -234,151 +234,112 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     ),
                   ],
                 ),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            width: 46,
-                            height: 46,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.25),
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: const [
-                                Positioned(top: 7, right: 8, child: Icon(Icons.wb_sunny_rounded, color: Color(0xFFFBBF24), size: 18)),
-                                Positioned(bottom: 6, left: 7, child: Icon(Icons.cloud_rounded, color: Colors.white, size: 24)),
-                              ],
-                            ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 46,
+                          height: 46,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.25),
+                            borderRadius: BorderRadius.circular(15),
                           ),
-                          const SizedBox(width: 12),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    _weatherCondition,
-                                    style: GoogleFonts.plusJakartaSans(
-                                      color: const Color(0xFF0D3E38),
-                                      fontWeight: FontWeight.w800,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black.withValues(alpha: 0.12),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Text(
-                                      'Admin Aktif',
-                                      style: GoogleFonts.plusJakartaSans(
-                                        color: const Color(0xFF0A2E2A),
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 10,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                _weatherCity,
-                                style: GoogleFonts.plusJakartaSans(
-                                  color: const Color(0xFF0D3E38).withValues(alpha: 0.85),
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: const [
+                              Positioned(top: 7, right: 8, child: Icon(Icons.wb_sunny_rounded, color: Color(0xFFFBBF24), size: 18)),
+                              Positioned(bottom: 6, left: 7, child: Icon(Icons.cloud_rounded, color: Colors.white, size: 24)),
                             ],
                           ),
-                        ],
-                      ),
-                      Text(
-                        '$_weatherTemp°',
-                        style: GoogleFonts.plusJakartaSans(
-                          color: const Color(0xFF0D3E38),
-                          fontWeight: FontWeight.w900,
-                          fontSize: 32,
-                          height: 1,
                         ),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  _weatherCondition,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    color: const Color(0xFF0D3E38),
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withValues(alpha: 0.12),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(
+                                    'Admin Aktif',
+                                    style: GoogleFonts.plusJakartaSans(
+                                      color: const Color(0xFF0A2E2A),
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              '$_weatherCity • Kelembapan $_weatherHumidity%',
+                              style: GoogleFonts.plusJakartaSans(
+                                color: const Color(0xFF0D3E38).withValues(alpha: 0.85),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Text(
+                      '$_weatherTemp°',
+                      style: GoogleFonts.plusJakartaSans(
+                        color: const Color(0xFF0D3E38),
+                        fontWeight: FontWeight.w900,
+                        fontSize: 32,
+                        height: 1,
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 18),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildWeatherCardStat(label: 'Berita', value: '$_pendingBeritaCount Menunggu'),
-                      _buildBannerDivider(),
-                      _buildWeatherCardStat(label: 'Laporan', value: '$_pendingLaporanCount Pokja'),
-                      _buildBannerDivider(),
-                      _buildWeatherCardStat(label: 'Kelembapan', value: '$_weatherHumidity%'),
-                      _buildBannerDivider(),
-                      _buildWeatherCardStat(label: 'Status', value: 'Admin Aktif'),
-                    ],
-                  ),
-                ]),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
 
-              // 2 FITUR UTAMA ADMIN
+              // Ringkasan Menunggu Verifikasi
+              Text('MENUNGGU VERIFIKASI', style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w800, letterSpacing: 0.8, color: subtextColor)),
+              const SizedBox(height: 12),
               Row(
                 children: [
-                  // Fitur 1: Verifikasi Berita
                   Expanded(
-                    child: _buildMainFeatureTile(
-                      title: 'Verifikasi Berita',
-                      subtitle: _loadingCount ? 'Memuat...' : '$_pendingBeritaCount Menunggu',
+                    child: _buildPendingCard(
+                      title: 'Berita',
+                      count: _pendingBeritaCount,
                       icon: Icons.article_rounded,
-                      badgeText: 'Moderasi',
-                      isMintTheme: true,
-                      primaryColor: primaryMintAccent,
+                      color: const Color(0xFFF59E0B),
                       cardBg: cardBg,
-                      textColor: textColor,
-                      subtextColor: subtextColor,
                       borderColor: borderColor,
-                      onTap: () async {
-                        await Navigator.push(context, MaterialPageRoute(builder: (_) => const VerifikasiBeritaScreen()));
-                        _loadPendingCounts();
-                      },
-                      onTapAction: () async {
-                        await Navigator.push(context, MaterialPageRoute(builder: (_) => const VerifikasiBeritaScreen()));
-                        _loadPendingCounts();
-                      },
-                      actionLabel: 'Buka',
+                      textColor: textColor,
                     ),
                   ),
-                  const SizedBox(width: 14),
-                  // Fitur 2: Verifikasi Laporan
+                  const SizedBox(width: 12),
                   Expanded(
-                    child: _buildMainFeatureTile(
-                      title: 'Verifikasi Laporan',
-                      subtitle: _loadingCount ? 'Memuat...' : '$_pendingLaporanCount Laporan Pokja',
-                      icon: Icons.assignment_turned_in_rounded,
-                      badgeText: 'Pokja 1-4',
-                      isMintTheme: false,
-                      primaryColor: primaryMintAccent,
+                    child: _buildPendingCard(
+                      title: 'Laporan',
+                      count: _pendingLaporanCount,
+                      icon: Icons.assignment_rounded,
+                      color: const Color(0xFF38BDF8),
                       cardBg: cardBg,
-                      textColor: textColor,
-                      subtextColor: subtextColor,
                       borderColor: borderColor,
-                      onTap: () async {
-                        await Navigator.push(context, MaterialPageRoute(builder: (_) => const VerifikasiLaporanScreen()));
-                        _loadPendingCounts();
-                      },
-                      onTapAction: () async {
-                        await Navigator.push(context, MaterialPageRoute(builder: (_) => const VerifikasiLaporanScreen()));
-                        _loadPendingCounts();
-                      },
-                      actionLabel: 'Buka',
+                      textColor: textColor,
                     ),
                   ),
                 ],
@@ -395,61 +356,49 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               ),
               const SizedBox(height: 24),
 
-              Text('MENU ADMIN', style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w800, letterSpacing: 0.8, color: subtextColor)),
+              // Aksi Cepat (Quick Actions)
+              Text('AKSI CEPAT', style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w800, letterSpacing: 0.8, color: subtextColor)),
               const SizedBox(height: 12),
-              InkWell(
+              _buildActionTile(
+                title: 'Verifikasi Berita',
+                subtitle: 'Tinjau berita yang dikirim kader',
+                icon: Icons.checklist_rounded,
+                color: const Color(0xFF0D9488),
+                cardBg: cardBg,
+                borderColor: borderColor,
+                textColor: textColor,
+                subtextColor: subtextColor,
+                onTap: () async {
+                  await Navigator.push(context, MaterialPageRoute(builder: (_) => const VerifikasiBeritaScreen()));
+                  _loadPendingCounts();
+                },
+              ),
+              const SizedBox(height: 12),
+              _buildActionTile(
+                title: 'Verifikasi Laporan',
+                subtitle: 'Tinjau laporan kegiatan Pokja 1-4',
+                icon: Icons.rule_folder_rounded,
+                color: const Color(0xFF0284C7),
+                cardBg: cardBg,
+                borderColor: borderColor,
+                textColor: textColor,
+                subtextColor: subtextColor,
+                onTap: () async {
+                  await Navigator.push(context, MaterialPageRoute(builder: (_) => const VerifikasiLaporanScreen()));
+                  _loadPendingCounts();
+                },
+              ),
+              const SizedBox(height: 12),
+              _buildActionTile(
+                title: 'Input Berita Baru',
+                subtitle: 'Tambah berita langsung dari panel admin',
+                icon: Icons.add_photo_alternate_rounded,
+                color: const Color(0xFF059669),
+                cardBg: cardBg,
+                borderColor: borderColor,
+                textColor: textColor,
+                subtextColor: subtextColor,
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BeritaFormScreen(isAdminMode: true))),
-                borderRadius: BorderRadius.circular(16),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-                  decoration: BoxDecoration(
-                    color: cardBg,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: borderColor),
-                    boxShadow: [
-                      if (!_isDarkMode)
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.03),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: primaryMintAccent.withValues(alpha: _isDarkMode ? 0.16 : 0.12),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Icon(Icons.add_photo_alternate_rounded, size: 20, color: primaryMintAccent),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Input Berita Baru',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.w700, color: textColor),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              'Tambah berita langsung dari panel admin',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: subtextColor),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Icon(Icons.chevron_right_rounded, size: 20, color: subtextColor.withValues(alpha: 0.6)),
-                    ],
-                  ),
-                ),
               ),
             ]),
           ),
@@ -458,205 +407,158 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  Widget _buildWeatherCardStat({required String label, required String value}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          value,
-          style: GoogleFonts.plusJakartaSans(
-            color: const Color(0xFF0D3E38),
-            fontWeight: FontWeight.w800,
-            fontSize: 13.5,
-          ),
-        ),
-        const SizedBox(height: 1),
-        Text(
-          label,
-          style: GoogleFonts.plusJakartaSans(
-            color: const Color(0xFF0D3E38).withValues(alpha: 0.75),
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBannerDivider() {
+  Widget _buildPendingCard({
+    required String title,
+    required int count,
+    required IconData icon,
+    required Color color,
+    required Color cardBg,
+    required Color borderColor,
+    required Color textColor,
+  }) {
     return Container(
-      width: 1,
-      height: 26,
-      color: Colors.black.withValues(alpha: 0.1),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 14),
+      decoration: BoxDecoration(
+        color: cardBg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: borderColor),
+        boxShadow: [
+          if (!_isDarkMode)
+            BoxShadow(
+              color: color.withValues(alpha: 0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: color, size: 20),
+              ),
+              if (count > 0)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEF4444).withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    'Baru',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFFEF4444),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            count.toString(),
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 24,
+              fontWeight: FontWeight.w800,
+              color: textColor,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            title,
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFF64748B),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildMainFeatureTile({
+  Widget _buildActionTile({
     required String title,
     required String subtitle,
     required IconData icon,
-    required String badgeText,
-    required bool isMintTheme,
-    required Color primaryColor,
+    required Color color,
     required Color cardBg,
+    required Color borderColor,
     required Color textColor,
     required Color subtextColor,
-    required Color borderColor,
     required VoidCallback onTap,
-    required VoidCallback onTapAction,
-    required String actionLabel,
   }) {
-    final activeBg = isMintTheme
-        ? primaryColor.withValues(alpha: _isDarkMode ? 0.16 : 0.12)
-        : cardBg;
-    final activeBorder = isMintTheme
-        ? primaryColor.withValues(alpha: 0.6)
-        : borderColor;
-
-    return Container(
-      height: 195,
-      decoration: BoxDecoration(
-        color: activeBg,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: activeBorder, width: 1.2),
-        boxShadow: isMintTheme
-            ? [
-                BoxShadow(
-                  color: primaryColor.withValues(alpha: 0.15),
-                  blurRadius: 16,
-                  offset: const Offset(0, 4),
-                ),
-              ]
-            : [
-                if (!_isDarkMode)
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
-                    blurRadius: 10,
-                    offset: const Offset(0, 3),
-                  ),
-              ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(20),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Top row: Icon & Chip
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: isMintTheme
-                            ? primaryColor.withValues(alpha: 0.25)
-                            : (_isDarkMode ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFF1F5F9)),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        icon,
-                        color: isMintTheme ? primaryColor : (_isDarkMode ? Colors.white : const Color(0xFF334155)),
-                        size: 22,
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: isMintTheme
-                            ? primaryColor.withValues(alpha: 0.2)
-                            : (_isDarkMode ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFE2E8F0)),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        badgeText,
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: isMintTheme
-                              ? primaryColor
-                              : (_isDarkMode ? Colors.white70 : const Color(0xFF475569)),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                // Middle: Title & Subtitle
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.plusJakartaSans(
-                        color: textColor,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14.5,
-                        height: 1.2,
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      subtitle,
-                      style: GoogleFonts.plusJakartaSans(
-                        color: subtextColor,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-
-                // Bottom row: Quick action button + indicator
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'BUKA',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                        color: isMintTheme
-                            ? primaryColor
-                            : (_isDarkMode ? Colors.white54 : const Color(0xFF94A3B8)),
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                    InkWell(
-                      onTap: onTapAction,
-                      borderRadius: BorderRadius.circular(10),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: isMintTheme
-                              ? primaryColor
-                              : (_isDarkMode ? Colors.white.withValues(alpha: 0.12) : const Color(0xFFE2E8F0)),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          actionLabel,
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 11.5,
-                            fontWeight: FontWeight.w700,
-                            color: isMintTheme
-                                ? (_isDarkMode ? const Color(0xFF0A2E2A) : Colors.white)
-                                : (_isDarkMode ? Colors.white : const Color(0xFF1E293B)),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: cardBg,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: borderColor),
+          boxShadow: [
+            if (!_isDarkMode)
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, size: 22, color: color),
             ),
-          ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: textColor,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 12,
+                      color: subtextColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right_rounded,
+              size: 20,
+              color: subtextColor.withValues(alpha: 0.6),
+            ),
+          ],
         ),
       ),
     );
