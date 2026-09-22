@@ -14,26 +14,25 @@ import '../models/berita.dart';
 import '../models/user.dart';
 import 'berita_service.dart';
 
+// ⚠️ SESUAIKAN — import model 3 sheet baru
+// Kalau nama file / class beda — ubah di sini
+// import '../models/data_umum_pkk.dart';
+// import '../models/rekap_kegiatan_warga_berjenjang.dart';
+// import '../models/rekap_bumil_berjenjang.dart';
+
 class ApiService {
   final http.Client _client = http.Client();
 
   // ============================================================
   // HELPER: Handle pagination response
-  // Laravel paginate() return: { data: { data: [...], current_page, ... } }
   // ============================================================
   List<dynamic> _extractList(dynamic rawData) {
-    // Kalau null / bukan Map/List → return empty
     if (rawData == null) return [];
-
-    // Kalau langsung List → return
     if (rawData is List) return rawData;
-
-    // Kalau Map (pagination) → ambil 'data'-nya
     if (rawData is Map) {
       final nested = rawData['data'];
       if (nested is List) return nested;
     }
-
     return [];
   }
 
@@ -88,7 +87,7 @@ class ApiService {
   }
 
   // ============================================================
-  // POKJA 1
+  // POKJA 1-4
   // ============================================================
   Future<Pokja1Response> getPokja1() async {
     final response = await _client.get(
@@ -97,9 +96,6 @@ class ApiService {
     return _handlePokja1Response(response);
   }
 
-  // ============================================================
-  // POKJA 2
-  // ============================================================
   Future<Pokja2Response> getPokja2() async {
     final response = await _client.get(
       Uri.parse('${AppConstants.baseUrl}${AppConstants.pokja2}'),
@@ -107,9 +103,6 @@ class ApiService {
     return _handlePokja2Response(response);
   }
 
-  // ============================================================
-  // POKJA 3
-  // ============================================================
   Future<Pokja3Response> getPokja3() async {
     final response = await _client.get(
       Uri.parse('${AppConstants.baseUrl}${AppConstants.pokja3}'),
@@ -117,9 +110,6 @@ class ApiService {
     return _handlePokja3Response(response);
   }
 
-  // ============================================================
-  // POKJA 4
-  // ============================================================
   Future<Pokja4Response> getPokja4() async {
     final response = await _client.get(
       Uri.parse('${AppConstants.baseUrl}${AppConstants.pokja4}'),
@@ -127,14 +117,370 @@ class ApiService {
     return _handlePokja4Response(response);
   }
 
-  // ============================================================
-  // SEKRETARIAT
-  // ============================================================
   Future<SekretariatResponse> getSekretariat() async {
     final response = await _client.get(
       Uri.parse('${AppConstants.baseUrl}${AppConstants.sekretariat}'),
     );
     return _handleSekretariatResponse(response);
+  }
+
+  // ============================================================
+  // ✅ TAMBAH — DATA UMUM PKK
+  // ============================================================
+
+  /// GET /api/data-umum-pkk
+  /// Ambil semua data umum PKK — filter tahun, level, wilayah
+  Future<List<Map<String, dynamic>>> getDataUmumPkk({
+    String? tahun,
+    String? level,
+    int? wilayahId,
+    String? search,
+  }) async {
+    try {
+      final queryParams = <String, String>{};
+      if (tahun != null) queryParams['tahun'] = tahun;
+      if (level != null) queryParams['level'] = level;
+      if (wilayahId != null) queryParams['wilayah_id'] = wilayahId.toString();
+      if (search != null) queryParams['search'] = search;
+
+      final uri = Uri.parse(
+        '${AppConstants.baseUrl}${AppConstants.dataUmumPkk}',
+      ).replace(queryParameters: queryParams.isNotEmpty ? queryParams : null);
+
+      final response = await _client.get(uri).timeout(
+        const Duration(seconds: 10),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final list = _extractList(data['data']);
+        return list.cast<Map<String, dynamic>>();
+      } else {
+        throw Exception('Gagal load data umum PKK: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Gagal load data umum PKK: $e');
+    }
+  }
+
+  /// GET /api/data-umum-pkk/{id}
+  Future<Map<String, dynamic>> getDataUmumPkkDetail(int id) async {
+    try {
+      final response = await _client.get(
+        Uri.parse('${AppConstants.baseUrl}${AppConstants.dataUmumPkk}/$id'),
+      ).timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['data'] ?? data;
+      } else {
+        throw Exception('Gagal load detail: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Gagal load detail: $e');
+    }
+  }
+
+  /// POST /api/data-umum-pkk — butuh token
+  Future<Map<String, dynamic>> createDataUmumPkk(
+    Map<String, dynamic> payload,
+    String token,
+  ) async {
+    try {
+      final response = await _client.post(
+        Uri.parse('${AppConstants.baseUrl}${AppConstants.dataUmumPkk}'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(payload),
+      ).timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['data'] ?? data;
+      } else if (response.statusCode == 422) {
+        final err = jsonDecode(response.body);
+        throw Exception('Validasi gagal: ${err['errors'] ?? err['message']}');
+      } else if (response.statusCode == 409) {
+        throw Exception('Data sudah ada — duplikat');
+      } else {
+        throw Exception('Gagal simpan: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Gagal simpan: $e');
+    }
+  }
+
+  /// PUT /api/data-umum-pkk/{id}
+  Future<Map<String, dynamic>> updateDataUmumPkk(
+    int id,
+    Map<String, dynamic> payload,
+    String token,
+  ) async {
+    try {
+      final response = await _client.put(
+        Uri.parse('${AppConstants.baseUrl}${AppConstants.dataUmumPkk}/$id'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(payload),
+      ).timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['data'] ?? data;
+      } else {
+        throw Exception('Gagal update: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Gagal update: $e');
+    }
+  }
+
+  /// DELETE /api/data-umum-pkk/{id}
+  Future<void> deleteDataUmumPkk(int id, String token) async {
+    try {
+      final response = await _client.delete(
+        Uri.parse('${AppConstants.baseUrl}${AppConstants.dataUmumPkk}/$id'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      ).timeout(const Duration(seconds: 15));
+
+      if (response.statusCode != 200) {
+        throw Exception('Gagal hapus: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Gagal hapus: $e');
+    }
+  }
+
+  // ============================================================
+  // ✅ TAMBAH — REKAP KEGIATAN WARGA
+  // ============================================================
+
+  Future<List<Map<String, dynamic>>> getRekapKegiatanWarga({
+    String? tahun,
+    String? level,
+    int? wilayahId,
+    String? search,
+  }) async {
+    try {
+      final queryParams = <String, String>{};
+      if (tahun != null) queryParams['tahun'] = tahun;
+      if (level != null) queryParams['level'] = level;
+      if (wilayahId != null) queryParams['wilayah_id'] = wilayahId.toString();
+      if (search != null) queryParams['search'] = search;
+
+      final uri = Uri.parse(
+        '${AppConstants.baseUrl}${AppConstants.rekapKegiatanWarga}',
+      ).replace(queryParameters: queryParams.isNotEmpty ? queryParams : null);
+
+      final response = await _client.get(uri).timeout(
+        const Duration(seconds: 10),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final list = _extractList(data['data']);
+        return list.cast<Map<String, dynamic>>();
+      } else {
+        throw Exception('Gagal load rekap kegiatan: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Gagal load rekap kegiatan: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> createRekapKegiatanWarga(
+    Map<String, dynamic> payload,
+    String token,
+  ) async {
+    try {
+      final response = await _client.post(
+        Uri.parse('${AppConstants.baseUrl}${AppConstants.rekapKegiatanWarga}'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(payload),
+      ).timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['data'] ?? data;
+      } else {
+        throw Exception('Gagal simpan: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Gagal simpan: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> updateRekapKegiatanWarga(
+    int id,
+    Map<String, dynamic> payload,
+    String token,
+  ) async {
+    try {
+      final response = await _client.put(
+        Uri.parse('${AppConstants.baseUrl}${AppConstants.rekapKegiatanWarga}/$id'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(payload),
+      ).timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['data'] ?? data;
+      } else {
+        throw Exception('Gagal update: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Gagal update: $e');
+    }
+  }
+
+  Future<void> deleteRekapKegiatanWarga(int id, String token) async {
+    try {
+      final response = await _client.delete(
+        Uri.parse('${AppConstants.baseUrl}${AppConstants.rekapKegiatanWarga}/$id'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      ).timeout(const Duration(seconds: 15));
+
+      if (response.statusCode != 200) {
+        throw Exception('Gagal hapus: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Gagal hapus: $e');
+    }
+  }
+
+  // ============================================================
+  // ✅ TAMBAH — REKAP BUMIL
+  // ============================================================
+
+  Future<List<Map<String, dynamic>>> getRekapBumil({
+    String? tahun,
+    String? bulan,
+    String? level,
+    int? wilayahId,
+    String? search,
+  }) async {
+    try {
+      final queryParams = <String, String>{};
+      if (tahun != null) queryParams['tahun'] = tahun;
+      if (bulan != null) queryParams['bulan'] = bulan;
+      if (level != null) queryParams['level'] = level;
+      if (wilayahId != null) queryParams['wilayah_id'] = wilayahId.toString();
+      if (search != null) queryParams['search'] = search;
+
+      final uri = Uri.parse(
+        '${AppConstants.baseUrl}${AppConstants.rekapBumil}',
+      ).replace(queryParameters: queryParams.isNotEmpty ? queryParams : null);
+
+      final response = await _client.get(uri).timeout(
+        const Duration(seconds: 10),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final list = _extractList(data['data']);
+        return list.cast<Map<String, dynamic>>();
+      } else {
+        throw Exception('Gagal load rekap bumil: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Gagal load rekap bumil: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> createRekapBumil(
+    Map<String, dynamic> payload,
+    String token,
+  ) async {
+    try {
+      final response = await _client.post(
+        Uri.parse('${AppConstants.baseUrl}${AppConstants.rekapBumil}'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(payload),
+      ).timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['data'] ?? data;
+      } else if (response.statusCode == 422) {
+        final err = jsonDecode(response.body);
+        throw Exception('Validasi gagal: ${err['errors'] ?? err['message']}');
+      } else if (response.statusCode == 409) {
+        throw Exception('Data sudah ada — duplikat');
+      } else {
+        throw Exception('Gagal simpan: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Gagal simpan: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> updateRekapBumil(
+    int id,
+    Map<String, dynamic> payload,
+    String token,
+  ) async {
+    try {
+      final response = await _client.put(
+        Uri.parse('${AppConstants.baseUrl}${AppConstants.rekapBumil}/$id'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode(payload),
+      ).timeout(const Duration(seconds: 15));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['data'] ?? data;
+      } else {
+        throw Exception('Gagal update: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Gagal update: $e');
+    }
+  }
+
+  Future<void> deleteRekapBumil(int id, String token) async {
+    try {
+      final response = await _client.delete(
+        Uri.parse('${AppConstants.baseUrl}${AppConstants.rekapBumil}/$id'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      ).timeout(const Duration(seconds: 15));
+
+      if (response.statusCode != 200) {
+        throw Exception('Gagal hapus: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Gagal hapus: $e');
+    }
   }
 
   // ============================================================
@@ -148,7 +494,6 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        // 🔥 FIX: pakai helper
         final list = _extractList(data['data']);
         return list.map((item) => Berita.fromJson(item)).toList();
       } else {
@@ -167,7 +512,6 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        // 🔥 FIX: pakai helper
         final list = _extractList(data['data']);
         return list.map((item) => Berita.fromJson(item)).toList();
       } else {
@@ -195,9 +539,6 @@ class ApiService {
     }
   }
 
-  // ============================================================
-  // 🔥 SUBMIT BERITA
-  // ============================================================
   Future<Berita> submitBerita({
     required String judul,
     required String ringkasan,
@@ -231,10 +572,6 @@ class ApiService {
     }
   }
 
-  // ============================================================
-  // 🔥 MY BERITA
-  // ✅ FIX: Endpoint /berita/saya → /my-berita
-  // ============================================================
   Future<List<Berita>> getMyBerita(String token) async {
     try {
       final response = await _client.get(
@@ -247,7 +584,6 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        // 🔥 FIX: pakai helper untuk handle pagination
         final list = _extractList(data['data']);
         return list.map((item) => Berita.fromJson(item)).toList();
       } else {
@@ -269,7 +605,6 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        // 🔥 FIX: pakai helper
         return _extractList(data['data']);
       } else {
         throw Exception('Gagal load galeri: ${response.statusCode}');
@@ -290,7 +625,6 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        // 🔥 FIX: pakai helper
         return _extractList(data['data']);
       } else {
         throw Exception('Gagal load agenda: ${response.statusCode}');
@@ -311,7 +645,6 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        // 🔥 FIX: pakai helper untuk handle pagination
         return _extractList(data['data']);
       } else {
         throw Exception('Gagal load laporan kegiatan: ${response.statusCode}');

@@ -1,66 +1,44 @@
 // lib/models/data_umum_pkk.dart
-// Model data untuk Data Umum PKK Tingkat Desa (20 kolom) dan Kecamatan (21 kolom)
-// Sesuai format formulir resmi TP PKK Kabupaten Tasikmalaya
+// ✅ HYBRID: Field lama (biar screen kompilasi) + fromJson API
 
 class DataUmumPkkItem {
   final int id;
-  final String level; // 'desa' atau 'kecamatan'
+  final String level;
   final String tahun;
-  final String kabupaten;
-  final String provinsi;
+  final String kabupaten;      // ← balikin — biar screen ga error
+  final String provinsi;       // ← balikin
   final String kecamatan;
-  final String desa; // Diisi jika level == 'desa'
-
-  // Kolom pengenal baris:
-  // Tingkat Desa: Nama Dusun / Lingkungan / Sebutan Lainnya (Kolom 2)
-  // Tingkat Kecamatan: Nama Desa (Kolom 2)
+  final String desa;
   final String namaDusun;
   final String namaDesa;
-
-  // Jumlah Wilayah / Kelompok:
-  final int jumlahDusun; // Hanya ada di Kecamatan (Kolom 3)
-  final int jumlahPkkRw; // Desa (Kolom 3), Kecamatan (Kolom 4)
-  final int jumlahPkkRt; // Desa (Kolom 4), Kecamatan (Kolom 5)
-  final int jumlahDasaWisma; // Desa (Kolom 5), Kecamatan (Kolom 6)
-
-  // Jumlah KRT & KK:
-  final int jumlahKrt; // Desa (Kolom 6), Kecamatan (Kolom 7)
-  final int jumlahKk; // Desa (Kolom 7), Kecamatan (Kolom 8)
-
-  // Jumlah Jiwa:
-  final int jiwaL; // L
-  final int jiwaP; // P
-
-  // Jumlah Kader:
-  // 1. Anggota TP PKK
-  final int kaderTpPkkL;
+  final int jumlahDusun;
+  final int jumlahPkkRw;
+  final int jumlahPkkRt;
+  final int jumlahDasaWisma;   // ← pakai 's' — sesuai model lama
+  final int jumlahKrt;
+  final int jumlahKk;
+  final int jiwaL;
+  final int jiwaP;
+  final int kaderTpPkkL;       // ← balikin — biar screen ga error
   final int kaderTpPkkP;
-  // 2. Kader Umum
   final int kaderUmumL;
   final int kaderUmumP;
-  // 3. Kader Khusus
   final int kaderKhususL;
   final int kaderKhususP;
-
-  // Jumlah Tenaga Sekretariat:
-  // 1. Honorer
   final int sekretariatHonorerL;
   final int sekretariatHonorerP;
-  // 2. Bantuan
   final int sekretariatBantuanL;
   final int sekretariatBantuanP;
-
-  // Keterangan
   final String keterangan;
 
   DataUmumPkkItem({
     required this.id,
-    required this.level,
+    this.level = 'desa',
     this.tahun = '2026',
     this.kabupaten = 'TASIKMALAYA',
     this.provinsi = 'JAWA BARAT',
-    this.kecamatan = 'Singaparna',
-    this.desa = 'Singaparna',
+    this.kecamatan = '',
+    this.desa = '',
     this.namaDusun = '',
     this.namaDesa = '',
     this.jumlahDusun = 0,
@@ -84,20 +62,17 @@ class DataUmumPkkItem {
     this.keterangan = '',
   });
 
+  // Getter — biar screen lama jalan
   int get totalJiwa => jiwaL + jiwaP;
   int get totalKader =>
-      kaderTpPkkL +
-      kaderTpPkkP +
-      kaderUmumL +
-      kaderUmumP +
-      kaderKhususL +
-      kaderKhususP;
+      kaderTpPkkL + kaderTpPkkP +
+      kaderUmumL + kaderUmumP +
+      kaderKhususL + kaderKhususP;
   int get totalSekretariat =>
-      sekretariatHonorerL +
-      sekretariatHonorerP +
-      sekretariatBantuanL +
-      sekretariatBantuanP;
+      sekretariatHonorerL + sekretariatHonorerP +
+      sekretariatBantuanL + sekretariatBantuanP;
 
+  // ✅ toJson — camelCase — buat SharedPreferences (lama)
   Map<String, dynamic> toJson() => {
         'id': id,
         'level': level,
@@ -129,97 +104,84 @@ class DataUmumPkkItem {
         'keterangan': keterangan,
       };
 
+  // ✅ fromJson — HYBRID: baca camelCase ATAU snake_case
   factory DataUmumPkkItem.fromJson(Map<String, dynamic> json) =>
       DataUmumPkkItem(
-        id: json['id'] is int ? json['id'] : int.tryParse('${json['id']}') ?? 0,
-        level: json['level'] ?? 'desa',
-        tahun: json['tahun'] ?? '2026',
-        kabupaten: json['kabupaten'] ?? 'TASIKMALAYA',
-        provinsi: json['provinsi'] ?? 'JAWA BARAT',
-        kecamatan: json['kecamatan'] ?? '',
-        desa: json['desa'] ?? '',
-        namaDusun: json['namaDusun'] ?? '',
-        namaDesa: json['namaDesa'] ?? '',
-        jumlahDusun: json['jumlahDusun'] ?? 0,
-        jumlahPkkRw: json['jumlahPkkRw'] ?? 0,
-        jumlahPkkRt: json['jumlahPkkRt'] ?? 0,
-        jumlahDasaWisma: json['jumlahDasaWisma'] ?? 0,
-        jumlahKrt: json['jumlahKrt'] ?? 0,
-        jumlahKk: json['jumlahKk'] ?? 0,
-        jiwaL: json['jiwaL'] ?? 0,
-        jiwaP: json['jiwaP'] ?? 0,
-        kaderTpPkkL: json['kaderTpPkkL'] ?? 0,
-        kaderTpPkkP: json['kaderTpPkkP'] ?? 0,
-        kaderUmumL: json['kaderUmumL'] ?? 0,
-        kaderUmumP: json['kaderUmumP'] ?? 0,
-        kaderKhususL: json['kaderKhususL'] ?? 0,
-        kaderKhususP: json['kaderKhususP'] ?? 0,
-        sekretariatHonorerL: json['sekretariatHonorerL'] ?? 0,
-        sekretariatHonorerP: json['sekretariatHonorerP'] ?? 0,
-        sekretariatBantuanL: json['sekretariatBantuanL'] ?? 0,
-        sekretariatBantuanP: json['sekretariatBantuanP'] ?? 0,
-        keterangan: json['keterangan'] ?? '',
+        id: _p(json['id']),
+        level: json['level']?.toString() ?? 'desa',
+        tahun: json['tahun']?.toString() ?? '2026',
+        kabupaten: json['kabupaten']?.toString() ?? 'TASIKMALAYA',
+        provinsi: json['provinsi']?.toString() ?? 'JAWA BARAT',
+        kecamatan: json['kecamatan']?.toString() ?? '',
+        desa: json['desa']?.toString() ?? '',
+        namaDusun: (json['namaDusun'] ?? json['nama_dusun'])?.toString() ?? '',
+        namaDesa: (json['namaDesa'] ?? json['nama_desa'])?.toString() ?? '',
+        jumlahDusun: _p(json['jumlahDusun'] ?? json['jumlah_dusun']),
+        jumlahPkkRw: _p(json['jumlahPkkRw'] ?? json['jumlah_pkk_rw']),
+        jumlahPkkRt: _p(json['jumlahPkkRt'] ?? json['jumlah_pkk_rt']),
+        jumlahDasaWisma: _p(json['jumlahDasaWisma'] ?? json['jumlah_dasa_wisma']),
+        jumlahKrt: _p(json['jumlahKrt'] ?? json['jumlah_krt']),
+        jumlahKk: _p(json['jumlahKk'] ?? json['jumlah_kk']),
+        jiwaL: _p(json['jiwaL'] ?? json['jiwa_l']),
+        jiwaP: _p(json['jiwaP'] ?? json['jiwa_p']),
+        kaderTpPkkL: _p(json['kaderTpPkkL'] ?? json['tp_pkk_l']),
+        kaderTpPkkP: _p(json['kaderTpPkkP'] ?? json['tp_pkk_p']),
+        kaderUmumL: _p(json['kaderUmumL'] ?? json['kader_umum_l']),
+        kaderUmumP: _p(json['kaderUmumP'] ?? json['kader_umum_p']),
+        kaderKhususL: _p(json['kaderKhususL'] ?? json['kader_khusus_l']),
+        kaderKhususP: _p(json['kaderKhususP'] ?? json['kader_khusus_p']),
+        sekretariatHonorerL: _p(json['sekretariatHonorerL'] ?? json['sekretariat_honorer_l']),
+        sekretariatHonorerP: _p(json['sekretariatHonorerP'] ?? json['sekretariat_honorer_p']),
+        sekretariatBantuanL: _p(json['sekretariatBantuanL'] ?? json['sekretariat_bantuan_l']),
+        sekretariatBantuanP: _p(json['sekretariatBantuanP'] ?? json['sekretariat_bantuan_p']),
+        keterangan: json['keterangan']?.toString() ?? '',
       );
 
-  DataUmumPkkItem copyWith({
-    int? id,
-    String? level,
-    String? tahun,
-    String? kabupaten,
-    String? provinsi,
-    String? kecamatan,
-    String? desa,
-    String? namaDusun,
-    String? namaDesa,
-    int? jumlahDusun,
-    int? jumlahPkkRw,
-    int? jumlahPkkRt,
-    int? jumlahDasaWisma,
-    int? jumlahKrt,
-    int? jumlahKk,
-    int? jiwaL,
-    int? jiwaP,
-    int? kaderTpPkkL,
-    int? kaderTpPkkP,
-    int? kaderUmumL,
-    int? kaderUmumP,
-    int? kaderKhususL,
-    int? kaderKhususP,
-    int? sekretariatHonorerL,
-    int? sekretariatHonorerP,
-    int? sekretariatBantuanL,
-    int? sekretariatBantuanP,
-    String? keterangan,
-  }) {
-    return DataUmumPkkItem(
-      id: id ?? this.id,
-      level: level ?? this.level,
-      tahun: tahun ?? this.tahun,
-      kabupaten: kabupaten ?? this.kabupaten,
-      provinsi: provinsi ?? this.provinsi,
-      kecamatan: kecamatan ?? this.kecamatan,
-      desa: desa ?? this.desa,
-      namaDusun: namaDusun ?? this.namaDusun,
-      namaDesa: namaDesa ?? this.namaDesa,
-      jumlahDusun: jumlahDusun ?? this.jumlahDusun,
-      jumlahPkkRw: jumlahPkkRw ?? this.jumlahPkkRw,
-      jumlahPkkRt: jumlahPkkRt ?? this.jumlahPkkRt,
-      jumlahDasaWisma: jumlahDasaWisma ?? this.jumlahDasaWisma,
-      jumlahKrt: jumlahKrt ?? this.jumlahKrt,
-      jumlahKk: jumlahKk ?? this.jumlahKk,
-      jiwaL: jiwaL ?? this.jiwaL,
-      jiwaP: jiwaP ?? this.jiwaP,
-      kaderTpPkkL: kaderTpPkkL ?? this.kaderTpPkkL,
-      kaderTpPkkP: kaderTpPkkP ?? this.kaderTpPkkP,
-      kaderUmumL: kaderUmumL ?? this.kaderUmumL,
-      kaderUmumP: kaderUmumP ?? this.kaderUmumP,
-      kaderKhususL: kaderKhususL ?? this.kaderKhususL,
-      kaderKhususP: kaderKhususP ?? this.kaderKhususP,
-      sekretariatHonorerL: sekretariatHonorerL ?? this.sekretariatHonorerL,
-      sekretariatHonorerP: sekretariatHonorerP ?? this.sekretariatHonorerP,
-      sekretariatBantuanL: sekretariatBantuanL ?? this.sekretariatBantuanL,
-      sekretariatBantuanP: sekretariatBantuanP ?? this.sekretariatBantuanP,
-      keterangan: keterangan ?? this.keterangan,
-    );
+  static int _p(dynamic v) {
+    if (v == null) return 0;
+    if (v is int) return v;
+    if (v is double) return v.toInt();
+    if (v is String) return int.tryParse(v) ?? 0;
+    return 0;
   }
+
+  DataUmumPkkItem copyWith({
+    int? id, String? level, String? tahun, String? kabupaten, String? provinsi,
+    String? kecamatan, String? desa, String? namaDusun, String? namaDesa,
+    int? jumlahDusun, int? jumlahPkkRw, int? jumlahPkkRt, int? jumlahDasaWisma,
+    int? jumlahKrt, int? jumlahKk, int? jiwaL, int? jiwaP,
+    int? kaderTpPkkL, int? kaderTpPkkP, int? kaderUmumL, int? kaderUmumP,
+    int? kaderKhususL, int? kaderKhususP,
+    int? sekretariatHonorerL, int? sekretariatHonorerP,
+    int? sekretariatBantuanL, int? sekretariatBantuanP, String? keterangan,
+  }) => DataUmumPkkItem(
+        id: id ?? this.id,
+        level: level ?? this.level,
+        tahun: tahun ?? this.tahun,
+        kabupaten: kabupaten ?? this.kabupaten,
+        provinsi: provinsi ?? this.provinsi,
+        kecamatan: kecamatan ?? this.kecamatan,
+        desa: desa ?? this.desa,
+        namaDusun: namaDusun ?? this.namaDusun,
+        namaDesa: namaDesa ?? this.namaDesa,
+        jumlahDusun: jumlahDusun ?? this.jumlahDusun,
+        jumlahPkkRw: jumlahPkkRw ?? this.jumlahPkkRw,
+        jumlahPkkRt: jumlahPkkRt ?? this.jumlahPkkRt,
+        jumlahDasaWisma: jumlahDasaWisma ?? this.jumlahDasaWisma,
+        jumlahKrt: jumlahKrt ?? this.jumlahKrt,
+        jumlahKk: jumlahKk ?? this.jumlahKk,
+        jiwaL: jiwaL ?? this.jiwaL,
+        jiwaP: jiwaP ?? this.jiwaP,
+        kaderTpPkkL: kaderTpPkkL ?? this.kaderTpPkkL,
+        kaderTpPkkP: kaderTpPkkP ?? this.kaderTpPkkP,
+        kaderUmumL: kaderUmumL ?? this.kaderUmumL,
+        kaderUmumP: kaderUmumP ?? this.kaderUmumP,
+        kaderKhususL: kaderKhususL ?? this.kaderKhususL,
+        kaderKhususP: kaderKhususP ?? this.kaderKhususP,
+        sekretariatHonorerL: sekretariatHonorerL ?? this.sekretariatHonorerL,
+        sekretariatHonorerP: sekretariatHonorerP ?? this.sekretariatHonorerP,
+        sekretariatBantuanL: sekretariatBantuanL ?? this.sekretariatBantuanL,
+        sekretariatBantuanP: sekretariatBantuanP ?? this.sekretariatBantuanP,
+        keterangan: keterangan ?? this.keterangan,
+      );
 }

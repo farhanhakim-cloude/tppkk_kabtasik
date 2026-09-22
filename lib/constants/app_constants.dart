@@ -6,18 +6,12 @@ class AppConstants {
   // ============================================================
 
   // 🔥 SEMUA DI 1 LAPTOP (Laravel & Flutter Web sama-sama di sini)
-  // PAKE 127.0.0.1 - selalu merujuk ke komputer ini sendiri,
-  // TIDAK berubah-ubah seperti IP WiFi (10.23.20.151 terbukti
-  // ERR_CONNECTION_TIMED_OUT, kemungkinan besar IP itu sudah
-  // tidak valid lagi / berubah setelah reconnect WiFi).
   static const String baseUrl = "http://127.0.0.1:8000/api/";
 
   // 📱 UNTUK EMULATOR ANDROID (AVD) - PAKE 10.0.2.2
   // static const String baseUrl = "http://10.0.2.2:8000/api/";
 
   // 📱 UNTUK HP FISIK (device terpisah, 1 WiFi yang sama) - PAKE IP
-  // dari `ipconfig` yang PALING BARU (cek ulang tiap kali WiFi
-  // reconnect, karena IP ini bisa berubah).
   // static const String baseUrl = "http://[IP_TERBARU]:8000/api/";
 
   // 💡 NANTI KALAU UDAH HOSTING:
@@ -39,6 +33,16 @@ class AppConstants {
   static const String pokja4 = "pokja-4";
   static const String sekretariat = "sekretariat";
 
+  // ✅ TAMBAH — 3 Endpoint Baru
+  static const String dataUmumPkk = "data-umum-pkk";
+  static const String rekapKegiatanWarga = "rekap-kegiatan-warga";
+  static const String rekapBumil = "rekap-bumil";
+
+  // ✅ TAMBAH — Endpoint Rekap (Roll-up)
+  static const String dataUmumPkkRekap = "data-umum-pkk/rekap";
+  static const String rekapKegiatanWargaRekap = "rekap-kegiatan-warga/rekap";
+  static const String rekapBumilRekap = "rekap-bumil/rekap";
+
   // Konten
   static const String berita = "berita";
   static const String beritaLatest = "berita/latest";
@@ -55,4 +59,3 @@ class AppConstants {
   static const String userKey = "user_data";
   static const String isLoggedInKey = "isLoggedIn";
 }
-

@@ -1,32 +1,35 @@
 // lib/models/rekap_kegiatan_warga_berjenjang.dart
-// Model untuk Form Rekap Berjenjang Catatan Data dan Kegiatan Warga
-// Sesuai format excel resmi untuk 5 Tingkat: RT, RW, Dusun, Desa, Kecamatan
+// ✅ HYBRID: Field lama (screen jalan) + field baru (API) + fromJson hybrid
 
 class RekapKegiatanWargaBerjenjangItem {
   final int id;
-  final String level; // 'rt', 'rw', 'dusun', 'desa', 'kecamatan'
+  final int? wilayahId;
+  final String level;
   final String tahun;
+
+  // Wilayah
   final String kabupaten;
   final String provinsi;
   final String kecamatan;
+  final String namaKecamatan;
   final String desa;
+  final String namaDesa;
   final String dusun;
+  final String namaDusun;
   final String rw;
   final String rt;
   final String dasaWisma;
 
-  // Kolom pengenal baris sesuai tingkat
-  final String namaDasawisma; // RT & RW
-  final String nomorRt;       // RW
-  final String nomorRw;       // Dusun
-  final String namaDusun;     // Desa
-  final String namaDesa;      // Kecamatan
+  // ✅ Field lama — biar screen lama jalan
+  final String namaDasawisma;
+  final String nomorRt;
+  final String nomorRw;
 
-  // Jumlah Wilayah Binaan (Dusun, RW, RT, Dasawisma)
-  final int jumlahDusun;      // Kecamatan
-  final int jumlahRw;         // Dusun (bisa), Desa, Kecamatan
-  final int jumlahRt;         // Dusun, Desa, Kecamatan
-  final int jumlahDasawisma;  // RW, Dusun, Desa, Kecamatan
+  // Jumlah Wilayah Binaan
+  final int jumlahDusun;
+  final int jumlahRw;
+  final int jumlahRt;
+  final int jumlahDasawisma;   // ← pakai 's' — sesuai screen lama
 
   // Jumlah KRT & KK
   final int jumlahKrt;
@@ -37,21 +40,26 @@ class RekapKegiatanWargaBerjenjangItem {
   final int totalP;
   final int balitaL;
   final int balitaP;
-  final int pus; // Pasangan Usia Subur
-  final int wus; // Wanita Usia Subur
+  final int pus;
+  final int wus;
   final int ibuHamil;
   final int ibuMenyusui;
   final int lansia;
-  final int butaL; // 3 Buta L
-  final int butaP; // 3 Buta P
-  final int berkebutuhanKhusus;
+  final int butaL;
+  final int butaP;
+  final int berkebutuhanKhusus;  // ← balikin — screen lama
 
   // Kriteria Rumah
   final int rumahSehat;
-  final int rumahTidakSehat;
-  final int tempatSampah;
-  final int spal;
-  final int jambanMck;
+  final int rumahTidakSehat;    // ← balikin — screen lama
+  final int rumahKurangSehat;   // ← baru — API
+  final int tempatSampah;       // ← balikin — screen lama
+  final int memilikiTempatSampah; // ← baru — API
+  final int spal;               // ← balikin — screen lama
+  final int memilikiSpal;       // ← baru — API
+  final int memilikiStikerP4k;
+  final int jambanMck;          // ← balikin — screen lama
+  final int jumlahJambanKeluarga; // ← baru — API
 
   // Sumber Air Keluarga
   final int airPdam;
@@ -60,35 +68,42 @@ class RekapKegiatanWargaBerjenjangItem {
   final int airDll;
 
   // Makanan Pokok
-  final int makananBeras;
-  final int makananNonBeras;
+  final int makananBeras;       // ← balikin — screen lama
+  final int makananPokokBeras;  // ← baru — API
+  final int makananNonBeras;    // ← balikin — screen lama
+  final int makananPokokNonBeras; // ← baru — API
 
   // Warga Mengikuti Kegiatan
   final int kegiatanUp2k;
-  final int kegiatanPekarangan;
-  final int kegiatanIndustriRt;
-  final int kegiatanKesling;
+  final int kegiatanPekarangan;          // ← balikin
+  final int kegiatanTanahPekarangan;     // ← baru
+  final int kegiatanIndustriRt;          // ← balikin
+  final int kegiatanIndustriRumahTangga; // ← baru
+  final int kegiatanKesling;             // ← balikin
+  final int kegiatanKesehatanLingkungan; // ← baru
 
   // Keterangan
   final String keterangan;
 
   RekapKegiatanWargaBerjenjangItem({
     required this.id,
-    required this.level,
+    this.wilayahId,
+    this.level = 'rt',
     this.tahun = '2026',
     this.kabupaten = 'Tasikmalaya',
     this.provinsi = 'Jawa Barat',
-    this.kecamatan = 'Singaparna',
-    this.desa = 'Singaparna',
-    this.dusun = 'Cikunir',
-    this.rw = '05',
-    this.rt = '01',
-    this.dasaWisma = 'Mawar 01',
+    this.kecamatan = '',
+    this.namaKecamatan = '',
+    this.desa = '',
+    this.namaDesa = '',
+    this.dusun = '',
+    this.namaDusun = '',
+    this.rw = '',
+    this.rt = '',
+    this.dasaWisma = '',
     this.namaDasawisma = '',
     this.nomorRt = '',
     this.nomorRw = '',
-    this.namaDusun = '',
-    this.namaDesa = '',
     this.jumlahDusun = 0,
     this.jumlahRw = 0,
     this.jumlahRt = 0,
@@ -109,22 +124,43 @@ class RekapKegiatanWargaBerjenjangItem {
     this.berkebutuhanKhusus = 0,
     this.rumahSehat = 0,
     this.rumahTidakSehat = 0,
+    this.rumahKurangSehat = 0,
     this.tempatSampah = 0,
+    this.memilikiTempatSampah = 0,
     this.spal = 0,
+    this.memilikiSpal = 0,
+    this.memilikiStikerP4k = 0,
     this.jambanMck = 0,
+    this.jumlahJambanKeluarga = 0,
     this.airPdam = 0,
     this.airSumur = 0,
     this.airSungai = 0,
     this.airDll = 0,
     this.makananBeras = 0,
+    this.makananPokokBeras = 0,
     this.makananNonBeras = 0,
+    this.makananPokokNonBeras = 0,
     this.kegiatanUp2k = 0,
     this.kegiatanPekarangan = 0,
+    this.kegiatanTanahPekarangan = 0,
     this.kegiatanIndustriRt = 0,
+    this.kegiatanIndustriRumahTangga = 0,
     this.kegiatanKesling = 0,
+    this.kegiatanKesehatanLingkungan = 0,
     this.keterangan = '',
   });
 
+  // ============================================================
+  // GETTER
+  // ============================================================
+  int get totalAnggotaKeluarga => totalL + totalP;
+  int get totalBalita => balitaL + balitaP;
+  int get totalButa => butaL + butaP;
+  int get totalAir => airPdam + airSumur + airSungai + airDll;
+
+  // ============================================================
+  // TO JSON — hybrid — kirim camelCase (untuk SharedPreferences lama)
+  // ============================================================
   Map<String, dynamic> toJson() => {
         'id': id,
         'level': level,
@@ -132,16 +168,17 @@ class RekapKegiatanWargaBerjenjangItem {
         'kabupaten': kabupaten,
         'provinsi': provinsi,
         'kecamatan': kecamatan,
+        'namaKecamatan': namaKecamatan,
         'desa': desa,
+        'namaDesa': namaDesa,
         'dusun': dusun,
+        'namaDusun': namaDusun,
         'rw': rw,
         'rt': rt,
         'dasaWisma': dasaWisma,
         'namaDasawisma': namaDasawisma,
         'nomorRt': nomorRt,
         'nomorRw': nomorRw,
-        'namaDusun': namaDusun,
-        'namaDesa': namaDesa,
         'jumlahDusun': jumlahDusun,
         'jumlahRw': jumlahRw,
         'jumlahRt': jumlahRt,
@@ -162,179 +199,199 @@ class RekapKegiatanWargaBerjenjangItem {
         'berkebutuhanKhusus': berkebutuhanKhusus,
         'rumahSehat': rumahSehat,
         'rumahTidakSehat': rumahTidakSehat,
+        'rumahKurangSehat': rumahKurangSehat,
         'tempatSampah': tempatSampah,
+        'memilikiTempatSampah': memilikiTempatSampah,
         'spal': spal,
+        'memilikiSpal': memilikiSpal,
+        'memilikiStikerP4k': memilikiStikerP4k,
         'jambanMck': jambanMck,
+        'jumlahJambanKeluarga': jumlahJambanKeluarga,
         'airPdam': airPdam,
         'airSumur': airSumur,
         'airSungai': airSungai,
         'airDll': airDll,
         'makananBeras': makananBeras,
+        'makananPokokBeras': makananPokokBeras,
         'makananNonBeras': makananNonBeras,
+        'makananPokokNonBeras': makananPokokNonBeras,
         'kegiatanUp2k': kegiatanUp2k,
         'kegiatanPekarangan': kegiatanPekarangan,
+        'kegiatanTanahPekarangan': kegiatanTanahPekarangan,
         'kegiatanIndustriRt': kegiatanIndustriRt,
+        'kegiatanIndustriRumahTangga': kegiatanIndustriRumahTangga,
         'kegiatanKesling': kegiatanKesling,
+        'kegiatanKesehatanLingkungan': kegiatanKesehatanLingkungan,
         'keterangan': keterangan,
       };
 
-  factory RekapKegiatanWargaBerjenjangItem.fromJson(Map<String, dynamic> json) =>
+  // ============================================================
+  // FROM JSON — HYBRID: camelCase ATAU snake_case
+  // ============================================================
+  factory RekapKegiatanWargaBerjenjangItem.fromJson(
+    Map<String, dynamic> json,
+  ) =>
       RekapKegiatanWargaBerjenjangItem(
-        id: json['id'] is int ? json['id'] : int.tryParse(json['id'].toString()) ?? 0,
-        level: json['level'] ?? 'rt',
-        tahun: json['tahun'] ?? '2026',
-        kabupaten: json['kabupaten'] ?? 'Tasikmalaya',
-        provinsi: json['provinsi'] ?? 'Jawa Barat',
-        kecamatan: json['kecamatan'] ?? 'Singaparna',
-        desa: json['desa'] ?? 'Singaparna',
-        dusun: json['dusun'] ?? 'Cikunir',
-        rw: json['rw'] ?? '05',
-        rt: json['rt'] ?? '01',
-        dasaWisma: json['dasaWisma'] ?? 'Mawar 01',
-        namaDasawisma: json['namaDasawisma'] ?? '',
-        nomorRt: json['nomorRt'] ?? '',
-        nomorRw: json['nomorRw'] ?? '',
-        namaDusun: json['namaDusun'] ?? '',
-        namaDesa: json['namaDesa'] ?? '',
-        jumlahDusun: json['jumlahDusun'] ?? 0,
-        jumlahRw: json['jumlahRw'] ?? 0,
-        jumlahRt: json['jumlahRt'] ?? 0,
-        jumlahDasawisma: json['jumlahDasawisma'] ?? 0,
-        jumlahKrt: json['jumlahKrt'] ?? 0,
-        jumlahKk: json['jumlahKk'] ?? 0,
-        totalL: json['totalL'] ?? 0,
-        totalP: json['totalP'] ?? 0,
-        balitaL: json['balitaL'] ?? 0,
-        balitaP: json['balitaP'] ?? 0,
-        pus: json['pus'] ?? 0,
-        wus: json['wus'] ?? 0,
-        ibuHamil: json['ibuHamil'] ?? 0,
-        ibuMenyusui: json['ibuMenyusui'] ?? 0,
-        lansia: json['lansia'] ?? 0,
-        butaL: json['butaL'] ?? 0,
-        butaP: json['butaP'] ?? 0,
-        berkebutuhanKhusus: json['berkebutuhanKhusus'] ?? 0,
-        rumahSehat: json['rumahSehat'] ?? 0,
-        rumahTidakSehat: json['rumahTidakSehat'] ?? 0,
-        tempatSampah: json['tempatSampah'] ?? 0,
-        spal: json['spal'] ?? 0,
-        jambanMck: json['jambanMck'] ?? 0,
-        airPdam: json['airPdam'] ?? 0,
-        airSumur: json['airSumur'] ?? 0,
-        airSungai: json['airSungai'] ?? 0,
-        airDll: json['airDll'] ?? 0,
-        makananBeras: json['makananBeras'] ?? 0,
-        makananNonBeras: json['makananNonBeras'] ?? 0,
-        kegiatanUp2k: json['kegiatanUp2k'] ?? 0,
-        kegiatanPekarangan: json['kegiatanPekarangan'] ?? 0,
-        kegiatanIndustriRt: json['kegiatanIndustriRt'] ?? 0,
-        kegiatanKesling: json['kegiatanKesling'] ?? 0,
-        keterangan: json['keterangan'] ?? '',
+        id: _p(json['id']),
+        wilayahId: json['wilayah_id'] != null ? _p(json['wilayah_id']) : null,
+        level: json['level']?.toString() ?? 'rt',
+        tahun: json['tahun']?.toString() ?? '2026',
+        kabupaten: json['kabupaten']?.toString() ?? 'Tasikmalaya',
+        provinsi: json['provinsi']?.toString() ?? 'Jawa Barat',
+        kecamatan: json['kecamatan']?.toString() ?? '',
+        namaKecamatan: (json['namaKecamatan'] ?? json['nama_kecamatan'])?.toString() ?? '',
+        desa: json['desa']?.toString() ?? '',
+        namaDesa: (json['namaDesa'] ?? json['nama_desa'])?.toString() ?? '',
+        dusun: json['dusun']?.toString() ?? '',
+        namaDusun: (json['namaDusun'] ?? json['nama_dusun'])?.toString() ?? '',
+        rw: json['rw']?.toString() ?? '',
+        rt: json['rt']?.toString() ?? '',
+        dasaWisma: (json['dasaWisma'] ?? json['dasa_wisma'])?.toString() ?? '',
+        namaDasawisma: (json['namaDasawisma'] ?? json['nama_dasawisma'])?.toString() ?? '',
+        nomorRt: (json['nomorRt'] ?? json['nomor_rt'] ?? json['rt'])?.toString() ?? '',
+        nomorRw: (json['nomorRw'] ?? json['nomor_rw'] ?? json['rw'])?.toString() ?? '',
+        jumlahDusun: _p(json['jumlahDusun'] ?? json['jumlah_dusun']),
+        jumlahRw: _p(json['jumlahRw'] ?? json['jumlah_rw']),
+        jumlahRt: _p(json['jumlahRt'] ?? json['jumlah_rt']),
+        jumlahDasawisma: _p(json['jumlahDasawisma'] ?? json['jumlah_dasa_wisma']),
+        jumlahKrt: _p(json['jumlahKrt'] ?? json['jumlah_krt']),
+        jumlahKk: _p(json['jumlahKk'] ?? json['jumlah_kk']),
+        totalL: _p(json['totalL'] ?? json['total_l']),
+        totalP: _p(json['totalP'] ?? json['total_p']),
+        balitaL: _p(json['balitaL'] ?? json['balita_l']),
+        balitaP: _p(json['balitaP'] ?? json['balita_p']),
+        pus: _p(json['pus']),
+        wus: _p(json['wus']),
+        ibuHamil: _p(json['ibuHamil'] ?? json['ibu_hamil']),
+        ibuMenyusui: _p(json['ibuMenyusui'] ?? json['ibu_menyusui']),
+        lansia: _p(json['lansia']),
+        butaL: _p(json['butaL'] ?? json['buta_l']),
+        butaP: _p(json['butaP'] ?? json['buta_p']),
+        berkebutuhanKhusus: _p(json['berkebutuhanKhusus'] ?? json['berkebutuhan_khusus']),
+        rumahSehat: _p(json['rumahSehat'] ?? json['rumah_sehat']),
+        rumahTidakSehat: _p(json['rumahTidakSehat'] ?? json['rumah_tidak_sehat'] ?? json['rumah_kurang_sehat']),
+        rumahKurangSehat: _p(json['rumahKurangSehat'] ?? json['rumah_kurang_sehat'] ?? json['rumah_tidak_sehat']),
+        tempatSampah: _p(json['tempatSampah'] ?? json['tempat_sampah'] ?? json['memiliki_tempat_sampah']),
+        memilikiTempatSampah: _p(json['memilikiTempatSampah'] ?? json['memiliki_tempat_sampah'] ?? json['tempat_sampah']),
+        spal: _p(json['spal'] ?? json['memiliki_spal']),
+        memilikiSpal: _p(json['memilikiSpal'] ?? json['memiliki_spal'] ?? json['spal']),
+        memilikiStikerP4k: _p(json['memilikiStikerP4k'] ?? json['memiliki_stiker_p4k']),
+        jambanMck: _p(json['jambanMck'] ?? json['jamban_mck'] ?? json['jumlah_jamban_keluarga']),
+        jumlahJambanKeluarga: _p(json['jumlahJambanKeluarga'] ?? json['jumlah_jamban_keluarga'] ?? json['jamban_mck']),
+        airPdam: _p(json['airPdam'] ?? json['air_pdam']),
+        airSumur: _p(json['airSumur'] ?? json['air_sumur']),
+        airSungai: _p(json['airSungai'] ?? json['air_sungai']),
+        airDll: _p(json['airDll'] ?? json['air_dll']),
+        makananBeras: _p(json['makananBeras'] ?? json['makanan_beras'] ?? json['makanan_pokok_beras']),
+        makananPokokBeras: _p(json['makananPokokBeras'] ?? json['makanan_pokok_beras'] ?? json['makanan_beras']),
+        makananNonBeras: _p(json['makananNonBeras'] ?? json['makanan_non_beras'] ?? json['makanan_pokok_non_beras']),
+        makananPokokNonBeras: _p(json['makananPokokNonBeras'] ?? json['makanan_pokok_non_beras'] ?? json['makanan_non_beras']),
+        kegiatanUp2k: _p(json['kegiatanUp2k'] ?? json['kegiatan_up2k']),
+        kegiatanPekarangan: _p(json['kegiatanPekarangan'] ?? json['kegiatan_pekarangan'] ?? json['kegiatan_tanah_pekarangan']),
+        kegiatanTanahPekarangan: _p(json['kegiatanTanahPekarangan'] ?? json['kegiatan_tanah_pekarangan'] ?? json['kegiatan_pekarangan']),
+        kegiatanIndustriRt: _p(json['kegiatanIndustriRt'] ?? json['kegiatan_industri_rt'] ?? json['kegiatan_industri_rumah_tangga']),
+        kegiatanIndustriRumahTangga: _p(json['kegiatanIndustriRumahTangga'] ?? json['kegiatan_industri_rumah_tangga'] ?? json['kegiatan_industri_rt']),
+        kegiatanKesling: _p(json['kegiatanKesling'] ?? json['kegiatan_kesling'] ?? json['kegiatan_kesehatan_lingkungan']),
+        kegiatanKesehatanLingkungan: _p(json['kegiatanKesehatanLingkungan'] ?? json['kegiatan_kesehatan_lingkungan'] ?? json['kegiatan_kesling']),
+        keterangan: json['keterangan']?.toString() ?? '',
       );
 
-  RekapKegiatanWargaBerjenjangItem copyWith({
-    int? id,
-    String? level,
-    String? tahun,
-    String? kabupaten,
-    String? provinsi,
-    String? kecamatan,
-    String? desa,
-    String? dusun,
-    String? rw,
-    String? rt,
-    String? dasaWisma,
-    String? namaDasawisma,
-    String? nomorRt,
-    String? nomorRw,
-    String? namaDusun,
-    String? namaDesa,
-    int? jumlahDusun,
-    int? jumlahRw,
-    int? jumlahRt,
-    int? jumlahDasawisma,
-    int? jumlahKrt,
-    int? jumlahKk,
-    int? totalL,
-    int? totalP,
-    int? balitaL,
-    int? balitaP,
-    int? pus,
-    int? wus,
-    int? ibuHamil,
-    int? ibuMenyusui,
-    int? lansia,
-    int? butaL,
-    int? butaP,
-    int? berkebutuhanKhusus,
-    int? rumahSehat,
-    int? rumahTidakSehat,
-    int? tempatSampah,
-    int? spal,
-    int? jambanMck,
-    int? airPdam,
-    int? airSumur,
-    int? airSungai,
-    int? airDll,
-    int? makananBeras,
-    int? makananNonBeras,
-    int? kegiatanUp2k,
-    int? kegiatanPekarangan,
-    int? kegiatanIndustriRt,
-    int? kegiatanKesling,
-    String? keterangan,
-  }) {
-    return RekapKegiatanWargaBerjenjangItem(
-      id: id ?? this.id,
-      level: level ?? this.level,
-      tahun: tahun ?? this.tahun,
-      kabupaten: kabupaten ?? this.kabupaten,
-      provinsi: provinsi ?? this.provinsi,
-      kecamatan: kecamatan ?? this.kecamatan,
-      desa: desa ?? this.desa,
-      dusun: dusun ?? this.dusun,
-      rw: rw ?? this.rw,
-      rt: rt ?? this.rt,
-      dasaWisma: dasaWisma ?? this.dasaWisma,
-      namaDasawisma: namaDasawisma ?? this.namaDasawisma,
-      nomorRt: nomorRt ?? this.nomorRt,
-      nomorRw: nomorRw ?? this.nomorRw,
-      namaDusun: namaDusun ?? this.namaDusun,
-      namaDesa: namaDesa ?? this.namaDesa,
-      jumlahDusun: jumlahDusun ?? this.jumlahDusun,
-      jumlahRw: jumlahRw ?? this.jumlahRw,
-      jumlahRt: jumlahRt ?? this.jumlahRt,
-      jumlahDasawisma: jumlahDasawisma ?? this.jumlahDasawisma,
-      jumlahKrt: jumlahKrt ?? this.jumlahKrt,
-      jumlahKk: jumlahKk ?? this.jumlahKk,
-      totalL: totalL ?? this.totalL,
-      totalP: totalP ?? this.totalP,
-      balitaL: balitaL ?? this.balitaL,
-      balitaP: balitaP ?? this.balitaP,
-      pus: pus ?? this.pus,
-      wus: wus ?? this.wus,
-      ibuHamil: ibuHamil ?? this.ibuHamil,
-      ibuMenyusui: ibuMenyusui ?? this.ibuMenyusui,
-      lansia: lansia ?? this.lansia,
-      butaL: butaL ?? this.butaL,
-      butaP: butaP ?? this.butaP,
-      berkebutuhanKhusus: berkebutuhanKhusus ?? this.berkebutuhanKhusus,
-      rumahSehat: rumahSehat ?? this.rumahSehat,
-      rumahTidakSehat: rumahTidakSehat ?? this.rumahTidakSehat,
-      tempatSampah: tempatSampah ?? this.tempatSampah,
-      spal: spal ?? this.spal,
-      jambanMck: jambanMck ?? this.jambanMck,
-      airPdam: airPdam ?? this.airPdam,
-      airSumur: airSumur ?? this.airSumur,
-      airSungai: airSungai ?? this.airSungai,
-      airDll: airDll ?? this.airDll,
-      makananBeras: makananBeras ?? this.makananBeras,
-      makananNonBeras: makananNonBeras ?? this.makananNonBeras,
-      kegiatanUp2k: kegiatanUp2k ?? this.kegiatanUp2k,
-      kegiatanPekarangan: kegiatanPekarangan ?? this.kegiatanPekarangan,
-      kegiatanIndustriRt: kegiatanIndustriRt ?? this.kegiatanIndustriRt,
-      kegiatanKesling: kegiatanKesling ?? this.kegiatanKesling,
-      keterangan: keterangan ?? this.keterangan,
-    );
+  static int _p(dynamic v) {
+    if (v == null) return 0;
+    if (v is int) return v;
+    if (v is double) return v.toInt();
+    if (v is String) return int.tryParse(v) ?? 0;
+    return 0;
   }
+
+  // ============================================================
+  // COPY WITH
+  // ============================================================
+  RekapKegiatanWargaBerjenjangItem copyWith({
+    int? id, int? wilayahId, String? level, String? tahun,
+    String? kabupaten, String? provinsi,
+    String? kecamatan, String? namaKecamatan,
+    String? desa, String? namaDesa, String? dusun, String? namaDusun,
+    String? rw, String? rt, String? dasaWisma,
+    String? namaDasawisma, String? nomorRt, String? nomorRw,
+    int? jumlahDusun, int? jumlahRw, int? jumlahRt, int? jumlahDasawisma,
+    int? jumlahKrt, int? jumlahKk, int? totalL, int? totalP,
+    int? balitaL, int? balitaP, int? pus, int? wus,
+    int? ibuHamil, int? ibuMenyusui, int? lansia,
+    int? butaL, int? butaP, int? berkebutuhanKhusus,
+    int? rumahSehat, int? rumahTidakSehat, int? rumahKurangSehat,
+    int? tempatSampah, int? memilikiTempatSampah,
+    int? spal, int? memilikiSpal, int? memilikiStikerP4k,
+    int? jambanMck, int? jumlahJambanKeluarga,
+    int? airPdam, int? airSumur, int? airSungai, int? airDll,
+    int? makananBeras, int? makananPokokBeras,
+    int? makananNonBeras, int? makananPokokNonBeras,
+    int? kegiatanUp2k, int? kegiatanPekarangan, int? kegiatanTanahPekarangan,
+    int? kegiatanIndustriRt, int? kegiatanIndustriRumahTangga,
+    int? kegiatanKesling, int? kegiatanKesehatanLingkungan,
+    String? keterangan,
+  }) => RekapKegiatanWargaBerjenjangItem(
+        id: id ?? this.id,
+        wilayahId: wilayahId ?? this.wilayahId,
+        level: level ?? this.level,
+        tahun: tahun ?? this.tahun,
+        kabupaten: kabupaten ?? this.kabupaten,
+        provinsi: provinsi ?? this.provinsi,
+        kecamatan: kecamatan ?? this.kecamatan,
+        namaKecamatan: namaKecamatan ?? this.namaKecamatan,
+        desa: desa ?? this.desa,
+        namaDesa: namaDesa ?? this.namaDesa,
+        dusun: dusun ?? this.dusun,
+        namaDusun: namaDusun ?? this.namaDusun,
+        rw: rw ?? this.rw,
+        rt: rt ?? this.rt,
+        dasaWisma: dasaWisma ?? this.dasaWisma,
+        namaDasawisma: namaDasawisma ?? this.namaDasawisma,
+        nomorRt: nomorRt ?? this.nomorRt,
+        nomorRw: nomorRw ?? this.nomorRw,
+        jumlahDusun: jumlahDusun ?? this.jumlahDusun,
+        jumlahRw: jumlahRw ?? this.jumlahRw,
+        jumlahRt: jumlahRt ?? this.jumlahRt,
+        jumlahDasawisma: jumlahDasawisma ?? this.jumlahDasawisma,
+        jumlahKrt: jumlahKrt ?? this.jumlahKrt,
+        jumlahKk: jumlahKk ?? this.jumlahKk,
+        totalL: totalL ?? this.totalL,
+        totalP: totalP ?? this.totalP,
+        balitaL: balitaL ?? this.balitaL,
+        balitaP: balitaP ?? this.balitaP,
+        pus: pus ?? this.pus,
+        wus: wus ?? this.wus,
+        ibuHamil: ibuHamil ?? this.ibuHamil,
+        ibuMenyusui: ibuMenyusui ?? this.ibuMenyusui,
+        lansia: lansia ?? this.lansia,
+        butaL: butaL ?? this.butaL,
+        butaP: butaP ?? this.butaP,
+        berkebutuhanKhusus: berkebutuhanKhusus ?? this.berkebutuhanKhusus,
+        rumahSehat: rumahSehat ?? this.rumahSehat,
+        rumahTidakSehat: rumahTidakSehat ?? this.rumahTidakSehat,
+        rumahKurangSehat: rumahKurangSehat ?? this.rumahKurangSehat,
+        tempatSampah: tempatSampah ?? this.tempatSampah,
+        memilikiTempatSampah: memilikiTempatSampah ?? this.memilikiTempatSampah,
+        spal: spal ?? this.spal,
+        memilikiSpal: memilikiSpal ?? this.memilikiSpal,
+        memilikiStikerP4k: memilikiStikerP4k ?? this.memilikiStikerP4k,
+        jambanMck: jambanMck ?? this.jambanMck,
+        jumlahJambanKeluarga: jumlahJambanKeluarga ?? this.jumlahJambanKeluarga,
+        airPdam: airPdam ?? this.airPdam,
+        airSumur: airSumur ?? this.airSumur,
+        airSungai: airSungai ?? this.airSungai,
+        airDll: airDll ?? this.airDll,
+        makananBeras: makananBeras ?? this.makananBeras,
+        makananPokokBeras: makananPokokBeras ?? this.makananPokokBeras,
+        makananNonBeras: makananNonBeras ?? this.makananNonBeras,
+        makananPokokNonBeras: makananPokokNonBeras ?? this.makananPokokNonBeras,
+        kegiatanUp2k: kegiatanUp2k ?? this.kegiatanUp2k,
+        kegiatanPekarangan: kegiatanPekarangan ?? this.kegiatanPekarangan,
+        kegiatanTanahPekarangan: kegiatanTanahPekarangan ?? this.kegiatanTanahPekarangan,
+        kegiatanIndustriRt: kegiatanIndustriRt ?? this.kegiatanIndustriRt,
+        kegiatanIndustriRumahTangga: kegiatanIndustriRumahTangga ?? this.kegiatanIndustriRumahTangga,
+        kegiatanKesling: kegiatanKesling ?? this.kegiatanKesling,
+        kegiatanKesehatanLingkungan: kegiatanKesehatanLingkungan ?? this.kegiatanKesehatanLingkungan,
+        keterangan: keterangan ?? this.keterangan,
+      );
 }
