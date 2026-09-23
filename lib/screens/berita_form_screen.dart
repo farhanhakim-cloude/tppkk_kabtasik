@@ -37,6 +37,8 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
   String? _fotoBase64;
   bool _isPublishing = false;
   bool _isLoadingKecamatan = true;
+  // Tandai error saat user menekan Kirim tanpa pilih kecamatan.
+  bool _showKecamatanError = false;
 
   final List<String> _kategoriList = [
     'Kegiatan PKK',
@@ -164,6 +166,165 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
     }
   }
 
+  // Bottom sheet searchable untuk 39 kecamatan — lebih ramah daripada
+  // dropdown panjang, pola sama seperti form Catatan Kegiatan.
+  void _showKecamatanSheet() {
+    HapticFeedback.selectionClick();
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final primary = const Color(0xFF0D9488);
+    final sheetBg = isDarkMode ? const Color(0xFF1E242D) : Colors.white;
+    final textColor = isDarkMode ? Colors.white : const Color(0xFF0F172A);
+    final subColor = isDarkMode ? Colors.white70 : const Color(0xFF64748B);
+    final faintColor = isDarkMode ? Colors.white54 : const Color(0xFF94A3B8);
+    final fillColor = isDarkMode
+        ? const Color(0xFF14181F)
+        : const Color(0xFFF8FAFC);
+    final handleColor = isDarkMode
+        ? Colors.white.withValues(alpha: 0.16)
+        : const Color(0xFFE2E8F0);
+    final dividerColor = isDarkMode
+        ? Colors.white.withValues(alpha: 0.06)
+        : const Color(0xFFF1F5F9);
+
+    final searchCtrl = TextEditingController();
+    List<String> filtered = List.from(_kecamatanList);
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setModal) => Container(
+          height: MediaQuery.of(context).size.height * 0.72,
+          decoration: BoxDecoration(
+            color: sheetBg,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(24),
+            ),
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 36,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: handleColor,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Pilih Kecamatan',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 16,
+                      color: textColor,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '39 kecamatan Kab. Tasikmalaya',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 12,
+                      color: subColor,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  TextField(
+                    controller: searchCtrl,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 14,
+                      color: textColor,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Cari kecamatan...',
+                      hintStyle: GoogleFonts.plusJakartaSans(
+                        fontSize: 13,
+                        color: faintColor,
+                      ),
+                      prefixIcon: Icon(
+                        Icons.search_rounded,
+                        size: 20,
+                        color: faintColor,
+                      ),
+                      filled: true,
+                      fillColor: fillColor,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    onChanged: (v) => setModal(
+                      () => filtered = _kecamatanList
+                          .where(
+                            (k) => k.toLowerCase().contains(
+                              v.toLowerCase().trim(),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Expanded(
+                    child: ListView.separated(
+                      itemCount: filtered.length,
+                      separatorBuilder: (_, _) =>
+                          Divider(height: 1, color: dividerColor),
+                      itemBuilder: (_, i) {
+                        final kec = filtered[i];
+                        final sel = kec == _selectedKecamatan;
+                        return ListTile(
+                          dense: true,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          title: Text(
+                            kec,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontWeight: sel
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
+                              fontSize: 14,
+                              color: sel ? primary : textColor,
+                            ),
+                          ),
+                          trailing: sel
+                              ? Icon(
+                                  Icons.check_circle_rounded,
+                                  color: primary,
+                                  size: 20,
+                                )
+                              : null,
+                          onTap: () {
+                            setState(() {
+                              _selectedKecamatan = kec;
+                              _showKecamatanError = false;
+                            });
+                            Navigator.pop(ctx);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   void _showImagePickerSheet() {
     HapticFeedback.lightImpact();
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -279,6 +440,7 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
 
     if (!widget.isAdminMode &&
         (_selectedKecamatan == null || _selectedKecamatan!.isEmpty)) {
+      setState(() => _showKecamatanError = true);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -482,51 +644,106 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                       _fieldLabel('Kecamatan', true, textColor),
                       const SizedBox(height: 8),
                       if (_isLoadingKecamatan)
-                        const Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(8),
-                            child: CircularProgressIndicator(strokeWidth: 2.5),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 15,
+                          ),
+                          decoration: BoxDecoration(
+                            color: cardBg,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: borderColor),
+                          ),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: primary,
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                'Memuat daftar kecamatan...',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 13,
+                                  color: subtextColor,
+                                ),
+                              ),
+                            ],
                           ),
                         )
                       else
-                        DropdownButtonFormField<String>(
-                          initialValue: _selectedKecamatan,
-                          dropdownColor: cardBg,
-                          style: GoogleFonts.plusJakartaSans(
-                            color: textColor,
-                            fontSize: 14,
-                          ),
-                          decoration: _inputDeco(
-                            'Pilih Kecamatan',
-                            null,
-                            Icon(
-                              Icons.location_on_rounded,
-                              color: primary,
-                              size: 20,
-                            ),
-                            cardBg,
-                            borderColor,
-                            subtextColor,
-                            primary,
-                          ),
-                          items: _kecamatanList.map((kec) {
-                            return DropdownMenuItem(
-                              value: kec,
-                              child: Text(
-                                kec,
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 14,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            InkWell(
+                              onTap: _showKecamatanSheet,
+                              borderRadius: BorderRadius.circular(12),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 13,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: cardBg,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: _showKecamatanError
+                                        ? const Color(0xFFEF4444)
+                                        : borderColor,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.location_on_rounded,
+                                      color: _showKecamatanError
+                                          ? const Color(0xFFEF4444)
+                                          : primary,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Text(
+                                        _selectedKecamatan ??
+                                            'Ketuk untuk pilih kecamatan',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: GoogleFonts.plusJakartaSans(
+                                          fontSize: 14,
+                                          fontWeight:
+                                              _selectedKecamatan != null
+                                              ? FontWeight.w600
+                                              : FontWeight.w500,
+                                          color: _selectedKecamatan != null
+                                              ? textColor
+                                              : subtextColor,
+                                        ),
+                                      ),
+                                    ),
+                                    Icon(
+                                      Icons.keyboard_arrow_down_rounded,
+                                      size: 20,
+                                      color: subtextColor,
+                                    ),
+                                  ],
                                 ),
                               ),
-                            );
-                          }).toList(),
-                          onChanged: (value) =>
-                              setState(() => _selectedKecamatan = value),
-                          validator: (value) {
-                            if (value == null || value.isEmpty)
-                              return 'Pilih kecamatan terlebih dahulu';
-                            return null;
-                          },
+                            ),
+                            if (_showKecamatanError) ...[
+                              const SizedBox(height: 6),
+                              Text(
+                                'Pilih kecamatan terlebih dahulu',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 12,
+                                  color: const Color(0xFFEF4444),
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       const SizedBox(height: 16),
                     ],
