@@ -1,4 +1,4 @@
-﻿// ignore_for_file: avoid_print, no_leading_underscores_for_local_identifiers
+// ignore_for_file: avoid_print, no_leading_underscores_for_local_identifiers
 // lib/services/catatan_kegiatan_service.dart
 
 import 'dart:convert';
@@ -8,7 +8,8 @@ import '../constants/app_constants.dart';
 import '../models/catatan_kegiatan.dart';
 
 class CatatanKegiatanService {
-  static final CatatanKegiatanService _instance = CatatanKegiatanService._internal();
+  static final CatatanKegiatanService _instance =
+      CatatanKegiatanService._internal();
   factory CatatanKegiatanService() => _instance;
   CatatanKegiatanService._internal();
 
@@ -16,7 +17,8 @@ class CatatanKegiatanService {
     CatatanKegiatan(
       id: 1,
       judul: 'Penyuluhan Pola Asuh Anak & Remaja (PAAR)',
-      deskripsiSingkat: 'Sosialisasi pembinaan pola asuh anak dengan cinta kasih dan pencegahan kekerasan dalam rumah tangga bagi warga Singaparna.',
+      deskripsiSingkat:
+          'Sosialisasi pembinaan pola asuh anak dengan cinta kasih dan pencegahan kekerasan dalam rumah tangga bagi warga Singaparna.',
       kategori: PokjaKategori.pokja1,
       kecamatan: 'Singaparna',
       desa: 'Cikunten',
@@ -26,7 +28,8 @@ class CatatanKegiatanService {
     CatatanKegiatan(
       id: 2,
       judul: 'Pelatihan Olahan Pangan Lokal UP2K PKK',
-      deskripsiSingkat: 'Pelatihan pembuatan keripik pisang aneka rasa dan kemasan higienis untuk peningkatan ekonomi kelompok UP2K.',
+      deskripsiSingkat:
+          'Pelatihan pembuatan keripik pisang aneka rasa dan kemasan higienis untuk peningkatan ekonomi kelompok UP2K.',
       kategori: PokjaKategori.pokja2,
       kecamatan: 'Rajapolah',
       desa: 'Manggungjaya',
@@ -35,8 +38,10 @@ class CatatanKegiatanService {
     ),
     CatatanKegiatan(
       id: 3,
-      judul: 'Gerakan Menanam Halaman Asri Teratur Indah dan Nyaman (HATINYA PKK)',
-      deskripsiSingkat: 'Penanaman bibit cabai, sayuran hidroponik, dan tanaman obat keluarga (TOGA) di pekarangan warga.',
+      judul:
+          'Gerakan Menanam Halaman Asri Teratur Indah dan Nyaman (HATINYA PKK)',
+      deskripsiSingkat:
+          'Penanaman bibit cabai, sayuran hidroponik, dan tanaman obat keluarga (TOGA) di pekarangan warga.',
       kategori: PokjaKategori.pokja3,
       kecamatan: 'Cisayong',
       desa: 'Nusawangi',
@@ -46,7 +51,8 @@ class CatatanKegiatanService {
     CatatanKegiatan(
       id: 4,
       judul: 'Penimbangan Balita & Pemeriksaan Ibu Hamil di Posyandu Melati',
-      deskripsiSingkat: 'Pelaksanaan posyandu rutin balita gizi terpantau, pemberian vitamin A, dan penyuluhan sanitasi jamban sehat.',
+      deskripsiSingkat:
+          'Pelaksanaan posyandu rutin balita gizi terpantau, pemberian vitamin A, dan penyuluhan sanitasi jamban sehat.',
       kategori: PokjaKategori.pokja4,
       kecamatan: 'Manonjaya',
       desa: 'Pasirbatang',
@@ -66,6 +72,7 @@ class CatatanKegiatanService {
   // ============================================================
   // âœ… KONVERSI POKJA KE KODE â€” pakai getter dari model
   // ============================================================
+  // ignore: unused_element
   String _kodePokja(PokjaKategori kategori) {
     // Pakai getter `kategoriPokja` dari extension â€” otomatis handle 7 value
     return kategori.kategoriPokja;
@@ -94,7 +101,8 @@ class CatatanKegiatanService {
 
       PokjaKategori _parseKategoriDynamic(dynamic v) {
         if (v is int) {
-          if (v >= 0 && v < PokjaKategori.values.length) return PokjaKategori.values[v];
+          if (v >= 0 && v < PokjaKategori.values.length)
+            return PokjaKategori.values[v];
           return PokjaKategori.pokja1;
         }
         return CatatanKegiatan.parseKategori(v);
@@ -128,16 +136,23 @@ class CatatanKegiatanService {
         final restored = CatatanKegiatan(
           id: m['id'] ?? 0,
           judul: m['judul']?.toString() ?? '',
-          deskripsiSingkat: m['cerita_singkat']?.toString() ?? m['deskripsi']?.toString() ?? '',
+          deskripsiSingkat:
+              m['cerita_singkat']?.toString() ??
+              m['deskripsi']?.toString() ??
+              '',
           kategori: _parseKategoriDynamic(m['kategori'] ?? m['kategori_pokja']),
           dataAngka: _decodeDataAngka(m['data_angka']),
           kecamatan: m['kecamatan']?.toString() ?? '',
           desa: m['desa']?.toString() ?? m['desa_kelurahan']?.toString(),
           fotoPath: m['foto_path']?.toString() ?? m['foto']?.toString(),
-          tanggal: DateTime.tryParse(m['tanggal']?.toString() ?? '') ?? DateTime.now(),
+          tanggal:
+              DateTime.tryParse(m['tanggal']?.toString() ?? '') ??
+              DateTime.now(),
           status: StatusKegiatan.terkirim,
         );
-        final exists = _data.any((d) => d.id == restored.id && d.judul == restored.judul);
+        final exists = _data.any(
+          (d) => d.id == restored.id && d.judul == restored.judul,
+        );
         if (!exists) _data.add(restored);
       }
     } catch (_) {}
@@ -152,8 +167,11 @@ class CatatanKegiatanService {
     if (rawData is Map) {
       final nested = rawData['data'];
       if (nested is List) return nested;
-      if (nested is Map && nested['data'] is List) return nested['data'] as List;
-      if (nested is Map && nested['data'] is Map && (nested['data'] as Map)['data'] is List) {
+      if (nested is Map && nested['data'] is List)
+        return nested['data'] as List;
+      if (nested is Map &&
+          nested['data'] is Map &&
+          (nested['data'] as Map)['data'] is List) {
         return (nested['data'] as Map)['data'] as List;
       }
     }
@@ -163,21 +181,28 @@ class CatatanKegiatanService {
   // ============================================================
   // GET ALL LAPORAN
   // ============================================================
-  Future<List<CatatanKegiatan>> getAll({String? query, PokjaKategori? kategori}) async {
+  Future<List<CatatanKegiatan>> getAll({
+    String? query,
+    PokjaKategori? kategori,
+  }) async {
     await _loadLocal();
 
     List<CatatanKegiatan> apiList = [];
     try {
       final token = await _getToken();
       if (token != null && token.isNotEmpty) {
-        final response = await http.get(
-          Uri.parse('${AppConstants.baseUrl}${AppConstants.laporanKegiatan}'),
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-            'Accept': 'application/json',
-          },
-        ).timeout(const Duration(seconds: 10));
+        final response = await http
+            .get(
+              Uri.parse(
+                '${AppConstants.baseUrl}${AppConstants.laporanKegiatan}',
+              ),
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer $token',
+                'Accept': 'application/json',
+              },
+            )
+            .timeout(const Duration(seconds: 10));
 
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);
@@ -185,7 +210,9 @@ class CatatanKegiatanService {
           apiList = raw.map((item) => CatatanKegiatan.fromJson(item)).toList();
           print('ðŸ“¥ Loaded ${apiList.length} laporan dari API');
         } else {
-          print('âš ï¸ API laporan status ${response.statusCode}: ${response.body}');
+          print(
+            'âš ï¸ API laporan status ${response.statusCode}: ${response.body}',
+          );
         }
       }
     } catch (e) {
@@ -198,7 +225,9 @@ class CatatanKegiatanService {
     } else {
       final apiIds = apiList.map((e) => e.id).toSet();
       final apiJuduls = apiList.map((e) => e.judul).toSet();
-      final localOnly = _data.where((d) => !apiIds.contains(d.id) && !apiJuduls.contains(d.judul)).toList();
+      final localOnly = _data
+          .where((d) => !apiIds.contains(d.id) && !apiJuduls.contains(d.judul))
+          .toList();
       list = [...apiList, ...localOnly];
     }
 
@@ -207,10 +236,12 @@ class CatatanKegiatanService {
     }
     if (query != null && query.isNotEmpty) {
       list = list
-          .where((c) =>
-              c.judul.toLowerCase().contains(query.toLowerCase()) ||
-              c.kecamatan.toLowerCase().contains(query.toLowerCase()) ||
-              c.deskripsiSingkat.toLowerCase().contains(query.toLowerCase()))
+          .where(
+            (c) =>
+                c.judul.toLowerCase().contains(query.toLowerCase()) ||
+                c.kecamatan.toLowerCase().contains(query.toLowerCase()) ||
+                c.deskripsiSingkat.toLowerCase().contains(query.toLowerCase()),
+          )
           .toList();
     }
     list.sort((a, b) => b.tanggal.compareTo(a.tanggal));
@@ -256,7 +287,10 @@ class CatatanKegiatanService {
       final newId = _data.isEmpty
           ? 1
           : _data.map((c) => c.id).reduce((a, b) => a > b ? a : b) + 1;
-      _data.insert(0, catatan.copyWith(id: catatan.id == 0 ? newId : catatan.id));
+      _data.insert(
+        0,
+        catatan.copyWith(id: catatan.id == 0 ? newId : catatan.id),
+      );
     }
     await _saveLocal();
 
@@ -264,7 +298,9 @@ class CatatanKegiatanService {
     print('ðŸ” TOKEN SAAT SUBMIT: "$token"');
 
     if (token == null || token.isEmpty) {
-      print('âš ï¸ Token kosong â€” disimpan lokal saja, anggap sukses offline');
+      print(
+        'âš ï¸ Token kosong â€” disimpan lokal saja, anggap sukses offline',
+      );
       return;
     }
 
@@ -322,7 +358,9 @@ class CatatanKegiatanService {
     }
 
     try {
-      final streamedResponse = await request.send().timeout(const Duration(seconds: 15));
+      final streamedResponse = await request.send().timeout(
+        const Duration(seconds: 15),
+      );
       final response = await http.Response.fromStream(streamedResponse);
 
       print('ðŸ“¡ Response status: ${response.statusCode}');
@@ -333,7 +371,8 @@ class CatatanKegiatanService {
         return;
       }
 
-      String pesan = 'Gagal mengirim ke server (${response.statusCode}), tapi data tetap tersimpan lokal';
+      String pesan =
+          'Gagal mengirim ke server (${response.statusCode}), tapi data tetap tersimpan lokal';
       try {
         final body = jsonDecode(response.body);
         if (body['message'] != null) {
@@ -357,7 +396,8 @@ class CatatanKegiatanService {
       print('âš ï¸ $pesan â€” data lokal tetap disimpan, tidak throw');
       return;
     } catch (e) {
-      if (e.toString().contains('Exception:') && e.toString().contains('422')) rethrow;
+      if (e.toString().contains('Exception:') && e.toString().contains('422'))
+        rethrow;
       print('âš ï¸ Error kirim catatan kegiatan (diabaikan, lokal tetap): $e');
       return;
     }

@@ -10,7 +10,8 @@ class GaleriAgendaScreen extends StatefulWidget {
   State<GaleriAgendaScreen> createState() => _GaleriAgendaScreenState();
 }
 
-class _GaleriAgendaScreenState extends State<GaleriAgendaScreen> with SingleTickerProviderStateMixin {
+class _GaleriAgendaScreenState extends State<GaleriAgendaScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final ApiService _apiService = ApiService();
 
@@ -52,12 +53,16 @@ class _GaleriAgendaScreenState extends State<GaleriAgendaScreen> with SingleTick
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
         backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
+        foregroundColor: const Color(0xFF0F172A),
         elevation: 0,
         surfaceTintColor: Colors.transparent,
         automaticallyImplyLeading: false,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: Colors.black87),
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 20,
+            color: Color(0xFF0F172A),
+          ),
           onPressed: () {
             HapticFeedback.lightImpact();
             Navigator.pop(context);
@@ -65,7 +70,11 @@ class _GaleriAgendaScreenState extends State<GaleriAgendaScreen> with SingleTick
         ),
         title: Text(
           'Galeri & Agenda',
-          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 17, color: Colors.black87),
+          style: GoogleFonts.plusJakartaSans(
+            fontWeight: FontWeight.w700,
+            fontSize: 17,
+            color: const Color(0xFF0F172A),
+          ),
         ),
         centerTitle: true,
         bottom: PreferredSize(
@@ -82,14 +91,24 @@ class _GaleriAgendaScreenState extends State<GaleriAgendaScreen> with SingleTick
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(28),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 4, offset: const Offset(0, 2)),
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
                 ],
               ),
               indicatorSize: TabBarIndicatorSize.tab,
               labelColor: primary,
-              unselectedLabelColor: Colors.grey[600],
-              labelStyle: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13),
-              unselectedLabelStyle: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w500, fontSize: 13),
+              unselectedLabelColor: const Color(0xFF64748B),
+              labelStyle: GoogleFonts.plusJakartaSans(
+                fontWeight: FontWeight.w700,
+                fontSize: 13,
+              ),
+              unselectedLabelStyle: GoogleFonts.plusJakartaSans(
+                fontWeight: FontWeight.w500,
+                fontSize: 13,
+              ),
               dividerColor: Colors.transparent,
               padding: const EdgeInsets.all(4),
               tabs: const [
@@ -113,7 +132,8 @@ class _GaleriAgendaScreenState extends State<GaleriAgendaScreen> with SingleTick
               if (snapshot.hasError) {
                 return _ErrorState(
                   message: 'Gagal memuat galeri.\n${snapshot.error}',
-                  onRetry: () => setState(() => _galeriFuture = _apiService.getGaleri()),
+                  onRetry: () =>
+                      setState(() => _galeriFuture = _apiService.getGaleri()),
                 );
               }
               final items = snapshot.data ?? [];
@@ -133,8 +153,16 @@ class _GaleriAgendaScreenState extends State<GaleriAgendaScreen> with SingleTick
                   final item = items[index] as Map;
                   // FIX: sesuaikan nama key kalau ternyata beda dari dugaan
                   final judul = _pickString(item, ['judul', 'nama', 'title']);
-                  final fotoUrl = _pickString(item, ['foto_url', 'gambar', 'image_url'], fallback: '');
-                  final tanggal = _pickString(item, ['created_at_formatted', 'tanggal', 'created_at']);
+                  final fotoUrl = _pickString(item, [
+                    'foto_url',
+                    'gambar',
+                    'image_url',
+                  ], fallback: '');
+                  final tanggal = _pickString(item, [
+                    'created_at_formatted',
+                    'tanggal',
+                    'created_at',
+                  ]);
 
                   return _FadeIn(
                     delay: Duration(milliseconds: 100 * index),
@@ -143,7 +171,11 @@ class _GaleriAgendaScreenState extends State<GaleriAgendaScreen> with SingleTick
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
-                          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4)),
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.04),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
                         ],
                       ),
                       child: Column(
@@ -151,26 +183,54 @@ class _GaleriAgendaScreenState extends State<GaleriAgendaScreen> with SingleTick
                         children: [
                           Expanded(
                             child: ClipRRect(
-                              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                              borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(20),
+                              ),
                               child: fotoUrl.isNotEmpty
                                   ? Image.network(
                                       fotoUrl,
                                       fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stackTrace) => Container(
-                                        color: primary.withValues(alpha: 0.05),
-                                        child: Icon(Icons.image_not_supported_outlined, size: 40, color: primary.withValues(alpha: 0.3)),
-                                      ),
-                                      loadingBuilder: (context, child, progress) {
-                                        if (progress == null) return child;
-                                        return Container(
-                                          color: primary.withValues(alpha: 0.05),
-                                          child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                                        );
-                                      },
+                                      errorBuilder:
+                                          (
+                                            context,
+                                            error,
+                                            stackTrace,
+                                          ) => Container(
+                                            color: primary.withValues(
+                                              alpha: 0.05,
+                                            ),
+                                            child: Icon(
+                                              Icons
+                                                  .image_not_supported_outlined,
+                                              size: 40,
+                                              color: primary.withValues(
+                                                alpha: 0.3,
+                                              ),
+                                            ),
+                                          ),
+                                      loadingBuilder:
+                                          (context, child, progress) {
+                                            if (progress == null) return child;
+                                            return Container(
+                                              color: primary.withValues(
+                                                alpha: 0.05,
+                                              ),
+                                              child: const Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                      strokeWidth: 2,
+                                                    ),
+                                              ),
+                                            );
+                                          },
                                     )
                                   : Container(
                                       color: primary.withValues(alpha: 0.05),
-                                      child: Icon(Icons.image_outlined, size: 40, color: primary.withValues(alpha: 0.3)),
+                                      child: Icon(
+                                        Icons.image_outlined,
+                                        size: 40,
+                                        color: primary.withValues(alpha: 0.3),
+                                      ),
                                     ),
                             ),
                           ),
@@ -181,14 +241,21 @@ class _GaleriAgendaScreenState extends State<GaleriAgendaScreen> with SingleTick
                               children: [
                                 Text(
                                   judul,
-                                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13, color: const Color(0xFF1E293B)),
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 13,
+                                    color: const Color(0xFF1E293B),
+                                  ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
                                   tanggal,
-                                  style: GoogleFonts.plusJakartaSans(fontSize: 11, color: Colors.grey[500]),
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 11,
+                                    color: Colors.grey[500],
+                                  ),
                                 ),
                               ],
                             ),
@@ -212,7 +279,8 @@ class _GaleriAgendaScreenState extends State<GaleriAgendaScreen> with SingleTick
               if (snapshot.hasError) {
                 return _ErrorState(
                   message: 'Gagal memuat agenda.\n${snapshot.error}',
-                  onRetry: () => setState(() => _agendaFuture = _apiService.getAgenda()),
+                  onRetry: () =>
+                      setState(() => _agendaFuture = _apiService.getAgenda()),
                 );
               }
               final items = snapshot.data ?? [];
@@ -222,14 +290,28 @@ class _GaleriAgendaScreenState extends State<GaleriAgendaScreen> with SingleTick
               return ListView.separated(
                 padding: const EdgeInsets.all(16),
                 itemCount: items.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 14),
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 14),
                 itemBuilder: (context, index) {
                   final item = items[index] as Map;
                   // FIX: sesuaikan nama key kalau ternyata beda dari dugaan
-                  final judul = _pickString(item, ['judul', 'nama_kegiatan', 'title']);
-                  final lokasi = _pickString(item, ['lokasi', 'tempat'], fallback: '-');
-                  final waktu = _pickString(item, ['waktu', 'jam'], fallback: '-');
-                  final tanggalRaw = _pickString(item, ['tanggal', 'tanggal_mulai'], fallback: '');
+                  final judul = _pickString(item, [
+                    'judul',
+                    'nama_kegiatan',
+                    'title',
+                  ]);
+                  final lokasi = _pickString(item, [
+                    'lokasi',
+                    'tempat',
+                  ], fallback: '-');
+                  final waktu = _pickString(item, [
+                    'waktu',
+                    'jam',
+                  ], fallback: '-');
+                  final tanggalRaw = _pickString(item, [
+                    'tanggal',
+                    'tanggal_mulai',
+                  ], fallback: '');
 
                   // FIX: parsing tanggal jadi tanggal & bulan untuk kotak di kiri
                   String tgl = '-';
@@ -237,7 +319,21 @@ class _GaleriAgendaScreenState extends State<GaleriAgendaScreen> with SingleTick
                   try {
                     final date = DateTime.parse(tanggalRaw);
                     tgl = date.day.toString();
-                    const namaBulan = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
+                    const namaBulan = [
+                      '',
+                      'Jan',
+                      'Feb',
+                      'Mar',
+                      'Apr',
+                      'Mei',
+                      'Jun',
+                      'Jul',
+                      'Agu',
+                      'Sep',
+                      'Okt',
+                      'Nov',
+                      'Des',
+                    ];
                     bulan = namaBulan[date.month];
                   } catch (_) {
                     // biarkan default '-' kalau format tanggal tidak sesuai
@@ -249,9 +345,13 @@ class _GaleriAgendaScreenState extends State<GaleriAgendaScreen> with SingleTick
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(18),
-                        border: Border.all(color: Colors.grey.withValues(alpha: 0.08)),
+                        border: Border.all(color: const Color(0xFFE2E8F0)),
                         boxShadow: [
-                          BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 4)),
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.03),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
                         ],
                       ),
                       padding: const EdgeInsets.all(16),
@@ -259,16 +359,33 @@ class _GaleriAgendaScreenState extends State<GaleriAgendaScreen> with SingleTick
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 10,
+                            ),
                             decoration: BoxDecoration(
                               color: primary.withValues(alpha: 0.08),
                               borderRadius: BorderRadius.circular(14),
                             ),
                             child: Column(
                               children: [
-                                Text(tgl, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 20, color: primary)),
+                                Text(
+                                  tgl,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontWeight: FontWeight.w800,
+                                    fontSize: 20,
+                                    color: primary,
+                                  ),
+                                ),
                                 const SizedBox(height: 2),
-                                Text(bulan, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, fontSize: 12, color: primary)),
+                                Text(
+                                  bulan,
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 12,
+                                    color: primary,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -279,24 +396,48 @@ class _GaleriAgendaScreenState extends State<GaleriAgendaScreen> with SingleTick
                               children: [
                                 Text(
                                   judul,
-                                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 15, color: const Color(0xFF1E293B)),
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 15,
+                                    color: const Color(0xFF1E293B),
+                                  ),
                                 ),
                                 const SizedBox(height: 8),
                                 Row(
                                   children: [
-                                    Icon(Icons.location_on_rounded, size: 14, color: Colors.grey[400]),
+                                    const Icon(
+                                      Icons.location_on_rounded,
+                                      size: 14,
+                                      color: Color(0xFF94A3B8),
+                                    ),
                                     const SizedBox(width: 4),
                                     Expanded(
-                                      child: Text(lokasi, style: GoogleFonts.plusJakartaSans(fontSize: 12.5, color: Colors.grey[600])),
+                                      child: Text(
+                                        lokasi,
+                                        style: GoogleFonts.plusJakartaSans(
+                                          fontSize: 12.5,
+                                          color: const Color(0xFF64748B),
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 ),
                                 const SizedBox(height: 4),
                                 Row(
                                   children: [
-                                    Icon(Icons.access_time_rounded, size: 14, color: Colors.grey[400]),
+                                    const Icon(
+                                      Icons.access_time_rounded,
+                                      size: 14,
+                                      color: Color(0xFF94A3B8),
+                                    ),
                                     const SizedBox(width: 4),
-                                    Text(waktu, style: GoogleFonts.plusJakartaSans(fontSize: 12.5, color: Colors.grey[600])),
+                                    Text(
+                                      waktu,
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 12.5,
+                                        color: const Color(0xFF64748B),
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ],
@@ -324,17 +465,49 @@ class _ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline_rounded, size: 40, color: Colors.grey[400]),
-            const SizedBox(height: 12),
-            Text(message, textAlign: TextAlign.center, style: GoogleFonts.plusJakartaSans(color: Colors.grey[600], fontSize: 13)),
+            Container(
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: primary.withValues(alpha: 0.08),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(Icons.wifi_off_rounded, size: 40, color: primary),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.plusJakartaSans(
+                color: const Color(0xFF64748B),
+                fontSize: 13,
+              ),
+            ),
             const SizedBox(height: 16),
-            TextButton(onPressed: onRetry, child: const Text('Coba Lagi')),
+            ElevatedButton(
+              onPressed: onRetry,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primary,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+              ),
+              child: Text(
+                'Coba Lagi',
+                style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700),
+              ),
+            ),
           ],
         ),
       ),
@@ -349,8 +522,46 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final primary = Theme.of(context).colorScheme.primary;
     return Center(
-      child: Text(message, style: GoogleFonts.plusJakartaSans(color: Colors.grey[500], fontSize: 13)),
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: primary.withValues(alpha: 0.08),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.photo_library_outlined,
+                size: 44,
+                color: primary.withValues(alpha: 0.6),
+              ),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              'Belum Ada Data',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF0F172A),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.plusJakartaSans(
+                color: const Color(0xFF64748B),
+                fontSize: 13,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -372,19 +583,31 @@ class _FadeInState extends State<_FadeIn> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 450));
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 450),
+    );
     _opacity = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
-    _slide = Tween<Offset>(begin: const Offset(0, 0.12), end: Offset.zero)
-        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic));
-    Future.delayed(widget.delay, () { if (mounted) _ctrl.forward(); });
+    _slide = Tween<Offset>(
+      begin: const Offset(0, 0.12),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic));
+    Future.delayed(widget.delay, () {
+      if (mounted) _ctrl.forward();
+    });
   }
 
   @override
-  void dispose() { _ctrl.dispose(); super.dispose(); }
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return FadeTransition(opacity: _opacity, child: SlideTransition(position: _slide, child: widget.child));
+    return FadeTransition(
+      opacity: _opacity,
+      child: SlideTransition(position: _slide, child: widget.child),
+    );
   }
 }
-

@@ -89,11 +89,13 @@ class _BeritaScreenState extends State<BeritaScreen>
         final matchDeskripsi = (berita.deskripsi ?? berita.konten ?? '')
             .toLowerCase()
             .contains(query);
-        final matchKecamatan = _selectedKecamatan == null ||
+        final matchKecamatan =
+            _selectedKecamatan == null ||
             _selectedKecamatan == 'Semua' ||
             (berita.kecamatan ?? '').toLowerCase() ==
                 _selectedKecamatan!.toLowerCase();
-        final matchStatus = _selectedStatus == null ||
+        final matchStatus =
+            _selectedStatus == null ||
             _selectedStatus == 'Semua' ||
             (berita.status ?? '') == _selectedStatus;
         return (matchJudul || matchDeskripsi) && matchKecamatan && matchStatus;
@@ -232,7 +234,11 @@ class _BeritaScreenState extends State<BeritaScreen>
         heroTag: null,
         onPressed: _openTulisBerita,
         backgroundColor: primary,
-        icon: const Icon(Icons.edit_note_rounded, color: Colors.white, size: 22),
+        icon: const Icon(
+          Icons.edit_note_rounded,
+          color: Colors.white,
+          size: 22,
+        ),
         label: Text(
           'Tulis Berita',
           style: GoogleFonts.plusJakartaSans(
@@ -275,11 +281,6 @@ class _BeritaScreenState extends State<BeritaScreen>
               _refresh();
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.add_circle_outline_rounded),
-            tooltip: 'Tulis Berita',
-            onPressed: _openTulisBerita,
-          ),
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(56),
@@ -301,10 +302,14 @@ class _BeritaScreenState extends State<BeritaScreen>
                     : null,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
+                  borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
                 ),
                 filled: true,
-                fillColor: Colors.grey[100],
+                fillColor: Colors.white,
                 contentPadding: const EdgeInsets.symmetric(vertical: 8),
               ),
               onChanged: (_) => _filterBerita(),
@@ -315,29 +320,29 @@ class _BeritaScreenState extends State<BeritaScreen>
       body: _isLoading
           ? const _ShimmerList()
           : _error != null
-              ? _buildErrorWidget()
-              : RefreshIndicator(
-                  onRefresh: _refresh,
-                  child: _filteredBerita.isEmpty
-                      ? _buildEmptyWidget()
-                      : ListView.builder(
-                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-                          itemCount: _filteredBerita.length,
-                          itemBuilder: (context, index) {
-                            final berita = _filteredBerita[index];
-                            return FadeTransition(
-                              opacity: _fadeAnimation,
-                              child: Padding(
-                                padding: const EdgeInsets.only(bottom: 14),
-                                child: _BeritaCard(
-                                  berita: berita,
-                                  onRefresh: _refresh,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                ),
+          ? _buildErrorWidget()
+          : RefreshIndicator(
+              onRefresh: _refresh,
+              child: _filteredBerita.isEmpty
+                  ? _buildEmptyWidget()
+                  : ListView.builder(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+                      itemCount: _filteredBerita.length,
+                      itemBuilder: (context, index) {
+                        final berita = _filteredBerita[index];
+                        return FadeTransition(
+                          opacity: _fadeAnimation,
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 14),
+                            child: _BeritaCard(
+                              berita: berita,
+                              onRefresh: _refresh,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+            ),
     );
   }
 
@@ -387,13 +392,13 @@ class _BeritaScreenState extends State<BeritaScreen>
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: primary.withOpacity(0.06),
+              color: primary.withValues(alpha: 0.06),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.campaign_rounded,
               size: 48,
-              color: primary.withOpacity(0.4),
+              color: primary.withValues(alpha: 0.4),
             ),
           ),
           const SizedBox(height: 16),
@@ -406,7 +411,9 @@ class _BeritaScreenState extends State<BeritaScreen>
           ),
           const SizedBox(height: 6),
           Text(
-            _isSearching ? 'Tidak ada hasil untuk pencarian' : 'Berita terbaru akan muncul di sini',
+            _isSearching
+                ? 'Tidak ada hasil untuk pencarian'
+                : 'Berita terbaru akan muncul di sini',
             style: GoogleFonts.plusJakartaSans(
               color: Colors.grey[500],
               fontSize: 13,
@@ -453,9 +460,10 @@ class _BeritaCardState extends State<_BeritaCard>
       vsync: this,
       duration: const Duration(milliseconds: 100),
     );
-    _scale = Tween(begin: 1.0, end: 0.97).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
-    );
+    _scale = Tween(
+      begin: 1.0,
+      end: 0.97,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
   }
 
   @override
@@ -469,8 +477,10 @@ class _BeritaCardState extends State<_BeritaCard>
     final primary = Theme.of(context).colorScheme.primary;
     final berita = widget.berita;
 
-    String tanggal = berita.createdAt ?? berita.tanggal ?? 'Tanggal tidak tersedia';
-    String deskripsi = berita.deskripsi ?? berita.konten ?? 'Klik untuk membaca selengkapnya';
+    String tanggal =
+        berita.createdAt ?? berita.tanggal ?? 'Tanggal tidak tersedia';
+    String deskripsi =
+        berita.deskripsi ?? berita.konten ?? 'Klik untuk membaca selengkapnya';
     deskripsi = deskripsi.replaceAll(RegExp(r'<[^>]*>'), '');
 
     return GestureDetector(
@@ -483,10 +493,8 @@ class _BeritaCardState extends State<_BeritaCard>
       onTapCancel: () => _ctrl.reverse(),
       child: AnimatedBuilder(
         animation: _scale,
-        builder: (context, child) => Transform.scale(
-          scale: _scale.value,
-          child: child,
-        ),
+        builder: (context, child) =>
+            Transform.scale(scale: _scale.value, child: child),
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -498,7 +506,7 @@ class _BeritaCardState extends State<_BeritaCard>
                 offset: const Offset(0, 4),
               ),
             ],
-            border: Border.all(color: Colors.grey.withValues(alpha: 0.06)),
+            border: Border.all(color: const Color(0xFFE2E8F0)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -508,8 +516,9 @@ class _BeritaCardState extends State<_BeritaCard>
                 Stack(
                   children: [
                     ClipRRect(
-                      borderRadius:
-                          const BorderRadius.vertical(top: Radius.circular(17)),
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(18),
+                      ),
                       child: SizedBox(
                         height: 150,
                         width: double.infinity,
@@ -527,7 +536,9 @@ class _BeritaCardState extends State<_BeritaCard>
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: _getStatusColor(berita.status!).withOpacity(0.9),
+                            color: _getStatusColor(
+                              berita.status!,
+                            ).withValues(alpha: 0.9),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -550,8 +561,9 @@ class _BeritaCardState extends State<_BeritaCard>
                     gradient: LinearGradient(
                       colors: [primary, primary.withValues(alpha: 0.4)],
                     ),
-                    borderRadius:
-                        const BorderRadius.vertical(top: Radius.circular(18)),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(18),
+                    ),
                   ),
                 ),
               Padding(
@@ -651,7 +663,9 @@ class _BeritaCardState extends State<_BeritaCard>
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      deskripsi.length > 150 ? '${deskripsi.substring(0, 150)}...' : deskripsi,
+                      deskripsi.length > 150
+                          ? '${deskripsi.substring(0, 150)}...'
+                          : deskripsi,
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 13.5,
                         color: Colors.grey[600],
@@ -711,11 +725,11 @@ class _BeritaCardState extends State<_BeritaCard>
   String _getStatusLabel(String status) {
     switch (status) {
       case 'pending':
-        return '⏳ Menunggu';
+        return 'Menunggu';
       case 'approved':
-        return '✅ Disetujui';
+        return 'Disetujui';
       case 'rejected':
-        return '❌ Ditolak';
+        return 'Ditolak';
       default:
         return status;
     }
@@ -766,7 +780,9 @@ class _BeritaCardState extends State<_BeritaCard>
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: _getStatusColor(berita.status!).withOpacity(0.1),
+                            color: _getStatusColor(
+                              berita.status!,
+                            ).withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
@@ -797,13 +813,16 @@ class _BeritaCardState extends State<_BeritaCard>
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            berita.createdAt ?? berita.tanggal ?? 'Tanggal tidak tersedia',
+                            berita.createdAt ??
+                                berita.tanggal ??
+                                'Tanggal tidak tersedia',
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 13,
                               color: Colors.grey[500],
                             ),
                           ),
-                          if (berita.kecamatan != null && berita.kecamatan!.isNotEmpty)
+                          if (berita.kecamatan != null &&
+                              berita.kecamatan!.isNotEmpty)
                             Row(
                               children: [
                                 const SizedBox(width: 12),
@@ -824,7 +843,8 @@ class _BeritaCardState extends State<_BeritaCard>
                             ),
                         ],
                       ),
-                      if (berita.fotoUrl != null && berita.fotoUrl!.isNotEmpty) ...[
+                      if (berita.fotoUrl != null &&
+                          berita.fotoUrl!.isNotEmpty) ...[
                         const SizedBox(height: 14),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(16),
@@ -878,13 +898,13 @@ Widget _buildBeritaImage(String pathOrUrl, Color primary) {
       loadingBuilder: (context, child, loadingProgress) {
         if (loadingProgress == null) return child;
         return Container(
-          color: primary.withOpacity(0.08),
+          color: primary.withValues(alpha: 0.08),
           child: Center(
             child: CircularProgressIndicator(
               color: primary,
               value: loadingProgress.expectedTotalBytes != null
                   ? loadingProgress.cumulativeBytesLoaded /
-                      loadingProgress.expectedTotalBytes!
+                        loadingProgress.expectedTotalBytes!
                   : null,
             ),
           ),
@@ -910,7 +930,11 @@ Widget _buildFallbackImage(Color primary) {
   return Container(
     color: primary.withValues(alpha: 0.08),
     child: Center(
-      child: Icon(Icons.newspaper_rounded, color: primary.withValues(alpha: 0.6), size: 36),
+      child: Icon(
+        Icons.newspaper_rounded,
+        color: primary.withValues(alpha: 0.6),
+        size: 36,
+      ),
     ),
   );
 }
@@ -941,4 +965,3 @@ class _ShimmerList extends StatelessWidget {
     );
   }
 }
-

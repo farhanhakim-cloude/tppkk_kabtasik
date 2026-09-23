@@ -43,10 +43,7 @@ class ApiService {
     final response = await _client.post(
       Uri.parse('${AppConstants.baseUrl}login'),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'username': username,
-        'password': password,
-      }),
+      body: jsonEncode({'username': username, 'password': password}),
     );
 
     if (response.statusCode == 200) {
@@ -147,9 +144,9 @@ class ApiService {
         '${AppConstants.baseUrl}${AppConstants.dataUmumPkk}',
       ).replace(queryParameters: queryParams.isNotEmpty ? queryParams : null);
 
-      final response = await _client.get(uri).timeout(
-        const Duration(seconds: 10),
-      );
+      final response = await _client
+          .get(uri)
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -166,9 +163,11 @@ class ApiService {
   /// GET /api/data-umum-pkk/{id}
   Future<Map<String, dynamic>> getDataUmumPkkDetail(int id) async {
     try {
-      final response = await _client.get(
-        Uri.parse('${AppConstants.baseUrl}${AppConstants.dataUmumPkk}/$id'),
-      ).timeout(const Duration(seconds: 10));
+      final response = await _client
+          .get(
+            Uri.parse('${AppConstants.baseUrl}${AppConstants.dataUmumPkk}/$id'),
+          )
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -187,15 +186,17 @@ class ApiService {
     String token,
   ) async {
     try {
-      final response = await _client.post(
-        Uri.parse('${AppConstants.baseUrl}${AppConstants.dataUmumPkk}'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(payload),
-      ).timeout(const Duration(seconds: 15));
+      final response = await _client
+          .post(
+            Uri.parse('${AppConstants.baseUrl}${AppConstants.dataUmumPkk}'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+            body: jsonEncode(payload),
+          )
+          .timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 201 || response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -220,15 +221,17 @@ class ApiService {
     String token,
   ) async {
     try {
-      final response = await _client.put(
-        Uri.parse('${AppConstants.baseUrl}${AppConstants.dataUmumPkk}/$id'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(payload),
-      ).timeout(const Duration(seconds: 15));
+      final response = await _client
+          .put(
+            Uri.parse('${AppConstants.baseUrl}${AppConstants.dataUmumPkk}/$id'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+            body: jsonEncode(payload),
+          )
+          .timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -244,13 +247,15 @@ class ApiService {
   /// DELETE /api/data-umum-pkk/{id}
   Future<void> deleteDataUmumPkk(int id, String token) async {
     try {
-      final response = await _client.delete(
-        Uri.parse('${AppConstants.baseUrl}${AppConstants.dataUmumPkk}/$id'),
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-      ).timeout(const Duration(seconds: 15));
+      final response = await _client
+          .delete(
+            Uri.parse('${AppConstants.baseUrl}${AppConstants.dataUmumPkk}/$id'),
+            headers: {
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+          )
+          .timeout(const Duration(seconds: 15));
 
       if (response.statusCode != 200) {
         throw Exception('Gagal hapus: ${response.statusCode}');
@@ -281,9 +286,9 @@ class ApiService {
         '${AppConstants.baseUrl}${AppConstants.rekapKegiatanWarga}',
       ).replace(queryParameters: queryParams.isNotEmpty ? queryParams : null);
 
-      final response = await _client.get(uri).timeout(
-        const Duration(seconds: 10),
-      );
+      final response = await _client
+          .get(uri)
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -302,15 +307,19 @@ class ApiService {
     String token,
   ) async {
     try {
-      final response = await _client.post(
-        Uri.parse('${AppConstants.baseUrl}${AppConstants.rekapKegiatanWarga}'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(payload),
-      ).timeout(const Duration(seconds: 15));
+      final response = await _client
+          .post(
+            Uri.parse(
+              '${AppConstants.baseUrl}${AppConstants.rekapKegiatanWarga}',
+            ),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+            body: jsonEncode(payload),
+          )
+          .timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 201 || response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -323,21 +332,46 @@ class ApiService {
     }
   }
 
+  Future<Map<String, dynamic>> getRekapKegiatanWargaDetail(int id) async {
+    try {
+      final response = await _client
+          .get(
+            Uri.parse(
+              '${AppConstants.baseUrl}${AppConstants.rekapKegiatanWarga}/$id',
+            ),
+          )
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['data'] ?? data;
+      } else {
+        throw Exception('Gagal load detail: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Gagal load detail: $e');
+    }
+  }
+
   Future<Map<String, dynamic>> updateRekapKegiatanWarga(
     int id,
     Map<String, dynamic> payload,
     String token,
   ) async {
     try {
-      final response = await _client.put(
-        Uri.parse('${AppConstants.baseUrl}${AppConstants.rekapKegiatanWarga}/$id'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(payload),
-      ).timeout(const Duration(seconds: 15));
+      final response = await _client
+          .put(
+            Uri.parse(
+              '${AppConstants.baseUrl}${AppConstants.rekapKegiatanWarga}/$id',
+            ),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+            body: jsonEncode(payload),
+          )
+          .timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -352,13 +386,17 @@ class ApiService {
 
   Future<void> deleteRekapKegiatanWarga(int id, String token) async {
     try {
-      final response = await _client.delete(
-        Uri.parse('${AppConstants.baseUrl}${AppConstants.rekapKegiatanWarga}/$id'),
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-      ).timeout(const Duration(seconds: 15));
+      final response = await _client
+          .delete(
+            Uri.parse(
+              '${AppConstants.baseUrl}${AppConstants.rekapKegiatanWarga}/$id',
+            ),
+            headers: {
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+          )
+          .timeout(const Duration(seconds: 15));
 
       if (response.statusCode != 200) {
         throw Exception('Gagal hapus: ${response.statusCode}');
@@ -391,9 +429,9 @@ class ApiService {
         '${AppConstants.baseUrl}${AppConstants.rekapBumil}',
       ).replace(queryParameters: queryParams.isNotEmpty ? queryParams : null);
 
-      final response = await _client.get(uri).timeout(
-        const Duration(seconds: 10),
-      );
+      final response = await _client
+          .get(uri)
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -412,15 +450,17 @@ class ApiService {
     String token,
   ) async {
     try {
-      final response = await _client.post(
-        Uri.parse('${AppConstants.baseUrl}${AppConstants.rekapBumil}'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(payload),
-      ).timeout(const Duration(seconds: 15));
+      final response = await _client
+          .post(
+            Uri.parse('${AppConstants.baseUrl}${AppConstants.rekapBumil}'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+            body: jsonEncode(payload),
+          )
+          .timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 201 || response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -438,21 +478,42 @@ class ApiService {
     }
   }
 
+  Future<Map<String, dynamic>> getRekapBumilDetail(int id) async {
+    try {
+      final response = await _client
+          .get(
+            Uri.parse('${AppConstants.baseUrl}${AppConstants.rekapBumil}/$id'),
+          )
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data['data'] ?? data;
+      } else {
+        throw Exception('Gagal load detail: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Gagal load detail: $e');
+    }
+  }
+
   Future<Map<String, dynamic>> updateRekapBumil(
     int id,
     Map<String, dynamic> payload,
     String token,
   ) async {
     try {
-      final response = await _client.put(
-        Uri.parse('${AppConstants.baseUrl}${AppConstants.rekapBumil}/$id'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(payload),
-      ).timeout(const Duration(seconds: 15));
+      final response = await _client
+          .put(
+            Uri.parse('${AppConstants.baseUrl}${AppConstants.rekapBumil}/$id'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+            body: jsonEncode(payload),
+          )
+          .timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -467,13 +528,15 @@ class ApiService {
 
   Future<void> deleteRekapBumil(int id, String token) async {
     try {
-      final response = await _client.delete(
-        Uri.parse('${AppConstants.baseUrl}${AppConstants.rekapBumil}/$id'),
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-      ).timeout(const Duration(seconds: 15));
+      final response = await _client
+          .delete(
+            Uri.parse('${AppConstants.baseUrl}${AppConstants.rekapBumil}/$id'),
+            headers: {
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+          )
+          .timeout(const Duration(seconds: 15));
 
       if (response.statusCode != 200) {
         throw Exception('Gagal hapus: ${response.statusCode}');
@@ -488,9 +551,9 @@ class ApiService {
   // ============================================================
   Future<List<Berita>> getBerita() async {
     try {
-      final response = await _client.get(
-        Uri.parse('${AppConstants.baseUrl}${AppConstants.berita}'),
-      ).timeout(const Duration(seconds: 10));
+      final response = await _client
+          .get(Uri.parse('${AppConstants.baseUrl}${AppConstants.berita}'))
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -506,9 +569,9 @@ class ApiService {
 
   Future<List<Berita>> getBeritaLatest() async {
     try {
-      final response = await _client.get(
-        Uri.parse('${AppConstants.baseUrl}${AppConstants.beritaLatest}'),
-      ).timeout(const Duration(seconds: 10));
+      final response = await _client
+          .get(Uri.parse('${AppConstants.baseUrl}${AppConstants.beritaLatest}'))
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -524,9 +587,9 @@ class ApiService {
 
   Future<Berita> getBeritaDetail(String slug) async {
     try {
-      final response = await _client.get(
-        Uri.parse('${AppConstants.baseUrl}${AppConstants.berita}/$slug'),
-      ).timeout(const Duration(seconds: 10));
+      final response = await _client
+          .get(Uri.parse('${AppConstants.baseUrl}${AppConstants.berita}/$slug'))
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -574,13 +637,15 @@ class ApiService {
 
   Future<List<Berita>> getMyBerita(String token) async {
     try {
-      final response = await _client.get(
-        Uri.parse('${AppConstants.baseUrl}my-berita'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-      ).timeout(const Duration(seconds: 10));
+      final response = await _client
+          .get(
+            Uri.parse('${AppConstants.baseUrl}my-berita'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+          )
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -599,9 +664,9 @@ class ApiService {
   // ============================================================
   Future<List<dynamic>> getGaleri() async {
     try {
-      final response = await _client.get(
-        Uri.parse('${AppConstants.baseUrl}${AppConstants.galeri}'),
-      ).timeout(const Duration(seconds: 10));
+      final response = await _client
+          .get(Uri.parse('${AppConstants.baseUrl}${AppConstants.galeri}'))
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -619,9 +684,9 @@ class ApiService {
   // ============================================================
   Future<List<dynamic>> getAgenda() async {
     try {
-      final response = await _client.get(
-        Uri.parse('${AppConstants.baseUrl}${AppConstants.agenda}'),
-      ).timeout(const Duration(seconds: 10));
+      final response = await _client
+          .get(Uri.parse('${AppConstants.baseUrl}${AppConstants.agenda}'))
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -639,9 +704,11 @@ class ApiService {
   // ============================================================
   Future<List<dynamic>> getLaporanKegiatan() async {
     try {
-      final response = await _client.get(
-        Uri.parse('${AppConstants.baseUrl}${AppConstants.laporanKegiatan}'),
-      ).timeout(const Duration(seconds: 10));
+      final response = await _client
+          .get(
+            Uri.parse('${AppConstants.baseUrl}${AppConstants.laporanKegiatan}'),
+          )
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -655,16 +722,20 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> createLaporanKegiatan(
-      Map<String, dynamic> data, String token) async {
+    Map<String, dynamic> data,
+    String token,
+  ) async {
     try {
-      final response = await _client.post(
-        Uri.parse('${AppConstants.baseUrl}${AppConstants.laporanKegiatan}'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode(data),
-      ).timeout(const Duration(seconds: 15));
+      final response = await _client
+          .post(
+            Uri.parse('${AppConstants.baseUrl}${AppConstants.laporanKegiatan}'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $token',
+            },
+            body: jsonEncode(data),
+          )
+          .timeout(const Duration(seconds: 15));
 
       if (response.statusCode == 201 || response.statusCode == 200) {
         return jsonDecode(response.body);
@@ -728,8 +799,3 @@ class ApiService {
     _client.close();
   }
 }
-
-
-
-
-

@@ -3,9 +3,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/rekap_bumil_berjenjang.dart';
 import '../../services/rekap_bumil_berjenjang_service.dart';
 import '../../widgets/kecamatan_dropdown_field.dart';
+import '../../constants/app_constants.dart';
 
 class RekapBumilBerjenjangFormScreen extends StatefulWidget {
   final String level; // 'rt', 'rw', 'dusun', 'desa', 'kecamatan'
@@ -18,10 +20,12 @@ class RekapBumilBerjenjangFormScreen extends StatefulWidget {
   });
 
   @override
-  State<RekapBumilBerjenjangFormScreen> createState() => _RekapBumilBerjenjangFormScreenState();
+  State<RekapBumilBerjenjangFormScreen> createState() =>
+      _RekapBumilBerjenjangFormScreenState();
 }
 
-class _RekapBumilBerjenjangFormScreenState extends State<RekapBumilBerjenjangFormScreen> {
+class _RekapBumilBerjenjangFormScreenState
+    extends State<RekapBumilBerjenjangFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final _service = RekapBumilBerjenjangService();
 
@@ -83,31 +87,65 @@ class _RekapBumilBerjenjangFormScreenState extends State<RekapBumilBerjenjangFor
     _desaCtrl = TextEditingController(text: d?.desa ?? 'Singaparna');
     _kecCtrl = TextEditingController(text: d?.kecamatan ?? 'Singaparna');
 
-    _namaDasawismaCtrl = TextEditingController(text: d?.namaDasawisma ?? 'Mawar 01');
+    _namaDasawismaCtrl = TextEditingController(
+      text: d?.namaDasawisma ?? 'Mawar 01',
+    );
     _nomorRtCtrl = TextEditingController(text: d?.nomorRt ?? '01');
     _nomorRwCtrl = TextEditingController(text: d?.nomorRw ?? '05');
     _namaDusunCtrl = TextEditingController(text: d?.namaDusun ?? 'Cikunir');
     _namaDesaCtrl = TextEditingController(text: d?.namaDesa ?? 'Singaparna');
 
-    _jumlahDusunCtrl = TextEditingController(text: d != null ? '${d.jumlahDusun}' : '4');
-    _jumlahRwCtrl = TextEditingController(text: d != null ? '${d.jumlahRw}' : '5');
-    _jumlahRtCtrl = TextEditingController(text: d != null ? '${d.jumlahRt}' : '12');
-    _jumlahDasawismaCtrl = TextEditingController(text: d != null ? '${d.jumlahDasawisma}' : '24');
+    _jumlahDusunCtrl = TextEditingController(
+      text: d != null ? '${d.jumlahDusun}' : '4',
+    );
+    _jumlahRwCtrl = TextEditingController(
+      text: d != null ? '${d.jumlahRw}' : '5',
+    );
+    _jumlahRtCtrl = TextEditingController(
+      text: d != null ? '${d.jumlahRt}' : '12',
+    );
+    _jumlahDasawismaCtrl = TextEditingController(
+      text: d != null ? '${d.jumlahDasawisma}' : '24',
+    );
 
-    _ibuHamilCtrl = TextEditingController(text: d != null ? '${d.ibuHamil}' : '0');
-    _ibuMelahirkanCtrl = TextEditingController(text: d != null ? '${d.ibuMelahirkan}' : '0');
-    _ibuNifasCtrl = TextEditingController(text: d != null ? '${d.ibuNifas}' : '0');
-    _ibuMeninggalCtrl = TextEditingController(text: d != null ? '${d.ibuMeninggal}' : '0');
+    _ibuHamilCtrl = TextEditingController(
+      text: d != null ? '${d.ibuHamil}' : '0',
+    );
+    _ibuMelahirkanCtrl = TextEditingController(
+      text: d != null ? '${d.ibuMelahirkan}' : '0',
+    );
+    _ibuNifasCtrl = TextEditingController(
+      text: d != null ? '${d.ibuNifas}' : '0',
+    );
+    _ibuMeninggalCtrl = TextEditingController(
+      text: d != null ? '${d.ibuMeninggal}' : '0',
+    );
 
-    _bayiLahirLCtrl = TextEditingController(text: d != null ? '${d.bayiLahirL}' : '0');
-    _bayiLahirPCtrl = TextEditingController(text: d != null ? '${d.bayiLahirP}' : '0');
-    _akteAdaCtrl = TextEditingController(text: d != null ? '${d.akteAda}' : '0');
-    _akteTidakAdaCtrl = TextEditingController(text: d != null ? '${d.akteTidakAda}' : '0');
-    _bayiMeninggalLCtrl = TextEditingController(text: d != null ? '${d.bayiMeninggalL}' : '0');
-    _bayiMeninggalPCtrl = TextEditingController(text: d != null ? '${d.bayiMeninggalP}' : '0');
+    _bayiLahirLCtrl = TextEditingController(
+      text: d != null ? '${d.bayiLahirL}' : '0',
+    );
+    _bayiLahirPCtrl = TextEditingController(
+      text: d != null ? '${d.bayiLahirP}' : '0',
+    );
+    _akteAdaCtrl = TextEditingController(
+      text: d != null ? '${d.akteAda}' : '0',
+    );
+    _akteTidakAdaCtrl = TextEditingController(
+      text: d != null ? '${d.akteTidakAda}' : '0',
+    );
+    _bayiMeninggalLCtrl = TextEditingController(
+      text: d != null ? '${d.bayiMeninggalL}' : '0',
+    );
+    _bayiMeninggalPCtrl = TextEditingController(
+      text: d != null ? '${d.bayiMeninggalP}' : '0',
+    );
 
-    _balitaMeninggalLCtrl = TextEditingController(text: d != null ? '${d.balitaMeninggalL}' : '0');
-    _balitaMeninggalPCtrl = TextEditingController(text: d != null ? '${d.balitaMeninggalP}' : '0');
+    _balitaMeninggalLCtrl = TextEditingController(
+      text: d != null ? '${d.balitaMeninggalL}' : '0',
+    );
+    _balitaMeninggalPCtrl = TextEditingController(
+      text: d != null ? '${d.balitaMeninggalP}' : '0',
+    );
 
     _keteranganCtrl = TextEditingController(text: d?.keterangan ?? '');
   }
@@ -207,17 +245,39 @@ class _RekapBumilBerjenjangFormScreenState extends State<RekapBumilBerjenjangFor
       keterangan: _keteranganCtrl.text.trim(),
     );
 
-    await _service.save(item);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString(AppConstants.tokenKey) ?? '';
+      await _service.save(item, token.isNotEmpty ? token : null);
 
-    if (mounted) {
-      setState(() => _saving = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Data berhasil disimpan!', style: GoogleFonts.plusJakartaSans()),
-          backgroundColor: const Color(0xFF10B981),
-        ),
-      );
-      Navigator.pop(context, true);
+      if (mounted) {
+        setState(() => _saving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              token.isNotEmpty
+                  ? 'Data bumil berhasil disimpan ke server!'
+                  : 'Data disimpan lokal (belum login)',
+              style: GoogleFonts.plusJakartaSans(),
+            ),
+            backgroundColor: const Color(0xFF10B981),
+          ),
+        );
+        Navigator.pop(context, true);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _saving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Gagal menyimpan: $e',
+              style: GoogleFonts.plusJakartaSans(),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -238,7 +298,11 @@ class _RekapBumilBerjenjangFormScreenState extends State<RekapBumilBerjenjangFor
               shape: BoxShape.circle,
               border: Border.all(color: const Color(0xFFE2E8F0)),
             ),
-            child: const Icon(Icons.arrow_back_rounded, size: 20, color: _darkText),
+            child: const Icon(
+              Icons.arrow_back_rounded,
+              size: 20,
+              color: _darkText,
+            ),
           ),
         ),
         title: Column(
@@ -246,11 +310,18 @@ class _RekapBumilBerjenjangFormScreenState extends State<RekapBumilBerjenjangFor
           children: [
             Text(
               widget.item == null ? 'Isi Form Rekap' : 'Edit Data Form',
-              style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w800, color: _darkText),
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: _darkText,
+              ),
             ),
             Text(
               _getLevelTitle(),
-              style: GoogleFonts.plusJakartaSans(fontSize: 11, color: const Color(0xFF64748B)),
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 11,
+                color: const Color(0xFF64748B),
+              ),
             ),
           ],
         ),
@@ -268,7 +339,9 @@ class _RekapBumilBerjenjangFormScreenState extends State<RekapBumilBerjenjangFor
               children: [
                 Row(
                   children: [
-                    Expanded(child: _textInput(_bulanCtrl, 'Bulan *', 'September')),
+                    Expanded(
+                      child: _textInput(_bulanCtrl, 'Bulan *', 'September'),
+                    ),
                     const SizedBox(width: 10),
                     Expanded(child: _textInput(_tahunCtrl, 'Tahun *', '2026')),
                   ],
@@ -287,9 +360,21 @@ class _RekapBumilBerjenjangFormScreenState extends State<RekapBumilBerjenjangFor
                 if (widget.level == 'dusun' || widget.level == 'desa') ...[
                   Row(
                     children: [
-                      Expanded(child: _textInput(_dusunCtrl, 'Dusun / Lingkungan', 'Cikunir')),
+                      Expanded(
+                        child: _textInput(
+                          _dusunCtrl,
+                          'Dusun / Lingkungan',
+                          'Cikunir',
+                        ),
+                      ),
                       const SizedBox(width: 10),
-                      Expanded(child: _textInput(_desaCtrl, 'Desa / Kelurahan', 'Singaparna')),
+                      Expanded(
+                        child: _textInput(
+                          _desaCtrl,
+                          'Desa / Kelurahan',
+                          'Singaparna',
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -306,49 +391,138 @@ class _RekapBumilBerjenjangFormScreenState extends State<RekapBumilBerjenjangFor
               color: const Color(0xFF0284C7),
               children: [
                 if (widget.level == 'rt') ...[
-                  _textInput(_namaDasawismaCtrl, 'Nama Kelompok Dasawisma * (Kolom 2)', 'Mawar 01'),
+                  _textInput(
+                    _namaDasawismaCtrl,
+                    'Nama Kelompok Dasawisma * (Kolom 2)',
+                    'Mawar 01',
+                  ),
                 ] else if (widget.level == 'rw') ...[
                   Row(
                     children: [
-                      Expanded(flex: 1, child: _textInput(_nomorRtCtrl, 'Nomor RT * (Kolom 2)', '01')),
+                      Expanded(
+                        flex: 1,
+                        child: _textInput(
+                          _nomorRtCtrl,
+                          'Nomor RT * (Kolom 2)',
+                          '01',
+                        ),
+                      ),
                       const SizedBox(width: 10),
-                      Expanded(flex: 2, child: _textInput(_namaDasawismaCtrl, 'Nama Kelompok Dasawisma * (Kolom 3)', 'Mawar 01')),
+                      Expanded(
+                        flex: 2,
+                        child: _textInput(
+                          _namaDasawismaCtrl,
+                          'Nama Kelompok Dasawisma * (Kolom 3)',
+                          'Mawar 01',
+                        ),
+                      ),
                     ],
                   ),
                 ] else if (widget.level == 'dusun') ...[
                   Row(
                     children: [
-                      Expanded(flex: 1, child: _textInput(_nomorRwCtrl, 'Nomor RW * (Kolom 2)', '05')),
+                      Expanded(
+                        flex: 1,
+                        child: _textInput(
+                          _nomorRwCtrl,
+                          'Nomor RW * (Kolom 2)',
+                          '05',
+                        ),
+                      ),
                       const SizedBox(width: 8),
-                      Expanded(flex: 1, child: _numberInput(_jumlahRtCtrl, 'Jml RT (Kolom 3)', '3')),
+                      Expanded(
+                        flex: 1,
+                        child: _numberInput(
+                          _jumlahRtCtrl,
+                          'Jml RT (Kolom 3)',
+                          '3',
+                        ),
+                      ),
                       const SizedBox(width: 8),
-                      Expanded(flex: 1, child: _numberInput(_jumlahDasawismaCtrl, 'Jml Dasa Wisma (Kolom 4)', '6')),
+                      Expanded(
+                        flex: 1,
+                        child: _numberInput(
+                          _jumlahDasawismaCtrl,
+                          'Jml Dasa Wisma (Kolom 4)',
+                          '6',
+                        ),
+                      ),
                     ],
                   ),
                 ] else if (widget.level == 'desa') ...[
-                  _textInput(_namaDusunCtrl, 'Nama Dusun/Lingkungan * (Kolom 2)', 'Cikunir'),
+                  _textInput(
+                    _namaDusunCtrl,
+                    'Nama Dusun/Lingkungan * (Kolom 2)',
+                    'Cikunir',
+                  ),
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      Expanded(child: _numberInput(_jumlahRwCtrl, 'Jml RW (Kolom 3)', '5')),
+                      Expanded(
+                        child: _numberInput(
+                          _jumlahRwCtrl,
+                          'Jml RW (Kolom 3)',
+                          '5',
+                        ),
+                      ),
                       const SizedBox(width: 8),
-                      Expanded(child: _numberInput(_jumlahRtCtrl, 'Jml RT (Kolom 4)', '18')),
+                      Expanded(
+                        child: _numberInput(
+                          _jumlahRtCtrl,
+                          'Jml RT (Kolom 4)',
+                          '18',
+                        ),
+                      ),
                       const SizedBox(width: 8),
-                      Expanded(child: _numberInput(_jumlahDasawismaCtrl, 'Jml Dasa Wisma (Kolom 5)', '36')),
+                      Expanded(
+                        child: _numberInput(
+                          _jumlahDasawismaCtrl,
+                          'Jml Dasa Wisma (Kolom 5)',
+                          '36',
+                        ),
+                      ),
                     ],
                   ),
                 ] else if (widget.level == 'kecamatan') ...[
-                  _textInput(_namaDesaCtrl, 'Nama Desa/Kelurahan * (Kolom 2)', 'Singaparna'),
+                  _textInput(
+                    _namaDesaCtrl,
+                    'Nama Desa/Kelurahan * (Kolom 2)',
+                    'Singaparna',
+                  ),
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      Expanded(child: _numberInput(_jumlahDusunCtrl, 'Jml Dusun (Kolom 3)', '4')),
+                      Expanded(
+                        child: _numberInput(
+                          _jumlahDusunCtrl,
+                          'Jml Dusun (Kolom 3)',
+                          '4',
+                        ),
+                      ),
                       const SizedBox(width: 6),
-                      Expanded(child: _numberInput(_jumlahRwCtrl, 'Jml RW (Kolom 4)', '12')),
+                      Expanded(
+                        child: _numberInput(
+                          _jumlahRwCtrl,
+                          'Jml RW (Kolom 4)',
+                          '12',
+                        ),
+                      ),
                       const SizedBox(width: 6),
-                      Expanded(child: _numberInput(_jumlahRtCtrl, 'Jml RT (Kolom 5)', '45')),
+                      Expanded(
+                        child: _numberInput(
+                          _jumlahRtCtrl,
+                          'Jml RT (Kolom 5)',
+                          '45',
+                        ),
+                      ),
                       const SizedBox(width: 6),
-                      Expanded(child: _numberInput(_jumlahDasawismaCtrl, 'Jml Dasa Wisma (Kolom 6)', '90')),
+                      Expanded(
+                        child: _numberInput(
+                          _jumlahDasawismaCtrl,
+                          'Jml Dasa Wisma (Kolom 6)',
+                          '90',
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -366,7 +540,13 @@ class _RekapBumilBerjenjangFormScreenState extends State<RekapBumilBerjenjangFor
                   children: [
                     Expanded(child: _numberInput(_ibuHamilCtrl, 'Hamil', '0')),
                     const SizedBox(width: 8),
-                    Expanded(child: _numberInput(_ibuMelahirkanCtrl, 'Melahirkan', '0')),
+                    Expanded(
+                      child: _numberInput(
+                        _ibuMelahirkanCtrl,
+                        'Melahirkan',
+                        '0',
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -374,7 +554,9 @@ class _RekapBumilBerjenjangFormScreenState extends State<RekapBumilBerjenjangFor
                   children: [
                     Expanded(child: _numberInput(_ibuNifasCtrl, 'Nifas', '0')),
                     const SizedBox(width: 8),
-                    Expanded(child: _numberInput(_ibuMeninggalCtrl, 'Meninggal', '0')),
+                    Expanded(
+                      child: _numberInput(_ibuMeninggalCtrl, 'Meninggal', '0'),
+                    ),
                   ],
                 ),
               ],
@@ -387,33 +569,86 @@ class _RekapBumilBerjenjangFormScreenState extends State<RekapBumilBerjenjangFor
               icon: Icons.child_care_rounded,
               color: const Color(0xFF10B981),
               children: [
-                Text('Kelahiran Bayi (L / P)', style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFF334155))),
+                Text(
+                  'Kelahiran Bayi (L / P)',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF334155),
+                  ),
+                ),
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    Expanded(child: _numberInput(_bayiLahirLCtrl, 'Lahir Laki (L)', '0')),
+                    Expanded(
+                      child: _numberInput(
+                        _bayiLahirLCtrl,
+                        'Lahir Laki (L)',
+                        '0',
+                      ),
+                    ),
                     const SizedBox(width: 8),
-                    Expanded(child: _numberInput(_bayiLahirPCtrl, 'Lahir Perempuan (P)', '0')),
+                    Expanded(
+                      child: _numberInput(
+                        _bayiLahirPCtrl,
+                        'Lahir Perempuan (P)',
+                        '0',
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 12),
-                Text('Akte Kelahiran (Ada / Tidak Ada)', style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFF334155))),
+                Text(
+                  'Akte Kelahiran (Ada / Tidak Ada)',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF334155),
+                  ),
+                ),
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    Expanded(child: _numberInput(_akteAdaCtrl, 'Akte Ada', '0')),
+                    Expanded(
+                      child: _numberInput(_akteAdaCtrl, 'Akte Ada', '0'),
+                    ),
                     const SizedBox(width: 8),
-                    Expanded(child: _numberInput(_akteTidakAdaCtrl, 'Akte Tidak Ada', '0')),
+                    Expanded(
+                      child: _numberInput(
+                        _akteTidakAdaCtrl,
+                        'Akte Tidak Ada',
+                        '0',
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 12),
-                Text('Kematian Bayi (L / P)', style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFF334155))),
+                Text(
+                  'Kematian Bayi (L / P)',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: const Color(0xFF334155),
+                  ),
+                ),
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    Expanded(child: _numberInput(_bayiMeninggalLCtrl, 'Bayi Meninggal (L)', '0')),
+                    Expanded(
+                      child: _numberInput(
+                        _bayiMeninggalLCtrl,
+                        'Bayi Meninggal (L)',
+                        '0',
+                      ),
+                    ),
                     const SizedBox(width: 8),
-                    Expanded(child: _numberInput(_bayiMeninggalPCtrl, 'Bayi Meninggal (P)', '0')),
+                    Expanded(
+                      child: _numberInput(
+                        _bayiMeninggalPCtrl,
+                        'Bayi Meninggal (P)',
+                        '0',
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -428,9 +663,21 @@ class _RekapBumilBerjenjangFormScreenState extends State<RekapBumilBerjenjangFor
               children: [
                 Row(
                   children: [
-                    Expanded(child: _numberInput(_balitaMeninggalLCtrl, 'Balita Meninggal (L)', '0')),
+                    Expanded(
+                      child: _numberInput(
+                        _balitaMeninggalLCtrl,
+                        'Balita Meninggal (L)',
+                        '0',
+                      ),
+                    ),
                     const SizedBox(width: 8),
-                    Expanded(child: _numberInput(_balitaMeninggalPCtrl, 'Balita Meninggal (P)', '0')),
+                    Expanded(
+                      child: _numberInput(
+                        _balitaMeninggalPCtrl,
+                        'Balita Meninggal (P)',
+                        '0',
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -447,7 +694,10 @@ class _RekapBumilBerjenjangFormScreenState extends State<RekapBumilBerjenjangFor
                   controller: _keteranganCtrl,
                   maxLines: 2,
                   style: GoogleFonts.plusJakartaSans(fontSize: 13),
-                  decoration: _inputDeco('Keterangan Tambahan', 'Catatan khusus di lapangan...'),
+                  decoration: _inputDeco(
+                    'Keterangan Tambahan',
+                    'Catatan khusus di lapangan...',
+                  ),
                 ),
               ],
             ),
@@ -458,15 +708,27 @@ class _RekapBumilBerjenjangFormScreenState extends State<RekapBumilBerjenjangFor
               height: 52,
               child: ElevatedButton.icon(
                 onPressed: _saving ? null : _submit,
-                icon: const Icon(Icons.save_rounded, color: Colors.white, size: 20),
+                icon: const Icon(
+                  Icons.save_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
                 label: Text(
-                  widget.item == null ? 'Simpan Baris Form' : 'Simpan Perubahan',
-                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 15, color: Colors.white),
+                  widget.item == null
+                      ? 'Simpan Baris Form'
+                      : 'Simpan Perubahan',
+                  style: GoogleFonts.plusJakartaSans(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 15,
+                    color: Colors.white,
+                  ),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _primary,
                   elevation: 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
               ),
             ),
@@ -489,7 +751,13 @@ class _RekapBumilBerjenjangFormScreenState extends State<RekapBumilBerjenjangFor
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: const Color(0xFFE2E8F0)),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 8, offset: const Offset(0, 2))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -498,14 +766,21 @@ class _RekapBumilBerjenjangFormScreenState extends State<RekapBumilBerjenjangFor
             children: [
               Container(
                 padding: const EdgeInsets.all(7),
-                decoration: BoxDecoration(color: color.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 child: Icon(icon, size: 18, color: color),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   title,
-                  style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.w800, color: _darkText),
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: _darkText,
+                  ),
                 ),
               ),
             ],
@@ -530,20 +805,35 @@ class _RekapBumilBerjenjangFormScreenState extends State<RekapBumilBerjenjangFor
     return TextFormField(
       controller: ctrl,
       keyboardType: TextInputType.number,
-      style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w700),
+      style: GoogleFonts.plusJakartaSans(
+        fontSize: 13,
+        fontWeight: FontWeight.w700,
+      ),
       decoration: _inputDeco(label, hint),
     );
   }
 
   InputDecoration _inputDeco(String label, String hint) => InputDecoration(
-        labelText: label,
-        labelStyle: GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFF64748B)),
-        hintText: hint,
-        hintStyle: GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFF94A3B8)),
-        filled: true,
-        fillColor: const Color(0xFFF8FAFC),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: _primary, width: 1.2)),
-      );
+    labelText: label,
+    labelStyle: GoogleFonts.plusJakartaSans(
+      fontSize: 12,
+      color: const Color(0xFF64748B),
+    ),
+    hintText: hint,
+    hintStyle: GoogleFonts.plusJakartaSans(
+      fontSize: 12,
+      color: const Color(0xFF94A3B8),
+    ),
+    filled: true,
+    fillColor: const Color(0xFFF8FAFC),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide.none,
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: _primary, width: 1.2),
+    ),
+  );
 }

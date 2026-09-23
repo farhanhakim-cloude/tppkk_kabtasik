@@ -119,28 +119,17 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
     );
 
     if (confirm == true) {
-      try {
-        await _service.autoGenerateFromRekap(_selectedLevel);
-        _reload();
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Data Umum ${_selectedLevel.toUpperCase()} berhasil disinkronkan & dihitung!',
-              ),
-              backgroundColor: const Color(0xFF10B981),
+      await _service.autoGenerateFromRekap(_selectedLevel);
+      _reload();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Data Umum ${_selectedLevel.toUpperCase()} berhasil disinkronkan & dihitung!',
             ),
-          );
-        }
-      } catch (error) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Gagal Auto-Isi: $error'),
-              backgroundColor: Colors.red.shade700,
-            ),
-          );
-        }
+            backgroundColor: const Color(0xFF10B981),
+          ),
+        );
       }
     }
   }

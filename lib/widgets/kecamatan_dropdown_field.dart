@@ -60,13 +60,24 @@ class KecamatanDropdownField extends StatelessWidget {
       ),
       filled: true,
       fillColor: const Color(0xFFF8FAFC),
-      prefixIcon: prefixIcon ??
-          Icon(Icons.location_city_rounded, size: isCompact ? 16 : 18, color: primary),
+      prefixIcon:
+          prefixIcon ??
+          Icon(
+            Icons.location_city_rounded,
+            size: isCompact ? 16 : 18,
+            color: primary,
+          ),
       contentPadding: isCompact
           ? const EdgeInsets.symmetric(horizontal: 10, vertical: 8)
           : const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none,
+      ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
         borderSide: const BorderSide(color: primary, width: 1.2),
@@ -74,9 +85,13 @@ class KecamatanDropdownField extends StatelessWidget {
     );
 
     return DropdownButtonFormField<String>(
-      value: currentVal,
+      initialValue: currentVal,
       isExpanded: true,
-      icon: Icon(Icons.arrow_drop_down_rounded, color: const Color(0xFF64748B), size: isCompact ? 18 : 22),
+      icon: Icon(
+        Icons.arrow_drop_down_rounded,
+        color: const Color(0xFF64748B),
+        size: isCompact ? 18 : 22,
+      ),
       style: GoogleFonts.plusJakartaSans(
         fontSize: isCompact ? 12 : 13.5,
         color: const Color(0xFF0F172A),

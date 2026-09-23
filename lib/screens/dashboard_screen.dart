@@ -57,7 +57,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final authService = AuthService();
     final user = await authService.getCurrentUser();
     final rolesLower = user.roles.map((r) => r.toLowerCase()).toList();
-    final isAdmin = rolesLower.any((r) => r.contains('admin') || r.contains('super'));
+    final isAdmin = rolesLower.any(
+      (r) => r.contains('admin') || r.contains('super'),
+    );
     if (isAdmin) return 'admin';
     final isDasawisma = rolesLower.any((r) => r.contains('dasawisma'));
     if (isDasawisma) return 'dasawisma';
@@ -119,7 +121,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
           return const KaderDashboardScreen();
         }
         if (role == 'loading') {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
         }
         // role == admin → tampilkan shell admin saja
         final isAdmin = true;
@@ -150,7 +154,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
           ),
         );
-      }
+      },
     );
   }
 }
@@ -183,7 +187,8 @@ class _BottomNavBar extends StatelessWidget {
     if (icon == Icons.notifications_rounded) return Icons.notifications_rounded;
     if (icon == Icons.description_rounded) return Icons.description_rounded;
     if (icon == Icons.person_rounded) return Icons.person_rounded;
-    if (icon == Icons.admin_panel_settings_rounded) return Icons.admin_panel_settings_rounded;
+    if (icon == Icons.admin_panel_settings_rounded)
+      return Icons.admin_panel_settings_rounded;
     return icon;
   }
 
@@ -220,7 +225,9 @@ class _BottomNavBar extends StatelessWidget {
                 curve: Curves.easeOut,
                 padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 4),
                 decoration: BoxDecoration(
-                  color: isActive ? primary.withValues(alpha: 0.12) : Colors.transparent,
+                  color: isActive
+                      ? primary.withValues(alpha: 0.12)
+                      : Colors.transparent,
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Column(
@@ -238,7 +245,9 @@ class _BottomNavBar extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 10.5,
-                        fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
+                        fontWeight: isActive
+                            ? FontWeight.w800
+                            : FontWeight.w600,
                         color: isActive ? primary : const Color(0xFF64748B),
                         letterSpacing: 0.1,
                       ),
@@ -304,7 +313,8 @@ class _NotifikasiPage extends StatelessWidget {
                       iconColor: const Color(0xFF10B981),
                       bgColor: const Color(0xFFECFDF5),
                       title: 'Data Posyandu Tersinkronisasi',
-                      subtitle: 'Semua data posyandu bulan ini telah berhasil disinkronkan dengan server.',
+                      subtitle:
+                          'Semua data posyandu bulan ini telah berhasil disinkronkan dengan server.',
                       time: 'Hari ini',
                     ),
                     const SizedBox(height: 10),
@@ -313,7 +323,8 @@ class _NotifikasiPage extends StatelessWidget {
                       iconColor: const Color(0xFF0D9488),
                       bgColor: const Color(0xFFF0FDFA),
                       title: 'Laporan PKK Siap Diunduh',
-                      subtitle: 'Laporan bulanan Pokja I–IV sudah dapat dicetak atau diunduh.',
+                      subtitle:
+                          'Laporan bulanan Pokja I–IV sudah dapat dicetak atau diunduh.',
                       time: 'Kemarin',
                     ),
                     const SizedBox(height: 10),
@@ -322,7 +333,8 @@ class _NotifikasiPage extends StatelessWidget {
                       iconColor: const Color(0xFF2563EB),
                       bgColor: const Color(0xFFEFF6FF),
                       title: 'Pengingat Posyandu Balita',
-                      subtitle: 'Jadwal posyandu balita minggu ini. Pastikan kader sudah siap bertugas.',
+                      subtitle:
+                          'Jadwal posyandu balita minggu ini. Pastikan kader sudah siap bertugas.',
                       time: '2 hari lalu',
                     ),
                   ],
@@ -374,7 +386,10 @@ class _NotifItem extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(12)),
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Icon(icon, color: iconColor, size: 22),
           ),
           const SizedBox(width: 14),
@@ -388,16 +403,30 @@ class _NotifItem extends StatelessWidget {
                     Expanded(
                       child: Text(
                         title,
-                        style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13.5, color: const Color(0xFF0F172A)),
+                        style: GoogleFonts.plusJakartaSans(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13.5,
+                          color: const Color(0xFF0F172A),
+                        ),
                       ),
                     ),
-                    Text(time, style: GoogleFonts.plusJakartaSans(fontSize: 11, color: Colors.grey[400])),
+                    Text(
+                      time,
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 11,
+                        color: Colors.grey[400],
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: GoogleFonts.plusJakartaSans(fontSize: 12.5, color: const Color(0xFF64748B), height: 1.4),
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 12.5,
+                    color: const Color(0xFF64748B),
+                    height: 1.4,
+                  ),
                 ),
               ],
             ),
@@ -517,18 +546,41 @@ class _BerandaPageState extends State<_BerandaPage> {
   late Future<({int rumah, int keluarga})> _statFuture;
   late Future<User> _userFuture;
 
-  final PageController _beritaPageController = PageController(viewportFraction: 0.88);
+  final PageController _beritaPageController = PageController(
+    viewportFraction: 0.88,
+  );
   final ScrollController _scrollController = ScrollController();
   int _currentBeritaPage = 0;
   int _weatherVersion = 0;
 
   String _getDayName(int weekday) {
-    const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+    const days = [
+      'Senin',
+      'Selasa',
+      'Rabu',
+      'Kamis',
+      'Jumat',
+      'Sabtu',
+      'Minggu',
+    ];
     return days[(weekday - 1) % 7];
   }
 
   String _getMonthName(int month) {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'Mei',
+      'Jun',
+      'Jul',
+      'Agu',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Des',
+    ];
     return months[(month - 1) % 12];
   }
 
@@ -570,7 +622,11 @@ class _BerandaPageState extends State<_BerandaPage> {
                     color: const Color(0xFFF1F5F9),
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: const Icon(Icons.notifications_active_outlined, color: Color(0xFF0D9488), size: 24),
+                  child: const Icon(
+                    Icons.notifications_active_outlined,
+                    color: Color(0xFF0D9488),
+                    size: 24,
+                  ),
                 ),
                 const SizedBox(width: 14),
                 Column(
@@ -605,7 +661,11 @@ class _BerandaPageState extends State<_BerandaPage> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.check_circle_rounded, color: Color(0xFF10B981), size: 20),
+                  const Icon(
+                    Icons.check_circle_rounded,
+                    color: Color(0xFF10B981),
+                    size: 20,
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -626,7 +686,6 @@ class _BerandaPageState extends State<_BerandaPage> {
     );
   }
 
-
   @override
   void initState() {
     super.initState();
@@ -644,7 +703,10 @@ class _BerandaPageState extends State<_BerandaPage> {
       _kriteriaRumahService.getAll(),
       _keluargaService.getAll(),
     ]);
-    return (rumah: (results[0] as List).length, keluarga: (results[1] as List).length);
+    return (
+      rumah: (results[0] as List).length,
+      keluarga: (results[1] as List).length,
+    );
   }
 
   Future<void> _onRefresh() async {
@@ -671,7 +733,9 @@ class _BerandaPageState extends State<_BerandaPage> {
       color: primary,
       child: CustomScrollView(
         controller: _scrollController,
-        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: BouncingScrollPhysics(),
+        ),
         slivers: [
           // ── HEADER TOP BAR (Sesuai Referensi Gambar: Tanpa Notif di Atas) ──
           SliverToBoxAdapter(
@@ -691,7 +755,8 @@ class _BerandaPageState extends State<_BerandaPage> {
                           future: _userFuture,
                           builder: (context, snapshot) {
                             final user = snapshot.data;
-                            final displayName = (user != null && user.nama.trim().isNotEmpty)
+                            final displayName =
+                                (user != null && user.nama.trim().isNotEmpty)
                                 ? user.nama.trim().split(' ').first
                                 : 'Kader';
 
@@ -700,7 +765,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  'Hello, $displayName',
+                                  '${_getGreeting()}, $displayName',
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 21,
                                     fontWeight: FontWeight.w800,
@@ -747,17 +812,24 @@ class _BerandaPageState extends State<_BerandaPage> {
                           HapticFeedback.lightImpact();
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                            MaterialPageRoute(
+                              builder: (_) => const ProfileScreen(),
+                            ),
                           );
                         },
                         child: Container(
                           padding: const EdgeInsets.all(2),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(color: const Color(0xFFE2E8F0), width: 1.5),
+                            border: Border.all(
+                              color: const Color(0xFFE2E8F0),
+                              width: 1.5,
+                            ),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFF0F172A).withValues(alpha: 0.06),
+                                color: const Color(
+                                  0xFF0F172A,
+                                ).withValues(alpha: 0.06),
                                 blurRadius: 8,
                                 offset: const Offset(0, 2),
                               ),
@@ -765,11 +837,12 @@ class _BerandaPageState extends State<_BerandaPage> {
                           ),
                           child: const CircleAvatar(
                             radius: 22,
-                            backgroundColor: Color(0xFFE2E8F0),
-                            backgroundImage: NetworkImage(
-                              'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+                            backgroundColor: Color(0xFF0D9488),
+                            child: Icon(
+                              Icons.person_rounded,
+                              color: Colors.white,
+                              size: 24,
                             ),
-                            child: Icon(Icons.person_rounded, color: Color(0xFF64748B), size: 24),
                           ),
                         ),
                       ),
@@ -785,11 +858,17 @@ class _BerandaPageState extends State<_BerandaPage> {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(30),
-                  border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
+                  border: Border.all(
+                    color: const Color(0xFFE2E8F0),
+                    width: 1.2,
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: const Color(0xFF0F172A).withValues(alpha: 0.03),
@@ -800,7 +879,11 @@ class _BerandaPageState extends State<_BerandaPage> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.search_rounded, size: 20, color: Color(0xFF94A3B8)),
+                    const Icon(
+                      Icons.search_rounded,
+                      size: 20,
+                      color: Color(0xFF94A3B8),
+                    ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -842,7 +925,9 @@ class _BerandaPageState extends State<_BerandaPage> {
                           color: const Color(0xFFFF6B35),
                           onTap: () => Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => const KriteriaRumahListScreen()),
+                            MaterialPageRoute(
+                              builder: (_) => const KriteriaRumahListScreen(),
+                            ),
                           ),
                         ),
                       ),
@@ -854,7 +939,9 @@ class _BerandaPageState extends State<_BerandaPage> {
                           color: const Color(0xFF10B981),
                           onTap: () => Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => const KeluargaListScreen()),
+                            MaterialPageRoute(
+                              builder: (_) => const KeluargaListScreen(),
+                            ),
                           ),
                         ),
                       ),
@@ -866,7 +953,9 @@ class _BerandaPageState extends State<_BerandaPage> {
                           color: const Color(0xFF2563EB),
                           onTap: () => Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => const CatatanKegiatanFormScreen()),
+                            MaterialPageRoute(
+                              builder: (_) => const CatatanKegiatanFormScreen(),
+                            ),
                           ),
                         ),
                       ),
@@ -883,7 +972,10 @@ class _BerandaPageState extends State<_BerandaPage> {
                           color: const Color(0xFF84CC16),
                           onTap: () => Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => const DataKeluargaDasawismaListScreen()),
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  const DataKeluargaDasawismaListScreen(),
+                            ),
                           ),
                         ),
                       ),
@@ -895,7 +987,9 @@ class _BerandaPageState extends State<_BerandaPage> {
                           color: const Color(0xFFF43F5E),
                           onTap: () => Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => const KesehatanKeibuanScreen()),
+                            MaterialPageRoute(
+                              builder: (_) => const KesehatanKeibuanScreen(),
+                            ),
                           ),
                         ),
                       ),
@@ -907,7 +1001,10 @@ class _BerandaPageState extends State<_BerandaPage> {
                           color: const Color(0xFF8B5CF6),
                           onTap: () => Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => const IndustriRumahTanggaListScreen()),
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  const IndustriRumahTanggaListScreen(),
+                            ),
                           ),
                         ),
                       ),
@@ -928,7 +1025,10 @@ class _BerandaPageState extends State<_BerandaPage> {
                   Container(
                     width: 105,
                     height: 108,
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 12,
+                      horizontal: 10,
+                    ),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
                         colors: [Color(0xFF0D9488), Color(0xFF10B981)],
@@ -938,7 +1038,9 @@ class _BerandaPageState extends State<_BerandaPage> {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF0D9488).withValues(alpha: 0.25),
+                          color: const Color(
+                            0xFF0D9488,
+                          ).withValues(alpha: 0.25),
                           blurRadius: 14,
                           offset: const Offset(0, 6),
                         ),
@@ -987,10 +1089,15 @@ class _BerandaPageState extends State<_BerandaPage> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
+                        border: Border.all(
+                          color: const Color(0xFFE2E8F0),
+                          width: 1.2,
+                        ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF0F172A).withValues(alpha: 0.03),
+                            color: const Color(
+                              0xFF0F172A,
+                            ).withValues(alpha: 0.03),
                             blurRadius: 10,
                             offset: const Offset(0, 3),
                           ),
@@ -1005,7 +1112,8 @@ class _BerandaPageState extends State<_BerandaPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Row(
                                     children: [
@@ -1013,7 +1121,9 @@ class _BerandaPageState extends State<_BerandaPage> {
                                         padding: const EdgeInsets.all(4),
                                         decoration: BoxDecoration(
                                           color: const Color(0xFFF1F5F9),
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
                                         ),
                                         child: const Icon(
                                           Icons.verified_rounded,
@@ -1033,14 +1143,21 @@ class _BerandaPageState extends State<_BerandaPage> {
                                     ],
                                   ),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 2,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: const Color(0xFFECFDF5),
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                     child: Row(
                                       children: [
-                                        const Icon(Icons.star_rounded, size: 12, color: Color(0xFFF59E0B)),
+                                        const Icon(
+                                          Icons.star_rounded,
+                                          size: 12,
+                                          color: Color(0xFFF59E0B),
+                                        ),
                                         const SizedBox(width: 2),
                                         Text(
                                           '4.9',
@@ -1061,32 +1178,47 @@ class _BerandaPageState extends State<_BerandaPage> {
                                     child: GestureDetector(
                                       onTap: () => Navigator.push(
                                         context,
-                                        MaterialPageRoute(builder: (_) => const KriteriaRumahListScreen()),
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              const KriteriaRumahListScreen(),
+                                        ),
                                       ),
                                       child: Container(
-                                        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 6,
+                                          horizontal: 8,
+                                        ),
                                         decoration: BoxDecoration(
                                           color: const Color(0xFFFFF7ED),
-                                          borderRadius: BorderRadius.circular(10),
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
                                         ),
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               '${data?.rumah ?? 0}',
-                                              style: GoogleFonts.plusJakartaSans(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w800,
-                                                color: const Color(0xFFEA580C),
-                                              ),
+                                              style:
+                                                  GoogleFonts.plusJakartaSans(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.w800,
+                                                    color: const Color(
+                                                      0xFFEA580C,
+                                                    ),
+                                                  ),
                                             ),
                                             Text(
                                               'Rumah',
-                                              style: GoogleFonts.plusJakartaSans(
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.w600,
-                                                color: const Color(0xFF9A3412),
-                                              ),
+                                              style:
+                                                  GoogleFonts.plusJakartaSans(
+                                                    fontSize: 10,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: const Color(
+                                                      0xFF9A3412,
+                                                    ),
+                                                  ),
                                             ),
                                           ],
                                         ),
@@ -1098,32 +1230,47 @@ class _BerandaPageState extends State<_BerandaPage> {
                                     child: GestureDetector(
                                       onTap: () => Navigator.push(
                                         context,
-                                        MaterialPageRoute(builder: (_) => const KeluargaListScreen()),
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              const KeluargaListScreen(),
+                                        ),
                                       ),
                                       child: Container(
-                                        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 6,
+                                          horizontal: 8,
+                                        ),
                                         decoration: BoxDecoration(
                                           color: const Color(0xFFF0FDF4),
-                                          borderRadius: BorderRadius.circular(10),
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
                                         ),
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               '${data?.keluarga ?? 0}',
-                                              style: GoogleFonts.plusJakartaSans(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w800,
-                                                color: const Color(0xFF16A34A),
-                                              ),
+                                              style:
+                                                  GoogleFonts.plusJakartaSans(
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.w800,
+                                                    color: const Color(
+                                                      0xFF16A34A,
+                                                    ),
+                                                  ),
                                             ),
                                             Text(
                                               'Kepala Keluarga',
-                                              style: GoogleFonts.plusJakartaSans(
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.w600,
-                                                color: const Color(0xFF166534),
-                                              ),
+                                              style:
+                                                  GoogleFonts.plusJakartaSans(
+                                                    fontSize: 10,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: const Color(
+                                                      0xFF166534,
+                                                    ),
+                                                  ),
                                             ),
                                           ],
                                         ),
@@ -1165,15 +1312,27 @@ class _BerandaPageState extends State<_BerandaPage> {
                       GestureDetector(
                         onTap: () => Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const GaleriAgendaScreen()),
-                        ),
-                        child: Text(
-                          'Lihat Semua >',
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 12.5,
-                            fontWeight: FontWeight.w700,
-                            color: const Color(0xFF0D9488),
+                          MaterialPageRoute(
+                            builder: (_) => const GaleriAgendaScreen(),
                           ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Lihat Semua',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF0D9488),
+                              ),
+                            ),
+                            const Icon(
+                              Icons.chevron_right_rounded,
+                              size: 16,
+                              color: Color(0xFF0D9488),
+                            ),
+                          ],
                         ),
                       ),
                     ],
@@ -1185,10 +1344,15 @@ class _BerandaPageState extends State<_BerandaPage> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
+                      border: Border.all(
+                        color: const Color(0xFFE2E8F0),
+                        width: 1.2,
+                      ),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFF0F172A).withValues(alpha: 0.04),
+                          color: const Color(
+                            0xFF0F172A,
+                          ).withValues(alpha: 0.04),
                           blurRadius: 14,
                           offset: const Offset(0, 4),
                         ),
@@ -1229,10 +1393,15 @@ class _BerandaPageState extends State<_BerandaPage> {
                                   Row(
                                     children: [
                                       Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 7,
+                                          vertical: 2,
+                                        ),
                                         decoration: BoxDecoration(
                                           color: const Color(0xFFECFDF5),
-                                          borderRadius: BorderRadius.circular(6),
+                                          borderRadius: BorderRadius.circular(
+                                            6,
+                                          ),
                                         ),
                                         child: Text(
                                           '● Terjadwal',
@@ -1268,15 +1437,24 @@ class _BerandaPageState extends State<_BerandaPage> {
                           children: [
                             Expanded(
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 8,
+                                ),
                                 decoration: BoxDecoration(
                                   color: const Color(0xFFF8FAFC),
                                   borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(color: const Color(0xFFF1F5F9)),
+                                  border: Border.all(
+                                    color: const Color(0xFFF1F5F9),
+                                  ),
                                 ),
                                 child: Row(
                                   children: [
-                                    const Icon(Icons.calendar_today_rounded, size: 14, color: Color(0xFF64748B)),
+                                    const Icon(
+                                      Icons.calendar_today_rounded,
+                                      size: 14,
+                                      color: Color(0xFF64748B),
+                                    ),
                                     const SizedBox(width: 6),
                                     Text(
                                       '${DateTime.now().day} ${_getMonthName(DateTime.now().month)}, ${DateTime.now().year}',
@@ -1293,15 +1471,24 @@ class _BerandaPageState extends State<_BerandaPage> {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 8,
+                                ),
                                 decoration: BoxDecoration(
                                   color: const Color(0xFFF8FAFC),
                                   borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(color: const Color(0xFFF1F5F9)),
+                                  border: Border.all(
+                                    color: const Color(0xFFF1F5F9),
+                                  ),
                                 ),
                                 child: Row(
                                   children: [
-                                    const Icon(Icons.access_time_rounded, size: 14, color: Color(0xFF64748B)),
+                                    const Icon(
+                                      Icons.access_time_rounded,
+                                      size: 14,
+                                      color: Color(0xFF64748B),
+                                    ),
                                     const SizedBox(width: 6),
                                     Text(
                                       '08:30 WIB',
@@ -1370,11 +1557,16 @@ class _BerandaPageState extends State<_BerandaPage> {
                           HapticFeedback.selectionClick();
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => const KesehatanKeibuanScreen()),
+                            MaterialPageRoute(
+                              builder: (_) => const KesehatanKeibuanScreen(),
+                            ),
                           );
                         },
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 11,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             color: primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(20),
@@ -1391,7 +1583,11 @@ class _BerandaPageState extends State<_BerandaPage> {
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              Icon(Icons.arrow_forward_rounded, size: 14, color: primary),
+                              Icon(
+                                Icons.arrow_forward_rounded,
+                                size: 14,
+                                color: primary,
+                              ),
                             ],
                           ),
                         ),
@@ -1451,14 +1647,19 @@ class _BerandaPageState extends State<_BerandaPage> {
                               HapticFeedback.selectionClick();
                               final res = await Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (_) => const BeritaFormScreen()),
+                                MaterialPageRoute(
+                                  builder: (_) => const BeritaFormScreen(),
+                                ),
                               );
                               if (res == true) {
                                 _onRefresh();
                               }
                             },
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 7,
+                              ),
                               margin: const EdgeInsets.only(right: 8),
                               decoration: BoxDecoration(
                                 color: primary.withValues(alpha: 0.09),
@@ -1466,7 +1667,11 @@ class _BerandaPageState extends State<_BerandaPage> {
                               ),
                               child: Row(
                                 children: [
-                                  Icon(Icons.edit_note_rounded, size: 15, color: primary),
+                                  Icon(
+                                    Icons.edit_note_rounded,
+                                    size: 15,
+                                    color: primary,
+                                  ),
                                   const SizedBox(width: 4),
                                   Text(
                                     'Tulis',
@@ -1485,16 +1690,24 @@ class _BerandaPageState extends State<_BerandaPage> {
                               HapticFeedback.selectionClick();
                               await Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (_) => const BeritaScreen()),
+                                MaterialPageRoute(
+                                  builder: (_) => const BeritaScreen(),
+                                ),
                               );
                               _onRefresh();
                             },
                             child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 7,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: const Color(0xFFF1F5F9), width: 1.5),
+                                border: Border.all(
+                                  color: const Color(0xFFE2E8F0),
+                                  width: 1.2,
+                                ),
                               ),
                               child: Row(
                                 children: [
@@ -1507,7 +1720,11 @@ class _BerandaPageState extends State<_BerandaPage> {
                                     ),
                                   ),
                                   const SizedBox(width: 4),
-                                  Icon(Icons.arrow_forward_rounded, size: 14, color: primary),
+                                  Icon(
+                                    Icons.arrow_forward_rounded,
+                                    size: 14,
+                                    color: primary,
+                                  ),
                                 ],
                               ),
                             ),
@@ -1523,7 +1740,9 @@ class _BerandaPageState extends State<_BerandaPage> {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Padding(
                           padding: EdgeInsets.symmetric(vertical: 24),
-                          child: Center(child: CircularProgressIndicator(strokeWidth: 2.5)),
+                          child: Center(
+                            child: CircularProgressIndicator(strokeWidth: 2.5),
+                          ),
                         );
                       }
                       final beritaList = snapshot.data ?? [];
@@ -1531,7 +1750,9 @@ class _BerandaPageState extends State<_BerandaPage> {
                         return Center(
                           child: Text(
                             'Belum ada berita',
-                            style: GoogleFonts.plusJakartaSans(color: Colors.grey[500]),
+                            style: GoogleFonts.plusJakartaSans(
+                              color: Colors.grey[500],
+                            ),
                           ),
                         );
                       }
@@ -1542,15 +1763,20 @@ class _BerandaPageState extends State<_BerandaPage> {
                             child: PageView.builder(
                               controller: _beritaPageController,
                               itemCount: beritaList.length,
-                              onPageChanged: (index) => setState(() => _currentBeritaPage = index),
+                              onPageChanged: (index) =>
+                                  setState(() => _currentBeritaPage = index),
                               itemBuilder: (context, index) {
                                 final isCenter = index == _currentBeritaPage;
                                 return AnimatedScale(
                                   scale: isCenter ? 1.0 : 0.96,
                                   duration: const Duration(milliseconds: 250),
                                   child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6),
-                                    child: _BeritaCard(berita: beritaList[index]),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                    ),
+                                    child: _BeritaCard(
+                                      berita: beritaList[index],
+                                    ),
                                   ),
                                 );
                               },
@@ -1564,7 +1790,9 @@ class _BerandaPageState extends State<_BerandaPage> {
                               return AnimatedContainer(
                                 duration: const Duration(milliseconds: 250),
                                 curve: Curves.easeOutCubic,
-                                margin: const EdgeInsets.symmetric(horizontal: 3),
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 3,
+                                ),
                                 width: isActive ? 24 : 7,
                                 height: 7,
                                 decoration: BoxDecoration(
@@ -1616,7 +1844,8 @@ class _KesehatanIbuBayiChart extends StatelessWidget {
     return FutureBuilder<RekapIbuAnakSummary>(
       future: RekapIbuAnakService().getSummary(),
       builder: (context, snapshot) {
-        final summary = snapshot.data ??
+        final summary =
+            snapshot.data ??
             RekapIbuAnakSummary(
               jumlahHamil: 2,
               jumlahMelahirkan: 1,
@@ -1661,7 +1890,9 @@ class _KesehatanIbuBayiChart extends StatelessWidget {
           ),
         ];
 
-        final maxValue = items.map((e) => e.value).reduce((a, b) => a > b ? a : b);
+        final maxValue = items
+            .map((e) => e.value)
+            .reduce((a, b) => a > b ? a : b);
         final chartMax = maxValue < 5 ? 5 : maxValue + 1;
 
         return Container(
@@ -1699,7 +1930,10 @@ class _KesehatanIbuBayiChart extends StatelessWidget {
                   const SizedBox(width: 8),
                   // Indikator Spesial Ibu Meninggal
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 9,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: summary.jumlahIbuMeninggal > 0
                           ? const Color(0xFFFEE2E2)
@@ -1759,7 +1993,10 @@ class _KesehatanIbuBayiChart extends StatelessWidget {
                           children: [
                             // Angka di atas batang
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
                                 color: item.isWarning
                                     ? const Color(0xFFEF4444)
@@ -1771,7 +2008,9 @@ class _KesehatanIbuBayiChart extends StatelessWidget {
                                 style: GoogleFonts.plusJakartaSans(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w800,
-                                  color: item.isWarning ? Colors.white : item.color,
+                                  color: item.isWarning
+                                      ? Colors.white
+                                      : item.color,
                                 ),
                               ),
                             ),
@@ -1799,20 +2038,27 @@ class _KesehatanIbuBayiChart extends StatelessWidget {
                                 boxShadow: item.isWarning
                                     ? [
                                         BoxShadow(
-                                          color: const Color(0xFFEF4444).withValues(alpha: 0.4),
+                                          color: const Color(
+                                            0xFFEF4444,
+                                          ).withValues(alpha: 0.4),
                                           blurRadius: 8,
                                           offset: const Offset(0, 2),
                                         ),
                                       ]
                                     : [
                                         BoxShadow(
-                                          color: item.color.withValues(alpha: 0.2),
+                                          color: item.color.withValues(
+                                            alpha: 0.2,
+                                          ),
                                           blurRadius: 4,
                                           offset: const Offset(0, 2),
                                         ),
                                       ],
                                 border: item.isWarning
-                                    ? Border.all(color: Colors.white, width: 1.5)
+                                    ? Border.all(
+                                        color: Colors.white,
+                                        width: 1.5,
+                                      )
                                     : null,
                               ),
                             ),
@@ -1840,7 +2086,11 @@ class _KesehatanIbuBayiChart extends StatelessWidget {
                     _legendDot(const Color(0xFFF59E0B), 'Nifas'),
                     _legendDot(const Color(0xFF06B6D4), 'Bayi Lahir'),
                     _legendDot(const Color(0xFFFB7185), 'Bayi Wafat'),
-                    _legendDot(const Color(0xFFEF4444), 'Ibu Wafat', isRed: true),
+                    _legendDot(
+                      const Color(0xFFEF4444),
+                      'Ibu Wafat',
+                      isRed: true,
+                    ),
                   ],
                 ),
               ),
@@ -1858,10 +2108,7 @@ class _KesehatanIbuBayiChart extends StatelessWidget {
         Container(
           width: 8,
           height: 8,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 5),
         Text(
@@ -1952,11 +2199,17 @@ class _StatCard extends StatelessWidget {
                   ),
                   if (trend.isNotEmpty)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 7,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: color.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: color.withValues(alpha: 0.2), width: 1),
+                        border: Border.all(
+                          color: color.withValues(alpha: 0.2),
+                          width: 1,
+                        ),
                       ),
                       child: Text(
                         trend,
@@ -2034,7 +2287,8 @@ class _StatShimmer extends StatefulWidget {
   State<_StatShimmer> createState() => _StatShimmerState();
 }
 
-class _StatShimmerState extends State<_StatShimmer> with SingleTickerProviderStateMixin {
+class _StatShimmerState extends State<_StatShimmer>
+    with SingleTickerProviderStateMixin {
   late AnimationController _ctrl;
 
   @override
@@ -2059,7 +2313,11 @@ class _StatShimmerState extends State<_StatShimmer> with SingleTickerProviderSta
       builder: (_, _) => Container(
         height: 118,
         decoration: BoxDecoration(
-          color: Color.lerp(const Color(0xFFE2E8F0), const Color(0xFFF1F5F9), _ctrl.value)!,
+          color: Color.lerp(
+            const Color(0xFFE2E8F0),
+            const Color(0xFFF1F5F9),
+            _ctrl.value,
+          )!,
           borderRadius: BorderRadius.circular(16),
         ),
       ),
@@ -2081,13 +2339,20 @@ class _BeritaCard extends StatelessWidget {
     final hasImage = berita.gambar != null && berita.gambar!.isNotEmpty;
 
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(16)),
-        border: Border.fromBorderSide(BorderSide(color: Color(0xFFF1F5F9), width: 1.5)),
+        borderRadius: const BorderRadius.all(Radius.circular(20)),
+        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF0F172A).withValues(alpha: 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(20),
         onTap: () {
           HapticFeedback.selectionClick();
           Navigator.push(
@@ -2099,24 +2364,29 @@ class _BeritaCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(20),
+              ),
               child: SizedBox(
                 height: 110,
                 width: double.infinity,
                 child: hasImage
-                    ? (berita.gambar!.startsWith('http://') || berita.gambar!.startsWith('https://')
-                        ? Image.network(
-                            berita.gambar!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, _, _) => _ImageFallback(primary: primary),
-                          )
-                        : (File(berita.gambar!).existsSync()
-                            ? Image.file(
-                                File(berita.gambar!),
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, _, _) => _ImageFallback(primary: primary),
-                              )
-                            : _ImageFallback(primary: primary)))
+                    ? (berita.gambar!.startsWith('http://') ||
+                              berita.gambar!.startsWith('https://')
+                          ? Image.network(
+                              berita.gambar!,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, _, _) =>
+                                  _ImageFallback(primary: primary),
+                            )
+                          : (File(berita.gambar!).existsSync()
+                                ? Image.file(
+                                    File(berita.gambar!),
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, _, _) =>
+                                        _ImageFallback(primary: primary),
+                                  )
+                                : _ImageFallback(primary: primary)))
                     : _ImageFallback(primary: primary),
               ),
             ),
@@ -2128,7 +2398,10 @@ class _BeritaCard extends StatelessWidget {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 7,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
                           color: primary.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(6),
@@ -2144,7 +2417,11 @@ class _BeritaCard extends StatelessWidget {
                         ),
                       ),
                       const Spacer(),
-                      Icon(Icons.access_time_rounded, size: 11, color: Colors.grey[400]),
+                      Icon(
+                        Icons.access_time_rounded,
+                        size: 11,
+                        color: Colors.grey[400],
+                      ),
                       const SizedBox(width: 3),
                       Text(
                         berita.tanggal,
@@ -2203,10 +2480,12 @@ class _ImageFallback extends StatelessWidget {
         ),
       ),
       child: Center(
-        child: Icon(Icons.article_rounded, color: Colors.white.withValues(alpha: 0.6), size: 36),
+        child: Icon(
+          Icons.article_rounded,
+          color: Colors.white.withValues(alpha: 0.6),
+          size: 36,
+        ),
       ),
     );
   }
 }
-
-

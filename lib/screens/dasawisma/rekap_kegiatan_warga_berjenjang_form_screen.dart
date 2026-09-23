@@ -4,9 +4,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/rekap_kegiatan_warga_berjenjang.dart';
 import '../../services/rekap_kegiatan_warga_berjenjang_service.dart';
 import '../../widgets/kecamatan_dropdown_field.dart';
+import '../../constants/app_constants.dart';
 
 class RekapKegiatanWargaBerjenjangFormScreen extends StatefulWidget {
   final String level; // 'rt', 'rw', 'dusun', 'desa', 'kecamatan'
@@ -110,18 +112,26 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
     _kecCtrl = TextEditingController(text: it?.kecamatan ?? 'Singaparna');
     _dasaWismaCtrl = TextEditingController(text: it?.dasaWisma ?? 'Mawar 01');
 
-    _namaDasawismaCtrl = TextEditingController(text: it?.namaDasawisma ?? 'Mawar 01');
+    _namaDasawismaCtrl = TextEditingController(
+      text: it?.namaDasawisma ?? 'Mawar 01',
+    );
     _nomorRtCtrl = TextEditingController(text: it?.nomorRt ?? '01');
     _nomorRwCtrl = TextEditingController(text: it?.nomorRw ?? '05');
     _namaDusunCtrl = TextEditingController(text: it?.namaDusun ?? 'Cikunir');
     _namaDesaCtrl = TextEditingController(text: it?.namaDesa ?? 'Singaparna');
 
-    _jumlahDusunCtrl = TextEditingController(text: (it?.jumlahDusun ?? 0).toString());
+    _jumlahDusunCtrl = TextEditingController(
+      text: (it?.jumlahDusun ?? 0).toString(),
+    );
     _jumlahRwCtrl = TextEditingController(text: (it?.jumlahRw ?? 0).toString());
     _jumlahRtCtrl = TextEditingController(text: (it?.jumlahRt ?? 0).toString());
-    _jumlahDasawismaCtrl = TextEditingController(text: (it?.jumlahDasawisma ?? 0).toString());
+    _jumlahDasawismaCtrl = TextEditingController(
+      text: (it?.jumlahDasawisma ?? 0).toString(),
+    );
 
-    _jumlahKrtCtrl = TextEditingController(text: (it?.jumlahKrt ?? 0).toString());
+    _jumlahKrtCtrl = TextEditingController(
+      text: (it?.jumlahKrt ?? 0).toString(),
+    );
     _jumlahKkCtrl = TextEditingController(text: (it?.jumlahKk ?? 0).toString());
 
     _totalLCtrl = TextEditingController(text: (it?.totalL ?? 0).toString());
@@ -131,30 +141,56 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
     _pusCtrl = TextEditingController(text: (it?.pus ?? 0).toString());
     _wusCtrl = TextEditingController(text: (it?.wus ?? 0).toString());
     _ibuHamilCtrl = TextEditingController(text: (it?.ibuHamil ?? 0).toString());
-    _ibuMenyusuiCtrl = TextEditingController(text: (it?.ibuMenyusui ?? 0).toString());
+    _ibuMenyusuiCtrl = TextEditingController(
+      text: (it?.ibuMenyusui ?? 0).toString(),
+    );
     _lansiaCtrl = TextEditingController(text: (it?.lansia ?? 0).toString());
     _butaLCtrl = TextEditingController(text: (it?.butaL ?? 0).toString());
     _butaPCtrl = TextEditingController(text: (it?.butaP ?? 0).toString());
-    _berkebutuhanKhususCtrl = TextEditingController(text: (it?.berkebutuhanKhusus ?? 0).toString());
+    _berkebutuhanKhususCtrl = TextEditingController(
+      text: (it?.berkebutuhanKhusus ?? 0).toString(),
+    );
 
-    _rumahSehatCtrl = TextEditingController(text: (it?.rumahSehat ?? 0).toString());
-    _rumahTidakSehatCtrl = TextEditingController(text: (it?.rumahTidakSehat ?? 0).toString());
-    _tempatSampahCtrl = TextEditingController(text: (it?.tempatSampah ?? 0).toString());
+    _rumahSehatCtrl = TextEditingController(
+      text: (it?.rumahSehat ?? 0).toString(),
+    );
+    _rumahTidakSehatCtrl = TextEditingController(
+      text: (it?.rumahTidakSehat ?? 0).toString(),
+    );
+    _tempatSampahCtrl = TextEditingController(
+      text: (it?.tempatSampah ?? 0).toString(),
+    );
     _spalCtrl = TextEditingController(text: (it?.spal ?? 0).toString());
-    _jambanMckCtrl = TextEditingController(text: (it?.jambanMck ?? 0).toString());
+    _jambanMckCtrl = TextEditingController(
+      text: (it?.jambanMck ?? 0).toString(),
+    );
 
     _airPdamCtrl = TextEditingController(text: (it?.airPdam ?? 0).toString());
     _airSumurCtrl = TextEditingController(text: (it?.airSumur ?? 0).toString());
-    _airSungaiCtrl = TextEditingController(text: (it?.airSungai ?? 0).toString());
+    _airSungaiCtrl = TextEditingController(
+      text: (it?.airSungai ?? 0).toString(),
+    );
     _airDllCtrl = TextEditingController(text: (it?.airDll ?? 0).toString());
 
-    _makananBerasCtrl = TextEditingController(text: (it?.makananBeras ?? 0).toString());
-    _makananNonBerasCtrl = TextEditingController(text: (it?.makananNonBeras ?? 0).toString());
+    _makananBerasCtrl = TextEditingController(
+      text: (it?.makananBeras ?? 0).toString(),
+    );
+    _makananNonBerasCtrl = TextEditingController(
+      text: (it?.makananNonBeras ?? 0).toString(),
+    );
 
-    _kegiatanUp2kCtrl = TextEditingController(text: (it?.kegiatanUp2k ?? 0).toString());
-    _kegiatanPekaranganCtrl = TextEditingController(text: (it?.kegiatanPekarangan ?? 0).toString());
-    _kegiatanIndustriRtCtrl = TextEditingController(text: (it?.kegiatanIndustriRt ?? 0).toString());
-    _kegiatanKeslingCtrl = TextEditingController(text: (it?.kegiatanKesling ?? 0).toString());
+    _kegiatanUp2kCtrl = TextEditingController(
+      text: (it?.kegiatanUp2k ?? 0).toString(),
+    );
+    _kegiatanPekaranganCtrl = TextEditingController(
+      text: (it?.kegiatanPekarangan ?? 0).toString(),
+    );
+    _kegiatanIndustriRtCtrl = TextEditingController(
+      text: (it?.kegiatanIndustriRt ?? 0).toString(),
+    );
+    _kegiatanKeslingCtrl = TextEditingController(
+      text: (it?.kegiatanKesling ?? 0).toString(),
+    );
 
     _keteranganCtrl = TextEditingController(text: it?.keterangan ?? '');
   }
@@ -291,17 +327,39 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
       keterangan: _keteranganCtrl.text.trim(),
     );
 
-    await _service.save(item);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString(AppConstants.tokenKey) ?? '';
+      await _service.save(item, token.isNotEmpty ? token : null);
 
-    if (mounted) {
-      setState(() => _saving = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Data rekap berhasil disimpan!', style: GoogleFonts.plusJakartaSans()),
-          backgroundColor: const Color(0xFF10B981),
-        ),
-      );
-      Navigator.pop(context, true);
+      if (mounted) {
+        setState(() => _saving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              token.isNotEmpty
+                  ? 'Data rekap berhasil disimpan ke server!'
+                  : 'Data disimpan lokal (belum login)',
+              style: GoogleFonts.plusJakartaSans(),
+            ),
+            backgroundColor: const Color(0xFF10B981),
+          ),
+        );
+        Navigator.pop(context, true);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _saving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Gagal menyimpan: $e',
+              style: GoogleFonts.plusJakartaSans(),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -322,19 +380,32 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
               shape: BoxShape.circle,
               border: Border.all(color: const Color(0xFFE2E8F0)),
             ),
-            child: const Icon(Icons.arrow_back_rounded, size: 20, color: _darkText),
+            child: const Icon(
+              Icons.arrow_back_rounded,
+              size: 20,
+              color: _darkText,
+            ),
           ),
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.item == null ? 'Isi Form Rekap Kegiatan' : 'Edit Form Rekap Kegiatan',
-              style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w800, color: _darkText),
+              widget.item == null
+                  ? 'Isi Form Rekap Kegiatan'
+                  : 'Edit Form Rekap Kegiatan',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: _darkText,
+              ),
             ),
             Text(
               _getLevelTitle(),
-              style: GoogleFonts.plusJakartaSans(fontSize: 11, color: const Color(0xFF64748B)),
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 11,
+                color: const Color(0xFF64748B),
+              ),
             ),
           ],
         ),
@@ -426,7 +497,8 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
 
             // ── CARD 2: PENGISIAN BARIS DATA SESUAI TINGKAT ──
             _buildSectionCard(
-              title: 'Entitas Baris Rekapitulasi (${widget.level.toUpperCase()})',
+              title:
+                  'Entitas Baris Rekapitulasi (${widget.level.toUpperCase()})',
               icon: Icons.table_chart_rounded,
               color: const Color(0xFF0284C7),
               children: [
@@ -942,15 +1014,23 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _primary,
                   elevation: 2,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                 ),
                 icon: _saving
                     ? const SizedBox(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
                       )
-                    : const Icon(Icons.check_circle_rounded, color: Colors.white),
+                    : const Icon(
+                        Icons.check_circle_rounded,
+                        color: Colors.white,
+                      ),
                 label: Text(
                   _saving ? 'Menyimpan Data...' : 'Simpan Data Rekapitulasi',
                   style: GoogleFonts.plusJakartaSans(
@@ -1036,10 +1116,16 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
         labelText: label,
         hintText: hint,
         prefixIcon: Icon(icon, size: 18, color: const Color(0xFF64748B)),
-        labelStyle: GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFF64748B)),
+        labelStyle: GoogleFonts.plusJakartaSans(
+          fontSize: 12,
+          color: const Color(0xFF64748B),
+        ),
         filled: true,
         fillColor: const Color(0xFFF8FAFC),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 12,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
@@ -1067,14 +1153,24 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
     return TextFormField(
       controller: controller,
       keyboardType: TextInputType.number,
-      style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w700, color: _darkText),
+      style: GoogleFonts.plusJakartaSans(
+        fontSize: 13,
+        fontWeight: FontWeight.w700,
+        color: _darkText,
+      ),
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, size: 18, color: const Color(0xFF64748B)),
-        labelStyle: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: const Color(0xFF64748B)),
+        labelStyle: GoogleFonts.plusJakartaSans(
+          fontSize: 11.5,
+          color: const Color(0xFF64748B),
+        ),
         filled: true,
         fillColor: const Color(0xFFF8FAFC),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 10,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: Color(0xFFE2E8F0)),

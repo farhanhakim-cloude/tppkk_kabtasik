@@ -32,13 +32,17 @@ class _LaporanScreenState extends State<LaporanScreen> {
     });
   }
 
-
-
   Future<_LaporanData> _loadData() async {
     final keluarga = await _keluargaService.getAll();
-    final ibuHamil = await _kesehatanService.getAll(filter: KategoriKesehatan.ibuHamil);
-    final ibuMenyusui = await _kesehatanService.getAll(filter: KategoriKesehatan.ibuMenyusui);
-    final balita = await _kesehatanService.getAll(filter: KategoriKesehatan.balita);
+    final ibuHamil = await _kesehatanService.getAll(
+      filter: KategoriKesehatan.ibuHamil,
+    );
+    final ibuMenyusui = await _kesehatanService.getAll(
+      filter: KategoriKesehatan.ibuMenyusui,
+    );
+    final balita = await _kesehatanService.getAll(
+      filter: KategoriKesehatan.balita,
+    );
 
     return _LaporanData(
       keluarga: keluarga.length,
@@ -50,22 +54,20 @@ class _LaporanScreenState extends State<LaporanScreen> {
     );
   }
 
-
-
   void _exportPdf() {
     HapticFeedback.lightImpact();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Fitur Export PDF akan aktif saat terhubung ke backend server',
-            style: GoogleFonts.plusJakartaSans()),
+        content: Text(
+          'Fitur Export PDF akan aktif saat terhubung ke backend server',
+          style: GoogleFonts.plusJakartaSans(),
+        ),
         backgroundColor: const Color(0xFF3B82F6),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }
-
-
 
   // ── TAB 1: REKAP LAPORAN ──
   Widget _buildLaporanTab(Color primary) {
@@ -77,8 +79,10 @@ class _LaporanScreenState extends State<LaporanScreen> {
         }
         if (snapshot.hasError) {
           return Center(
-            child: Text('Gagal memuat laporan: ${snapshot.error}',
-                style: GoogleFonts.plusJakartaSans()),
+            child: Text(
+              'Gagal memuat laporan: ${snapshot.error}',
+              style: GoogleFonts.plusJakartaSans(),
+            ),
           );
         }
 
@@ -99,26 +103,34 @@ class _LaporanScreenState extends State<LaporanScreen> {
                 child: DropdownButton<String>(
                   value: _periode,
                   isExpanded: true,
-                  icon: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF64748B)),
+                  icon: const Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    color: Color(0xFF64748B),
+                  ),
                   items: ['Juni 2026', 'Juli 2026', 'Agustus 2026']
-                      .map((p) => DropdownMenuItem(
-                            value: p,
-                            child: Row(
-                              children: [
-                                const Icon(Icons.calendar_today_rounded,
-                                    size: 16, color: Color(0xFF3B82F6)),
-                                const SizedBox(width: 10),
-                                Text(
-                                  'Periode: $p',
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 13.5,
-                                    fontWeight: FontWeight.w600,
-                                    color: const Color(0xFF0F172A),
-                                  ),
+                      .map(
+                        (p) => DropdownMenuItem(
+                          value: p,
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.calendar_today_rounded,
+                                size: 16,
+                                color: Color(0xFF0D9488),
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                'Periode: $p',
+                                style: GoogleFonts.plusJakartaSans(
+                                  fontSize: 13.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFF0F172A),
                                 ),
-                              ],
-                            ),
-                          ))
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
                       .toList(),
                   onChanged: (v) {
                     if (v != null) {
@@ -136,6 +148,7 @@ class _LaporanScreenState extends State<LaporanScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: const Color(0xFFE2E8F0)),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.04),
@@ -176,7 +189,7 @@ class _LaporanScreenState extends State<LaporanScreen> {
                               _periode,
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 12,
-                                color: Colors.grey[500],
+                                color: const Color(0xFF64748B),
                               ),
                             ),
                           ],
@@ -187,8 +200,14 @@ class _LaporanScreenState extends State<LaporanScreen> {
                   const SizedBox(height: 16),
                   const Divider(height: 1),
                   const SizedBox(height: 14),
-                  _RowItem('Jumlah Kepala Keluarga (KK)', '${data.keluarga} KK'),
-                  _RowItem('Total Jumlah Jiwa / Anggota', '${data.anggota} Orang'),
+                  _RowItem(
+                    'Jumlah Kepala Keluarga (KK)',
+                    '${data.keluarga} KK',
+                  ),
+                  _RowItem(
+                    'Total Jumlah Jiwa / Anggota',
+                    '${data.anggota} Orang',
+                  ),
                   _RowItem('Ibu Hamil Terpantau', '${data.ibuHamil} Orang'),
                   _RowItem('Ibu Menyusui Terdata', '${data.ibuMenyusui} Orang'),
                   _RowItem('Balita Terdata', '${data.balita} Balita'),
@@ -218,7 +237,9 @@ class _LaporanScreenState extends State<LaporanScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFEF4444),
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                   elevation: 0,
                 ),
               ),
@@ -238,9 +259,25 @@ class _LaporanScreenState extends State<LaporanScreen> {
       appBar: widget.embedded
           ? null
           : AppBar(
+              backgroundColor: Colors.white,
+              elevation: 0,
+              surfaceTintColor: Colors.transparent,
+              centerTitle: true,
+              leading: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  size: 20,
+                  color: Color(0xFF0F172A),
+                ),
+                onPressed: () => Navigator.pop(context),
+              ),
               title: Text(
                 'Laporan Rekapitulasi',
-                style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700),
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF0F172A),
+                ),
               ),
             ),
       body: Column(
@@ -266,9 +303,7 @@ class _LaporanScreenState extends State<LaporanScreen> {
                 ),
               ),
             ),
-          Expanded(
-            child: _buildLaporanTab(primary),
-          ),
+          Expanded(child: _buildLaporanTab(primary)),
         ],
       ),
     );
@@ -293,7 +328,7 @@ class _RowItem extends StatelessWidget {
             label,
             style: GoogleFonts.plusJakartaSans(
               fontSize: 13,
-              color: Colors.grey[700],
+              color: const Color(0xFF475569),
             ),
           ),
           Text(
@@ -301,7 +336,9 @@ class _RowItem extends StatelessWidget {
             style: GoogleFonts.plusJakartaSans(
               fontSize: 13.5,
               fontWeight: FontWeight.w700,
-              color: isAlert ? const Color(0xFFDC2626) : const Color(0xFF0F172A),
+              color: isAlert
+                  ? const Color(0xFFDC2626)
+                  : const Color(0xFF0F172A),
             ),
           ),
         ],
@@ -327,4 +364,3 @@ class _LaporanData {
     required this.balitaGiziKurang,
   });
 }
-

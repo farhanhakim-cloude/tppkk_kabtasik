@@ -1,4 +1,4 @@
-﻿// lib/services/rekap_bumil_berjenjang_service.dart
+// lib/services/rekap_bumil_berjenjang_service.dart
 // ✅ FIX: Ganti SharedPreferences → API
 // Sumber data: API Laravel — /api/rekap-bumil
 // Cache: opsional — untuk offline
@@ -6,7 +6,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/rekap_bumil_berjenjang.dart';
-import '../constants/app_constants.dart';
 import 'api_service.dart';
 
 class RekapBumilBerjenjangService {
@@ -33,19 +32,20 @@ class RekapBumilBerjenjangService {
     String? search,
   }) async {
     try {
-      final list = await _api.getRekapBumil(
+      final rawList = await _api.getRekapBumil(
         tahun: tahun,
         bulan: bulan,
         level: level,
         wilayahId: wilayahId,
         search: search,
       );
-      _cache = list
-          .map((item) => RekapBumilBerjenjangItem.fromJson(item))
+      final list = rawList
+          .map((e) => RekapBumilBerjenjangItem.fromJson(e))
           .toList();
+      _cache = list;
       _lastFetch = DateTime.now();
-      await _saveToCache(_cache);
-      return _cache;
+      await _saveToCache(list);
+      return list;
     } catch (e) {
       if (_cache.isEmpty) {
         await _loadFromCache();
@@ -63,13 +63,17 @@ class RekapBumilBerjenjangService {
     return getAll(tahun: tahun);
   }
 
-  Future<List<RekapBumilBerjenjangItem>> getByBulan(String tahun, int bulan) async {
+  Future<List<RekapBumilBerjenjangItem>> getByBulan(
+    String tahun,
+    int bulan,
+  ) async {
     return getAll(tahun: tahun, bulan: bulan.toString());
   }
 
   Future<RekapBumilBerjenjangItem?> getById(int id) async {
     try {
-      return (await getAll()).where((item) => item.id == id).firstOrNull;
+      final json = await _api.getRekapBumilDetail(id);
+      return RekapBumilBerjenjangItem.fromJson(json);
     } catch (e) {
       return null;
     }
@@ -80,11 +84,23 @@ class RekapBumilBerjenjangService {
   // ============================================================
 
   Future<RekapBumilBerjenjangItem> save(
-    RekapBumilBerjenjangItem item,
-    [String? token]
-  ) async {
-    token ??= await _token();
-    if (token.isEmpty) return item;
+    RekapBumilBerjenjangItem item, [
+    String? token,
+  ]) async {
+    if (token == null || token.isEmpty) {
+      // Simpan lokal tanpa token
+      final idx = _cache.indexWhere((e) => e.id == item.id);
+      final saved = item.id > 0
+          ? item
+          : item.copyWith(id: DateTime.now().millisecondsSinceEpoch % 100000);
+      if (idx >= 0) {
+        _cache[idx] = saved;
+      } else {
+        _cache.insert(0, saved);
+      }
+      await _saveToCache(_cache);
+      return saved;
+    }
     if (item.id > 0) {
       final json = await _api.updateRekapBumil(item.id, item.toJson(), token);
       final updated = RekapBumilBerjenjangItem.fromJson(json);
@@ -99,14 +115,21 @@ class RekapBumilBerjenjangService {
     }
   }
 
+  /// Auto-generate dari data Dasawisma — stub untuk kompatibilitas screen lama
+  Future<void> autoGenerateFromDasawisma(String level) async {
+    // Fitur ini sudah dimigrasi ke API — tidak ada aksi lokal
+  }
+
   // ============================================================
   // DELETE — ke API
   // ============================================================
 
   Future<void> delete(int id, [String? token]) async {
-    token ??= await _token();
-    if (token.isEmpty) return;
-    await _api.deleteRekapBumil(id, token);
+    if (token != null && token.isNotEmpty) {
+      try {
+        await _api.deleteRekapBumil(id, token);
+      } catch (_) {}
+    }
     _cache.removeWhere((e) => e.id == id);
     await _saveToCache(_cache);
   }
@@ -129,9 +152,7 @@ class RekapBumilBerjenjangService {
       final raw = prefs.getString(_cacheKey);
       if (raw != null) {
         final list = jsonDecode(raw) as List;
-        _cache = list
-            .map((e) => RekapBumilBerjenjangItem.fromJson(e))
-            .toList();
+        _cache = list.map((e) => RekapBumilBerjenjangItem.fromJson(e)).toList();
       }
     } catch (_) {
       _cache = [];
@@ -155,13 +176,4 @@ class RekapBumilBerjenjangService {
   }
 
   DateTime? get lastFetch => _lastFetch;
-
-  Future<String> _token() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(AppConstants.tokenKey) ?? '';
-  }
-
-  Future<void> autoGenerateFromDasawisma(String level) async {
-    await getByLevel(level);
-  }
 }

@@ -40,6 +40,29 @@ class AnggotaKeluargaItem {
       pekerjaan: pekerjaan ?? this.pekerjaan,
     );
   }
+
+  factory AnggotaKeluargaItem.fromJson(Map<String, dynamic> j) =>
+      AnggotaKeluargaItem(
+        noReg: j['noReg']?.toString() ?? '',
+        nama: j['nama']?.toString() ?? '',
+        statusDalamKeluarga: j['statusDalamKeluarga']?.toString() ?? '',
+        statusPerkawinan: j['statusPerkawinan']?.toString() ?? '',
+        jenisKelamin: j['jenisKelamin']?.toString() ?? 'L',
+        tanggalLahirUmur: j['tanggalLahirUmur']?.toString() ?? '',
+        pendidikan: j['pendidikan']?.toString() ?? '',
+        pekerjaan: j['pekerjaan']?.toString() ?? '',
+      );
+
+  Map<String, dynamic> toJson() => {
+    'noReg': noReg,
+    'nama': nama,
+    'statusDalamKeluarga': statusDalamKeluarga,
+    'statusPerkawinan': statusPerkawinan,
+    'jenisKelamin': jenisKelamin,
+    'tanggalLahirUmur': tanggalLahirUmur,
+    'pendidikan': pendidikan,
+    'pekerjaan': pekerjaan,
+  };
 }
 
 class DataKeluargaDasawisma {
@@ -191,7 +214,8 @@ class DataKeluargaDasawisma {
       kecamatan: kecamatan ?? this.kecamatan,
       kabupaten: kabupaten ?? this.kabupaten,
       provinsi: provinsi ?? this.provinsi,
-      namaKepalaRumahTangga: namaKepalaRumahTangga ?? this.namaKepalaRumahTangga,
+      namaKepalaRumahTangga:
+          namaKepalaRumahTangga ?? this.namaKepalaRumahTangga,
       nomorKk: nomorKk ?? this.nomorKk,
       nikKepalaKeluarga: nikKepalaKeluarga ?? this.nikKepalaKeluarga,
       alamat: alamat ?? this.alamat,
@@ -221,11 +245,99 @@ class DataKeluargaDasawisma {
       kriteriaRumah: kriteriaRumah ?? this.kriteriaRumah,
       aktifitasUp2k: aktifitasUp2k ?? this.aktifitasUp2k,
       jenisUsahaUp2k: jenisUsahaUp2k ?? this.jenisUsahaUp2k,
-      aktifitasKesehatanLingkungan: aktifitasKesehatanLingkungan ?? this.aktifitasKesehatanLingkungan,
+      aktifitasKesehatanLingkungan:
+          aktifitasKesehatanLingkungan ?? this.aktifitasKesehatanLingkungan,
       aktifitasTanahPekarangan:
           aktifitasTanahPekarangan ?? this.aktifitasTanahPekarangan,
       aktifitasIndustriRumahTangga:
           aktifitasIndustriRumahTangga ?? this.aktifitasIndustriRumahTangga,
     );
   }
+
+  static int _p(dynamic v) {
+    if (v == null) return 0;
+    if (v is int) return v;
+    if (v is double) return v.toInt();
+    if (v is String) return int.tryParse(v) ?? 0;
+    return 0;
+  }
+
+  factory DataKeluargaDasawisma.fromJson(Map<String, dynamic> j) =>
+      DataKeluargaDasawisma(
+        id: _p(j['id']),
+        dasaWisma: j['dasaWisma']?.toString() ?? '',
+        rt: j['rt']?.toString() ?? '',
+        rw: j['rw']?.toString() ?? '',
+        desa: j['desa']?.toString() ?? '',
+        kecamatan: j['kecamatan']?.toString() ?? '',
+        kabupaten: j['kabupaten']?.toString() ?? 'Kabupaten Tasikmalaya',
+        provinsi: j['provinsi']?.toString() ?? 'Provinsi Jawa Barat',
+        namaKepalaRumahTangga: j['namaKepalaRumahTangga']?.toString() ?? '',
+        jumlahLakiLaki: _p(j['jumlahLakiLaki']),
+        jumlahPerempuan: _p(j['jumlahPerempuan']),
+        jumlahKk: _p(j['jumlahKk']),
+        jumlahBalita: _p(j['jumlahBalita']),
+        jumlahAnak: _p(j['jumlahAnak']),
+        jumlahPus: _p(j['jumlahPus']),
+        jumlahWus: _p(j['jumlahWus']),
+        jumlahTigaButa: _p(j['jumlahTigaButa']),
+        jumlahIbuHamil: _p(j['jumlahIbuHamil']),
+        jumlahIbuMenyusui: _p(j['jumlahIbuMenyusui']),
+        jumlahLansia: _p(j['jumlahLansia']),
+        anggotaList: j['anggotaList'] != null
+            ? (j['anggotaList'] as List)
+                  .map(
+                    (e) =>
+                        AnggotaKeluargaItem.fromJson(e as Map<String, dynamic>),
+                  )
+                  .toList()
+            : [],
+        makananPokok: j['makananPokok']?.toString() ?? 'Beras',
+        mempunyaiMck: j['mempunyaiMck'] == true || j['mempunyaiMck'] == 1,
+        jumlahMckSepticTank: _p(j['jumlahMckSepticTank']),
+        sumberAir: j['sumberAir']?.toString() ?? 'Sumur',
+        memilikiTempatSampah:
+            j['memilikiTempatSampah'] == true || j['memilikiTempatSampah'] == 1,
+        mempunyaiSpal: j['mempunyaiSpal'] == true || j['mempunyaiSpal'] == 1,
+        kriteriaRumah: j['kriteriaRumah']?.toString() ?? 'Sehat',
+        aktifitasUp2k: j['aktifitasUp2k'] == true || j['aktifitasUp2k'] == 1,
+        jenisUsahaUp2k: j['jenisUsahaUp2k']?.toString() ?? '',
+        aktifitasKesehatanLingkungan:
+            j['aktifitasKesehatanLingkungan'] == true ||
+            j['aktifitasKesehatanLingkungan'] == 1,
+      );
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'dasaWisma': dasaWisma,
+    'rt': rt,
+    'rw': rw,
+    'desa': desa,
+    'kecamatan': kecamatan,
+    'kabupaten': kabupaten,
+    'provinsi': provinsi,
+    'namaKepalaRumahTangga': namaKepalaRumahTangga,
+    'jumlahLakiLaki': jumlahLakiLaki,
+    'jumlahPerempuan': jumlahPerempuan,
+    'jumlahKk': jumlahKk,
+    'jumlahBalita': jumlahBalita,
+    'jumlahAnak': jumlahAnak,
+    'jumlahPus': jumlahPus,
+    'jumlahWus': jumlahWus,
+    'jumlahTigaButa': jumlahTigaButa,
+    'jumlahIbuHamil': jumlahIbuHamil,
+    'jumlahIbuMenyusui': jumlahIbuMenyusui,
+    'jumlahLansia': jumlahLansia,
+    'anggotaList': anggotaList.map((e) => e.toJson()).toList(),
+    'makananPokok': makananPokok,
+    'mempunyaiMck': mempunyaiMck,
+    'jumlahMckSepticTank': jumlahMckSepticTank,
+    'sumberAir': sumberAir,
+    'memilikiTempatSampah': memilikiTempatSampah,
+    'mempunyaiSpal': mempunyaiSpal,
+    'kriteriaRumah': kriteriaRumah,
+    'aktifitasUp2k': aktifitasUp2k,
+    'jenisUsahaUp2k': jenisUsahaUp2k,
+    'aktifitasKesehatanLingkungan': aktifitasKesehatanLingkungan,
+  };
 }

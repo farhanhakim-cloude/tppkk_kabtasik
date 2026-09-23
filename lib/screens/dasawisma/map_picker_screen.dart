@@ -42,9 +42,25 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 20,
+            color: Color(0xFF0F172A),
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: Text(
           'Pilih Lokasi Rumah',
-          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 16),
+          style: GoogleFonts.plusJakartaSans(
+            fontWeight: FontWeight.w700,
+            fontSize: 17,
+            color: const Color(0xFF0F172A),
+          ),
         ),
         actions: [
           IconButton(
@@ -102,11 +118,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                       ),
                     ),
                     const SizedBox(height: 2),
-                    Icon(
-                      Icons.location_on_rounded,
-                      size: 40,
-                      color: primary,
-                    ),
+                    Icon(Icons.location_on_rounded, size: 40, color: primary),
                     const SizedBox(height: 40), // Offset to align pin tip
                   ],
                 ),
@@ -126,17 +138,26 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 16, offset: const Offset(0, 4)),
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 16,
+                    offset: const Offset(0, 4),
+                  ),
                 ],
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.search_rounded, color: Colors.grey),
+                  const Icon(Icons.search_rounded, color: Color(0xFF94A3B8)),
                   const SizedBox(width: 10),
                   Expanded(
                     child: TextField(
-                      decoration: const InputDecoration(
-                        hintText: 'Cari wilayah/RT/RW di Tasikmalaya...',
+                      enabled: false,
+                      decoration: InputDecoration(
+                        hintText: 'Pencarian segera hadir',
+                        hintStyle: GoogleFonts.plusJakartaSans(
+                          fontSize: 13,
+                          color: const Color(0xFF94A3B8),
+                        ),
                         border: InputBorder.none,
                         isDense: true,
                       ),
@@ -186,7 +207,11 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withValues(alpha: 0.12), blurRadius: 20, offset: const Offset(0, 8)),
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.12),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
                 ],
               ),
               child: Column(
@@ -201,7 +226,11 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                           color: primary.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(Icons.my_location_rounded, color: primary, size: 18),
+                        child: Icon(
+                          Icons.my_location_rounded,
+                          color: primary,
+                          size: 18,
+                        ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -210,12 +239,18 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                           children: [
                             Text(
                               'Koordinat Terpilih',
-                              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13),
+                              style: GoogleFonts.plusJakartaSans(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                              ),
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              'Tasikmalaya, Jawa Barat, Indonesia',
-                              style: GoogleFonts.plusJakartaSans(fontSize: 11, color: Colors.grey[500]),
+                              'Peta ilustrasi — pastikan pin di rumah yang benar',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 12,
+                                color: const Color(0xFF64748B),
+                              ),
                             ),
                           ],
                         ),
@@ -232,8 +267,22 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Latitude: ${_lat.toStringAsFixed(6)}', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.grey[700])),
-                        Text('Longitude: ${_lng.toStringAsFixed(6)}', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.grey[700])),
+                        Text(
+                          'Lat: ${_lat.toStringAsFixed(5)}',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF334155),
+                          ),
+                        ),
+                        Text(
+                          'Lng: ${_lng.toStringAsFixed(5)}',
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: const Color(0xFF334155),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -248,11 +297,16 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primary,
                         foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
                       ),
                       child: Text(
                         'Gunakan Lokasi Ini',
-                        style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 14),
+                        style: GoogleFonts.plusJakartaSans(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 14,
+                        ),
                       ),
                     ),
                   ),
@@ -275,17 +329,22 @@ class _MapButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 42,
-      height: 42,
+      width: 46,
+      height: 46,
       decoration: BoxDecoration(
         color: Colors.white,
         shape: BoxShape.circle,
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 10, offset: const Offset(0, 2)),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: IconButton(
-        icon: Icon(icon, color: Colors.grey[700], size: 20),
+        tooltip: icon == Icons.add ? 'Perbesar' : 'Perkecil',
+        icon: Icon(icon, color: const Color(0xFF334155), size: 22),
         onPressed: onPressed,
       ),
     );
@@ -298,11 +357,16 @@ class _MapPainter extends CustomPainter {
   final double zoom;
   final Color primaryColor;
 
-  _MapPainter({required this.offset, required this.zoom, required this.primaryColor});
+  _MapPainter({
+    required this.offset,
+    required this.zoom,
+    required this.primaryColor,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paintBg = Paint()..color = const Color(0xFFF1F5F9); // map background land
+    final paintBg = Paint()
+      ..color = const Color(0xFFF1F5F9); // map background land
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paintBg);
 
     final double scale = zoom / 15.0;
@@ -313,10 +377,30 @@ class _MapPainter extends CustomPainter {
     canvas.scale(scale);
 
     // Draw some mock land features: Parks (green areas)
-    final paintPark = Paint()..color = const Color(0xFFDCFCE7)..style = PaintingStyle.fill;
-    canvas.drawRRect(RRect.fromRectAndRadius(const Rect.fromLTWH(-500, -300, 300, 200), const Radius.circular(30)), paintPark);
-    canvas.drawRRect(RRect.fromRectAndRadius(const Rect.fromLTWH(150, -400, 400, 250), const Radius.circular(50)), paintPark);
-    canvas.drawRRect(RRect.fromRectAndRadius(const Rect.fromLTWH(-300, 180, 500, 300), const Radius.circular(40)), paintPark);
+    final paintPark = Paint()
+      ..color = const Color(0xFFDCFCE7)
+      ..style = PaintingStyle.fill;
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        const Rect.fromLTWH(-500, -300, 300, 200),
+        const Radius.circular(30),
+      ),
+      paintPark,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        const Rect.fromLTWH(150, -400, 400, 250),
+        const Radius.circular(50),
+      ),
+      paintPark,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        const Rect.fromLTWH(-300, 180, 500, 300),
+        const Radius.circular(40),
+      ),
+      paintPark,
+    );
 
     // Draw a River (blue curve)
     final paintRiver = Paint()
@@ -335,11 +419,22 @@ class _MapPainter extends CustomPainter {
     for (int x = -600; x < 600; x += 120) {
       for (int y = -600; y < 600; y += 120) {
         // Exclude river or park zones dynamically
-        if ((x > -400 && x < -100 && y > -300 && y < -100) || (x > 150 && x < 550 && y > -400 && y < -150)) continue;
+        if ((x > -400 && x < -100 && y > -300 && y < -100) ||
+            (x > 150 && x < 550 && y > -400 && y < -150))
+          continue;
         if (x.abs() % 240 == 0 && y.abs() % 240 == 0) {
-          canvas.drawRect(Rect.fromLTWH(x.toDouble(), y.toDouble(), 35, 35), paintBuilding);
-          canvas.drawRect(Rect.fromLTWH(x + 50.0, y.toDouble(), 30, 25), paintBuilding);
-          canvas.drawRect(Rect.fromLTWH(x.toDouble(), y + 45.0, 45, 30), paintBuilding);
+          canvas.drawRect(
+            Rect.fromLTWH(x.toDouble(), y.toDouble(), 35, 35),
+            paintBuilding,
+          );
+          canvas.drawRect(
+            Rect.fromLTWH(x + 50.0, y.toDouble(), 30, 25),
+            paintBuilding,
+          );
+          canvas.drawRect(
+            Rect.fromLTWH(x.toDouble(), y + 45.0, 45, 30),
+            paintBuilding,
+          );
         }
       }
     }
@@ -357,9 +452,21 @@ class _MapPainter extends CustomPainter {
 
     // Major Highways (thick white lines)
     paintRoadMain.strokeWidth = 16;
-    canvas.drawLine(const Offset(-1000, 0), const Offset(1000, 0), paintRoadMain);
-    canvas.drawLine(const Offset(0, -1000), const Offset(0, 1000), paintRoadMain);
-    canvas.drawLine(const Offset(-800, -800), const Offset(800, 800), paintRoadMain);
+    canvas.drawLine(
+      const Offset(-1000, 0),
+      const Offset(1000, 0),
+      paintRoadMain,
+    );
+    canvas.drawLine(
+      const Offset(0, -1000),
+      const Offset(0, 1000),
+      paintRoadMain,
+    );
+    canvas.drawLine(
+      const Offset(-800, -800),
+      const Offset(800, 800),
+      paintRoadMain,
+    );
 
     // Minor Roads (thinner white lines)
     paintRoadMain.strokeWidth = 8;
@@ -373,8 +480,16 @@ class _MapPainter extends CustomPainter {
     // Major highway dashed center line
     paintRoadLine.strokeWidth = 1.2;
     paintRoadLine.color = const Color(0xFFF59E0B); // Yellow highway divider
-    canvas.drawLine(const Offset(-1000, 0), const Offset(1000, 0), paintRoadLine);
-    canvas.drawLine(const Offset(0, -1000), const Offset(0, 1000), paintRoadLine);
+    canvas.drawLine(
+      const Offset(-1000, 0),
+      const Offset(1000, 0),
+      paintRoadLine,
+    );
+    canvas.drawLine(
+      const Offset(0, -1000),
+      const Offset(0, 1000),
+      paintRoadLine,
+    );
 
     // Draw some points of interest (mock markers on land)
     final paintPoi = Paint()..color = primaryColor.withValues(alpha: 0.6);
@@ -388,4 +503,3 @@ class _MapPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
-
