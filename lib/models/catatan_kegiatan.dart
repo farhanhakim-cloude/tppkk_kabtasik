@@ -12,9 +12,9 @@ enum PokjaKategori {
   pokja2,
   pokja3,
   pokja4,
-  pokja4Pyd,       // âœ… BARU
-  pokja4Posyandu,  // âœ… BARU
-  pokja4Rekap,     // âœ… BARU
+  pokja4Pyd, // âœ… BARU
+  pokja4Posyandu, // âœ… BARU
+  pokja4Rekap, // âœ… BARU
 }
 
 extension PokjaKategoriLabel on PokjaKategori {
@@ -126,79 +126,157 @@ extension PokjaKategoriLabel on PokjaKategori {
     switch (this) {
       case PokjaKategori.pokja1:
         return [
-          'pkbn_l', 'pkbn_p',
-          'pkdrt_l', 'pkdrt_p',
-          'pola_asuh_l', 'pola_asuh_p',
-          'lansia_l', 'lansia_p',
-          'kader_pokja1_l', 'kader_pokja1_p',
+          // Kader
+          'kader_umum', 'kader_khusus',
+          // KISAH
+          'kisah_kegiatan', 'kisah_volume', 'kisah_metode', 'kisah_sasaran',
+          // KILAS
+          'kilas_kegiatan', 'kilas_volume', 'kilas_metode', 'kilas_sasaran',
+          // KRISAN
+          'krisan_kegiatan', 'krisan_volume', 'krisan_metode', 'krisan_sasaran',
+          // KIAT
+          'kiat_kegiatan', 'kiat_volume', 'kiat_metode', 'kiat_sasaran',
+          // KISAK
+          'kisak_kegiatan', 'kisak_volume', 'kisak_metode', 'kisak_sasaran',
+          // PKBN
+          'pkbn_kegiatan', 'pkbn_volume', 'pkbn_metode', 'pkbn_sasaran',
+          // Keterangan
+          'keterangan',
         ];
       case PokjaKategori.pokja2:
         return [
-          'warga_buta_l', 'warga_buta_p',
+          'warga_buta_l',
+          'warga_buta_p',
           'kelompok_belajar_paket_a',
           'kelompok_belajar_paket_b',
           'kelompok_belajar_paket_c',
-          'kf', 'paud', 'koperasi_berbadan_hukum',
+          'kf',
+          'paud',
+          'koperasi_berbadan_hukum',
         ];
       case PokjaKategori.pokja3:
         return [
-          'rumah_sehat', 'rumah_tidak_sehat',
-          'pemanfaatan_pekarangan', 'industri_rumah_tangga',
+          'rumah_sehat',
+          'rumah_tidak_sehat',
+          'pemanfaatan_pekarangan',
+          'industri_rumah_tangga',
         ];
       case PokjaKategori.pokja4:
         // âœ… FIX: 25 kolom â€” match dengan backend
         return [
-          'posyandu', 'akseptor_kb', 'phbs', 'jamban_keluarga',
-          'kader_kesehatan', 'kader_gizi', 'kader_kesling', 'kader_phbs', 'kader_kb',
-          'imunisasi', 'pkg', 'tbc',
-          'spal', 'tps', 'mck',
-          'air_pdam', 'air_sumur', 'air_lainnya',
-          'jumlah_pus', 'jumlah_wus',
-          'akseptor_kb_l', 'akseptor_kb_p',
-          'tabungan_keluarga', 'asuransi_kesehatan',
-          'program_kesehatan', 'program_lingkungan', 'program_perencanaan',
+          'posyandu',
+          'akseptor_kb',
+          'phbs',
+          'jamban_keluarga',
+          'kader_kesehatan',
+          'kader_gizi',
+          'kader_kesling',
+          'kader_phbs',
+          'kader_kb',
+          'imunisasi',
+          'pkg',
+          'tbc',
+          'spal',
+          'tps',
+          'mck',
+          'air_pdam',
+          'air_sumur',
+          'air_lainnya',
+          'jumlah_pus',
+          'jumlah_wus',
+          'akseptor_kb_l',
+          'akseptor_kb_p',
+          'tabungan_keluarga',
+          'asuransi_kesehatan',
+          'program_kesehatan',
+          'program_lingkungan',
+          'program_perencanaan',
         ];
       case PokjaKategori.pokja4Pyd:
         // âœ… BARU: 21 kolom Kunjungan PYD
         return [
-          'bulan', 'tahun',
-          'bayi_0_12_l', 'bayi_0_12_p',
-          'bayi_0_12_laki_l', 'bayi_0_12_laki_p',
-          'balita_1_5_l', 'balita_1_5_p',
-          'balita_1_5_laki_l', 'balita_1_5_laki_p',
-          'wus', 'pus', 'ibu_hamil', 'ibu_menyusui',
-          'bayi_lahir', 'bayi_meninggal', 'kematian_ibu',
-          'petugas_kader', 'petugas_plkb', 'petugas_medis',
+          'bulan',
+          'tahun',
+          'bayi_0_12_l',
+          'bayi_0_12_p',
+          'bayi_0_12_laki_l',
+          'bayi_0_12_laki_p',
+          'balita_1_5_l',
+          'balita_1_5_p',
+          'balita_1_5_laki_l',
+          'balita_1_5_laki_p',
+          'wus',
+          'pus',
+          'ibu_hamil',
+          'ibu_menyusui',
+          'bayi_lahir',
+          'bayi_meninggal',
+          'kematian_ibu',
+          'petugas_kader',
+          'petugas_plkb',
+          'petugas_medis',
           'keterangan',
         ];
       case PokjaKategori.pokja4Posyandu:
         // âœ… BARU: 40 kolom Kegiatan Posyandu
         return [
-          'bulan', 'tahun',
-          'ibu_hamil', 'ibu_hamil_diperiksa', 'ibu_hamil_dapat_fe', 'menyusui',
-          'kb_iud', 'kb_mow', 'kb_mop', 'kb_implan', 'kb_pil', 'kb_suntik', 'kb_kondom',
-          'balita_l', 'balita_p', 'balita_kia_l', 'balita_kia_p',
-          'balita_ditimbang_l', 'balita_ditimbang_p',
-          'balita_naik_l', 'balita_naik_p',
-          'vit_a_1', 'vit_a_2',
-          'imunisasi_tt_1', 'imunisasi_tt_2', 'imunisasi_bcg',
-          'imunisasi_dpt_1', 'imunisasi_dpt_2', 'imunisasi_dpt_3',
-          'imunisasi_polio_1', 'imunisasi_polio_2',
-          'imunisasi_polio_3', 'imunisasi_polio_4',
+          'bulan',
+          'tahun',
+          'ibu_hamil',
+          'ibu_hamil_diperiksa',
+          'ibu_hamil_dapat_fe',
+          'menyusui',
+          'kb_iud',
+          'kb_mow',
+          'kb_mop',
+          'kb_implan',
+          'kb_pil',
+          'kb_suntik',
+          'kb_kondom',
+          'balita_l',
+          'balita_p',
+          'balita_kia_l',
+          'balita_kia_p',
+          'balita_ditimbang_l',
+          'balita_ditimbang_p',
+          'balita_naik_l',
+          'balita_naik_p',
+          'vit_a_1',
+          'vit_a_2',
+          'imunisasi_tt_1',
+          'imunisasi_tt_2',
+          'imunisasi_bcg',
+          'imunisasi_dpt_1',
+          'imunisasi_dpt_2',
+          'imunisasi_dpt_3',
+          'imunisasi_polio_1',
+          'imunisasi_polio_2',
+          'imunisasi_polio_3',
+          'imunisasi_polio_4',
           'imunisasi_campak',
-          'imunisasi_hepatitis_1', 'imunisasi_hepatitis_2', 'imunisasi_hepatitis_3',
-          'balita_diare', 'balita_oralit',
+          'imunisasi_hepatitis_1',
+          'imunisasi_hepatitis_2',
+          'imunisasi_hepatitis_3',
+          'balita_diare',
+          'balita_oralit',
           'keterangan',
         ];
       case PokjaKategori.pokja4Rekap:
         // âœ… BARU: 19 kolom Rekapitulasi
         return [
           'tahun',
-          'ibu_hamil', 'ibu_melahirkan', 'ibu_nifas', 'ibu_meninggal',
-          'bayi_lahir_l', 'bayi_lahir_p',
-          'akte_ada', 'akte_tidak',
-          'bayi_meninggal_l', 'bayi_meninggal_p',
-          'balita_meninggal_l', 'balita_meninggal_p',
+          'ibu_hamil',
+          'ibu_melahirkan',
+          'ibu_nifas',
+          'ibu_meninggal',
+          'bayi_lahir_l',
+          'bayi_lahir_p',
+          'akte_ada',
+          'akte_tidak',
+          'bayi_meninggal_l',
+          'bayi_meninggal_p',
+          'balita_meninggal_l',
+          'balita_meninggal_p',
           'keterangan',
         ];
     }
@@ -207,44 +285,82 @@ extension PokjaKategoriLabel on PokjaKategori {
   // Label untuk field
   String getLabelForField(String field) {
     switch (field) {
-      case 'pkbn_l': return 'PKBN Laki-laki';
-      case 'pkbn_p': return 'PKBN Perempuan';
-      case 'pkdrt_l': return 'PKDRT Laki-laki';
-      case 'pkdrt_p': return 'PKDRT Perempuan';
-      case 'pola_asuh_l': return 'Pola Asuh Laki-laki';
-      case 'pola_asuh_p': return 'Pola Asuh Perempuan';
-      case 'lansia_l': return 'Lansia Laki-laki';
-      case 'lansia_p': return 'Lansia Perempuan';
-      case 'kader_pokja1_l': return 'Kader Pokja I Laki-laki';
-      case 'kader_pokja1_p': return 'Kader Pokja I Perempuan';
-      case 'posyandu': return 'Jumlah Posyandu';
-      case 'akseptor_kb': return 'Akseptor KB';
-      case 'phbs': return 'PHBS';
-      case 'jamban_keluarga': return 'Jamban Keluarga';
-      case 'kader_kesehatan': return 'Kader Kesehatan';
-      case 'kader_gizi': return 'Kader Gizi';
-      case 'kader_kesling': return 'Kader Kesling';
-      case 'kader_phbs': return 'Kader PHBS';
-      case 'kader_kb': return 'Kader KB';
-      case 'imunisasi': return 'Imunisasi';
-      case 'pkg': return 'PKG';
-      case 'tbc': return 'TBC';
-      case 'spal': return 'SPAL';
-      case 'tps': return 'TPS';
-      case 'mck': return 'MCK';
-      case 'air_pdam': return 'Air PDAM';
-      case 'air_sumur': return 'Air Sumur';
-      case 'air_lainnya': return 'Air Lainnya';
-      case 'jumlah_pus': return 'Jumlah PUS';
-      case 'jumlah_wus': return 'Jumlah WUS';
-      case 'akseptor_kb_l': return 'Akseptor KB L';
-      case 'akseptor_kb_p': return 'Akseptor KB P';
-      case 'tabungan_keluarga': return 'Tabungan Keluarga';
-      case 'asuransi_kesehatan': return 'Asuransi Kesehatan';
-      case 'program_kesehatan': return 'Program Kesehatan';
-      case 'program_lingkungan': return 'Program Lingkungan';
-      case 'program_perencanaan': return 'Program Perencanaan';
-      default: return field;
+      case 'pkbn_l':
+        return 'PKBN Laki-laki';
+      case 'pkbn_p':
+        return 'PKBN Perempuan';
+      case 'pkdrt_l':
+        return 'PKDRT Laki-laki';
+      case 'pkdrt_p':
+        return 'PKDRT Perempuan';
+      case 'pola_asuh_l':
+        return 'Pola Asuh Laki-laki';
+      case 'pola_asuh_p':
+        return 'Pola Asuh Perempuan';
+      case 'lansia_l':
+        return 'Lansia Laki-laki';
+      case 'lansia_p':
+        return 'Lansia Perempuan';
+      case 'kader_pokja1_l':
+        return 'Kader Pokja I Laki-laki';
+      case 'kader_pokja1_p':
+        return 'Kader Pokja I Perempuan';
+      case 'posyandu':
+        return 'Jumlah Posyandu';
+      case 'akseptor_kb':
+        return 'Akseptor KB';
+      case 'phbs':
+        return 'PHBS';
+      case 'jamban_keluarga':
+        return 'Jamban Keluarga';
+      case 'kader_kesehatan':
+        return 'Kader Kesehatan';
+      case 'kader_gizi':
+        return 'Kader Gizi';
+      case 'kader_kesling':
+        return 'Kader Kesling';
+      case 'kader_phbs':
+        return 'Kader PHBS';
+      case 'kader_kb':
+        return 'Kader KB';
+      case 'imunisasi':
+        return 'Imunisasi';
+      case 'pkg':
+        return 'PKG';
+      case 'tbc':
+        return 'TBC';
+      case 'spal':
+        return 'SPAL';
+      case 'tps':
+        return 'TPS';
+      case 'mck':
+        return 'MCK';
+      case 'air_pdam':
+        return 'Air PDAM';
+      case 'air_sumur':
+        return 'Air Sumur';
+      case 'air_lainnya':
+        return 'Air Lainnya';
+      case 'jumlah_pus':
+        return 'Jumlah PUS';
+      case 'jumlah_wus':
+        return 'Jumlah WUS';
+      case 'akseptor_kb_l':
+        return 'Akseptor KB L';
+      case 'akseptor_kb_p':
+        return 'Akseptor KB P';
+      case 'tabungan_keluarga':
+        return 'Tabungan Keluarga';
+      case 'asuransi_kesehatan':
+        return 'Asuransi Kesehatan';
+      case 'program_kesehatan':
+        return 'Program Kesehatan';
+      case 'program_lingkungan':
+        return 'Program Lingkungan';
+      case 'program_perencanaan':
+        return 'Program Perencanaan';
+      default:
+        return field;
     }
   }
 
@@ -280,7 +396,8 @@ extension PokjaKategoriLabel on PokjaKategori {
 enum StatusKegiatan { terkirim, dibaca }
 
 extension StatusKegiatanLabel on StatusKegiatan {
-  String get label => this == StatusKegiatan.dibaca ? 'Sudah Dibaca' : 'Terkirim';
+  String get label =>
+      this == StatusKegiatan.dibaca ? 'Sudah Dibaca' : 'Terkirim';
 }
 
 // ============================================================
@@ -291,7 +408,7 @@ class CatatanKegiatan {
   final String judul;
   final String deskripsiSingkat;
   final PokjaKategori kategori;
-  final Map<String, dynamic> dataAngka;  // âœ… dynamic â€” bisa int + string
+  final Map<String, dynamic> dataAngka; // âœ… dynamic â€” bisa int + string
   final String kecamatan;
   final String? desa;
   final String? fotoPath;
@@ -310,8 +427,8 @@ class CatatanKegiatan {
     this.fotoPath,
     DateTime? tanggal,
     this.status = StatusKegiatan.terkirim,
-  })  : deskripsiSingkat = deskripsiSingkat ?? ceritaSingkat ?? '',
-        tanggal = tanggal ?? DateTime.now();
+  }) : deskripsiSingkat = deskripsiSingkat ?? ceritaSingkat ?? '',
+       tanggal = tanggal ?? DateTime.now();
 
   String get ceritaSingkat => deskripsiSingkat;
 
@@ -348,14 +465,45 @@ class CatatanKegiatan {
   }
 
   static const List<String> daftar39Kecamatan = [
-    'Bantarkalong', 'Bojongasih', 'Bojonggambir', 'Ciawi', 'Cibalong',
-    'Cigalontang', 'Cikalong', 'Cikatomas', 'Cineam', 'Cipatujah',
-    'Cisayong', 'Culamega', 'Gunungtanjung', 'Jamanis', 'Jatiwaras',
-    'Kadipaten', 'Karangjaya', 'Karangnunggal', 'Leuwisari', 'Mangunreja',
-    'Manonjaya', 'Padakembang', 'Pagerageung', 'Pancatengah', 'Parungponteng',
-    'Puspahiang', 'Rajapolah', 'Salawu', 'Salopa', 'Sariwangi',
-    'Singaparna', 'Sodonghilir', 'Sukahening', 'Sukaraja', 'Sukarame',
-    'Sukaratu', 'Sukaresik', 'Tanjungjaya', 'Taraju',
+    'Bantarkalong',
+    'Bojongasih',
+    'Bojonggambir',
+    'Ciawi',
+    'Cibalong',
+    'Cigalontang',
+    'Cikalong',
+    'Cikatomas',
+    'Cineam',
+    'Cipatujah',
+    'Cisayong',
+    'Culamega',
+    'Gunungtanjung',
+    'Jamanis',
+    'Jatiwaras',
+    'Kadipaten',
+    'Karangjaya',
+    'Karangnunggal',
+    'Leuwisari',
+    'Mangunreja',
+    'Manonjaya',
+    'Padakembang',
+    'Pagerageung',
+    'Pancatengah',
+    'Parungponteng',
+    'Puspahiang',
+    'Rajapolah',
+    'Salawu',
+    'Salopa',
+    'Sariwangi',
+    'Singaparna',
+    'Sodonghilir',
+    'Sukahening',
+    'Sukaraja',
+    'Sukarame',
+    'Sukaratu',
+    'Sukaresik',
+    'Tanjungjaya',
+    'Taraju',
   ];
 
   // ============================================================
@@ -366,7 +514,7 @@ class CatatanKegiatan {
       'id': id,
       'judul': judul,
       'deskripsi': deskripsiSingkat,
-      'kategori_pokja': kategori.kategoriPokja,   // âœ… FIX: string
+      'kategori_pokja': kategori.kategoriPokja, // âœ… FIX: string
       'data_angka': dataAngka,
       'kecamatan': kecamatan,
       'desa_kelurahan': desa,
@@ -396,18 +544,24 @@ class CatatanKegiatan {
 
     DateTime parsedTanggal = DateTime.now();
     if (json['created_at'] != null) {
-      parsedTanggal = DateTime.tryParse(json['created_at'].toString()) ?? DateTime.now();
+      parsedTanggal =
+          DateTime.tryParse(json['created_at'].toString()) ?? DateTime.now();
     } else if (json['tanggal'] != null) {
-      parsedTanggal = DateTime.tryParse(json['tanggal'].toString()) ?? DateTime.now();
+      parsedTanggal =
+          DateTime.tryParse(json['tanggal'].toString()) ?? DateTime.now();
     }
 
     return CatatanKegiatan(
-      id: json['id'] is int ? json['id'] : (int.tryParse(json['id']?.toString() ?? '0') ?? 0),
-      judul: json['judul']?.toString() ??
+      id: json['id'] is int
+          ? json['id']
+          : (int.tryParse(json['id']?.toString() ?? '0') ?? 0),
+      judul:
+          json['judul']?.toString() ??
           json['judul_kegiatan']?.toString() ??
           json['title']?.toString() ??
           '',
-      deskripsiSingkat: json['deskripsi']?.toString() ??
+      deskripsiSingkat:
+          json['deskripsi']?.toString() ??
           json['deskripsi_singkat']?.toString() ??
           json['keterangan']?.toString() ??
           '',
@@ -415,13 +569,16 @@ class CatatanKegiatan {
         json['kategori_pokja'] ?? json['kategori'] ?? 'I',
       ),
       dataAngka: dataAngka,
-      kecamatan: json['kecamatan']?.toString() ??
+      kecamatan:
+          json['kecamatan']?.toString() ??
           json['nama_kecamatan']?.toString() ??
           '',
-      desa: json['desa']?.toString() ??
+      desa:
+          json['desa']?.toString() ??
           json['desa_kelurahan']?.toString() ??
           json['kelurahan']?.toString(),
-      fotoPath: json['foto']?.toString() ??
+      fotoPath:
+          json['foto']?.toString() ??
           json['foto_path']?.toString() ??
           json['foto_url']?.toString(),
       tanggal: parsedTanggal,
@@ -441,14 +598,16 @@ class CatatanKegiatan {
     final payload = {
       'judul': catatan.judul,
       'deskripsi': catatan.deskripsiSingkat,
-      'kategori_pokja': catatan.kategori.kategoriPokja,   // âœ… IV, IV-PYD, dll
+      'kategori_pokja': catatan.kategori.kategoriPokja, // âœ… IV, IV-PYD, dll
       'data_angka': catatan.dataAngka,
       'kecamatan': catatan.kecamatan,
       'desa_kelurahan': catatan.desa,
     };
 
     final response = await http.post(
-      Uri.parse('${AppConstants.baseUrl}/api/laporan-kegiatan'),  // âœ… FIX: endpoint
+      Uri.parse(
+        '${AppConstants.baseUrl}/api/laporan-kegiatan',
+      ), // âœ… FIX: endpoint
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',

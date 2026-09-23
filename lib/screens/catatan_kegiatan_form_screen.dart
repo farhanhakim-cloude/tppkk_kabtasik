@@ -52,6 +52,13 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
     themeNotifier.addListener(_onThemeChanged);
     _loadTheme();
 
+    // Pastikan controller Pokja 1 (4 field per program) ada
+    for (final k in ['kisah', 'kilas', 'krisan', 'kiat', 'kisak', 'pkbn']) {
+      for (final suffix in ['_kegiatan', '_volume', '_metode', '_sasaran']) {
+        _angkaCtrl['$k$suffix'] = TextEditingController();
+      }
+    }
+
     final allFields = <String>{};
     for (final k in PokjaKategori.values) {
       allFields.addAll(k.fieldAngka);
@@ -63,7 +70,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
       }
     }
     for (final f in allFields) {
-      _angkaCtrl[f] = TextEditingController();
+      _angkaCtrl.putIfAbsent(f, () => TextEditingController());
     }
 
     if (widget.catatan != null) {
@@ -226,9 +233,6 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
     }
   }
 
-  /// Palet warna bottom sheet yang ikut tema (light/dark) — dipakai
-  /// _showKecamatanPicker, _showPokjaPicker, _showKegiatanInputSheet.
-  /// Sheet yang hardcode putih bikin silau di dark mode.
   ({Color bg, Color text, Color sub, Color faint, Color fill, Color handle})
   _sheetPalette() {
     if (_isDarkMode) {
@@ -252,815 +256,150 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
   }
 
   // ============================================================
-  // SUB-ITEMS — 7 case — SESUAI BACKEND $pokjaFields
+  // SUB-ITEMS — Pokja 1 (4 field per program) + Pokja lain
   // ============================================================
   List<_PokjaSubItem> _getSubItems(PokjaKategori p) {
     switch (p) {
       case PokjaKategori.pokja1:
         return const [
-          _PokjaSubItem(
-            title: 'PKBN',
-            deskripsi: 'Bela Negara',
-            fieldL: 'pkbn_l',
-            fieldP: 'pkbn_p',
-            icon: Icons.shield_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'PKDRT',
-            deskripsi: 'Cegah KDRT',
-            fieldL: 'pkdrt_l',
-            fieldP: 'pkdrt_p',
-            icon: Icons.family_restroom_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Pola Asuh',
-            deskripsi: 'PAAR',
-            fieldL: 'pola_asuh_l',
-            fieldP: 'pola_asuh_p',
-            icon: Icons.child_care_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Lansia',
-            deskripsi: 'Bina Keluarga Lansia',
-            fieldL: 'lansia_l',
-            fieldP: 'lansia_p',
-            icon: Icons.elderly_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Kader Pokja I',
-            deskripsi: 'Kader aktif',
-            fieldL: 'kader_pokja1_l',
-            fieldP: 'kader_pokja1_p',
-            icon: Icons.badge_rounded,
-          ),
+          _PokjaSubItem(title: 'Kader Umum', deskripsi: 'Jumlah kader umum', fieldL: 'kader_umum', fieldP: '', icon: Icons.badge_rounded),
+          _PokjaSubItem(title: 'Kader Khusus', deskripsi: 'Jumlah kader khusus', fieldL: 'kader_khusus', fieldP: '', icon: Icons.badge_rounded),
+          _PokjaSubItem(title: 'KISAH', deskripsi: 'Kegiatan + Volume + Metode + Sasaran', fieldL: 'kisah', fieldP: '', icon: Icons.groups_rounded),
+          _PokjaSubItem(title: 'KILAS', deskripsi: 'Kegiatan + Volume + Metode + Sasaran', fieldL: 'kilas', fieldP: '', icon: Icons.groups_rounded),
+          _PokjaSubItem(title: 'KRISAN', deskripsi: 'Kegiatan + Volume + Metode + Sasaran', fieldL: 'krisan', fieldP: '', icon: Icons.groups_rounded),
+          _PokjaSubItem(title: 'KIAT', deskripsi: 'Kegiatan + Volume + Metode + Sasaran', fieldL: 'kiat', fieldP: '', icon: Icons.groups_rounded),
+          _PokjaSubItem(title: 'KISAK', deskripsi: 'Kegiatan + Volume + Metode + Sasaran', fieldL: 'kisak', fieldP: '', icon: Icons.groups_rounded),
+          _PokjaSubItem(title: 'PKBN', deskripsi: 'Kegiatan + Volume + Metode + Sasaran', fieldL: 'pkbn', fieldP: '', icon: Icons.groups_rounded),
         ];
 
       case PokjaKategori.pokja2:
         return const [
-          _PokjaSubItem(
-            title: 'Warga Buta Aksara',
-            deskripsi: 'L & P',
-            fieldL: 'warga_buta_l',
-            fieldP: 'warga_buta_p',
-            icon: Icons.menu_book_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Kelompok Belajar Paket A',
-            deskripsi: 'Jumlah kelompok',
-            fieldL: 'kelompok_belajar_paket_a',
-            fieldP: '',
-            icon: Icons.school_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Kelompok Belajar Paket B',
-            deskripsi: 'Jumlah kelompok',
-            fieldL: 'kelompok_belajar_paket_b',
-            fieldP: '',
-            icon: Icons.school_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Kelompok Belajar Paket C',
-            deskripsi: 'Jumlah kelompok',
-            fieldL: 'kelompok_belajar_paket_c',
-            fieldP: '',
-            icon: Icons.school_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'KF & PAUD',
-            deskripsi: 'Keaksaraan & PAUD',
-            fieldL: 'kf',
-            fieldP: 'paud',
-            icon: Icons.child_care_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Koperasi Berbadan Hukum',
-            deskripsi: 'Jumlah koperasi',
-            fieldL: 'koperasi_berbadan_hukum',
-            fieldP: '',
-            icon: Icons.storefront_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Warga Belajar Paket A',
-            deskripsi: 'Jumlah warga',
-            fieldL: 'warga_belajar_paket_a',
-            fieldP: '',
-            icon: Icons.menu_book_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Warga Belajar Paket B',
-            deskripsi: 'Jumlah warga',
-            fieldL: 'warga_belajar_paket_b',
-            fieldP: '',
-            icon: Icons.menu_book_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Warga Belajar Paket C',
-            deskripsi: 'Jumlah warga',
-            fieldL: 'warga_belajar_paket_c',
-            fieldP: '',
-            icon: Icons.menu_book_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Warga Belajar KF',
-            deskripsi: 'Jumlah warga',
-            fieldL: 'warga_belajar_kf',
-            fieldP: '',
-            icon: Icons.menu_book_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Taman Bacaan',
-            deskripsi: 'Jumlah taman bacaan',
-            fieldL: 'taman_bacaan',
-            fieldP: '',
-            icon: Icons.local_library_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Kelompok BKB',
-            deskripsi: 'Jumlah kelompok',
-            fieldL: 'kelompok_bkb',
-            fieldP: '',
-            icon: Icons.family_restroom_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Peserta BKB',
-            deskripsi: 'Jumlah peserta',
-            fieldL: 'peserta_bkb',
-            fieldP: '',
-            icon: Icons.people_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'APE BKB',
-            deskripsi: 'Alat Permainan Edukatif',
-            fieldL: 'ape_bkb',
-            fieldP: '',
-            icon: Icons.toys_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Kelompok Simulasi BKB',
-            deskripsi: 'Jumlah kelompok',
-            fieldL: 'kelompok_simulasi_bkb',
-            fieldP: '',
-            icon: Icons.groups_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Tutor KF',
-            deskripsi: 'Jumlah tutor',
-            fieldL: 'tutor_kf',
-            fieldP: '',
-            icon: Icons.badge_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Tutor PAUD',
-            deskripsi: 'Jumlah tutor',
-            fieldL: 'tutor_paud',
-            fieldP: '',
-            icon: Icons.badge_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Kader BKB',
-            deskripsi: 'Jumlah kader',
-            fieldL: 'kader_bkb',
-            fieldP: '',
-            icon: Icons.badge_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Kelompok Kader Koperasi',
-            deskripsi: 'Jumlah kelompok',
-            fieldL: 'kelompok_kader_koperasi',
-            fieldP: '',
-            icon: Icons.groups_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Kader Keterampilan',
-            deskripsi: 'Jumlah kader',
-            fieldL: 'kader_keterampilan',
-            fieldP: '',
-            icon: Icons.badge_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Kader Dilatih Pengelolaan',
-            deskripsi: 'Jumlah kader',
-            fieldL: 'kader_dilatih_pengelolaan',
-            fieldP: '',
-            icon: Icons.badge_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Kader Dilatih TP PKK',
-            deskripsi: 'Jumlah kader',
-            fieldL: 'kader_dilatih_tp_pkk',
-            fieldP: '',
-            icon: Icons.badge_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Kader Dilatih Damas',
-            deskripsi: 'Jumlah kader',
-            fieldL: 'kader_dilatih_damas',
-            fieldP: '',
-            icon: Icons.badge_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'UP2K Pemula Kelompok',
-            deskripsi: 'Jumlah kelompok',
-            fieldL: 'up2k_pemula_kelompok',
-            fieldP: '',
-            icon: Icons.workspaces_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'UP2K Pemula Peserta',
-            deskripsi: 'Jumlah peserta',
-            fieldL: 'up2k_pemula_peserta',
-            fieldP: '',
-            icon: Icons.people_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'UP2K Madya Kelompok',
-            deskripsi: 'Jumlah kelompok',
-            fieldL: 'up2k_madya_kelompok',
-            fieldP: '',
-            icon: Icons.workspaces_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'UP2K Madya Peserta',
-            deskripsi: 'Jumlah peserta',
-            fieldL: 'up2k_madya_peserta',
-            fieldP: '',
-            icon: Icons.people_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'UP2K Utama Kelompok',
-            deskripsi: 'Jumlah kelompok',
-            fieldL: 'up2k_utama_kelompok',
-            fieldP: '',
-            icon: Icons.workspaces_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'UP2K Utama Peserta',
-            deskripsi: 'Jumlah peserta',
-            fieldL: 'up2k_utama_peserta',
-            fieldP: '',
-            icon: Icons.people_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'UP2K Mandiri Kelompok',
-            deskripsi: 'Jumlah kelompok',
-            fieldL: 'up2k_mandiri_kelompok',
-            fieldP: '',
-            icon: Icons.workspaces_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'UP2K Mandiri Peserta',
-            deskripsi: 'Jumlah peserta',
-            fieldL: 'up2k_mandiri_peserta',
-            fieldP: '',
-            icon: Icons.people_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Anggota Koperasi',
-            deskripsi: 'Jumlah anggota',
-            fieldL: 'anggota_koperasi',
-            fieldP: '',
-            icon: Icons.people_rounded,
-          ),
+          _PokjaSubItem(title: 'Warga Buta Aksara', deskripsi: 'L & P', fieldL: 'warga_buta_l', fieldP: 'warga_buta_p', icon: Icons.menu_book_rounded),
+          _PokjaSubItem(title: 'Kelompok Belajar Paket A', deskripsi: 'Jumlah kelompok', fieldL: 'kelompok_belajar_paket_a', fieldP: '', icon: Icons.school_rounded),
+          _PokjaSubItem(title: 'Kelompok Belajar Paket B', deskripsi: 'Jumlah kelompok', fieldL: 'kelompok_belajar_paket_b', fieldP: '', icon: Icons.school_rounded),
+          _PokjaSubItem(title: 'Kelompok Belajar Paket C', deskripsi: 'Jumlah kelompok', fieldL: 'kelompok_belajar_paket_c', fieldP: '', icon: Icons.school_rounded),
+          _PokjaSubItem(title: 'KF & PAUD', deskripsi: 'Keaksaraan & PAUD', fieldL: 'kf', fieldP: 'paud', icon: Icons.child_care_rounded),
+          _PokjaSubItem(title: 'Koperasi Berbadan Hukum', deskripsi: 'Jumlah koperasi', fieldL: 'koperasi_berbadan_hukum', fieldP: '', icon: Icons.storefront_rounded),
+          _PokjaSubItem(title: 'Warga Belajar Paket A', deskripsi: 'Jumlah warga', fieldL: 'warga_belajar_paket_a', fieldP: '', icon: Icons.menu_book_rounded),
+          _PokjaSubItem(title: 'Warga Belajar Paket B', deskripsi: 'Jumlah warga', fieldL: 'warga_belajar_paket_b', fieldP: '', icon: Icons.menu_book_rounded),
+          _PokjaSubItem(title: 'Warga Belajar Paket C', deskripsi: 'Jumlah warga', fieldL: 'warga_belajar_paket_c', fieldP: '', icon: Icons.menu_book_rounded),
+          _PokjaSubItem(title: 'Warga Belajar KF', deskripsi: 'Jumlah warga', fieldL: 'warga_belajar_kf', fieldP: '', icon: Icons.menu_book_rounded),
+          _PokjaSubItem(title: 'Taman Bacaan', deskripsi: 'Jumlah taman bacaan', fieldL: 'taman_bacaan', fieldP: '', icon: Icons.local_library_rounded),
+          _PokjaSubItem(title: 'Kelompok BKB', deskripsi: 'Jumlah kelompok', fieldL: 'kelompok_bkb', fieldP: '', icon: Icons.family_restroom_rounded),
+          _PokjaSubItem(title: 'Peserta BKB', deskripsi: 'Jumlah peserta', fieldL: 'peserta_bkb', fieldP: '', icon: Icons.people_rounded),
+          _PokjaSubItem(title: 'APE BKB', deskripsi: 'Alat Permainan Edukatif', fieldL: 'ape_bkb', fieldP: '', icon: Icons.toys_rounded),
+          _PokjaSubItem(title: 'Kelompok Simulasi BKB', deskripsi: 'Jumlah kelompok', fieldL: 'kelompok_simulasi_bkb', fieldP: '', icon: Icons.groups_rounded),
+          _PokjaSubItem(title: 'Tutor KF', deskripsi: 'Jumlah tutor', fieldL: 'tutor_kf', fieldP: '', icon: Icons.badge_rounded),
+          _PokjaSubItem(title: 'Tutor PAUD', deskripsi: 'Jumlah tutor', fieldL: 'tutor_paud', fieldP: '', icon: Icons.badge_rounded),
+          _PokjaSubItem(title: 'Kader BKB', deskripsi: 'Jumlah kader', fieldL: 'kader_bkb', fieldP: '', icon: Icons.badge_rounded),
+          _PokjaSubItem(title: 'Kelompok Kader Koperasi', deskripsi: 'Jumlah kelompok', fieldL: 'kelompok_kader_koperasi', fieldP: '', icon: Icons.groups_rounded),
+          _PokjaSubItem(title: 'Kader Keterampilan', deskripsi: 'Jumlah kader', fieldL: 'kader_keterampilan', fieldP: '', icon: Icons.badge_rounded),
+          _PokjaSubItem(title: 'Kader Dilatih Pengelolaan', deskripsi: 'Jumlah kader', fieldL: 'kader_dilatih_pengelolaan', fieldP: '', icon: Icons.badge_rounded),
+          _PokjaSubItem(title: 'Kader Dilatih TP PKK', deskripsi: 'Jumlah kader', fieldL: 'kader_dilatih_tp_pkk', fieldP: '', icon: Icons.badge_rounded),
+          _PokjaSubItem(title: 'Kader Dilatih Damas', deskripsi: 'Jumlah kader', fieldL: 'kader_dilatih_damas', fieldP: '', icon: Icons.badge_rounded),
+          _PokjaSubItem(title: 'UP2K Pemula Kelompok', deskripsi: 'Jumlah kelompok', fieldL: 'up2k_pemula_kelompok', fieldP: '', icon: Icons.workspaces_rounded),
+          _PokjaSubItem(title: 'UP2K Pemula Peserta', deskripsi: 'Jumlah peserta', fieldL: 'up2k_pemula_peserta', fieldP: '', icon: Icons.people_rounded),
+          _PokjaSubItem(title: 'UP2K Madya Kelompok', deskripsi: 'Jumlah kelompok', fieldL: 'up2k_madya_kelompok', fieldP: '', icon: Icons.workspaces_rounded),
+          _PokjaSubItem(title: 'UP2K Madya Peserta', deskripsi: 'Jumlah peserta', fieldL: 'up2k_madya_peserta', fieldP: '', icon: Icons.people_rounded),
+          _PokjaSubItem(title: 'UP2K Utama Kelompok', deskripsi: 'Jumlah kelompok', fieldL: 'up2k_utama_kelompok', fieldP: '', icon: Icons.workspaces_rounded),
+          _PokjaSubItem(title: 'UP2K Utama Peserta', deskripsi: 'Jumlah peserta', fieldL: 'up2k_utama_peserta', fieldP: '', icon: Icons.people_rounded),
+          _PokjaSubItem(title: 'UP2K Mandiri Kelompok', deskripsi: 'Jumlah kelompok', fieldL: 'up2k_mandiri_kelompok', fieldP: '', icon: Icons.workspaces_rounded),
+          _PokjaSubItem(title: 'UP2K Mandiri Peserta', deskripsi: 'Jumlah peserta', fieldL: 'up2k_mandiri_peserta', fieldP: '', icon: Icons.people_rounded),
+          _PokjaSubItem(title: 'Anggota Koperasi', deskripsi: 'Jumlah anggota', fieldL: 'anggota_koperasi', fieldP: '', icon: Icons.people_rounded),
         ];
 
       case PokjaKategori.pokja3:
         return const [
-          _PokjaSubItem(
-            title: 'Rumah Sehat',
-            deskripsi: 'Jumlah rumah sehat',
-            fieldL: 'rumah_sehat',
-            fieldP: '',
-            icon: Icons.house_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Rumah Tidak Sehat',
-            deskripsi: 'Jumlah rumah tidak sehat',
-            fieldL: 'rumah_tidak_sehat',
-            fieldP: '',
-            icon: Icons.house_siding_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Pemanfaatan Pekarangan',
-            deskripsi: 'Jumlah pekarangan',
-            fieldL: 'pemanfaatan_pekarangan',
-            fieldP: '',
-            icon: Icons.grass_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Industri Rumah Tangga',
-            deskripsi: 'Jumlah industri',
-            fieldL: 'industri_rumah_tangga',
-            fieldP: '',
-            icon: Icons.store_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Jumlah Kader',
-            deskripsi: 'Total kader',
-            fieldL: 'jumlah_kader',
-            fieldP: '',
-            icon: Icons.badge_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Jumlah Kader Perempuan',
-            deskripsi: 'Kader perempuan',
-            fieldL: 'jumlah_kader_p',
-            fieldP: '',
-            icon: Icons.badge_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Makanan Pokok',
-            deskripsi: 'Jumlah',
-            fieldL: 'makanan_pokok',
-            fieldP: '',
-            icon: Icons.rice_bowl_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'HATINYA PKK',
-            deskripsi: 'Jumlah',
-            fieldL: 'hatinya_pkk',
-            fieldP: '',
-            icon: Icons.grass_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Jumlah Rumah',
-            deskripsi: 'Total rumah',
-            fieldL: 'jumlah_rumah',
-            fieldP: '',
-            icon: Icons.home_rounded,
-          ),
+          _PokjaSubItem(title: 'Rumah Sehat', deskripsi: 'Jumlah rumah sehat', fieldL: 'rumah_sehat', fieldP: '', icon: Icons.house_rounded),
+          _PokjaSubItem(title: 'Rumah Tidak Sehat', deskripsi: 'Jumlah rumah tidak sehat', fieldL: 'rumah_tidak_sehat', fieldP: '', icon: Icons.house_siding_rounded),
+          _PokjaSubItem(title: 'Pemanfaatan Pekarangan', deskripsi: 'Jumlah pekarangan', fieldL: 'pemanfaatan_pekarangan', fieldP: '', icon: Icons.grass_rounded),
+          _PokjaSubItem(title: 'Industri Rumah Tangga', deskripsi: 'Jumlah industri', fieldL: 'industri_rumah_tangga', fieldP: '', icon: Icons.store_rounded),
+          _PokjaSubItem(title: 'Jumlah Kader', deskripsi: 'Total kader', fieldL: 'jumlah_kader', fieldP: '', icon: Icons.badge_rounded),
+          _PokjaSubItem(title: 'Jumlah Kader Perempuan', deskripsi: 'Kader perempuan', fieldL: 'jumlah_kader_p', fieldP: '', icon: Icons.badge_rounded),
+          _PokjaSubItem(title: 'Makanan Pokok', deskripsi: 'Jumlah', fieldL: 'makanan_pokok', fieldP: '', icon: Icons.rice_bowl_rounded),
+          _PokjaSubItem(title: 'HATINYA PKK', deskripsi: 'Jumlah', fieldL: 'hatinya_pkk', fieldP: '', icon: Icons.grass_rounded),
+          _PokjaSubItem(title: 'Jumlah Rumah', deskripsi: 'Total rumah', fieldL: 'jumlah_rumah', fieldP: '', icon: Icons.home_rounded),
         ];
 
       case PokjaKategori.pokja4:
         return const [
-          _PokjaSubItem(
-            title: 'Posyandu',
-            deskripsi: 'Jumlah posyandu',
-            fieldL: 'posyandu',
-            fieldP: '',
-            icon: Icons.local_hospital_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Akseptor KB',
-            deskripsi: 'Jumlah akseptor',
-            fieldL: 'akseptor_kb',
-            fieldP: '',
-            icon: Icons.family_restroom_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'PHBS',
-            deskripsi: 'Rumah tangga PHBS',
-            fieldL: 'phbs',
-            fieldP: '',
-            icon: Icons.health_and_safety_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Jamban Keluarga',
-            deskripsi: 'Jumlah jamban',
-            fieldL: 'jamban_keluarga',
-            fieldP: '',
-            icon: Icons.wc_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Kader Kesehatan',
-            deskripsi: 'Jumlah kader',
-            fieldL: 'kader_kesehatan',
-            fieldP: '',
-            icon: Icons.badge_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Kader Gizi',
-            deskripsi: 'Jumlah kader',
-            fieldL: 'kader_gizi',
-            fieldP: '',
-            icon: Icons.badge_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Kader Kesling',
-            deskripsi: 'Jumlah kader',
-            fieldL: 'kader_kesling',
-            fieldP: '',
-            icon: Icons.badge_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Kader PHBS',
-            deskripsi: 'Jumlah kader',
-            fieldL: 'kader_phbs',
-            fieldP: '',
-            icon: Icons.badge_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Kader KB',
-            deskripsi: 'Jumlah kader',
-            fieldL: 'kader_kb',
-            fieldP: '',
-            icon: Icons.badge_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Imunisasi',
-            deskripsi: 'Jumlah imunisasi',
-            fieldL: 'imunisasi',
-            fieldP: '',
-            icon: Icons.vaccines_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'PKG',
-            deskripsi: 'Penyuluhan Kelompok',
-            fieldL: 'pkg',
-            fieldP: '',
-            icon: Icons.groups_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'TBC',
-            deskripsi: 'Jumlah kasus TBC',
-            fieldL: 'tbc',
-            fieldP: '',
-            icon: Icons.medical_services_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'SPAL',
-            deskripsi: 'Saluran air limbah',
-            fieldL: 'spal',
-            fieldP: '',
-            icon: Icons.water_damage_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'TPS',
-            deskripsi: 'Tempat sampah',
-            fieldL: 'tps',
-            fieldP: '',
-            icon: Icons.delete_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'MCK',
-            deskripsi: 'Jumlah MCK',
-            fieldL: 'mck',
-            fieldP: '',
-            icon: Icons.bathtub_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Air PDAM',
-            deskripsi: 'Pengguna PDAM',
-            fieldL: 'air_pdam',
-            fieldP: '',
-            icon: Icons.water_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Air Sumur',
-            deskripsi: 'Pengguna sumur',
-            fieldL: 'air_sumur',
-            fieldP: '',
-            icon: Icons.water_drop_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Air Lainnya',
-            deskripsi: 'Sumber air lain',
-            fieldL: 'air_lainnya',
-            fieldP: '',
-            icon: Icons.water_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Jumlah PUS',
-            deskripsi: 'Pasangan Usia Subur',
-            fieldL: 'jumlah_pus',
-            fieldP: '',
-            icon: Icons.family_restroom_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Jumlah WUS',
-            deskripsi: 'Wanita Usia Subur',
-            fieldL: 'jumlah_wus',
-            fieldP: '',
-            icon: Icons.woman_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Akseptor KB',
-            deskripsi: 'L & P',
-            fieldL: 'akseptor_kb_l',
-            fieldP: 'akseptor_kb_p',
-            icon: Icons.family_restroom_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Tabungan Keluarga',
-            deskripsi: 'Jumlah KK',
-            fieldL: 'tabungan_keluarga',
-            fieldP: '',
-            icon: Icons.savings_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Asuransi Kesehatan',
-            deskripsi: 'Jumlah KK',
-            fieldL: 'asuransi_kesehatan',
-            fieldP: '',
-            icon: Icons.health_and_safety_rounded,
-          ),
+          _PokjaSubItem(title: 'Posyandu', deskripsi: 'Jumlah posyandu', fieldL: 'posyandu', fieldP: '', icon: Icons.local_hospital_rounded),
+          _PokjaSubItem(title: 'Akseptor KB', deskripsi: 'Jumlah akseptor', fieldL: 'akseptor_kb', fieldP: '', icon: Icons.family_restroom_rounded),
+          _PokjaSubItem(title: 'PHBS', deskripsi: 'Rumah tangga PHBS', fieldL: 'phbs', fieldP: '', icon: Icons.health_and_safety_rounded),
+          _PokjaSubItem(title: 'Jamban Keluarga', deskripsi: 'Jumlah jamban', fieldL: 'jamban_keluarga', fieldP: '', icon: Icons.wc_rounded),
+          _PokjaSubItem(title: 'Kader Kesehatan', deskripsi: 'Jumlah kader', fieldL: 'kader_kesehatan', fieldP: '', icon: Icons.badge_rounded),
+          _PokjaSubItem(title: 'Kader Gizi', deskripsi: 'Jumlah kader', fieldL: 'kader_gizi', fieldP: '', icon: Icons.badge_rounded),
+          _PokjaSubItem(title: 'Kader Kesling', deskripsi: 'Jumlah kader', fieldL: 'kader_kesling', fieldP: '', icon: Icons.badge_rounded),
+          _PokjaSubItem(title: 'Kader PHBS', deskripsi: 'Jumlah kader', fieldL: 'kader_phbs', fieldP: '', icon: Icons.badge_rounded),
+          _PokjaSubItem(title: 'Kader KB', deskripsi: 'Jumlah kader', fieldL: 'kader_kb', fieldP: '', icon: Icons.badge_rounded),
+          _PokjaSubItem(title: 'Imunisasi', deskripsi: 'Jumlah imunisasi', fieldL: 'imunisasi', fieldP: '', icon: Icons.vaccines_rounded),
+          _PokjaSubItem(title: 'PKG', deskripsi: 'Penyuluhan Kelompok', fieldL: 'pkg', fieldP: '', icon: Icons.groups_rounded),
+          _PokjaSubItem(title: 'TBC', deskripsi: 'Jumlah kasus TBC', fieldL: 'tbc', fieldP: '', icon: Icons.medical_services_rounded),
+          _PokjaSubItem(title: 'SPAL', deskripsi: 'Saluran air limbah', fieldL: 'spal', fieldP: '', icon: Icons.water_damage_rounded),
+          _PokjaSubItem(title: 'TPS', deskripsi: 'Tempat sampah', fieldL: 'tps', fieldP: '', icon: Icons.delete_rounded),
+          _PokjaSubItem(title: 'MCK', deskripsi: 'Jumlah MCK', fieldL: 'mck', fieldP: '', icon: Icons.bathtub_rounded),
+          _PokjaSubItem(title: 'Air PDAM', deskripsi: 'Pengguna PDAM', fieldL: 'air_pdam', fieldP: '', icon: Icons.water_rounded),
+          _PokjaSubItem(title: 'Air Sumur', deskripsi: 'Pengguna sumur', fieldL: 'air_sumur', fieldP: '', icon: Icons.water_drop_rounded),
+          _PokjaSubItem(title: 'Air Lainnya', deskripsi: 'Sumber air lain', fieldL: 'air_lainnya', fieldP: '', icon: Icons.water_rounded),
+          _PokjaSubItem(title: 'Jumlah PUS', deskripsi: 'Pasangan Usia Subur', fieldL: 'jumlah_pus', fieldP: '', icon: Icons.family_restroom_rounded),
+          _PokjaSubItem(title: 'Jumlah WUS', deskripsi: 'Wanita Usia Subur', fieldL: 'jumlah_wus', fieldP: '', icon: Icons.woman_rounded),
+          _PokjaSubItem(title: 'Akseptor KB', deskripsi: 'L & P', fieldL: 'akseptor_kb_l', fieldP: 'akseptor_kb_p', icon: Icons.family_restroom_rounded),
+          _PokjaSubItem(title: 'Tabungan Keluarga', deskripsi: 'Jumlah KK', fieldL: 'tabungan_keluarga', fieldP: '', icon: Icons.savings_rounded),
+          _PokjaSubItem(title: 'Asuransi Kesehatan', deskripsi: 'Jumlah KK', fieldL: 'asuransi_kesehatan', fieldP: '', icon: Icons.health_and_safety_rounded),
         ];
 
       case PokjaKategori.pokja4Pyd:
         return const [
-          _PokjaSubItem(
-            title: 'Bayi 0-12 Bln',
-            deskripsi: 'L & P',
-            fieldL: 'bayi_0_12_l',
-            fieldP: 'bayi_0_12_p',
-            icon: Icons.child_care_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Balita 1-5 Thn',
-            deskripsi: 'L & P',
-            fieldL: 'balita_1_5_l',
-            fieldP: 'balita_1_5_p',
-            icon: Icons.escalator_warning_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'WUS',
-            deskripsi: 'Wanita Usia Subur',
-            fieldL: 'wus',
-            fieldP: '',
-            icon: Icons.woman_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'PUS',
-            deskripsi: 'Pasangan Usia Subur',
-            fieldL: 'pus',
-            fieldP: '',
-            icon: Icons.family_restroom_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Ibu Hamil',
-            deskripsi: 'Jumlah ibu hamil',
-            fieldL: 'ibu_hamil',
-            fieldP: '',
-            icon: Icons.pregnant_woman_rounded,
-          ),
-          // ✅ FIX: 'menyusui' → 'ibu_menyusui'
-          _PokjaSubItem(
-            title: 'Menyusui',
-            deskripsi: 'Jumlah ibu menyusui',
-            fieldL: 'ibu_menyusui',
-            fieldP: '',
-            icon: Icons.child_friendly_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Bayi Lahir',
-            deskripsi: 'Jumlah kelahiran',
-            fieldL: 'bayi_lahir',
-            fieldP: '',
-            icon: Icons.celebration_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Bayi Meninggal',
-            deskripsi: 'Jumlah kematian bayi',
-            fieldL: 'bayi_meninggal',
-            fieldP: '',
-            icon: Icons.sentiment_very_dissatisfied_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Kematian Ibu',
-            deskripsi: 'Hamil/melahirkan/nifas',
-            fieldL: 'kematian_ibu',
-            fieldP: '',
-            icon: Icons.warning_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Petugas Kader',
-            deskripsi: 'Jumlah kader hadir',
-            fieldL: 'petugas_kader',
-            fieldP: '',
-            icon: Icons.badge_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Petugas PLKB',
-            deskripsi: 'Jumlah PLKB hadir',
-            fieldL: 'petugas_plkb',
-            fieldP: '',
-            icon: Icons.person_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Petugas Medis',
-            deskripsi: 'Jumlah medis hadir',
-            fieldL: 'petugas_medis',
-            fieldP: '',
-            icon: Icons.medical_services_rounded,
-          ),
+          _PokjaSubItem(title: 'Bayi 0-12 Bln', deskripsi: 'L & P', fieldL: 'bayi_0_12_l', fieldP: 'bayi_0_12_p', icon: Icons.child_care_rounded),
+          _PokjaSubItem(title: 'Balita 1-5 Thn', deskripsi: 'L & P', fieldL: 'balita_1_5_l', fieldP: 'balita_1_5_p', icon: Icons.escalator_warning_rounded),
+          _PokjaSubItem(title: 'WUS', deskripsi: 'Wanita Usia Subur', fieldL: 'wus', fieldP: '', icon: Icons.woman_rounded),
+          _PokjaSubItem(title: 'PUS', deskripsi: 'Pasangan Usia Subur', fieldL: 'pus', fieldP: '', icon: Icons.family_restroom_rounded),
+          _PokjaSubItem(title: 'Ibu Hamil', deskripsi: 'Jumlah ibu hamil', fieldL: 'ibu_hamil', fieldP: '', icon: Icons.pregnant_woman_rounded),
+          _PokjaSubItem(title: 'Menyusui', deskripsi: 'Jumlah ibu menyusui', fieldL: 'ibu_menyusui', fieldP: '', icon: Icons.child_friendly_rounded),
+          _PokjaSubItem(title: 'Bayi Lahir', deskripsi: 'Jumlah kelahiran', fieldL: 'bayi_lahir', fieldP: '', icon: Icons.celebration_rounded),
+          _PokjaSubItem(title: 'Bayi Meninggal', deskripsi: 'Jumlah kematian bayi', fieldL: 'bayi_meninggal', fieldP: '', icon: Icons.sentiment_very_dissatisfied_rounded),
+          _PokjaSubItem(title: 'Kematian Ibu', deskripsi: 'Hamil/melahirkan/nifas', fieldL: 'kematian_ibu', fieldP: '', icon: Icons.warning_rounded),
+          _PokjaSubItem(title: 'Petugas Kader', deskripsi: 'Jumlah kader hadir', fieldL: 'petugas_kader', fieldP: '', icon: Icons.badge_rounded),
+          _PokjaSubItem(title: 'Petugas PLKB', deskripsi: 'Jumlah PLKB hadir', fieldL: 'petugas_plkb', fieldP: '', icon: Icons.person_rounded),
+          _PokjaSubItem(title: 'Petugas Medis', deskripsi: 'Jumlah medis hadir', fieldL: 'petugas_medis', fieldP: '', icon: Icons.medical_services_rounded),
         ];
 
       case PokjaKategori.pokja4Posyandu:
         return const [
-          _PokjaSubItem(
-            title: 'Ibu Hamil',
-            deskripsi: 'Jumlah & diperiksa',
-            fieldL: 'ibu_hamil',
-            fieldP: 'ibu_hamil_diperiksa',
-            icon: Icons.pregnant_woman_rounded,
-          ),
-          // ✅ FIX: 'menyusui' → 'ibu_menyusui'
-          _PokjaSubItem(
-            title: 'Menyusui',
-            deskripsi: 'Jumlah ibu menyusui',
-            fieldL: 'ibu_menyusui',
-            fieldP: '',
-            icon: Icons.child_friendly_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'KB IUD',
-            deskripsi: 'Akseptor IUD',
-            fieldL: 'kb_iud',
-            fieldP: '',
-            icon: Icons.health_and_safety_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'KB MOW',
-            deskripsi: 'Akseptor MOW',
-            fieldL: 'kb_mow',
-            fieldP: '',
-            icon: Icons.health_and_safety_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'KB MOP',
-            deskripsi: 'Akseptor MOP',
-            fieldL: 'kb_mop',
-            fieldP: '',
-            icon: Icons.health_and_safety_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'KB Implan',
-            deskripsi: 'Akseptor Implan',
-            fieldL: 'kb_implan',
-            fieldP: '',
-            icon: Icons.health_and_safety_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'KB Pil',
-            deskripsi: 'Akseptor Pil',
-            fieldL: 'kb_pil',
-            fieldP: '',
-            icon: Icons.health_and_safety_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'KB Suntik',
-            deskripsi: 'Akseptor Suntik',
-            fieldL: 'kb_suntik',
-            fieldP: '',
-            icon: Icons.health_and_safety_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'KB Kondom',
-            deskripsi: 'Akseptor Kondom',
-            fieldL: 'kb_kondom',
-            fieldP: '',
-            icon: Icons.health_and_safety_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Balita',
-            deskripsi: 'Jumlah L & P',
-            fieldL: 'balita_l',
-            fieldP: 'balita_p',
-            icon: Icons.child_care_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Balita KIA',
-            deskripsi: 'L & P',
-            fieldL: 'balita_kia_l',
-            fieldP: 'balita_kia_p',
-            icon: Icons.card_membership_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Ditimbang',
-            deskripsi: 'L & P',
-            fieldL: 'balita_ditimbang_l',
-            fieldP: 'balita_ditimbang_p',
-            icon: Icons.monitor_weight_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Naik BB',
-            deskripsi: 'L & P',
-            fieldL: 'balita_naik_l',
-            fieldP: 'balita_naik_p',
-            icon: Icons.trending_up_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Vit A-1',
-            deskripsi: 'Dapat Vit A dosis 1',
-            fieldL: 'vit_a_1',
-            fieldP: '',
-            icon: Icons.medication_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Vit A-2',
-            deskripsi: 'Dapat Vit A dosis 2',
-            fieldL: 'vit_a_2',
-            fieldP: '',
-            icon: Icons.medication_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'TT I & II',
-            deskripsi: 'Imunisasi TT',
-            fieldL: 'imunisasi_tt_1',
-            fieldP: 'imunisasi_tt_2',
-            icon: Icons.vaccines_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'BCG',
-            deskripsi: 'Imunisasi BCG',
-            fieldL: 'imunisasi_bcg',
-            fieldP: '',
-            icon: Icons.vaccines_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'DPT',
-            deskripsi: 'DPT 1, 2, 3',
-            fieldL: 'imunisasi_dpt_1',
-            fieldP: 'imunisasi_dpt_2',
-            icon: Icons.vaccines_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Polio',
-            deskripsi: 'Polio 1-4',
-            fieldL: 'imunisasi_polio_1',
-            fieldP: 'imunisasi_polio_2',
-            icon: Icons.vaccines_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Campak',
-            deskripsi: 'Imunisasi campak',
-            fieldL: 'imunisasi_campak',
-            fieldP: '',
-            icon: Icons.vaccines_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Hepatitis',
-            deskripsi: 'Hep 1, 2, 3',
-            fieldL: 'imunisasi_hepatitis_1',
-            fieldP: 'imunisasi_hepatitis_2',
-            icon: Icons.vaccines_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Diare',
-            deskripsi: 'Jumlah & dapat oralit',
-            fieldL: 'balita_diare',
-            fieldP: 'balita_oralit',
-            icon: Icons.sick_rounded,
-          ),
+          _PokjaSubItem(title: 'Ibu Hamil', deskripsi: 'Jumlah & diperiksa', fieldL: 'ibu_hamil', fieldP: 'ibu_hamil_diperiksa', icon: Icons.pregnant_woman_rounded),
+          _PokjaSubItem(title: 'Menyusui', deskripsi: 'Jumlah ibu menyusui', fieldL: 'ibu_menyusui', fieldP: '', icon: Icons.child_friendly_rounded),
+          _PokjaSubItem(title: 'KB IUD', deskripsi: 'Akseptor IUD', fieldL: 'kb_iud', fieldP: '', icon: Icons.health_and_safety_rounded),
+          _PokjaSubItem(title: 'KB MOW', deskripsi: 'Akseptor MOW', fieldL: 'kb_mow', fieldP: '', icon: Icons.health_and_safety_rounded),
+          _PokjaSubItem(title: 'KB MOP', deskripsi: 'Akseptor MOP', fieldL: 'kb_mop', fieldP: '', icon: Icons.health_and_safety_rounded),
+          _PokjaSubItem(title: 'KB Implan', deskripsi: 'Akseptor Implan', fieldL: 'kb_implan', fieldP: '', icon: Icons.health_and_safety_rounded),
+          _PokjaSubItem(title: 'KB Pil', deskripsi: 'Akseptor Pil', fieldL: 'kb_pil', fieldP: '', icon: Icons.health_and_safety_rounded),
+          _PokjaSubItem(title: 'KB Suntik', deskripsi: 'Akseptor Suntik', fieldL: 'kb_suntik', fieldP: '', icon: Icons.health_and_safety_rounded),
+          _PokjaSubItem(title: 'KB Kondom', deskripsi: 'Akseptor Kondom', fieldL: 'kb_kondom', fieldP: '', icon: Icons.health_and_safety_rounded),
+          _PokjaSubItem(title: 'Balita', deskripsi: 'Jumlah L & P', fieldL: 'balita_l', fieldP: 'balita_p', icon: Icons.child_care_rounded),
+          _PokjaSubItem(title: 'Balita KIA', deskripsi: 'L & P', fieldL: 'balita_kia_l', fieldP: 'balita_kia_p', icon: Icons.card_membership_rounded),
+          _PokjaSubItem(title: 'Ditimbang', deskripsi: 'L & P', fieldL: 'balita_ditimbang_l', fieldP: 'balita_ditimbang_p', icon: Icons.monitor_weight_rounded),
+          _PokjaSubItem(title: 'Naik BB', deskripsi: 'L & P', fieldL: 'balita_naik_l', fieldP: 'balita_naik_p', icon: Icons.trending_up_rounded),
+          _PokjaSubItem(title: 'Vit A-1', deskripsi: 'Dapat Vit A dosis 1', fieldL: 'vit_a_1', fieldP: '', icon: Icons.medication_rounded),
+          _PokjaSubItem(title: 'Vit A-2', deskripsi: 'Dapat Vit A dosis 2', fieldL: 'vit_a_2', fieldP: '', icon: Icons.medication_rounded),
+          _PokjaSubItem(title: 'TT I & II', deskripsi: 'Imunisasi TT', fieldL: 'imunisasi_tt_1', fieldP: 'imunisasi_tt_2', icon: Icons.vaccines_rounded),
+          _PokjaSubItem(title: 'BCG', deskripsi: 'Imunisasi BCG', fieldL: 'imunisasi_bcg', fieldP: '', icon: Icons.vaccines_rounded),
+          _PokjaSubItem(title: 'DPT', deskripsi: 'DPT 1, 2, 3', fieldL: 'imunisasi_dpt_1', fieldP: 'imunisasi_dpt_2', icon: Icons.vaccines_rounded),
+          _PokjaSubItem(title: 'Polio', deskripsi: 'Polio 1-4', fieldL: 'imunisasi_polio_1', fieldP: 'imunisasi_polio_2', icon: Icons.vaccines_rounded),
+          _PokjaSubItem(title: 'Campak', deskripsi: 'Imunisasi campak', fieldL: 'imunisasi_campak', fieldP: '', icon: Icons.vaccines_rounded),
+          _PokjaSubItem(title: 'Hepatitis', deskripsi: 'Hep 1, 2, 3', fieldL: 'imunisasi_hepatitis_1', fieldP: 'imunisasi_hepatitis_2', icon: Icons.vaccines_rounded),
+          _PokjaSubItem(title: 'Diare', deskripsi: 'Jumlah & dapat oralit', fieldL: 'balita_diare', fieldP: 'balita_oralit', icon: Icons.sick_rounded),
         ];
 
       case PokjaKategori.pokja4Rekap:
         return const [
-          _PokjaSubItem(
-            title: 'Ibu Hamil',
-            deskripsi: 'Jumlah ibu hamil',
-            fieldL: 'ibu_hamil',
-            fieldP: '',
-            icon: Icons.pregnant_woman_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Ibu Melahirkan',
-            deskripsi: 'Jumlah melahirkan',
-            fieldL: 'ibu_melahirkan',
-            fieldP: '',
-            icon: Icons.child_friendly_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Ibu Nifas',
-            deskripsi: 'Jumlah nifas',
-            fieldL: 'ibu_nifas',
-            fieldP: '',
-            icon: Icons.favorite_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Ibu Meninggal',
-            deskripsi: 'Jumlah kematian ibu',
-            fieldL: 'ibu_meninggal',
-            fieldP: '',
-            icon: Icons.warning_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Bayi Lahir',
-            deskripsi: 'Laki-laki & Perempuan',
-            fieldL: 'bayi_lahir_l',
-            fieldP: 'bayi_lahir_p',
-            icon: Icons.child_care_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Akte',
-            deskripsi: 'Ada & Tidak',
-            fieldL: 'akte_ada',
-            fieldP: 'akte_tidak',
-            icon: Icons.description_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Bayi Meninggal',
-            deskripsi: 'Laki-laki & Perempuan',
-            fieldL: 'bayi_meninggal_l',
-            fieldP: 'bayi_meninggal_p',
-            icon: Icons.sentiment_very_dissatisfied_rounded,
-          ),
-          _PokjaSubItem(
-            title: 'Balita Meninggal',
-            deskripsi: 'Laki-laki & Perempuan',
-            fieldL: 'balita_meninggal_l',
-            fieldP: 'balita_meninggal_p',
-            icon: Icons.sentiment_dissatisfied_rounded,
-          ),
+          _PokjaSubItem(title: 'Ibu Hamil', deskripsi: 'Jumlah ibu hamil', fieldL: 'ibu_hamil', fieldP: '', icon: Icons.pregnant_woman_rounded),
+          _PokjaSubItem(title: 'Ibu Melahirkan', deskripsi: 'Jumlah melahirkan', fieldL: 'ibu_melahirkan', fieldP: '', icon: Icons.child_friendly_rounded),
+          _PokjaSubItem(title: 'Ibu Nifas', deskripsi: 'Jumlah nifas', fieldL: 'ibu_nifas', fieldP: '', icon: Icons.favorite_rounded),
+          _PokjaSubItem(title: 'Ibu Meninggal', deskripsi: 'Jumlah kematian ibu', fieldL: 'ibu_meninggal', fieldP: '', icon: Icons.warning_rounded),
+          _PokjaSubItem(title: 'Bayi Lahir', deskripsi: 'Laki-laki & Perempuan', fieldL: 'bayi_lahir_l', fieldP: 'bayi_lahir_p', icon: Icons.child_care_rounded),
+          _PokjaSubItem(title: 'Akte', deskripsi: 'Ada & Tidak', fieldL: 'akte_ada', fieldP: 'akte_tidak', icon: Icons.description_rounded),
+          _PokjaSubItem(title: 'Bayi Meninggal', deskripsi: 'Laki-laki & Perempuan', fieldL: 'bayi_meninggal_l', fieldP: 'bayi_meninggal_p', icon: Icons.sentiment_very_dissatisfied_rounded),
+          _PokjaSubItem(title: 'Balita Meninggal', deskripsi: 'Laki-laki & Perempuan', fieldL: 'balita_meninggal_l', fieldP: 'balita_meninggal_p', icon: Icons.sentiment_dissatisfied_rounded),
         ];
     }
   }
@@ -1478,12 +817,23 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
     );
   }
 
+  // ============================================================
+  // BOTTOM SHEET — INPUT
+  // ============================================================
   void _showKegiatanInputSheet(_PokjaSubItem sub, int idx) {
+    // Pokja 1 program (4 field) — pakai sheet khusus
+    final isPokja1Program = _kategori == PokjaKategori.pokja1 &&
+        ['kisah', 'kilas', 'krisan', 'kiat', 'kisak', 'pkbn'].contains(sub.fieldL);
+    if (isPokja1Program) {
+      _showKegiatanInputSheetPokja1(sub);
+      return;
+    }
+
+    // Sheet lama (L/P) untuk Pokja 2-4 + Kader Pokja 1
     HapticFeedback.selectionClick();
     final c = _getPokjaColor(_kategori);
     final soft = _getPokjaSoft(_kategori);
     final pal = _sheetPalette();
-    // Fokus otomatis ke kolom pertama yang masih kosong biar sekali ketuk.
     final lEmpty = (_angkaCtrl[sub.fieldL]?.text ?? '').isEmpty;
     final pEmpty = sub.fieldP.isNotEmpty &&
         (_angkaCtrl[sub.fieldP]?.text ?? '').isEmpty;
@@ -1614,7 +964,6 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                         ],
                       ),
                     ),
-                    // Total live — user langsung lihat hasil L + P.
                     const SizedBox(height: 12),
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -1694,7 +1043,155 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
     );
   }
 
-  Future<void> _pilihTanggal() async {
+  void _showKegiatanInputSheetPokja1(_PokjaSubItem sub) {
+    HapticFeedback.selectionClick();
+    final c = _getPokjaColor(_kategori);
+    final soft = _getPokjaSoft(_kategori);
+    final pal = _sheetPalette();
+    final prefix = sub.fieldL;
+
+    for (final suffix in ['_kegiatan', '_volume', '_metode', '_sasaran']) {
+      _angkaCtrl.putIfAbsent('$prefix$suffix', () => TextEditingController());
+    }
+
+    final kegiatanCtrl = _angkaCtrl['${prefix}_kegiatan']!;
+    final volumeCtrl = _angkaCtrl['${prefix}_volume']!;
+    final metodeCtrl = _angkaCtrl['${prefix}_metode']!;
+    final sasaranCtrl = _angkaCtrl['${prefix}_sasaran']!;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setSheet) {
+          return Container(
+            decoration: BoxDecoration(
+              color: pal.bg,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            ),
+            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 36, height: 4,
+                        decoration: BoxDecoration(color: pal.handle, borderRadius: BorderRadius.circular(10)),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Container(
+                          width: 42, height: 42,
+                          decoration: BoxDecoration(
+                            color: _isDarkMode ? c.withValues(alpha: 0.14) : soft,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(sub.icon, size: 20, color: c),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(sub.title, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 15, color: pal.text)),
+                              Text(sub.deskripsi, style: GoogleFonts.plusJakartaSans(fontSize: 12, color: pal.sub)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: kegiatanCtrl,
+                      style: GoogleFonts.plusJakartaSans(fontSize: 13, color: pal.text),
+                      decoration: InputDecoration(
+                        labelText: 'Kegiatan',
+                        hintText: 'Mis. Sosialisasi CATIN',
+                        filled: true, fillColor: pal.fill,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: volumeCtrl,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      style: GoogleFonts.plusJakartaSans(fontSize: 13, color: pal.text),
+                      decoration: InputDecoration(
+                        labelText: 'Volume',
+                        hintText: 'Mis. 22',
+                        filled: true, fillColor: pal.fill,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: metodeCtrl,
+                      style: GoogleFonts.plusJakartaSans(fontSize: 13, color: pal.text),
+                      decoration: InputDecoration(
+                        labelText: 'Metode',
+                        hintText: 'Mis. Sosialisasi / Pembinaan',
+                        filled: true, fillColor: pal.fill,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: sasaranCtrl,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      style: GoogleFonts.plusJakartaSans(fontSize: 13, color: pal.text),
+                      decoration: InputDecoration(
+                        labelText: 'Jumlah Sasaran',
+                        hintText: 'Mis. 384',
+                        filled: true, fillColor: pal.fill,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: c.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: c.withValues(alpha: 0.18)),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.calculate_rounded, color: c, size: 18),
+                          const SizedBox(width: 8),
+                          Text('Sasaran', style: GoogleFonts.plusJakartaSans(fontSize: 12.5, fontWeight: FontWeight.w700, color: pal.sub)),
+                          const Spacer(),
+                          Text(sasaranCtrl.text.isEmpty ? '0' : sasaranCtrl.text, style: GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.w800, color: c)),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity, height: 48,
+                      child: ElevatedButton(
+                        onPressed: () { setState(() {}); Navigator.pop(ctx); },
+                        style: ElevatedButton.styleFrom(backgroundColor: c, foregroundColor: Colors.white, elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+                        child: Text('Selesai', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 14)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+    Future<void> _pilihTanggal() async {
     HapticFeedback.selectionClick();
     final picked = await showDatePicker(
       context: context,
@@ -1736,9 +1233,26 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
     HapticFeedback.mediumImpact();
     try {
       final Map<String, dynamic> dataAngka = {};
-      for (final e in _angkaCtrl.entries) {
-        final v = int.tryParse(e.value.text.trim());
-        if (v != null && v > 0) dataAngka[e.key] = v;
+      if (_kategori == PokjaKategori.pokja1) {
+        for (final k in ['kader_umum', 'kader_khusus']) {
+          final v = int.tryParse(_angkaCtrl[k]?.text.trim() ?? '');
+          if (v != null && v > 0) dataAngka[k] = v;
+        }
+        for (final prog in ['kisah', 'kilas', 'krisan', 'kiat', 'kisak', 'pkbn']) {
+          final kegiatan = _angkaCtrl['${prog}_kegiatan']?.text.trim() ?? '';
+          final volume = int.tryParse(_angkaCtrl['${prog}_volume']?.text.trim() ?? '');
+          final metode = _angkaCtrl['${prog}_metode']?.text.trim() ?? '';
+          final sasaran = int.tryParse(_angkaCtrl['${prog}_sasaran']?.text.trim() ?? '');
+          if (kegiatan.isNotEmpty) dataAngka['${prog}_kegiatan'] = kegiatan;
+          if (volume != null && volume > 0) dataAngka['${prog}_volume'] = volume;
+          if (metode.isNotEmpty) dataAngka['${prog}_metode'] = metode;
+          if (sasaran != null && sasaran > 0) dataAngka['${prog}_sasaran'] = sasaran;
+        }
+      } else {
+        for (final e in _angkaCtrl.entries) {
+          final v = int.tryParse(e.value.text.trim());
+          if (v != null && v > 0) dataAngka[e.key] = v;
+        }
       }
 
       if (_kategori == PokjaKategori.pokja4Pyd ||
@@ -1809,6 +1323,12 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
   int _hitungTotal() {
     int t = 0;
     for (final s in _getSubItems(_kategori)) {
+      if (_kategori == PokjaKategori.pokja1 &&
+          ['kisah', 'kilas', 'krisan', 'kiat', 'kisak', 'pkbn'].contains(s.fieldL)) {
+        final prefix = s.fieldL;
+        t += int.tryParse(_angkaCtrl['${prefix}_sasaran']?.text ?? '') ?? 0;
+        continue;
+      }
       t += int.tryParse(_angkaCtrl[s.fieldL]?.text ?? '') ?? 0;
       if (s.fieldP.isNotEmpty)
         t += int.tryParse(_angkaCtrl[s.fieldP]?.text ?? '') ?? 0;
@@ -1819,6 +1339,14 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
   int _countFilled() {
     int c = 0;
     for (final s in _getSubItems(_kategori)) {
+      if (_kategori == PokjaKategori.pokja1 &&
+          ['kisah', 'kilas', 'krisan', 'kiat', 'kisak', 'pkbn'].contains(s.fieldL)) {
+        final prefix = s.fieldL;
+        final kegiatan = _angkaCtrl['${prefix}_kegiatan']?.text ?? '';
+        final sasaran = _angkaCtrl['${prefix}_sasaran']?.text ?? '';
+        if (kegiatan.isNotEmpty || sasaran.isNotEmpty) c++;
+        continue;
+      }
       if ((int.tryParse(_angkaCtrl[s.fieldL]?.text ?? '') ?? 0) > 0) c++;
       if (s.fieldP.isNotEmpty &&
           (int.tryParse(_angkaCtrl[s.fieldP]?.text ?? '') ?? 0) > 0)
@@ -2301,14 +1829,146 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
             ...subItems.asMap().entries.map((e) {
               final idx = e.key;
               final s = e.value;
+              final isPokja1Program = _kategori == PokjaKategori.pokja1 &&
+                  ['kisah', 'kilas', 'krisan', 'kiat', 'kisak', 'pkbn'].contains(s.fieldL);
               int sum = 0;
+              String ringkas;
+              if (isPokja1Program) {
+                final prefix = s.fieldL;
+                final kegiatan = _angkaCtrl['${prefix}_kegiatan']?.text ?? '';
+                final sasaran = _angkaCtrl['${prefix}_sasaran']?.text ?? '';
+                final hasValue = kegiatan.isNotEmpty || sasaran.isNotEmpty;
+                ringkas = hasValue
+                    ? '${kegiatan.isNotEmpty ? kegiatan.substring(0, kegiatan.length.clamp(0, 15)) : "-"}${sasaran.isNotEmpty ? " • $sasaran" : ""}'
+                    : 'Isi';
+                final hasValueFinal = hasValue;
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Material(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(16),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(16),
+                      onTap: () => _showKegiatanInputSheet(s, idx),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 14,
+                        ),
+                        decoration: BoxDecoration(
+                          color: cardBg,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: hasValueFinal ? c.withValues(alpha: 0.18) : border,
+                            width: 1,
+                          ),
+                          boxShadow: [
+                            if (!_isDarkMode)
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.02),
+                                blurRadius: 8,
+                                offset: const Offset(0, 2),
+                              ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 42,
+                              height: 42,
+                              decoration: BoxDecoration(
+                                color: hasValueFinal
+                                    ? c.withValues(alpha: 0.12)
+                                    : inputFill,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Icon(
+                                s.icon,
+                                size: 20,
+                                color: hasValueFinal ? c : const Color(0xFF94A3B8),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    s.title,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 13.5,
+                                      color: text,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    s.deskripsi,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 11.5,
+                                      color: sub,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: hasValueFinal
+                                    ? c.withValues(alpha: 0.12)
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: hasValueFinal ? Colors.transparent : border,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    ringkas,
+                                    style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w800,
+                                      color: hasValueFinal ? c : sub,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Icon(
+                                    hasValueFinal
+                                        ? Icons.check_circle_rounded
+                                        : Icons.chevron_right_rounded,
+                                    size: 14,
+                                    color: hasValueFinal
+                                        ? c
+                                        : sub.withValues(alpha: 0.7),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }
               if (_angkaCtrl[s.fieldL]?.text.isNotEmpty == true)
                 sum += int.tryParse(_angkaCtrl[s.fieldL]!.text) ?? 0;
               if (s.fieldP.isNotEmpty &&
                   _angkaCtrl[s.fieldP]?.text.isNotEmpty == true)
                 sum += int.tryParse(_angkaCtrl[s.fieldP]!.text) ?? 0;
               final hasValue = sum > 0;
-              String ringkas;
               if (hasValue) {
                 if (s.fieldP.isEmpty) {
                   ringkas = '$sum';
@@ -3121,6 +2781,26 @@ class _PokjaSubItem {
     required this.deskripsi,
     required this.fieldL,
     required this.fieldP,
+    required this.icon,
+  });
+}
+
+class _KegiatanSubItem {
+  final String title;
+  final String deskripsi;
+  final String fieldKegiatan;
+  final String fieldVolume;
+  final String fieldMetode;
+  final String fieldSasaran;
+  final IconData icon;
+
+  const _KegiatanSubItem({
+    required this.title,
+    required this.deskripsi,
+    required this.fieldKegiatan,
+    required this.fieldVolume,
+    required this.fieldMetode,
+    required this.fieldSasaran,
     required this.icon,
   });
 }
