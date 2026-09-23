@@ -1,4 +1,4 @@
-// ignore_for_file: curly_braces_in_flow_control_structures
+﻿// ignore_for_file: curly_braces_in_flow_control_structures
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';

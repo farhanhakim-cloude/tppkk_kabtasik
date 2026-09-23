@@ -1,4 +1,4 @@
-// lib/services/rekap_bumil_berjenjang_service.dart
+﻿// lib/services/rekap_bumil_berjenjang_service.dart
 // ✅ FIX: Ganti SharedPreferences → API
 // Sumber data: API Laravel — /api/rekap-bumil
 // Cache: opsional — untuk offline
@@ -6,6 +6,7 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/rekap_bumil_berjenjang.dart';
+import '../constants/app_constants.dart';
 import 'api_service.dart';
 
 class RekapBumilBerjenjangService {
@@ -39,10 +40,12 @@ class RekapBumilBerjenjangService {
         wilayahId: wilayahId,
         search: search,
       );
-      _cache = list;
+      _cache = list
+          .map((item) => RekapBumilBerjenjangItem.fromJson(item))
+          .toList();
       _lastFetch = DateTime.now();
-      await _saveToCache(list);
-      return list;
+      await _saveToCache(_cache);
+      return _cache;
     } catch (e) {
       if (_cache.isEmpty) {
         await _loadFromCache();
@@ -66,8 +69,7 @@ class RekapBumilBerjenjangService {
 
   Future<RekapBumilBerjenjangItem?> getById(int id) async {
     try {
-      final json = await _api.getRekapBumilDetail(id);
-      return RekapBumilBerjenjangItem.fromJson(json);
+      return (await getAll()).where((item) => item.id == id).firstOrNull;
     } catch (e) {
       return null;
     }
@@ -79,8 +81,10 @@ class RekapBumilBerjenjangService {
 
   Future<RekapBumilBerjenjangItem> save(
     RekapBumilBerjenjangItem item,
-    String token,
+    [String? token]
   ) async {
+    token ??= await _token();
+    if (token.isEmpty) return item;
     if (item.id > 0) {
       final json = await _api.updateRekapBumil(item.id, item.toJson(), token);
       final updated = RekapBumilBerjenjangItem.fromJson(json);
@@ -99,7 +103,9 @@ class RekapBumilBerjenjangService {
   // DELETE — ke API
   // ============================================================
 
-  Future<void> delete(int id, String token) async {
+  Future<void> delete(int id, [String? token]) async {
+    token ??= await _token();
+    if (token.isEmpty) return;
     await _api.deleteRekapBumil(id, token);
     _cache.removeWhere((e) => e.id == id);
     await _saveToCache(_cache);
@@ -149,4 +155,13 @@ class RekapBumilBerjenjangService {
   }
 
   DateTime? get lastFetch => _lastFetch;
+
+  Future<String> _token() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(AppConstants.tokenKey) ?? '';
+  }
+
+  Future<void> autoGenerateFromDasawisma(String level) async {
+    await getByLevel(level);
+  }
 }

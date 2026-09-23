@@ -20,18 +20,26 @@ class _DataKeluargaDasawismaFormScreenState extends State<DataKeluargaDasawismaF
   late TextEditingController _dasaWismaCtrl;
   late TextEditingController _rtCtrl;
   late TextEditingController _rwCtrl;
+  late TextEditingController _dusunCtrl;
   late TextEditingController _desaCtrl;
   late TextEditingController _kecamatanCtrl;
   late TextEditingController _namaKepalaRtCtrl;
+  late TextEditingController _nomorKkCtrl;
+  late TextEditingController _nikKepalaCtrl;
+  late TextEditingController _alamatCtrl;
   late TextEditingController _jmlLakiCtrl;
   late TextEditingController _jmlPerempuanCtrl;
 
   late TextEditingController _jmlKkCtrl;
   late TextEditingController _jmlBalitaCtrl;
+  late TextEditingController _jmlBalitaLCtrl;
+  late TextEditingController _jmlBalitaPCtrl;
   late TextEditingController _jmlAnakCtrl;
   late TextEditingController _jmlPusCtrl;
   late TextEditingController _jmlWusCtrl;
   late TextEditingController _jmlTigaButaCtrl;
+  late TextEditingController _jmlTigaButaLCtrl;
+  late TextEditingController _jmlTigaButaPCtrl;
   late TextEditingController _jmlBumilCtrl;
   late TextEditingController _jmlBusuiCtrl;
   late TextEditingController _jmlLansiaCtrl;
@@ -44,10 +52,13 @@ class _DataKeluargaDasawismaFormScreenState extends State<DataKeluargaDasawismaF
   String _sumberAir = 'Sumur';
   bool _memilikiTempatSampah = true;
   bool _mempunyaiSpal = true;
+  bool _memilikiStikerP4k = false;
   String _kriteriaRumah = 'Sehat';
   bool _aktifitasUp2k = false;
   late TextEditingController _jenisUsahaUp2kCtrl;
   bool _aktifitasKesling = true;
+  bool _aktifitasTanahPekarangan = false;
+  bool _aktifitasIndustriRumahTangga = false;
 
   bool _saving = false;
 
@@ -58,18 +69,26 @@ class _DataKeluargaDasawismaFormScreenState extends State<DataKeluargaDasawismaF
     _dasaWismaCtrl = TextEditingController(text: d?.dasaWisma ?? '');
     _rtCtrl = TextEditingController(text: d?.rt ?? '');
     _rwCtrl = TextEditingController(text: d?.rw ?? '');
+    _dusunCtrl = TextEditingController(text: d?.dusun ?? '');
     _desaCtrl = TextEditingController(text: d?.desa ?? '');
     _kecamatanCtrl = TextEditingController(text: d?.kecamatan ?? '');
     _namaKepalaRtCtrl = TextEditingController(text: d?.namaKepalaRumahTangga ?? '');
+    _nomorKkCtrl = TextEditingController(text: d?.nomorKk ?? '');
+    _nikKepalaCtrl = TextEditingController(text: d?.nikKepalaKeluarga ?? '');
+    _alamatCtrl = TextEditingController(text: d?.alamat ?? '');
     _jmlLakiCtrl = TextEditingController(text: d != null ? d.jumlahLakiLaki.toString() : '');
     _jmlPerempuanCtrl = TextEditingController(text: d != null ? d.jumlahPerempuan.toString() : '');
 
     _jmlKkCtrl = TextEditingController(text: d != null ? d.jumlahKk.toString() : '');
     _jmlBalitaCtrl = TextEditingController(text: d != null && d.jumlahBalita != 0 ? d.jumlahBalita.toString() : '');
+    _jmlBalitaLCtrl = TextEditingController(text: d?.jumlahBalitaL.toString() ?? '0');
+    _jmlBalitaPCtrl = TextEditingController(text: d?.jumlahBalitaP.toString() ?? '0');
     _jmlAnakCtrl = TextEditingController(text: d != null && d.jumlahAnak != 0 ? d.jumlahAnak.toString() : '');
     _jmlPusCtrl = TextEditingController(text: d != null && d.jumlahPus != 0 ? d.jumlahPus.toString() : '');
     _jmlWusCtrl = TextEditingController(text: d != null && d.jumlahWus != 0 ? d.jumlahWus.toString() : '');
     _jmlTigaButaCtrl = TextEditingController(text: d != null && d.jumlahTigaButa != 0 ? d.jumlahTigaButa.toString() : '');
+    _jmlTigaButaLCtrl = TextEditingController(text: d?.jumlahTigaButaL.toString() ?? '0');
+    _jmlTigaButaPCtrl = TextEditingController(text: d?.jumlahTigaButaP.toString() ?? '0');
     _jmlBumilCtrl = TextEditingController(text: d != null && d.jumlahIbuHamil != 0 ? d.jumlahIbuHamil.toString() : '');
     _jmlBusuiCtrl = TextEditingController(text: d != null && d.jumlahIbuMenyusui != 0 ? d.jumlahIbuMenyusui.toString() : '');
     _jmlLansiaCtrl = TextEditingController(text: d != null && d.jumlahLansia != 0 ? d.jumlahLansia.toString() : '');
@@ -82,10 +101,13 @@ class _DataKeluargaDasawismaFormScreenState extends State<DataKeluargaDasawismaF
     _sumberAir = d?.sumberAir ?? 'Sumur';
     _memilikiTempatSampah = d?.memilikiTempatSampah ?? true;
     _mempunyaiSpal = d?.mempunyaiSpal ?? true;
+    _memilikiStikerP4k = d?.memilikiStikerP4k ?? false;
     _kriteriaRumah = d?.kriteriaRumah ?? 'Sehat';
     _aktifitasUp2k = d?.aktifitasUp2k ?? false;
     _jenisUsahaUp2kCtrl = TextEditingController(text: d?.jenisUsahaUp2k ?? '');
     _aktifitasKesling = d?.aktifitasKesehatanLingkungan ?? true;
+    _aktifitasTanahPekarangan = d?.aktifitasTanahPekarangan ?? false;
+    _aktifitasIndustriRumahTangga = d?.aktifitasIndustriRumahTangga ?? false;
   }
 
   @override
@@ -93,17 +115,25 @@ class _DataKeluargaDasawismaFormScreenState extends State<DataKeluargaDasawismaF
     _dasaWismaCtrl.dispose();
     _rtCtrl.dispose();
     _rwCtrl.dispose();
+    _dusunCtrl.dispose();
     _desaCtrl.dispose();
     _kecamatanCtrl.dispose();
     _namaKepalaRtCtrl.dispose();
+    _nomorKkCtrl.dispose();
+    _nikKepalaCtrl.dispose();
+    _alamatCtrl.dispose();
     _jmlLakiCtrl.dispose();
     _jmlPerempuanCtrl.dispose();
     _jmlKkCtrl.dispose();
     _jmlBalitaCtrl.dispose();
+    _jmlBalitaLCtrl.dispose();
+    _jmlBalitaPCtrl.dispose();
     _jmlAnakCtrl.dispose();
     _jmlPusCtrl.dispose();
     _jmlWusCtrl.dispose();
     _jmlTigaButaCtrl.dispose();
+    _jmlTigaButaLCtrl.dispose();
+    _jmlTigaButaPCtrl.dispose();
     _jmlBumilCtrl.dispose();
     _jmlBusuiCtrl.dispose();
     _jmlLansiaCtrl.dispose();
@@ -243,17 +273,25 @@ class _DataKeluargaDasawismaFormScreenState extends State<DataKeluargaDasawismaF
       dasaWisma: _dasaWismaCtrl.text.trim(),
       rt: _rtCtrl.text.trim(),
       rw: _rwCtrl.text.trim(),
+      dusun: _dusunCtrl.text.trim(),
       desa: _desaCtrl.text.trim(),
       kecamatan: _kecamatanCtrl.text.trim(),
       namaKepalaRumahTangga: _namaKepalaRtCtrl.text.trim(),
+      nomorKk: _nomorKkCtrl.text.trim(),
+      nikKepalaKeluarga: _nikKepalaCtrl.text.trim(),
+      alamat: _alamatCtrl.text.trim(),
       jumlahLakiLaki: int.tryParse(_jmlLakiCtrl.text) ?? 0,
       jumlahPerempuan: int.tryParse(_jmlPerempuanCtrl.text) ?? 0,
       jumlahKk: int.tryParse(_jmlKkCtrl.text) ?? 1,
       jumlahBalita: int.tryParse(_jmlBalitaCtrl.text) ?? 0,
+      jumlahBalitaL: int.tryParse(_jmlBalitaLCtrl.text) ?? 0,
+      jumlahBalitaP: int.tryParse(_jmlBalitaPCtrl.text) ?? 0,
       jumlahAnak: int.tryParse(_jmlAnakCtrl.text) ?? 0,
       jumlahPus: int.tryParse(_jmlPusCtrl.text) ?? 0,
       jumlahWus: int.tryParse(_jmlWusCtrl.text) ?? 0,
       jumlahTigaButa: int.tryParse(_jmlTigaButaCtrl.text) ?? 0,
+      jumlahTigaButaL: int.tryParse(_jmlTigaButaLCtrl.text) ?? 0,
+      jumlahTigaButaP: int.tryParse(_jmlTigaButaPCtrl.text) ?? 0,
       jumlahIbuHamil: int.tryParse(_jmlBumilCtrl.text) ?? 0,
       jumlahIbuMenyusui: int.tryParse(_jmlBusuiCtrl.text) ?? 0,
       jumlahLansia: int.tryParse(_jmlLansiaCtrl.text) ?? 0,
@@ -264,10 +302,13 @@ class _DataKeluargaDasawismaFormScreenState extends State<DataKeluargaDasawismaF
       sumberAir: _sumberAir,
       memilikiTempatSampah: _memilikiTempatSampah,
       mempunyaiSpal: _mempunyaiSpal,
+      memilikiStikerP4k: _memilikiStikerP4k,
       kriteriaRumah: _kriteriaRumah,
       aktifitasUp2k: _aktifitasUp2k,
       jenisUsahaUp2k: _aktifitasUp2k ? _jenisUsahaUp2kCtrl.text.trim() : '',
       aktifitasKesehatanLingkungan: _aktifitasKesling,
+      aktifitasTanahPekarangan: _aktifitasTanahPekarangan,
+      aktifitasIndustriRumahTangga: _aktifitasIndustriRumahTangga,
     );
     await _service.save(record);
     if (mounted) {
@@ -332,9 +373,17 @@ class _DataKeluargaDasawismaFormScreenState extends State<DataKeluargaDasawismaF
               const SizedBox(height: 10),
               Row(children: [Expanded(child: TextFormField(controller: _rtCtrl, style: GoogleFonts.plusJakartaSans(fontSize: 13.5), decoration: _inputDeco('RT', '01'))), const SizedBox(width: 10), Expanded(child: TextFormField(controller: _rwCtrl, style: GoogleFonts.plusJakartaSans(fontSize: 13.5), decoration: _inputDeco('RW', '05')))]),
               const SizedBox(height: 10),
+              TextFormField(controller: _dusunCtrl, style: GoogleFonts.plusJakartaSans(fontSize: 13.5), decoration: _inputDeco('Dusun', 'Nama dusun')),
+              const SizedBox(height: 10),
               Row(children: [Expanded(child: TextFormField(controller: _desaCtrl, style: GoogleFonts.plusJakartaSans(fontSize: 13.5), decoration: _inputDeco('Desa', 'Singaparna'))), const SizedBox(width: 10), Expanded(child: KecamatanDropdownField(controller: _kecamatanCtrl))]),
               const SizedBox(height: 10),
               TextFormField(controller: _namaKepalaRtCtrl, style: GoogleFonts.plusJakartaSans(fontSize: 13.5, fontWeight: FontWeight.w600), decoration: _inputDeco('Nama Kepala Rumah Tangga *', 'Nama lengkap'), validator: (v) => v!.trim().isEmpty ? 'Wajib' : null),
+              const SizedBox(height: 10),
+              TextFormField(controller: _nomorKkCtrl, keyboardType: TextInputType.number, style: GoogleFonts.plusJakartaSans(fontSize: 13.5), decoration: _inputDeco('Nomor KK', 'Nomor Kartu Keluarga')),
+              const SizedBox(height: 10),
+              TextFormField(controller: _nikKepalaCtrl, keyboardType: TextInputType.number, style: GoogleFonts.plusJakartaSans(fontSize: 13.5), decoration: _inputDeco('NIK Kepala Keluarga', 'NIK')),
+              const SizedBox(height: 10),
+              TextFormField(controller: _alamatCtrl, style: GoogleFonts.plusJakartaSans(fontSize: 13.5), decoration: _inputDeco('Alamat', 'Alamat lengkap')),
               const SizedBox(height: 10),
               Row(children: [Expanded(child: TextFormField(controller: _jmlLakiCtrl, keyboardType: TextInputType.number, style: GoogleFonts.plusJakartaSans(fontSize: 13.5), decoration: _inputDeco('Laki-laki', '0'))), const SizedBox(width: 10), Expanded(child: TextFormField(controller: _jmlPerempuanCtrl, keyboardType: TextInputType.number, style: GoogleFonts.plusJakartaSans(fontSize: 13.5), decoration: _inputDeco('Perempuan', '0')))]),
             ]),
@@ -344,11 +393,15 @@ class _DataKeluargaDasawismaFormScreenState extends State<DataKeluargaDasawismaF
               const SizedBox(height: 12),
               Text('Kategori Anggota', style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFF334155))),
               const SizedBox(height: 8),
-              _twoField(_jmlBalitaCtrl, 'Balita', _jmlAnakCtrl, 'Anak'),
+              _twoField(_jmlBalitaLCtrl, 'Balita L', _jmlBalitaPCtrl, 'Balita P'),
+              const SizedBox(height: 8),
+              _twoField(_jmlBalitaCtrl, 'Balita Total', _jmlAnakCtrl, 'Anak'),
               const SizedBox(height: 8),
               _twoField(_jmlPusCtrl, 'PUS', _jmlWusCtrl, 'WUS'),
               const SizedBox(height: 8),
-              _twoField(_jmlTigaButaCtrl, '3 Buta', _jmlBumilCtrl, 'Ibu Hamil'),
+              _twoField(_jmlTigaButaLCtrl, '3 Buta L', _jmlTigaButaPCtrl, '3 Buta P'),
+              const SizedBox(height: 8),
+              _twoField(_jmlTigaButaCtrl, '3 Buta Total', _jmlBumilCtrl, 'Ibu Hamil'),
               const SizedBox(height: 8),
               _twoField(_jmlBusuiCtrl, 'Ibu Menyusui', _jmlLansiaCtrl, 'Lansia'),
             ]),
@@ -415,6 +468,7 @@ class _DataKeluargaDasawismaFormScreenState extends State<DataKeluargaDasawismaF
               const Divider(height: 20, color: Color(0xFFF1F5F9)),
               _switchTile('Memiliki Tempat Sampah', _memilikiTempatSampah, (v) => setState(() => _memilikiTempatSampah = v)),
               _switchTile('Mempunyai SPAL', _mempunyaiSpal, (v) => setState(() => _mempunyaiSpal = v)),
+              _switchTile('Memiliki Stiker P4K', _memilikiStikerP4k, (v) => setState(() => _memilikiStikerP4k = v)),
               const Divider(height: 20, color: Color(0xFFF1F5F9)),
               Text('Kriteria Rumah', style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFF334155))),
               const SizedBox(height: 6),
@@ -424,6 +478,8 @@ class _DataKeluargaDasawismaFormScreenState extends State<DataKeluargaDasawismaF
               if (_aktifitasUp2k) Padding(padding: const EdgeInsets.only(top: 8), child: TextFormField(controller: _jenisUsahaUp2kCtrl, style: GoogleFonts.plusJakartaSans(fontSize: 13.5), decoration: _inputDeco('Jenis Usaha UP2K', 'Kerajinan / kuliner'))),
               const Divider(height: 20, color: Color(0xFFF1F5F9)),
               _switchTile('Kesehatan Lingkungan', _aktifitasKesling, (v) => setState(() => _aktifitasKesling = v)),
+              _switchTile('Tanah Pekarangan', _aktifitasTanahPekarangan, (v) => setState(() => _aktifitasTanahPekarangan = v)),
+              _switchTile('Industri Rumah Tangga', _aktifitasIndustriRumahTangga, (v) => setState(() => _aktifitasIndustriRumahTangga = v)),
             ]),
 
             const SizedBox(height: 20),

@@ -3,6 +3,7 @@
 
 class DataUmumPkkItem {
   final int id;
+  final int? wilayahId;
   final String level;
   final String tahun;
   final String kabupaten;      // ← balikin — biar screen ga error
@@ -33,6 +34,7 @@ class DataUmumPkkItem {
 
   DataUmumPkkItem({
     required this.id,
+    this.wilayahId,
     this.level = 'desa',
     this.tahun = '2026',
     this.kabupaten = 'TASIKMALAYA',
@@ -72,35 +74,36 @@ class DataUmumPkkItem {
       sekretariatHonorerL + sekretariatHonorerP +
       sekretariatBantuanL + sekretariatBantuanP;
 
-  // ✅ toJson — camelCase — buat SharedPreferences (lama)
+  // Payload uses the Laravel table column names.
   Map<String, dynamic> toJson() => {
         'id': id,
+        'wilayah_id': wilayahId,
         'level': level,
         'tahun': tahun,
-        'kabupaten': kabupaten,
-        'provinsi': provinsi,
         'kecamatan': kecamatan,
+        'nama_kecamatan': kecamatan,
         'desa': desa,
-        'namaDusun': namaDusun,
-        'namaDesa': namaDesa,
-        'jumlahDusun': jumlahDusun,
-        'jumlahPkkRw': jumlahPkkRw,
-        'jumlahPkkRt': jumlahPkkRt,
-        'jumlahDasaWisma': jumlahDasaWisma,
-        'jumlahKrt': jumlahKrt,
-        'jumlahKk': jumlahKk,
-        'jiwaL': jiwaL,
-        'jiwaP': jiwaP,
-        'kaderTpPkkL': kaderTpPkkL,
-        'kaderTpPkkP': kaderTpPkkP,
-        'kaderUmumL': kaderUmumL,
-        'kaderUmumP': kaderUmumP,
-        'kaderKhususL': kaderKhususL,
-        'kaderKhususP': kaderKhususP,
-        'sekretariatHonorerL': sekretariatHonorerL,
-        'sekretariatHonorerP': sekretariatHonorerP,
-        'sekretariatBantuanL': sekretariatBantuanL,
-        'sekretariatBantuanP': sekretariatBantuanP,
+        'nama_desa': namaDesa.isNotEmpty ? namaDesa : desa,
+        'dusun': namaDusun,
+        'nama_dusun': namaDusun,
+        'jumlah_dusun': jumlahDusun,
+        'jumlah_pkk_rw': jumlahPkkRw,
+        'jumlah_pkk_rt': jumlahPkkRt,
+        'jumlah_dasa_wisma': jumlahDasaWisma,
+        'jumlah_krt': jumlahKrt,
+        'jumlah_kk': jumlahKk,
+        'jiwa_l': jiwaL,
+        'jiwa_p': jiwaP,
+        'tp_pkk_l': kaderTpPkkL,
+        'tp_pkk_p': kaderTpPkkP,
+        'kader_umum_l': kaderUmumL,
+        'kader_umum_p': kaderUmumP,
+        'kader_khusus_l': kaderKhususL,
+        'kader_khusus_p': kaderKhususP,
+        'sekretariat_honorer_l': sekretariatHonorerL,
+        'sekretariat_honorer_p': sekretariatHonorerP,
+        'sekretariat_bantuan_l': sekretariatBantuanL,
+        'sekretariat_bantuan_p': sekretariatBantuanP,
         'keterangan': keterangan,
       };
 
@@ -108,6 +111,7 @@ class DataUmumPkkItem {
   factory DataUmumPkkItem.fromJson(Map<String, dynamic> json) =>
       DataUmumPkkItem(
         id: _p(json['id']),
+        wilayahId: json['wilayah_id'] != null ? _p(json['wilayah_id']) : null,
         level: json['level']?.toString() ?? 'desa',
         tahun: json['tahun']?.toString() ?? '2026',
         kabupaten: json['kabupaten']?.toString() ?? 'TASIKMALAYA',
@@ -146,7 +150,7 @@ class DataUmumPkkItem {
   }
 
   DataUmumPkkItem copyWith({
-    int? id, String? level, String? tahun, String? kabupaten, String? provinsi,
+    int? id, int? wilayahId, String? level, String? tahun, String? kabupaten, String? provinsi,
     String? kecamatan, String? desa, String? namaDusun, String? namaDesa,
     int? jumlahDusun, int? jumlahPkkRw, int? jumlahPkkRt, int? jumlahDasaWisma,
     int? jumlahKrt, int? jumlahKk, int? jiwaL, int? jiwaP,
@@ -156,6 +160,7 @@ class DataUmumPkkItem {
     int? sekretariatBantuanL, int? sekretariatBantuanP, String? keterangan,
   }) => DataUmumPkkItem(
         id: id ?? this.id,
+        wilayahId: wilayahId ?? this.wilayahId,
         level: level ?? this.level,
         tahun: tahun ?? this.tahun,
         kabupaten: kabupaten ?? this.kabupaten,

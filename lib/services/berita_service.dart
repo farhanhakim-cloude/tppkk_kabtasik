@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print, prefer_interpolation_to_compose_strings
+﻿// ignore_for_file: avoid_print, prefer_interpolation_to_compose_strings
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
@@ -63,15 +63,15 @@ class BeritaService {
   }
 
   // ============================================================
-  // 🔥 GET MY BERITA (Berita yang dikirim sendiri) — handle pagination + merge lokal
-  // ✅ FIX: Endpoint /berita/saya → /my-berita
+  // ðŸ”¥ GET MY BERITA (Berita yang dikirim sendiri) â€” handle pagination + merge lokal
+  // âœ… FIX: Endpoint /berita/saya â†’ /my-berita
   // ============================================================
   Future<List<Berita>> getMyBerita() async {
     List<Berita> apiList = [];
     try {
       final token = await _getToken();
       if (token == null || token.isEmpty) {
-        print('⚠️ getMyBerita: token kosong');
+        print('âš ï¸ getMyBerita: token kosong');
       } else {
         final response = await http.get(
           Uri.parse('${AppConstants.baseUrl}my-berita'),
@@ -81,20 +81,20 @@ class BeritaService {
           },
         ).timeout(const Duration(seconds: 10));
 
-        print('📥 getMyBerita status: ${response.statusCode}');
+        print('ðŸ“¥ getMyBerita status: ${response.statusCode}');
 
         if (response.statusCode == 200) {
           final data = jsonDecode(response.body);
           final List<dynamic> list = _extractList(data['data']);
           final finalList = list.isNotEmpty ? list : _extractList(data);
-          print('📥 getMyBerita parsed ${finalList.length} item');
+          print('ðŸ“¥ getMyBerita parsed ${finalList.length} item');
           apiList = finalList.map((item) => Berita.fromJson(item as Map<String, dynamic>)).toList();
         } else {
-          print('⚠️ getMyBerita gagal status ${response.statusCode}: ${response.body.substring(0, response.body.length > 300 ? 300 : response.body.length)}');
+          print('âš ï¸ getMyBerita gagal status ${response.statusCode}: ${response.body.substring(0, response.body.length > 300 ? 300 : response.body.length)}');
         }
       }
     } catch (e) {
-      print('⚠️ Gagal mengambil berita saya: $e');
+      print('âš ï¸ Gagal mengambil berita saya: $e');
     }
 
     // merge dengan cache lokal agar setelah submit tetap muncul walau API belum sync
@@ -112,7 +112,7 @@ class BeritaService {
   }
 
   // ============================================================
-  // 🔥 GET ALL BERITA (Public)
+  // ðŸ”¥ GET ALL BERITA (Public)
   // ============================================================
   Future<List<Berita>> getBerita({String? search, String? kecamatan}) async {
     try {
@@ -144,13 +144,13 @@ class BeritaService {
         return finalList.map((item) => Berita.fromJson(item as Map<String, dynamic>)).toList();
       }
     } catch (e) {
-      print('⚠️ Gagal mengambil berita: $e');
+      print('âš ï¸ Gagal mengambil berita: $e');
     }
     return [];
   }
 
   // ============================================================
-  // 🔥 GET DETAIL BERITA
+  // ðŸ”¥ GET DETAIL BERITA
   // ============================================================
   Future<Berita?> getBeritaDetail(String slug) async {
     try {
@@ -170,13 +170,13 @@ class BeritaService {
         return Berita.fromJson(data['data'] ?? data);
       }
     } catch (e) {
-      print('⚠️ Gagal mengambil detail berita: $e');
+      print('âš ï¸ Gagal mengambil detail berita: $e');
     }
     return null;
   }
 
   // ============================================================
-  // 🔥 SUBMIT BERITA (Kader Mobile) - DENGAN DEBUG
+  // ðŸ”¥ SUBMIT BERITA (Kader Mobile) - DENGAN DEBUG
   // ============================================================
   Future<Berita> submitBerita({
     required String judul,
@@ -187,7 +187,7 @@ class BeritaService {
     String? fotoBase64,
   }) async {
     try {
-      print('📝 SUBMIT BERITA:');
+      print('ðŸ“ SUBMIT BERITA:');
       print('  - Judul: $judul');
       print('  - Kategori: $kategori');
       print('  - Kecamatan: $kecamatan');
@@ -226,7 +226,7 @@ class BeritaService {
           body['foto'] = base64;
           print('  - Foto di-convert ke Base64 (${base64.length} chars)');
         } catch (e) {
-          print('⚠️ Gagal convert foto ke base64: $e');
+          print('âš ï¸ Gagal convert foto ke base64: $e');
         }
       }
 
@@ -240,8 +240,8 @@ class BeritaService {
         body: jsonEncode(body),
       ).timeout(const Duration(seconds: 15));
 
-      print('📡 Response status: ${response.statusCode}');
-      print('📡 Response body: ${response.body.substring(0, response.body.length > 200 ? 200 : response.body.length)}...');
+      print('ðŸ“¡ Response status: ${response.statusCode}');
+      print('ðŸ“¡ Response body: ${response.body.substring(0, response.body.length > 200 ? 200 : response.body.length)}...');
 
       if (response.statusCode == 201 || response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -249,7 +249,7 @@ class BeritaService {
         if (berita.id == 0) {
           throw Exception('Berita gagal disimpan, data tidak valid');
         }
-        print('✅ Berita berhasil dikirim! ID: ${berita.id}');
+        print('âœ… Berita berhasil dikirim! ID: ${berita.id}');
         await _saveMyBeritaLocal(berita);
         return berita;
       } else {
@@ -257,14 +257,14 @@ class BeritaService {
         throw Exception(error['message'] ?? 'Gagal mengirim berita: ${response.statusCode}');
       }
     } catch (e) {
-      print('❌ Error submit berita: $e');
+      print('âŒ Error submit berita: $e');
       rethrow;
     }
   }
 
   // ============================================================
-  // 🔥 UPDATE BERITA (Hanya jika status pending)
-  // ✅ FIX: Endpoint /berita/saya/$id → /my-berita/$id
+  // ðŸ”¥ UPDATE BERITA (Hanya jika status pending)
+  // âœ… FIX: Endpoint /berita/saya/$id â†’ /my-berita/$id
   // ============================================================
   Future<Berita?> updateBerita({
     required int id,
@@ -321,14 +321,14 @@ class BeritaService {
         throw Exception(error['message'] ?? 'Gagal update berita');
       }
     } catch (e) {
-      print('⚠️ Error update berita: $e');
+      print('âš ï¸ Error update berita: $e');
       rethrow;
     }
   }
 
   // ============================================================
-  // 🔥 DELETE BERITA (Hanya jika status pending)
-  // ✅ FIX: Endpoint /berita/saya/$id → /my-berita/$id
+  // ðŸ”¥ DELETE BERITA (Hanya jika status pending)
+  // âœ… FIX: Endpoint /berita/saya/$id â†’ /my-berita/$id
   // ============================================================
   Future<bool> deleteBerita(int id) async {
     try {
@@ -352,13 +352,13 @@ class BeritaService {
         throw Exception(error['message'] ?? 'Gagal hapus berita');
       }
     } catch (e) {
-      print('⚠️ Error delete berita: $e');
+      print('âš ï¸ Error delete berita: $e');
       rethrow;
     }
   }
 
   // ============================================================
-  // 🔥 GET LATEST BERITA (Untuk Homepage)
+  // ðŸ”¥ GET LATEST BERITA (Untuk Homepage)
   // ============================================================
   Future<List<Berita>> getLatestBerita({int limit = 6}) async {
     try {
@@ -374,13 +374,13 @@ class BeritaService {
         return finalList.map((item) => Berita.fromJson(item as Map<String, dynamic>)).toList();
       }
     } catch (e) {
-      print('⚠️ Gagal mengambil berita terbaru: $e');
+      print('âš ï¸ Gagal mengambil berita terbaru: $e');
     }
     return [];
   }
 
   // ============================================================
-  // 🔥 GET KECAMATAN TERAKTIF
+  // ðŸ”¥ GET KECAMATAN TERAKTIF
   // ============================================================
   Future<List<Map<String, dynamic>>> getKecamatanTeraktif() async {
     try {
@@ -398,13 +398,13 @@ class BeritaService {
         }).toList();
       }
     } catch (e) {
-      print('⚠️ Gagal mengambil kecamatan teraktif: $e');
+      print('âš ï¸ Gagal mengambil kecamatan teraktif: $e');
     }
     return [];
   }
 
   // ============================================================
-  // 🔥 GET PENDING COUNT (Untuk Badge Admin)
+  // ðŸ”¥ GET PENDING COUNT (Untuk Badge Admin)
   // ============================================================
   Future<int> getPendingCount() async {
     try {
@@ -424,13 +424,13 @@ class BeritaService {
         return data['count'] ?? 0;
       }
     } catch (e) {
-      print('⚠️ Gagal mengambil pending count: $e');
+      print('âš ï¸ Gagal mengambil pending count: $e');
     }
     return 0;
   }
 
   // ============================================================
-  // 🔥 APPROVE / REJECT BERITA (ADMIN)
+  // ðŸ”¥ APPROVE / REJECT BERITA (ADMIN)
   // ============================================================
   Future<void> approveBerita(int id, bool isApprove) async {
     try {
@@ -451,10 +451,10 @@ class BeritaService {
       ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode != 200) {
-         print('⚠️ Mocking approval because real API might fail: ${response.statusCode}');
+         print('âš ï¸ Mocking approval because real API might fail: ${response.statusCode}');
       }
     } catch (e) {
-      print('⚠️ Error approve/reject berita: $e');
+      print('âš ï¸ Error approve/reject berita: $e');
       throw Exception('Gagal mengubah status: $e');
     }
   }

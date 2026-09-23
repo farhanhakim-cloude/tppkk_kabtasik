@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/data_umum_pkk.dart';
 import '../models/rekap_kegiatan_warga_berjenjang.dart';
+import 'data_keluarga_dasawisma_service.dart';
 import 'rekap_kegiatan_warga_berjenjang_service.dart';
 import 'api_service.dart';
 
@@ -29,12 +30,15 @@ class DataUmumPkkService {
     String? search,
   }) async {
     try {
-      final list = await _api.getDataUmumPkk(
+      final rawList = await _api.getDataUmumPkk(
         tahun: tahun,
         level: level,
         wilayahId: wilayahId,
         search: search,
       );
+      final list = rawList
+          .map((item) => DataUmumPkkItem.fromJson(item))
+          .toList();
       _cache = list;
       _lastFetch = DateTime.now();
       await _saveToCache(list);
@@ -69,28 +73,23 @@ class DataUmumPkkService {
   // ============================================================
   // SAVE — token OPSIONAL
   // ============================================================
-  Future<DataUmumPkkItem> save(
-    DataUmumPkkItem item, [
-    String? token,
-  ]) async {
+  Future<DataUmumPkkItem> save(DataUmumPkkItem item, [String? token]) async {
+    token ??= await _token();
     if (item.id > 0) {
       // Update
-      if (token == null || token.isEmpty) {
+      if (token.isEmpty) {
         // Tanpa token — simpan lokal
         await _updateCache(item);
         return item;
       }
-      final json = await _api.updateDataUmumPkk(
-        item.id,
-        item.toJson(),
-        token,
-      );
+
+      final json = await _api.updateDataUmumPkk(item.id, item.toJson(), token);
       final updated = DataUmumPkkItem.fromJson(json);
       await _updateCache(updated);
       return updated;
     } else {
       // Create
-      if (token == null || token.isEmpty) {
+      if (token.isEmpty) {
         // Tanpa token — simpan lokal
         final newId = DateTime.now().millisecondsSinceEpoch % 100000;
         final newItem = item.copyWith(id: newId);
@@ -104,6 +103,11 @@ class DataUmumPkkService {
       await _saveToCache(_cache);
       return created;
     }
+  }
+
+  Future<String> _token() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('auth_token') ?? '';
   }
 
   // ============================================================
@@ -125,65 +129,180 @@ class DataUmumPkkService {
   // ✅ METHOD LAMA — autoGenerateFromRekap — biar screen jalan
   // ============================================================
   Future<void> autoGenerateFromRekap(String level) async {
-    try {
-      final kegiatanService = RekapKegiatanWargaBerjenjangService();
-      final kegiatanList = await kegiatanService.getByLevel(level);
+    final binaan = await DataKeluargaDasawismaService().getAll();
+    final dataKk = binaan;
 
-      if (kegiatanList.isEmpty) return;
-
-      for (final k in kegiatanList) {
-        final name = level == 'desa'
-            ? (k.namaDusun.isNotEmpty ? k.namaDusun : 'Dusun ${k.dusun}')
-            : (k.namaDesa.isNotEmpty ? k.namaDesa : 'Desa ${k.desa}');
-
-        final existingIdx = _cache.indexWhere((e) =>
-            e.level == level &&
-            (level == 'desa' ? e.namaDusun == name : e.namaDesa == name));
-
-        final newItem = DataUmumPkkItem(
-          id: existingIdx >= 0
-              ? _cache[existingIdx].id
-              : DateTime.now().millisecondsSinceEpoch % 100000,
-          level: level,
-          tahun: k.tahun.isNotEmpty ? k.tahun : '2026',
-          kabupaten: 'TASIKMALAYA',
-          provinsi: 'JAWA BARAT',
-          kecamatan: k.kecamatan.isNotEmpty ? k.kecamatan : 'Singaparna',
-          desa: k.desa.isNotEmpty ? k.desa : 'Singaparna',
-          namaDusun: level == 'desa' ? name : '',
-          namaDesa: level == 'kecamatan' ? name : '',
-          jumlahDusun: k.jumlahDusun > 0 ? k.jumlahDusun : (level == 'kecamatan' ? 3 : 0),
-          jumlahPkkRw: k.jumlahRw > 0 ? k.jumlahRw : 4,
-          jumlahPkkRt: k.jumlahRt > 0 ? k.jumlahRt : 12,
-          jumlahDasaWisma: k.jumlahDasawisma > 0 ? k.jumlahDasawisma : 24,
-          jumlahKrt: k.jumlahKrt,
-          jumlahKk: k.jumlahKk,
-          jiwaL: k.totalL,
-          jiwaP: k.totalP,
-          kaderTpPkkL: 2,
-          kaderTpPkkP: 18,
-          kaderUmumL: 5,
-          kaderUmumP: 25,
-          kaderKhususL: 2,
-          kaderKhususP: 10,
-          sekretariatHonorerL: 1,
-          sekretariatHonorerP: 2,
-          sekretariatBantuanL: 0,
-          sekretariatBantuanP: 1,
-          keterangan: 'Auto roll-up dari data kegiatan warga $name',
-        );
-
-        if (existingIdx >= 0) {
-          _cache[existingIdx] = newItem;
-        } else {
-          _cache.add(newItem);
-        }
-      }
-
-      await _saveToCache(_cache);
-    } catch (e) {
-      // Silent — biar screen ga crash
+    if (binaan.isEmpty && dataKk.isEmpty) {
+      throw StateError(
+        'Belum ada data Keluarga Binaan atau Data KK untuk dihitung.',
+      );
     }
+
+    final wilayah = binaan.isNotEmpty ? binaan.first : null;
+    final distinctRw = binaan
+        .map((e) => e.rw)
+        .where((e) => e.isNotEmpty)
+        .toSet();
+    final distinctRt = binaan
+        .map((e) => e.rt)
+        .where((e) => e.isNotEmpty)
+        .toSet();
+    final distinctDasaWisma = binaan
+        .map((e) => e.dasaWisma)
+        .where((e) => e.isNotEmpty)
+        .toSet();
+    final distinctDusun = binaan
+        .map((e) => e.dusun.trim().toLowerCase())
+        .where((e) => e.isNotEmpty)
+        .toSet();
+    final totalBalitaL = binaan.fold(
+      0,
+      (sum, e) => sum +
+          (e.jumlahBalitaL + e.jumlahBalitaP > 0
+              ? e.jumlahBalitaL
+              : e.jumlahBalita),
+    );
+    final totalBalitaP = binaan.fold(0, (sum, e) => sum + e.jumlahBalitaP);
+    final totalPus = binaan.fold(0, (sum, e) => sum + e.jumlahPus);
+    final totalWus = binaan.fold(0, (sum, e) => sum + e.jumlahWus);
+    final totalIbuHamil = binaan.fold(0, (sum, e) => sum + e.jumlahIbuHamil);
+    final totalIbuMenyusui = binaan.fold(
+      0,
+      (sum, e) => sum + e.jumlahIbuMenyusui,
+    );
+    final totalLansia = binaan.fold(0, (sum, e) => sum + e.jumlahLansia);
+    final totalButaL = binaan.fold(
+      0,
+      (sum, e) => sum +
+          (e.jumlahTigaButaL + e.jumlahTigaButaP > 0
+              ? e.jumlahTigaButaL
+              : e.jumlahTigaButa),
+    );
+    final totalButaP = binaan.fold(0, (sum, e) => sum + e.jumlahTigaButaP);
+    final totalRumahSehat = binaan
+        .where((e) => e.kriteriaRumah.toLowerCase() == 'sehat')
+        .length;
+    final totalRumahKurangSehat = binaan.length - totalRumahSehat;
+    final totalSampah = binaan.where((e) => e.memilikiTempatSampah).length;
+    final totalSpal = binaan.where((e) => e.mempunyaiSpal).length;
+    final totalAirPdam = binaan
+        .where((e) => e.sumberAir.toLowerCase() == 'pdam')
+        .length;
+    final totalAirSumur = binaan
+        .where((e) => e.sumberAir.toLowerCase() == 'sumur')
+        .length;
+    final totalAirSungai = binaan
+        .where((e) => e.sumberAir.toLowerCase() == 'sungai')
+        .length;
+    final totalAirLainnya =
+        binaan.length - totalAirPdam - totalAirSumur - totalAirSungai;
+    final totalJamban = binaan.fold(0, (sum, e) => sum + e.jumlahMckSepticTank);
+    final totalBeras = binaan
+        .where((e) => e.makananPokok.toLowerCase() == 'beras')
+        .length;
+    final totalNonBeras = binaan.length - totalBeras;
+    final totalUp2k = binaan.where((e) => e.aktifitasUp2k).length;
+    final totalKesling = binaan
+        .where((e) => e.aktifitasKesehatanLingkungan)
+        .length;
+    final totalStikerP4k =
+        binaan.where((e) => e.memilikiStikerP4k).length;
+    final totalKegiatanPekarangan =
+        binaan.where((e) => e.aktifitasTanahPekarangan).length;
+    final totalIndustriRumahTangga =
+        binaan.where((e) => e.aktifitasIndustriRumahTangga).length;
+
+    final existing = _cache.firstWhere(
+      (e) => e.level == level && e.tahun == '2026',
+      orElse: () => DataUmumPkkItem(id: 0, level: level, tahun: '2026'),
+    );
+    final item = DataUmumPkkItem(
+      id: existing.id,
+      level: level,
+      tahun: '2026',
+      kabupaten: wilayah?.kabupaten ?? 'TASIKMALAYA',
+      provinsi: wilayah?.provinsi ?? 'JAWA BARAT',
+      kecamatan: wilayah?.kecamatan ?? 'Singaparna',
+      desa: wilayah?.desa ?? 'Singaparna',
+      jumlahDusun: distinctDusun.length,
+      jumlahPkkRw: distinctRw.length,
+      jumlahPkkRt: distinctRt.length,
+      jumlahDasaWisma: distinctDasaWisma.length,
+      jumlahKrt: dataKk.fold(0, (sum, e) => sum + e.jumlahKk),
+      jumlahKk: dataKk.fold(0, (sum, e) => sum + e.jumlahKk),
+      jiwaL: binaan.fold(0, (sum, e) => sum + e.jumlahLakiLaki),
+      jiwaP: binaan.fold(0, (sum, e) => sum + e.jumlahPerempuan),
+      keterangan:
+          'Auto-Isi dari ${binaan.length} Keluarga Binaan dan ${dataKk.length} Data KK',
+    );
+
+    final token = await _token();
+    if (token.isEmpty) {
+      throw StateError('Sesi login tidak ditemukan. Silakan login kembali.');
+    }
+
+    final rekapService = RekapKegiatanWargaBerjenjangService();
+    final existingRekap = (await rekapService.getByLevel(
+      level,
+    )).where((e) => e.tahun == '2026').firstOrNull;
+    await rekapService.save(
+      RekapKegiatanWargaBerjenjangItem(
+        id: existingRekap?.id ?? 0,
+        level: level,
+        tahun: '2026',
+        kecamatan: wilayah?.kecamatan ?? 'Singaparna',
+        namaKecamatan: wilayah?.kecamatan ?? 'Singaparna',
+        desa: wilayah?.desa ?? 'Singaparna',
+        namaDesa: wilayah?.desa ?? 'Singaparna',
+        jumlahDusun: item.jumlahDusun,
+        jumlahRw: item.jumlahPkkRw,
+        jumlahRt: item.jumlahPkkRt,
+        jumlahDasawisma: item.jumlahDasaWisma,
+        jumlahKrt: item.jumlahKrt,
+        jumlahKk: item.jumlahKk,
+        totalL: item.jiwaL,
+        totalP: item.jiwaP,
+        balitaL: totalBalitaL,
+        balitaP: totalBalitaP,
+        pus: totalPus,
+        wus: totalWus,
+        ibuHamil: totalIbuHamil,
+        ibuMenyusui: totalIbuMenyusui,
+        lansia: totalLansia,
+        butaL: totalButaL,
+        butaP: totalButaP,
+        memilikiStikerP4k: totalStikerP4k,
+        rumahSehat: totalRumahSehat,
+        rumahKurangSehat: totalRumahKurangSehat,
+        memilikiTempatSampah: totalSampah,
+        memilikiSpal: totalSpal,
+        jumlahJambanKeluarga: totalJamban,
+        airPdam: totalAirPdam,
+        airSumur: totalAirSumur,
+        airSungai: totalAirSungai,
+        airDll: totalAirLainnya,
+        makananPokokBeras: totalBeras,
+        makananPokokNonBeras: totalNonBeras,
+        kegiatanUp2k: totalUp2k,
+        kegiatanTanahPekarangan: totalKegiatanPekarangan,
+        kegiatanIndustriRumahTangga: totalIndustriRumahTangga,
+        kegiatanKesehatanLingkungan: totalKesling,
+        keterangan:
+            'Auto-Isi dari ${binaan.length} Keluarga Binaan dan ${dataKk.length} Data KK',
+      ),
+      token,
+    );
+
+    final saved = await save(item, token);
+    final existingIdx = _cache.indexWhere(
+      (e) => e.level == saved.level && e.tahun == saved.tahun,
+    );
+    if (existingIdx >= 0) {
+      _cache[existingIdx] = saved;
+    } else {
+      _cache.insert(0, saved);
+    }
+    await _saveToCache(_cache);
   }
 
   // ============================================================

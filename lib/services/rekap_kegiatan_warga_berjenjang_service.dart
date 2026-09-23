@@ -1,4 +1,4 @@
-// lib/services/rekap_kegiatan_warga_berjenjang_service.dart
+﻿// lib/services/rekap_kegiatan_warga_berjenjang_service.dart
 // ✅ FIX: Ganti SharedPreferences → API
 // Sumber data: API Laravel — /api/rekap-kegiatan-warga
 // Cache: opsional — untuk offline
@@ -6,6 +6,7 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/rekap_kegiatan_warga_berjenjang.dart';
+import '../constants/app_constants.dart';
 import 'api_service.dart';
 
 class RekapKegiatanWargaBerjenjangService {
@@ -37,10 +38,12 @@ class RekapKegiatanWargaBerjenjangService {
         wilayahId: wilayahId,
         search: search,
       );
-      _cache = list;
+      _cache = list
+          .map((item) => RekapKegiatanWargaBerjenjangItem.fromJson(item))
+          .toList();
       _lastFetch = DateTime.now();
-      await _saveToCache(list);
-      return list;
+      await _saveToCache(_cache);
+      return _cache;
     } catch (e) {
       if (_cache.isEmpty) {
         await _loadFromCache();
@@ -56,8 +59,7 @@ class RekapKegiatanWargaBerjenjangService {
 
   Future<RekapKegiatanWargaBerjenjangItem?> getById(int id) async {
     try {
-      final json = await _api.getRekapKegiatanWargaDetail(id);
-      return RekapKegiatanWargaBerjenjangItem.fromJson(json);
+      return (await getAll()).where((item) => item.id == id).firstOrNull;
     } catch (e) {
       return null;
     }
@@ -73,8 +75,10 @@ class RekapKegiatanWargaBerjenjangService {
 
   Future<RekapKegiatanWargaBerjenjangItem> save(
     RekapKegiatanWargaBerjenjangItem item,
-    String token,
+    [String? token]
   ) async {
+    token ??= await _token();
+    if (token.isEmpty) return item;
     if (item.id > 0) {
       final json = await _api.updateRekapKegiatanWarga(
         item.id,
@@ -97,7 +101,9 @@ class RekapKegiatanWargaBerjenjangService {
   // DELETE — ke API
   // ============================================================
 
-  Future<void> delete(int id, String token) async {
+  Future<void> delete(int id, [String? token]) async {
+    token ??= await _token();
+    if (token.isEmpty) return;
     await _api.deleteRekapKegiatanWarga(id, token);
     _cache.removeWhere((e) => e.id == id);
     await _saveToCache(_cache);
@@ -147,4 +153,13 @@ class RekapKegiatanWargaBerjenjangService {
   }
 
   DateTime? get lastFetch => _lastFetch;
+
+  Future<String> _token() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(AppConstants.tokenKey) ?? '';
+  }
+
+  Future<void> autoGenerateFromDasawisma(String level) async {
+    await getByLevel(level);
+  }
 }

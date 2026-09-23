@@ -1,4 +1,4 @@
-// lib/services/auth_service.dart
+﻿// lib/services/auth_service.dart
 
 // ignore_for_file: avoid_print
 import 'dart:convert';
@@ -27,7 +27,7 @@ class AuthService {
         }),
       );
 
-      print('🔍 LOGIN RESPONSE [${response.statusCode}]: ${response.body}');
+      print('ðŸ” LOGIN RESPONSE [${response.statusCode}]: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -36,7 +36,7 @@ class AuthService {
         final token = data['data']['token'] ?? '';
         final userData = data['data']['user'] ?? {};
 
-        print('🔍 TOKEN SAVED: "$token"');
+        print('ðŸ” TOKEN SAVED: "$token"');
 
         // Simpan token dan user data ke SharedPreferences
         final prefs = await SharedPreferences.getInstance();
@@ -64,14 +64,14 @@ class AuthService {
   }
 
   // ============================================================
-  // LOGIN DEMO ADMIN (Nembak API — adminpkk / password123)
+  // LOGIN DEMO ADMIN (Nembak API â€” adminpkk / password123)
   // ============================================================
   Future<void> loginDemoAdmin() async {
     await login('adminpkk', 'password123');
   }
 
   // ============================================================
-  // LOGIN DEMO KADER (Nembak API — user_dasawisma / password123)
+  // LOGIN DEMO KADER (Nembak API â€” user_dasawisma / password123)
   // ============================================================
   Future<void> loginDemoKader() async {
     await login('user_dasawisma', 'password123');
@@ -211,3 +211,4 @@ class AuthService {
     _client.close();
   }
 }
+

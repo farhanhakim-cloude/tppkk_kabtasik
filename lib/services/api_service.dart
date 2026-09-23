@@ -14,8 +14,8 @@ import '../models/berita.dart';
 import '../models/user.dart';
 import 'berita_service.dart';
 
-// ⚠️ SESUAIKAN — import model 3 sheet baru
-// Kalau nama file / class beda — ubah di sini
+// Ã¢Å¡Â Ã¯Â¸Â SESUAIKAN Ã¢â‚¬â€ import model 3 sheet baru
+// Kalau nama file / class beda Ã¢â‚¬â€ ubah di sini
 // import '../models/data_umum_pkk.dart';
 // import '../models/rekap_kegiatan_warga_berjenjang.dart';
 // import '../models/rekap_bumil_berjenjang.dart';
@@ -125,11 +125,11 @@ class ApiService {
   }
 
   // ============================================================
-  // ✅ TAMBAH — DATA UMUM PKK
+  // Ã¢Å“â€¦ TAMBAH Ã¢â‚¬â€ DATA UMUM PKK
   // ============================================================
 
   /// GET /api/data-umum-pkk
-  /// Ambil semua data umum PKK — filter tahun, level, wilayah
+  /// Ambil semua data umum PKK Ã¢â‚¬â€ filter tahun, level, wilayah
   Future<List<Map<String, dynamic>>> getDataUmumPkk({
     String? tahun,
     String? level,
@@ -181,7 +181,7 @@ class ApiService {
     }
   }
 
-  /// POST /api/data-umum-pkk — butuh token
+  /// POST /api/data-umum-pkk Ã¢â‚¬â€ butuh token
   Future<Map<String, dynamic>> createDataUmumPkk(
     Map<String, dynamic> payload,
     String token,
@@ -204,7 +204,7 @@ class ApiService {
         final err = jsonDecode(response.body);
         throw Exception('Validasi gagal: ${err['errors'] ?? err['message']}');
       } else if (response.statusCode == 409) {
-        throw Exception('Data sudah ada — duplikat');
+        throw Exception('Data sudah ada Ã¢â‚¬â€ duplikat');
       } else {
         throw Exception('Gagal simpan: ${response.statusCode}');
       }
@@ -261,7 +261,7 @@ class ApiService {
   }
 
   // ============================================================
-  // ✅ TAMBAH — REKAP KEGIATAN WARGA
+  // Ã¢Å“â€¦ TAMBAH Ã¢â‚¬â€ REKAP KEGIATAN WARGA
   // ============================================================
 
   Future<List<Map<String, dynamic>>> getRekapKegiatanWarga({
@@ -369,7 +369,7 @@ class ApiService {
   }
 
   // ============================================================
-  // ✅ TAMBAH — REKAP BUMIL
+  // Ã¢Å“â€¦ TAMBAH Ã¢â‚¬â€ REKAP BUMIL
   // ============================================================
 
   Future<List<Map<String, dynamic>>> getRekapBumil({
@@ -429,7 +429,7 @@ class ApiService {
         final err = jsonDecode(response.body);
         throw Exception('Validasi gagal: ${err['errors'] ?? err['message']}');
       } else if (response.statusCode == 409) {
-        throw Exception('Data sudah ada — duplikat');
+        throw Exception('Data sudah ada Ã¢â‚¬â€ duplikat');
       } else {
         throw Exception('Gagal simpan: ${response.statusCode}');
       }
@@ -567,7 +567,7 @@ class ApiService {
 
       return result;
     } catch (e) {
-      print('❌ ApiService.submitBerita error: $e');
+      print('Ã¢ÂÅ’ ApiService.submitBerita error: $e');
       throw Exception('Gagal submit berita: $e');
     }
   }
@@ -728,3 +728,8 @@ class ApiService {
     _client.close();
   }
 }
+
+
+
+
+

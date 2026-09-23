@@ -47,21 +47,29 @@ class DataKeluargaDasawisma {
   final String dasaWisma;
   final String rt;
   final String rw;
+  final String dusun;
   final String desa;
   final String kecamatan;
   final String kabupaten;
   final String provinsi;
   final String namaKepalaRumahTangga;
+  final String nomorKk;
+  final String nikKepalaKeluarga;
+  final String alamat;
   final int jumlahLakiLaki;
   final int jumlahPerempuan;
 
   // 1-2 Rekapitulasi
   final int jumlahKk;
   final int jumlahBalita;
+  final int jumlahBalitaL;
+  final int jumlahBalitaP;
   final int jumlahAnak;
   final int jumlahPus; // Pasangan Usia Subur
   final int jumlahWus; // Wanita Usia Subur
   final int jumlahTigaButa;
+  final int jumlahTigaButaL;
+  final int jumlahTigaButaP;
   final int jumlahIbuHamil;
   final int jumlahIbuMenyusui;
   final int jumlahLansia;
@@ -76,29 +84,40 @@ class DataKeluargaDasawisma {
   final String sumberAir; // PDAM / Sumur / Sungai / Lainnya
   final bool memilikiTempatSampah;
   final bool mempunyaiSpal;
+  final bool memilikiStikerP4k;
   final String kriteriaRumah; // Sehat / Kurang Sehat
   final bool aktifitasUp2k;
   final String jenisUsahaUp2k;
   final bool aktifitasKesehatanLingkungan;
+  final bool aktifitasTanahPekarangan;
+  final bool aktifitasIndustriRumahTangga;
 
   DataKeluargaDasawisma({
     required this.id,
     required this.dasaWisma,
     required this.rt,
     required this.rw,
+    this.dusun = '',
     required this.desa,
     required this.kecamatan,
     this.kabupaten = 'Kabupaten Tasikmalaya',
     this.provinsi = 'Provinsi Jawa Barat',
     required this.namaKepalaRumahTangga,
+    this.nomorKk = '',
+    this.nikKepalaKeluarga = '',
+    this.alamat = '',
     this.jumlahLakiLaki = 2,
     this.jumlahPerempuan = 2,
     this.jumlahKk = 1,
     this.jumlahBalita = 1,
+    this.jumlahBalitaL = 0,
+    this.jumlahBalitaP = 0,
     this.jumlahAnak = 1,
     this.jumlahPus = 1,
     this.jumlahWus = 1,
     this.jumlahTigaButa = 0,
+    this.jumlahTigaButaL = 0,
+    this.jumlahTigaButaP = 0,
     this.jumlahIbuHamil = 0,
     this.jumlahIbuMenyusui = 1,
     this.jumlahLansia = 0,
@@ -109,10 +128,13 @@ class DataKeluargaDasawisma {
     this.sumberAir = 'Sumur',
     this.memilikiTempatSampah = true,
     this.mempunyaiSpal = true,
+    this.memilikiStikerP4k = false,
     this.kriteriaRumah = 'Sehat',
     this.aktifitasUp2k = false,
     this.jenisUsahaUp2k = '',
     this.aktifitasKesehatanLingkungan = true,
+    this.aktifitasTanahPekarangan = false,
+    this.aktifitasIndustriRumahTangga = false,
   });
 
   DataKeluargaDasawisma copyWith({
@@ -120,19 +142,27 @@ class DataKeluargaDasawisma {
     String? dasaWisma,
     String? rt,
     String? rw,
+    String? dusun,
     String? desa,
     String? kecamatan,
     String? kabupaten,
     String? provinsi,
     String? namaKepalaRumahTangga,
+    String? nomorKk,
+    String? nikKepalaKeluarga,
+    String? alamat,
     int? jumlahLakiLaki,
     int? jumlahPerempuan,
     int? jumlahKk,
     int? jumlahBalita,
+    int? jumlahBalitaL,
+    int? jumlahBalitaP,
     int? jumlahAnak,
     int? jumlahPus,
     int? jumlahWus,
     int? jumlahTigaButa,
+    int? jumlahTigaButaL,
+    int? jumlahTigaButaP,
     int? jumlahIbuHamil,
     int? jumlahIbuMenyusui,
     int? jumlahLansia,
@@ -143,29 +173,40 @@ class DataKeluargaDasawisma {
     String? sumberAir,
     bool? memilikiTempatSampah,
     bool? mempunyaiSpal,
+    bool? memilikiStikerP4k,
     String? kriteriaRumah,
     bool? aktifitasUp2k,
     String? jenisUsahaUp2k,
     bool? aktifitasKesehatanLingkungan,
+    bool? aktifitasTanahPekarangan,
+    bool? aktifitasIndustriRumahTangga,
   }) {
     return DataKeluargaDasawisma(
       id: id ?? this.id,
       dasaWisma: dasaWisma ?? this.dasaWisma,
       rt: rt ?? this.rt,
       rw: rw ?? this.rw,
+      dusun: dusun ?? this.dusun,
       desa: desa ?? this.desa,
       kecamatan: kecamatan ?? this.kecamatan,
       kabupaten: kabupaten ?? this.kabupaten,
       provinsi: provinsi ?? this.provinsi,
       namaKepalaRumahTangga: namaKepalaRumahTangga ?? this.namaKepalaRumahTangga,
+      nomorKk: nomorKk ?? this.nomorKk,
+      nikKepalaKeluarga: nikKepalaKeluarga ?? this.nikKepalaKeluarga,
+      alamat: alamat ?? this.alamat,
       jumlahLakiLaki: jumlahLakiLaki ?? this.jumlahLakiLaki,
       jumlahPerempuan: jumlahPerempuan ?? this.jumlahPerempuan,
       jumlahKk: jumlahKk ?? this.jumlahKk,
       jumlahBalita: jumlahBalita ?? this.jumlahBalita,
+      jumlahBalitaL: jumlahBalitaL ?? this.jumlahBalitaL,
+      jumlahBalitaP: jumlahBalitaP ?? this.jumlahBalitaP,
       jumlahAnak: jumlahAnak ?? this.jumlahAnak,
       jumlahPus: jumlahPus ?? this.jumlahPus,
       jumlahWus: jumlahWus ?? this.jumlahWus,
       jumlahTigaButa: jumlahTigaButa ?? this.jumlahTigaButa,
+      jumlahTigaButaL: jumlahTigaButaL ?? this.jumlahTigaButaL,
+      jumlahTigaButaP: jumlahTigaButaP ?? this.jumlahTigaButaP,
       jumlahIbuHamil: jumlahIbuHamil ?? this.jumlahIbuHamil,
       jumlahIbuMenyusui: jumlahIbuMenyusui ?? this.jumlahIbuMenyusui,
       jumlahLansia: jumlahLansia ?? this.jumlahLansia,
@@ -176,10 +217,15 @@ class DataKeluargaDasawisma {
       sumberAir: sumberAir ?? this.sumberAir,
       memilikiTempatSampah: memilikiTempatSampah ?? this.memilikiTempatSampah,
       mempunyaiSpal: mempunyaiSpal ?? this.mempunyaiSpal,
+      memilikiStikerP4k: memilikiStikerP4k ?? this.memilikiStikerP4k,
       kriteriaRumah: kriteriaRumah ?? this.kriteriaRumah,
       aktifitasUp2k: aktifitasUp2k ?? this.aktifitasUp2k,
       jenisUsahaUp2k: jenisUsahaUp2k ?? this.jenisUsahaUp2k,
       aktifitasKesehatanLingkungan: aktifitasKesehatanLingkungan ?? this.aktifitasKesehatanLingkungan,
+      aktifitasTanahPekarangan:
+          aktifitasTanahPekarangan ?? this.aktifitasTanahPekarangan,
+      aktifitasIndustriRumahTangga:
+          aktifitasIndustriRumahTangga ?? this.aktifitasIndustriRumahTangga,
     );
   }
 }

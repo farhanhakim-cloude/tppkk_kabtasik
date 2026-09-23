@@ -1,4 +1,4 @@
-// ignore_for_file: curly_braces_in_flow_control_structures
+﻿// ignore_for_file: curly_braces_in_flow_control_structures
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -106,7 +106,7 @@ class _VerifikasiBeritaScreenState extends State<VerifikasiBeritaScreen> {
         if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isApprove ? 'Berita disetujui!' : 'Berita ditolak!'), backgroundColor: isApprove ? const Color(0xFF10B981) : const Color(0xFFEF4444), behavior: SnackBarBehavior.floating, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))));
         _loadPendingBerita();
       } else {
-        // Jika backend belum siap (data dummy lokal) → anggap sukses lokal agar tidak stuck 500
+        // Jika backend belum siap (data dummy lokal) â†’ anggap sukses lokal agar tidak stuck 500
         final bodySnippet = response.body.length > 300 ? response.body.substring(0, 300) : response.body;
         if (response.statusCode == 500 || response.statusCode == 404) {
           if (mounted) {
@@ -209,3 +209,4 @@ class _VerifikasiBeritaScreenState extends State<VerifikasiBeritaScreen> {
     );
   }
 }
+

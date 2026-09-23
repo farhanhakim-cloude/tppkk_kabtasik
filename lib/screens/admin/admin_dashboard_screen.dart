@@ -1,4 +1,4 @@
-// ignore_for_file: curly_braces_in_flow_control_structures, avoid_print, unnecessary_import, prefer_final_fields
+﻿// ignore_for_file: curly_braces_in_flow_control_structures, avoid_print, unnecessary_import, prefer_final_fields
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -289,7 +289,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              '$_weatherCity • Kelembapan $_weatherHumidity%',
+                              '$_weatherCity â€¢ Kelembapan $_weatherHumidity%',
                               style: GoogleFonts.plusJakartaSans(
                                 color: const Color(0xFF0D3E38).withValues(alpha: 0.85),
                                 fontSize: 12,
@@ -301,7 +301,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       ],
                     ),
                     Text(
-                      '$_weatherTemp°',
+                      '$_weatherTempÂ°',
                       style: GoogleFonts.plusJakartaSans(
                         color: const Color(0xFF0D3E38),
                         fontWeight: FontWeight.w900,

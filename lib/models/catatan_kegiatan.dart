@@ -1,20 +1,20 @@
-// lib/models/catatan_kegiatan.dart
+﻿// lib/models/catatan_kegiatan.dart
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../constants/app_constants.dart';
 
 // ============================================================
-// ENUM — TAMBAH 3 SHEET POKJA 4
+// ENUM â€” TAMBAH 3 SHEET POKJA 4
 // ============================================================
 enum PokjaKategori {
   pokja1,
   pokja2,
   pokja3,
   pokja4,
-  pokja4Pyd,       // ✅ BARU
-  pokja4Posyandu,  // ✅ BARU
-  pokja4Rekap,     // ✅ BARU
+  pokja4Pyd,       // âœ… BARU
+  pokja4Posyandu,  // âœ… BARU
+  pokja4Rekap,     // âœ… BARU
 }
 
 extension PokjaKategoriLabel on PokjaKategori {
@@ -56,7 +56,7 @@ extension PokjaKategoriLabel on PokjaKategori {
     }
   }
 
-  // ✅ KATEGORI_POKJA — untuk dikirim ke backend
+  // âœ… KATEGORI_POKJA â€” untuk dikirim ke backend
   String get kategoriPokja {
     switch (this) {
       case PokjaKategori.pokja1:
@@ -76,7 +76,7 @@ extension PokjaKategoriLabel on PokjaKategori {
     }
   }
 
-  // ✅ CHECKER
+  // âœ… CHECKER
   bool get isPokja4Sheet {
     return this == PokjaKategori.pokja4Pyd ||
         this == PokjaKategori.pokja4Posyandu ||
@@ -96,7 +96,7 @@ extension PokjaKategoriLabel on PokjaKategori {
       case PokjaKategori.pokja4Pyd:
       case PokjaKategori.pokja4Posyandu:
       case PokjaKategori.pokja4Rekap:
-        return '/api/pokja4'; // placeholder — ga dipakai POST
+        return '/api/pokja4'; // placeholder â€” ga dipakai POST
     }
   }
 
@@ -120,7 +120,7 @@ extension PokjaKategoriLabel on PokjaKategori {
   }
 
   // ============================================================
-  // FIELD ANGKA — SESUAI DATABASE
+  // FIELD ANGKA â€” SESUAI DATABASE
   // ============================================================
   List<String> get fieldAngka {
     switch (this) {
@@ -146,7 +146,7 @@ extension PokjaKategoriLabel on PokjaKategori {
           'pemanfaatan_pekarangan', 'industri_rumah_tangga',
         ];
       case PokjaKategori.pokja4:
-        // ✅ FIX: 25 kolom — match dengan backend
+        // âœ… FIX: 25 kolom â€” match dengan backend
         return [
           'posyandu', 'akseptor_kb', 'phbs', 'jamban_keluarga',
           'kader_kesehatan', 'kader_gizi', 'kader_kesling', 'kader_phbs', 'kader_kb',
@@ -159,7 +159,7 @@ extension PokjaKategoriLabel on PokjaKategori {
           'program_kesehatan', 'program_lingkungan', 'program_perencanaan',
         ];
       case PokjaKategori.pokja4Pyd:
-        // ✅ BARU: 21 kolom Kunjungan PYD
+        // âœ… BARU: 21 kolom Kunjungan PYD
         return [
           'bulan', 'tahun',
           'bayi_0_12_l', 'bayi_0_12_p',
@@ -172,7 +172,7 @@ extension PokjaKategoriLabel on PokjaKategori {
           'keterangan',
         ];
       case PokjaKategori.pokja4Posyandu:
-        // ✅ BARU: 40 kolom Kegiatan Posyandu
+        // âœ… BARU: 40 kolom Kegiatan Posyandu
         return [
           'bulan', 'tahun',
           'ibu_hamil', 'ibu_hamil_diperiksa', 'ibu_hamil_dapat_fe', 'menyusui',
@@ -191,7 +191,7 @@ extension PokjaKategoriLabel on PokjaKategori {
           'keterangan',
         ];
       case PokjaKategori.pokja4Rekap:
-        // ✅ BARU: 19 kolom Rekapitulasi
+        // âœ… BARU: 19 kolom Rekapitulasi
         return [
           'tahun',
           'ibu_hamil', 'ibu_melahirkan', 'ibu_nifas', 'ibu_meninggal',
@@ -291,7 +291,7 @@ class CatatanKegiatan {
   final String judul;
   final String deskripsiSingkat;
   final PokjaKategori kategori;
-  final Map<String, dynamic> dataAngka;  // ✅ dynamic — bisa int + string
+  final Map<String, dynamic> dataAngka;  // âœ… dynamic â€” bisa int + string
   final String kecamatan;
   final String? desa;
   final String? fotoPath;
@@ -359,14 +359,14 @@ class CatatanKegiatan {
   ];
 
   // ============================================================
-  // TO JSON — untuk kirim ke backend
+  // TO JSON â€” untuk kirim ke backend
   // ============================================================
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'judul': judul,
       'deskripsi': deskripsiSingkat,
-      'kategori_pokja': kategori.kategoriPokja,   // ✅ FIX: string
+      'kategori_pokja': kategori.kategoriPokja,   // âœ… FIX: string
       'data_angka': dataAngka,
       'kecamatan': kecamatan,
       'desa_kelurahan': desa,
@@ -377,7 +377,7 @@ class CatatanKegiatan {
   }
 
   // ============================================================
-  // FROM JSON — untuk baca dari backend
+  // FROM JSON â€” untuk baca dari backend
   // ============================================================
   factory CatatanKegiatan.fromJson(Map<String, dynamic> json) {
     Map<String, dynamic> dataAngka = {};
@@ -432,7 +432,7 @@ class CatatanKegiatan {
   }
 
   // ============================================================
-  // KIRIM KE BACKEND — POST /api/laporan-kegiatan
+  // KIRIM KE BACKEND â€” POST /api/laporan-kegiatan
   // ============================================================
   static Future<Map<String, dynamic>> kirimKeBackend({
     required String token,
@@ -441,14 +441,14 @@ class CatatanKegiatan {
     final payload = {
       'judul': catatan.judul,
       'deskripsi': catatan.deskripsiSingkat,
-      'kategori_pokja': catatan.kategori.kategoriPokja,   // ✅ IV, IV-PYD, dll
+      'kategori_pokja': catatan.kategori.kategoriPokja,   // âœ… IV, IV-PYD, dll
       'data_angka': catatan.dataAngka,
       'kecamatan': catatan.kecamatan,
       'desa_kelurahan': catatan.desa,
     };
 
     final response = await http.post(
-      Uri.parse('${AppConstants.baseUrl}/api/laporan-kegiatan'),  // ✅ FIX: endpoint
+      Uri.parse('${AppConstants.baseUrl}/api/laporan-kegiatan'),  // âœ… FIX: endpoint
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',

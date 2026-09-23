@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print, no_leading_underscores_for_local_identifiers
+﻿// ignore_for_file: avoid_print, no_leading_underscores_for_local_identifiers
 // lib/services/catatan_kegiatan_service.dart
 
 import 'dart:convert';
@@ -64,15 +64,15 @@ class CatatanKegiatanService {
   }
 
   // ============================================================
-  // ✅ KONVERSI POKJA KE KODE — pakai getter dari model
+  // âœ… KONVERSI POKJA KE KODE â€” pakai getter dari model
   // ============================================================
   String _kodePokja(PokjaKategori kategori) {
-    // Pakai getter `kategoriPokja` dari extension — otomatis handle 7 value
+    // Pakai getter `kategoriPokja` dari extension â€” otomatis handle 7 value
     return kategori.kategoriPokja;
   }
 
   // ============================================================
-  // 🔥 PERSISTENCE
+  // ðŸ”¥ PERSISTENCE
   // ============================================================
   static const String _localKey = 'catatan_kegiatan_local';
 
@@ -100,7 +100,7 @@ class CatatanKegiatanService {
         return CatatanKegiatan.parseKategori(v);
       }
 
-      // ✅ Helper: decode dataAngka — jangan cast paksa ke int
+      // âœ… Helper: decode dataAngka â€” jangan cast paksa ke int
       Map<String, dynamic> _decodeDataAngka(dynamic raw) {
         if (raw is Map) {
           return Map<String, dynamic>.from(raw);
@@ -183,13 +183,13 @@ class CatatanKegiatanService {
           final data = jsonDecode(response.body);
           final List<dynamic> raw = _extractList(data['data']);
           apiList = raw.map((item) => CatatanKegiatan.fromJson(item)).toList();
-          print('📥 Loaded ${apiList.length} laporan dari API');
+          print('ðŸ“¥ Loaded ${apiList.length} laporan dari API');
         } else {
-          print('⚠️ API laporan status ${response.statusCode}: ${response.body}');
+          print('âš ï¸ API laporan status ${response.statusCode}: ${response.body}');
         }
       }
     } catch (e) {
-      print('⚠️ Error get laporan API: $e');
+      print('âš ï¸ Error get laporan API: $e');
     }
 
     List<CatatanKegiatan> list;
@@ -245,7 +245,7 @@ class CatatanKegiatanService {
   }
 
   // ============================================================
-  // 🔥 KIRIM LAPORAN — simpan lokal dulu, API jangan bikin gagal lokal
+  // ðŸ”¥ KIRIM LAPORAN â€” simpan lokal dulu, API jangan bikin gagal lokal
   // ============================================================
   Future<void> kirim(CatatanKegiatan catatan) async {
     // Simpan ke data lokal agar langsung muncul di list kader
@@ -261,10 +261,10 @@ class CatatanKegiatanService {
     await _saveLocal();
 
     final token = await _getToken();
-    print('🔍 TOKEN SAAT SUBMIT: "$token"');
+    print('ðŸ” TOKEN SAAT SUBMIT: "$token"');
 
     if (token == null || token.isEmpty) {
-      print('⚠️ Token kosong — disimpan lokal saja, anggap sukses offline');
+      print('âš ï¸ Token kosong â€” disimpan lokal saja, anggap sukses offline');
       return;
     }
 
@@ -284,12 +284,12 @@ class CatatanKegiatanService {
 
     request.fields['judul'] = catatan.judul;
     request.fields['deskripsi'] = catatan.ceritaSingkat;
-    // ✅ FIX: pakai `kategori.kategoriPokja` — handle IV-PYD, IV-POSYANDU, IV-REKAP
+    // âœ… FIX: pakai `kategori.kategoriPokja` â€” handle IV-PYD, IV-POSYANDU, IV-REKAP
     request.fields['kategori_pokja'] = catatan.kategori.kategoriPokja;
     request.fields['kecamatan'] = catatan.kecamatan;
     request.fields['desa_kelurahan'] = desaFinal;
 
-    print('📤 SEND DATA:');
+    print('ðŸ“¤ SEND DATA:');
     print('  - Judul: ${catatan.judul}');
     print('  - Kategori: ${catatan.kategori.kategoriPokja}');
     print('  - Kecamatan: ${catatan.kecamatan}');
@@ -317,7 +317,7 @@ class CatatanKegiatanService {
         );
         request.files.add(file);
       } catch (e) {
-        print('⚠️ Gagal attach foto: $e');
+        print('âš ï¸ Gagal attach foto: $e');
       }
     }
 
@@ -325,11 +325,11 @@ class CatatanKegiatanService {
       final streamedResponse = await request.send().timeout(const Duration(seconds: 15));
       final response = await http.Response.fromStream(streamedResponse);
 
-      print('📡 Response status: ${response.statusCode}');
-      print('📡 Response body: ${response.body}');
+      print('ðŸ“¡ Response status: ${response.statusCode}');
+      print('ðŸ“¡ Response body: ${response.body}');
 
       if (response.statusCode == 201 || response.statusCode == 200) {
-        print('✅ Berhasil mengirim catatan kegiatan ke server!');
+        print('âœ… Berhasil mengirim catatan kegiatan ke server!');
         return;
       }
 
@@ -354,11 +354,11 @@ class CatatanKegiatanService {
       if (response.statusCode == 422) {
         throw Exception(pesan);
       }
-      print('⚠️ $pesan — data lokal tetap disimpan, tidak throw');
+      print('âš ï¸ $pesan â€” data lokal tetap disimpan, tidak throw');
       return;
     } catch (e) {
       if (e.toString().contains('Exception:') && e.toString().contains('422')) rethrow;
-      print('⚠️ Error kirim catatan kegiatan (diabaikan, lokal tetap): $e');
+      print('âš ï¸ Error kirim catatan kegiatan (diabaikan, lokal tetap): $e');
       return;
     }
   }
