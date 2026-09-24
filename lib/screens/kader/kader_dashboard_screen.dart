@@ -29,6 +29,7 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
 
   String _userName = 'Kader PKK';
   String _desaKecamatan = 'Kab. Tasikmalaya';
+  String? _pokjaRole;
   int _selectedCategoryIndex = 0; // 0: Semua, 1: Pokja I, 2: Pokja II, 3: Pokja III, 4: Pokja IV
   int _selectedBottomNavIndex = 0;
   bool _isDarkMode = false; // ikut global themeNotifier (default light)
@@ -69,10 +70,14 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
       final nama = data['name'] ?? data['nama'] ?? 'Kader PKK';
       final desa = data['desa'] ?? data['kelurahan'] ?? '';
       final kec = data['kecamatan'] ?? prefs.getString('default_kecamatan') ?? 'Tasikmalaya';
+      final role = (data['role'] ?? '').toString().toLowerCase();
 
       setState(() {
         _userName = nama;
         _desaKecamatan = desa.isNotEmpty ? '$desa, $kec' : 'Kec. $kec';
+        _pokjaRole = ['pokja1', 'pokja2', 'pokja3', 'pokja4'].contains(role)
+            ? role
+            : null;
       });
     } catch (_) {}
   }
@@ -294,7 +299,9 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
                                       _buildBannerDivider(),
                                       _buildWeatherCardStat(
                                         label: 'Status',
-                                        value: 'Siap 4 Pokja',
+                                        value: _pokjaRole == null
+                                            ? 'Siap 4 Pokja'
+                                            : 'Akses ${_pokjaLabel(_pokjaRole!)}',
                                       ),
                                     ],
                                   ),
@@ -312,7 +319,9 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
                                     title: 'Catatan Kegiatan',
                                     subtitle: '$totalKegiatan Laporan',
                                     icon: Icons.assignment_outlined,
-                                    badgeText: 'Pokja I - IV',
+                                    badgeText: _pokjaRole == null
+                                        ? 'Pokja I - IV'
+                                        : _pokjaLabel(_pokjaRole!),
                                     isMintTheme: true,
                                     primaryColor: primaryMintAccent,
                                     cardBg: cardBg,
@@ -688,9 +697,14 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
       ),
     ];
 
-    final filtered = _selectedCategoryIndex == 0
-        ? allPokjas
-        : allPokjas.where((p) => p.index == _selectedCategoryIndex).toList();
+    final roleIndex = _pokjaRole == null
+        ? null
+        : int.tryParse(_pokjaRole!.substring('pokja'.length));
+    final filtered = roleIndex != null
+        ? allPokjas.where((p) => p.index == roleIndex).toList()
+        : (_selectedCategoryIndex == 0
+            ? allPokjas
+            : allPokjas.where((p) => p.index == _selectedCategoryIndex).toList());
 
     return filtered.map((item) {
       return Padding(
@@ -759,6 +773,21 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
         ),
       );
     }).toList();
+  }
+
+  String _pokjaLabel(String role) {
+    switch (role) {
+      case 'pokja1':
+        return 'Pokja I';
+      case 'pokja2':
+        return 'Pokja II';
+      case 'pokja3':
+        return 'Pokja III';
+      case 'pokja4':
+        return 'Pokja IV';
+      default:
+        return 'Pokja';
+    }
   }
 
   Widget _buildBottomNavigationBar(

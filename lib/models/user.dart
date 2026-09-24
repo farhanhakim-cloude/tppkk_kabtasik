@@ -6,6 +6,7 @@ class User {
   final String username;
   final String email;
   final List<String> roles;
+  final String? mobileRole;
 
   User({
     this.id,
@@ -16,7 +17,9 @@ class User {
     List<String>? roles,
     String? role,
     String? jabatan,
+    String? mobileRole,
   })  : name = name ?? nama ?? 'User',
+        mobileRole = mobileRole ?? role,
         roles = roles ?? (role != null ? [role] : (jabatan != null ? [jabatan] : const []));
 
   // Compatibility getters
@@ -48,6 +51,7 @@ class User {
       username: map['username'] ?? '',
       email: map['email'] ?? '',
       roles: parsedRoles,
+      mobileRole: map['role']?.toString(),
     );
   }
 
@@ -58,6 +62,6 @@ class User {
     'username': username,
     'email': email,
     'roles': roles,
+    'role': mobileRole ?? role,
   };
 }
-

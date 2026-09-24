@@ -2,6 +2,7 @@
 // Redesign: lebih menarik, tidak kaku, tidak terlalu rame — soft, airy, modern
 
 import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -44,6 +45,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
   bool _isSaving = false;
 
   bool _isDarkMode = false;
+  PokjaKategori? _restrictedPokja;
 
   @override
   void initState() {
@@ -51,12 +53,14 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
     _isDarkMode = themeNotifier.value == ThemeMode.dark;
     themeNotifier.addListener(_onThemeChanged);
     _loadTheme();
+    _loadRoleRestriction();
 
     // Pastikan controller Pokja 1 (4 field per program) ada
     for (final k in ['kisah', 'kilas', 'krisan', 'kiat', 'kisak', 'pkbn']) {
       for (final suffix in ['_kegiatan', '_volume', '_metode', '_sasaran']) {
         _angkaCtrl['$k$suffix'] = TextEditingController();
       }
+
     }
 
     final allFields = <String>{};
@@ -98,6 +102,46 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
       _kategori = PokjaKategori.pokja1;
       _pokjaDipilih = false;
     }
+  }
+
+  Future<void> _loadRoleRestriction() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString('user_data');
+      if (raw == null || raw.isEmpty) return;
+      final data = jsonDecode(raw) as Map<String, dynamic>;
+      final roles = data['roles'] is List ? List<dynamic>.from(data['roles']) : const [];
+      final username = (data['username'] ?? '').toString().toLowerCase();
+      final role = (data['role'] ??
+              (roles.isNotEmpty ? roles.first : '') ??
+              (username.startsWith('pokja') ? username : ''))
+          .toString()
+          .toLowerCase();
+      final index = int.tryParse(role.replaceFirst('pokja', ''));
+      if (index == null || index < 1 || index > 4) return;
+
+      final pokja = PokjaKategori.values[index - 1];
+      if (!mounted) return;
+      setState(() {
+        _restrictedPokja = pokja;
+        if (widget.catatan == null) {
+          _kategori = pokja;
+        }
+      });
+    } catch (_) {}
+  }
+
+  List<PokjaKategori> _availablePokjas() {
+    if (_restrictedPokja == null) return PokjaKategori.values;
+    if (_restrictedPokja == PokjaKategori.pokja4) {
+      return const [
+        PokjaKategori.pokja4,
+        PokjaKategori.pokja4Pyd,
+        PokjaKategori.pokja4Posyandu,
+        PokjaKategori.pokja4Rekap,
+      ];
+    }
+    return [_restrictedPokja!];
   }
 
   @override
@@ -659,7 +703,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
   void _showPokjaPicker() {
     HapticFeedback.selectionClick();
     final pal = _sheetPalette();
-    final pokjas = PokjaKategori.values;
+    final pokjas = _availablePokjas();
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -703,7 +747,9 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '7 kategori — termasuk 3 sheet Pokja IV',
+                  _restrictedPokja == PokjaKategori.pokja4
+                      ? '4 kategori Pokja IV'
+                      : '${pokjas.length} kategori tersedia',
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
                     color: pal.sub,

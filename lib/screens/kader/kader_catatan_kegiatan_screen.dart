@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import '../../main.dart';
 import '../../models/catatan_kegiatan.dart';
 import '../../services/catatan_kegiatan_service.dart';
@@ -23,6 +24,7 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
     with SingleTickerProviderStateMixin {
   final _service = CatatanKegiatanService();
   PokjaKategori? _selectedFilter;
+  PokjaKategori? _restrictedPokja;
   String _searchQuery = '';
   bool _isDarkMode = false;
   late AnimationController _fabAnim;
@@ -41,10 +43,36 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
     _isDarkMode = themeNotifier.value == ThemeMode.dark;
     themeNotifier.addListener(_onThemeChanged);
     _loadTheme();
+    _loadRoleRestriction();
     _fabAnim = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 400),
     )..forward();
+  }
+
+  Future<void> _loadRoleRestriction() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final raw = prefs.getString('user_data');
+      if (raw == null || raw.isEmpty) return;
+      final data = jsonDecode(raw) as Map<String, dynamic>;
+      final roles = data['roles'] is List ? List<dynamic>.from(data['roles']) : const [];
+      final username = (data['username'] ?? '').toString().toLowerCase();
+      final role = (data['role'] ??
+              (roles.isNotEmpty ? roles.first : '') ??
+              (username.startsWith('pokja') ? username : ''))
+          .toString()
+          .toLowerCase();
+      final index = int.tryParse(role.replaceFirst('pokja', ''));
+      if (index == null || index < 1 || index > 4) return;
+
+      final pokja = PokjaKategori.values[index - 1];
+      if (!mounted) return;
+      setState(() {
+        _restrictedPokja = pokja;
+        _selectedFilter = pokja;
+      });
+    } catch (_) {}
   }
 
   // ✅ FIX: _reload jadi Future<void>, sinkron di dalam setState
@@ -69,8 +97,9 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
           prefs.getBool('kader_dark_mode') ??
           prefs.getBool('isDarkMode') ??
           (themeNotifier.value == ThemeMode.dark);
-      if (mounted && _isDarkMode != isDark)
+      if (mounted && _isDarkMode != isDark) {
         setState(() => _isDarkMode = isDark);
+      }
       if (themeNotifier.value != (isDark ? ThemeMode.dark : ThemeMode.light)) {
         themeNotifier.value = isDark ? ThemeMode.dark : ThemeMode.light;
       }
@@ -214,26 +243,30 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                     shrinkWrap: true,
                     padding: EdgeInsets.zero,
                     children: [
-                      _buildFilterSheetItem(
-                        null,
-                        'Semua Pokja',
-                        'Tampilkan semua kategori',
-                        Icons.apps_rounded,
-                        const Color(0xFF0D9488),
-                        ctx,
-                      ),
-                      const SizedBox(height: 8),
+                      if (_restrictedPokja == null) ...[
+                        _buildFilterSheetItem(
+                          null,
+                          'Semua Pokja',
+                          'Tampilkan semua kategori',
+                          Icons.apps_rounded,
+                          const Color(0xFF0D9488),
+                          ctx,
+                        ),
+                        const SizedBox(height: 8),
+                      ],
                       ...PokjaKategori.values.map(
                         (p) => Padding(
                           padding: const EdgeInsets.only(bottom: 8),
-                          child: _buildFilterSheetItem(
-                            p,
-                            p.label,
-                            _pokjaSubtitle(p),
-                            _getPokjaIcon(p),
-                            _getPokjaColor(p),
-                            ctx,
-                          ),
+                          child: _restrictedPokja != null && p != _restrictedPokja
+                              ? const SizedBox.shrink()
+                              : _buildFilterSheetItem(
+                                  p,
+                                  p.label,
+                                  _pokjaSubtitle(p),
+                                  _getPokjaIcon(p),
+                                  _getPokjaColor(p),
+                                  ctx,
+                                ),
                         ),
                       ),
                     ],
@@ -244,10 +277,10 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                   width: double.infinity,
                   height: 46,
                   child: OutlinedButton(
-                    onPressed: () {
+                    onPressed: _restrictedPokja == null ? () {
                       setState(() => _selectedFilter = null);
                       Navigator.pop(ctx);
-                    },
+                    } : null,
                     style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xFF64748B),
                       side: const BorderSide(color: Color(0xFFE2E8F0)),
@@ -647,8 +680,9 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                 final allList = snapshot.data ?? [];
                 final filteredList = allList.where((item) {
                   if (_selectedFilter != null &&
-                      item.kategori != _selectedFilter)
+                      item.kategori != _selectedFilter) {
                     return false;
+                  }
                   if (_searchQuery.isNotEmpty) {
                     final q = _searchQuery.toLowerCase();
                     return item.judul.toLowerCase().contains(q) ||
