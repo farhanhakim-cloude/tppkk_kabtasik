@@ -165,6 +165,19 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
     await _reload();
   }
 
+  List<PokjaKategori> _availablePokjas() {
+    if (_restrictedPokja == null) return PokjaKategori.values;
+    if (_restrictedPokja == PokjaKategori.pokja4) {
+      return const [
+        PokjaKategori.pokja4,
+        PokjaKategori.pokja4Pyd,
+        PokjaKategori.pokja4Posyandu,
+        PokjaKategori.pokja4Rekap,
+      ];
+    }
+    return [_restrictedPokja!];
+  }
+
   void _showFilterSheet() {
     final sheetBg = Colors.white;
     showModalBottomSheet(
@@ -254,12 +267,10 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                         ),
                         const SizedBox(height: 8),
                       ],
-                      ...PokjaKategori.values.map(
+                      ..._availablePokjas().map(
                         (p) => Padding(
                           padding: const EdgeInsets.only(bottom: 8),
-                          child: _restrictedPokja != null && p != _restrictedPokja
-                              ? const SizedBox.shrink()
-                              : _buildFilterSheetItem(
+                          child: _buildFilterSheetItem(
                                   p,
                                   p.label,
                                   _pokjaSubtitle(p),

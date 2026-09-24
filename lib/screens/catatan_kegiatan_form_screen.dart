@@ -1410,7 +1410,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
         ? Colors.white.withValues(alpha: 0.06)
         : const Color(0xFFE2E8F0);
 
-    final pokjas = PokjaKategori.values;
+    final pokjas = _availablePokjas();
 
     return Scaffold(
       backgroundColor: bg,

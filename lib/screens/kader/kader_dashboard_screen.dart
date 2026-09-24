@@ -695,6 +695,30 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
         icon: Icons.health_and_safety_rounded,
         index: 4,
       ),
+      _PokjaItem(
+        pokja: PokjaKategori.pokja4Pyd,
+        title: 'Kunjungan PYD',
+        desc: 'Data Kunjungan PYD per Bulan',
+        color: const Color(0xFF8B5CF6),
+        icon: Icons.child_friendly_rounded,
+        index: 4,
+      ),
+      _PokjaItem(
+        pokja: PokjaKategori.pokja4Posyandu,
+        title: 'Kegiatan Posyandu',
+        desc: 'Data Kegiatan Posyandu per Bulan',
+        color: const Color(0xFF06B6D4),
+        icon: Icons.local_hospital_rounded,
+        index: 4,
+      ),
+      _PokjaItem(
+        pokja: PokjaKategori.pokja4Rekap,
+        title: 'Rekapitulasi',
+        desc: 'Rekap Ibu Hamil, Melahirkan & Nifas',
+        color: const Color(0xFFEC4899),
+        icon: Icons.assignment_rounded,
+        index: 4,
+      ),
     ];
 
     final roleIndex = _pokjaRole == null
