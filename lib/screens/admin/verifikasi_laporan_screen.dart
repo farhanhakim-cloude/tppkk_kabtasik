@@ -133,7 +133,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
               decoration: BoxDecoration(
                 color:
                     (isApprove
-                            ? const Color(0xFF10B981)
+                            ? const Color(0xFF0F326D)
                             : const Color(0xFFEF4444))
                         .withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10),
@@ -141,7 +141,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
               child: Icon(
                 isApprove ? Icons.check_circle_rounded : Icons.cancel_rounded,
                 color: isApprove
-                    ? const Color(0xFF10B981)
+                    ? const Color(0xFF0F326D)
                     : const Color(0xFFEF4444),
                 size: 24,
               ),
@@ -186,7 +186,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: isApprove
-                  ? const Color(0xFF10B981)
+                  ? const Color(0xFF0F326D)
                   : const Color(0xFFEF4444),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -333,19 +333,11 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = _isDarkMode
-        ? const Color(0xFF14181F)
-        : const Color(0xFFF3F5F7);
-    final appBarBg = _isDarkMode ? const Color(0xFF1A1F28) : Colors.white;
-    final textColor = _isDarkMode
-        ? AdminElderlyStyle.darkText
-        : AdminElderlyStyle.lightText;
-    final subtextColor = _isDarkMode
-        ? AdminElderlyStyle.darkSubtext
-        : AdminElderlyStyle.lightSubtext;
-    final primaryAccent = _isDarkMode
-        ? const Color(0xFF2ED9C3)
-        : const Color(0xFF0D9488);
+    final bgColor = _isDarkMode ? const Color(0xFF14181F) : const Color(0xFFF8F9FB);
+    final appBarBg = bgColor;
+    final textColor = _isDarkMode ? Colors.white : const Color(0xFF0F172A);
+    final subtextColor = _isDarkMode ? const Color(0xFF8E9BAE) : const Color(0xFF64748B);
+    final primaryAccent = const Color(0xFF0F326D);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -456,7 +448,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
   Widget _chip(String label, PokjaKategori? pokja, int count) {
     final selected = _filterPokja == pokja;
     final accent = pokja == null
-        ? (_isDarkMode ? const Color(0xFF2ED9C3) : const Color(0xFF0D9488))
+        ? const Color(0xFF0F326D)
         : _pokjaColor(pokja);
     final bg = selected
         ? accent
@@ -464,8 +456,8 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
     final fg = selected
         ? Colors.white
         : (_isDarkMode
-              ? AdminElderlyStyle.darkSubtext
-              : AdminElderlyStyle.lightSubtext);
+              ? const Color(0xFF8E9BAE)
+              : const Color(0xFF64748B));
 
     return InkWell(
       onTap: () {
@@ -524,12 +516,10 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
 
   /// Kolom cari — gaya halaman catatan kader
   Widget _buildSearchBar() {
-    final cardBg = AdminElderlyStyle.cardBg(_isDarkMode);
-    final borderColor = AdminElderlyStyle.border(_isDarkMode);
+    final cardBg = _isDarkMode ? const Color(0xFF1E242D) : Colors.white;
+    final borderColor = _isDarkMode ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFE2E8F0);
     final textColor = _isDarkMode ? Colors.white : const Color(0xFF0F172A);
-    final hintColor = _isDarkMode
-        ? AdminElderlyStyle.darkSubtext
-        : const Color(0xFF64748B);
+    final hintColor = _isDarkMode ? const Color(0xFF8E9BAE) : const Color(0xFF64748B);
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
       child: Container(
@@ -537,6 +527,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
           color: cardBg,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: borderColor),
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 10, offset: const Offset(0, 4))],
         ),
         child: TextField(
           onChanged: (v) => setState(() => _searchQuery = v),
@@ -568,9 +559,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
   }
 
   Widget _buildBody() {
-    final primaryAccent = _isDarkMode
-        ? const Color(0xFF2ED9C3)
-        : const Color(0xFF0D9488);
+    final primaryAccent = const Color(0xFF0F326D);
     if (_isLoading)
       return Center(
         child: CircularProgressIndicator(
@@ -623,15 +612,9 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
   }
 
   Widget _buildErrorState() {
-    final textColor = _isDarkMode
-        ? AdminElderlyStyle.darkText
-        : AdminElderlyStyle.lightText;
-    final subtextColor = _isDarkMode
-        ? AdminElderlyStyle.darkSubtext
-        : AdminElderlyStyle.lightSubtext;
-    final primaryAccent = _isDarkMode
-        ? const Color(0xFF2ED9C3)
-        : const Color(0xFF0D9488);
+    final textColor = _isDarkMode ? Colors.white : const Color(0xFF0F172A);
+    final subtextColor = _isDarkMode ? const Color(0xFF8E9BAE) : const Color(0xFF64748B);
+    final primaryAccent = const Color(0xFF0F326D);
 
     return Center(
       child: Padding(
@@ -703,15 +686,9 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
   }
 
   Widget _buildEmptyState() {
-    final textColor = _isDarkMode
-        ? AdminElderlyStyle.darkText
-        : AdminElderlyStyle.lightText;
-    final subtextColor = _isDarkMode
-        ? AdminElderlyStyle.darkSubtext
-        : AdminElderlyStyle.lightSubtext;
-    final accent = _isDarkMode
-        ? const Color(0xFF2ED9C3)
-        : const Color(0xFF0D9488);
+    final textColor = _isDarkMode ? Colors.white : const Color(0xFF0F172A);
+    final subtextColor = _isDarkMode ? const Color(0xFF8E9BAE) : const Color(0xFF64748B);
+    final accent = const Color(0xFF0F326D);
 
     return Center(
       child: Padding(
@@ -759,15 +736,11 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
   Widget _buildLaporanCard(CatatanKegiatan laporan) {
     // Gaya kartu disamakan dengan kartu catatan kader: putih polos,
     // pil status + judul + deskripsi + baris kategori, lalu tombol admin.
-    final cardBg = AdminElderlyStyle.cardBg(_isDarkMode);
-    final borderColor = AdminElderlyStyle.border(_isDarkMode);
+    final cardBg = _isDarkMode ? const Color(0xFF1E242D) : Colors.white;
+    final borderColor = _isDarkMode ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFE2E8F0);
     final titleColor = _isDarkMode ? Colors.white : const Color(0xFF0F172A);
-    final bodyColor = _isDarkMode
-        ? AdminElderlyStyle.darkSubtext
-        : const Color(0xFF475569);
-    final faintColor = _isDarkMode
-        ? AdminElderlyStyle.darkSubtext
-        : const Color(0xFF94A3B8);
+    final bodyColor = _isDarkMode ? const Color(0xFF8E9BAE) : const Color(0xFF64748B);
+    final faintColor = _isDarkMode ? const Color(0xFF8E9BAE) : const Color(0xFF94A3B8);
     final accent = _pokjaColor(laporan.kategori);
     const pendingBg = Color(0xFFFFF7ED);
     const pendingColor = Color(0xFFD97706);
@@ -777,7 +750,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
         color: cardBg,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: borderColor, width: 1),
-        boxShadow: AdminElderlyStyle.cardShadow(_isDarkMode),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 10, offset: const Offset(0, 4))],
       ),
       child: Padding(
         padding: const EdgeInsets.all(14),
@@ -916,12 +889,12 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
                     label: Text(
                       'Setujui',
                       style: GoogleFonts.plusJakartaSans(
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w800,
                         fontSize: 13,
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF10B981),
+                      backgroundColor: const Color(0xFF0F326D),
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(

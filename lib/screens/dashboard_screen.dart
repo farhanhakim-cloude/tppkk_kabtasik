@@ -120,14 +120,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
         if (role == 'kader') {
           return const KaderDashboardScreen();
         }
+        if (role == 'admin') {
+          return const AdminDashboardScreen();
+        }
         if (role == 'loading') {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
         }
-        // role == admin → tampilkan shell admin saja
-        final isAdmin = true;
-        final currentItems = _adminNavItems;
+        
+        final isAdmin = false;
+        final currentItems = _navItems;
         final numPages = currentItems.length;
 
         if (_currentIndex >= numPages) {

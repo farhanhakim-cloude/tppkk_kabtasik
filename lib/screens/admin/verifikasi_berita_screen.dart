@@ -134,7 +134,7 @@ class _VerifikasiBeritaScreenState extends State<VerifikasiBeritaScreen> {
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: isApprove
-                  ? const Color(0xFF10B981)
+                  ? const Color(0xFF0F326D)
                   : const Color(0xFFEF4444),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -264,19 +264,11 @@ class _VerifikasiBeritaScreenState extends State<VerifikasiBeritaScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = _isDarkMode
-        ? const Color(0xFF14181F)
-        : const Color(0xFFF3F5F7);
-    final appBarBg = _isDarkMode ? const Color(0xFF1A1F28) : Colors.white;
-    final textColor = _isDarkMode
-        ? AdminElderlyStyle.darkText
-        : AdminElderlyStyle.lightText;
-    final subtextColor = _isDarkMode
-        ? AdminElderlyStyle.darkSubtext
-        : AdminElderlyStyle.lightSubtext;
-    final primaryAccent = _isDarkMode
-        ? const Color(0xFF2ED9C3)
-        : const Color(0xFF0D9488);
+    final bgColor = _isDarkMode ? const Color(0xFF14181F) : const Color(0xFFF8F9FB);
+    final appBarBg = bgColor;
+    final textColor = _isDarkMode ? Colors.white : const Color(0xFF0F172A);
+    final subtextColor = _isDarkMode ? const Color(0xFF8E9BAE) : const Color(0xFF64748B);
+    final primaryAccent = const Color(0xFF0F326D);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -357,10 +349,10 @@ class _VerifikasiBeritaScreenState extends State<VerifikasiBeritaScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AdminElderlyStyle.cardBg(isDark),
+        color: isDark ? const Color(0xFF1E242D) : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AdminElderlyStyle.border(isDark)),
-        boxShadow: AdminElderlyStyle.cardShadow(isDark),
+        border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFE2E8F0)),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 10, offset: const Offset(0, 4))],
       ),
       child: Row(
         children: [
@@ -408,9 +400,10 @@ class _VerifikasiBeritaScreenState extends State<VerifikasiBeritaScreen> {
     final textColor = isDark ? Colors.white : const Color(0xFF0F172A);
     return Container(
       decoration: BoxDecoration(
-        color: AdminElderlyStyle.cardBg(isDark),
+        color: isDark ? const Color(0xFF1E242D) : Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AdminElderlyStyle.border(isDark)),
+        border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFE2E8F0)),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 10, offset: const Offset(0, 4))],
       ),
       child: TextField(
         controller: _searchController,
@@ -489,15 +482,11 @@ class _VerifikasiBeritaScreenState extends State<VerifikasiBeritaScreen> {
   }
 
   Widget _buildBeritaCard(Berita berita) {
-    final cardBg = AdminElderlyStyle.cardBg(_isDarkMode);
-    final borderColor = AdminElderlyStyle.border(_isDarkMode);
+    final cardBg = _isDarkMode ? const Color(0xFF1E242D) : Colors.white;
+    final borderColor = _isDarkMode ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFE2E8F0);
     final titleColor = _isDarkMode ? Colors.white : const Color(0xFF0F172A);
-    final bodyColor = _isDarkMode
-        ? AdminElderlyStyle.darkSubtext
-        : const Color(0xFF64748B);
-    final faintColor = _isDarkMode
-        ? AdminElderlyStyle.darkSubtext
-        : const Color(0xFF94A3B8);
+    final bodyColor = _isDarkMode ? const Color(0xFF8E9BAE) : const Color(0xFF64748B);
+    final faintColor = _isDarkMode ? const Color(0xFF8E9BAE) : const Color(0xFF94A3B8);
     const statusColor = Color(0xFFD97706);
 
     return Container(
@@ -506,7 +495,7 @@ class _VerifikasiBeritaScreenState extends State<VerifikasiBeritaScreen> {
         color: cardBg,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: borderColor),
-        boxShadow: AdminElderlyStyle.cardShadow(_isDarkMode),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 10, offset: const Offset(0, 4))],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -587,7 +576,7 @@ class _VerifikasiBeritaScreenState extends State<VerifikasiBeritaScreen> {
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFF0D9488),
+                    color: const Color(0xFF0F326D),
                   ),
                 ),
               ),
@@ -628,12 +617,12 @@ class _VerifikasiBeritaScreenState extends State<VerifikasiBeritaScreen> {
                   label: Text(
                     'Setujui',
                     style: GoogleFonts.plusJakartaSans(
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w800,
                       fontSize: 13,
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF10B981),
+                    backgroundColor: const Color(0xFF0F326D),
                     foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(

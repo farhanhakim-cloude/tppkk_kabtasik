@@ -186,18 +186,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = _isDark(context);
-    final bg = isDark ? const Color(0xFF14181F) : const Color(0xFFF8FAFC);
-    final cardBg = isDark ? const Color(0xFF1E242D) : Colors.white;
-    final border = isDark ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFE2E8F0);
-    final sub = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
-    final primary = isDark ? primaryMint : primaryTeal;
+    final bg = isDark ? const Color(0xFF14181F) : const Color(0xFFF8F9FB);
+    final sub = isDark ? const Color(0xFF8E9BAE) : const Color(0xFF64748B);
+    final primaryDark = const Color(0xFF0F326D);
 
     return Scaffold(
       backgroundColor: bg,
       appBar: widget.embedded
           ? null
           : AppBar(
-              backgroundColor: isDark ? const Color(0xFF1A1F28) : Colors.white,
+              backgroundColor: bg,
               elevation: 0,
               surfaceTintColor: Colors.transparent,
               leading: IconButton(icon: Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: isDark ? Colors.white : const Color(0xFF0F172A)), onPressed: () => Navigator.pop(context)),
@@ -207,7 +205,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: FutureBuilder<User>(
         future: _future,
         builder: (ctx, snap) {
-          if (snap.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator(color: primary, strokeWidth: 2.5));
+          if (snap.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator(color: primaryDark, strokeWidth: 2.5));
           if (snap.hasError) {
             return Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
               Icon(Icons.error_outline_rounded, size: 44, color: sub),
@@ -222,11 +220,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
             physics: const ClampingScrollPhysics(),
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
             child: Column(children: [
-              // Header — ala admin tapi soft, tidak ramai
+              // Header Blue Card ala Insightlancer
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
-                decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(22), border: Border.all(color: border)),
+                padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
+                decoration: BoxDecoration(
+                  color: primaryDark,
+                  borderRadius: BorderRadius.circular(28),
+                  boxShadow: [
+                    BoxShadow(color: primaryDark.withValues(alpha: 0.15), blurRadius: 20, offset: const Offset(0, 10))
+                  ],
+                ),
                 child: Column(children: [
                   Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                     InkWell(
@@ -240,97 +244,89 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         await prefs.setBool('isDarkMode', newVal);
                       },
                       borderRadius: BorderRadius.circular(20),
-                      child: Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6), decoration: BoxDecoration(color: isDark ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(20)), child: Row(mainAxisSize: MainAxisSize.min, children: [
-                        Icon(isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded, size: 14, color: isDark ? const Color(0xFF94A3B8) : const Color(0xFFF59E0B)),
+                      child: Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6), decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(20)), child: Row(mainAxisSize: MainAxisSize.min, children: [
+                        Icon(isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded, size: 14, color: Colors.white),
                         const SizedBox(width: 6),
-                        Text(isDark ? 'Gelap' : 'Terang', style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w700, color: isDark ? Colors.white : const Color(0xFF334155))),
+                        Text(isDark ? 'Gelap' : 'Terang', style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white)),
                       ])),
                     ),
                   ]),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 10),
                   GestureDetector(
                     onTap: _pilihFotoProfil,
                     child: Stack(children: [
                       Container(
-                        padding: const EdgeInsets.all(3),
-                        decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: primary.withValues(alpha: 0.18), width: 2)),
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 2)),
                         child: CircleAvatar(
-                          radius: 42,
-                          backgroundColor: primary.withValues(alpha: 0.10),
+                          radius: 46,
+                          backgroundColor: Colors.white.withValues(alpha: 0.2),
                           backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
                           child: _profileImage == null
-                              ? Text(user.nama.isNotEmpty ? user.nama[0].toUpperCase() : 'K', style: GoogleFonts.plusJakartaSans(fontSize: 30, fontWeight: FontWeight.w800, color: primary))
+                              ? Text(user.nama.isNotEmpty ? user.nama[0].toUpperCase() : 'K', style: GoogleFonts.plusJakartaSans(fontSize: 34, fontWeight: FontWeight.w800, color: Colors.white))
                               : null,
                         ),
                       ),
                       Positioned(
                         bottom: 2, right: 2,
-                        child: Container(padding: const EdgeInsets.all(5), decoration: BoxDecoration(color: primary, shape: BoxShape.circle, border: Border.all(color: cardBg, width: 2)), child: const Icon(Icons.camera_alt_rounded, size: 12, color: Colors.white)),
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                          child: const Icon(Icons.camera_alt_rounded, size: 14, color: Color(0xFF0F326D)),
+                        ),
                       ),
                     ]),
                   ),
-                  const SizedBox(height: 12),
-                  Text(user.nama, textAlign: TextAlign.center, style: GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.w800, color: isDark ? Colors.white : const Color(0xFF0F172A), letterSpacing: -0.3)),
-                  const SizedBox(height: 4),
-                  Text(user.email, style: GoogleFonts.plusJakartaSans(fontSize: 12.5, color: sub)),
-                  const SizedBox(height: 10),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(color: primary.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(20), border: Border.all(color: primary.withValues(alpha: 0.18))),
-                    child: Row(mainAxisSize: MainAxisSize.min, children: [
-                      Icon(Icons.verified_rounded, size: 14, color: primary),
-                      const SizedBox(width: 6),
-                      Text('${user.jabatan} • TP PKK', style: GoogleFonts.plusJakartaSans(fontSize: 11.5, fontWeight: FontWeight.w700, color: primary)),
-                    ]),
+                  const SizedBox(height: 16),
+                  Text(user.nama, textAlign: TextAlign.center, style: GoogleFonts.plusJakartaSans(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -0.3)),
+                  const SizedBox(height: 6),
+                  Text('${user.jabatan} • TP PKK', style: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.white70)),
+                  
+                  const SizedBox(height: 28),
+                  // Stats Inside Blue Card
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _statInsideBlue('24', 'Keluarga'),
+                      _dividerInsideBlue(),
+                      _statInsideBlue('18', 'KIA & Gizi'),
+                      _dividerInsideBlue(),
+                      _statInsideBlue('12', 'Lap. Pokja'),
+                    ],
                   ),
                 ]),
               ),
-              const SizedBox(height: 14),
-              // Stats — minimalis pill
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
-                decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(20), border: Border.all(color: border)),
-                child: Row(children: [
-                  _stat('24', 'Keluarga', Icons.home_rounded, isDark, primary, sub),
-                  _divider(isDark),
-                  _stat('18', 'KIA & Gizi', Icons.child_care_rounded, isDark, primary, sub),
-                  _divider(isDark),
-                  _stat('12', 'Lap. Pokja', Icons.assignment_rounded, isDark, primary, sub),
-                ]),
-              ),
-              const SizedBox(height: 14),
-              // Wilayah — tidak ramai: 4 baris saja
-              _sectionCard(
-                title: 'Wilayah Tugas',
-                icon: Icons.location_on_rounded,
-                isDark: isDark, cardBg: cardBg, border: border, sub: sub, primary: primary, items: [
-                  _infoRow('Kabupaten', 'Kab. Tasikmalaya', isDark),
-                  _infoRow('Kecamatan', 'Singaparna', isDark),
-                  _infoRow('Desa', 'Cipakat', isDark),
-                  _infoRow('Dasawisma', 'Mawar 02 • RT 02/RW 05', isDark),
-                ]),
-              const SizedBox(height: 12),
-              // Menu seperti admin Input Langsung — tapi untuk kader
-              _sectionCard(
-                title: 'Menu',
-                icon: Icons.grid_view_rounded,
-                isDark: isDark, cardBg: cardBg, border: border, sub: sub, primary: primary, items: [
-                  _actionRow(icon: Icons.assignment_outlined, title: 'Riwayat Catatan Pokja', subtitle: 'Lihat laporan yang pernah dikirim', isDark: isDark, onTap: () => _showInfo('Riwayat', 'Fitur riwayat catatan akan menampilkan semua laporan yang telah Anda kirim.')),
-                  _actionRow(icon: Icons.shield_outlined, title: 'Keamanan Akun', subtitle: 'Ubah kata sandi', isDark: isDark, onTap: () => _showInfo('Keamanan', 'Hubungi pengurus TP PKK untuk ubah kata sandi.')),
-                  _actionRow(icon: Icons.info_outline_rounded, title: 'Tentang e-PKK', subtitle: 'Versi 1.0.0 • Kab. Tasikmalaya', isDark: isDark, onTap: () => _showInfo('Tentang', 'e-PKK Kab. Tasikmalaya\nVersi 1.0.0 (2026)\nDigitalisasi pendataan Dasawisma & Pokja.')),
-                ]),
-              const SizedBox(height: 20),
+              const SizedBox(height: 32),
+              
+              // Wilayah Tugas
+              _sectionTitle('Wilayah Tugas', isDark),
+              const SizedBox(height: 16),
+              _infoRowModern('Kabupaten', 'Kab. Tasikmalaya', isDark),
+              _infoRowModern('Kecamatan', 'Singaparna', isDark),
+              _infoRowModern('Desa', 'Cipakat', isDark),
+              _infoRowModern('Dasawisma', 'Mawar 02 • RT 02/RW 05', isDark),
+
+              const SizedBox(height: 28),
+              
+              // Menu Lainnya
+              _sectionTitle('Menu Lainnya', isDark),
+              const SizedBox(height: 16),
+              _actionRowModern(icon: Icons.assignment_outlined, title: 'Riwayat Catatan Pokja', subtitle: 'Lihat laporan terkirim', isDark: isDark, onTap: () => _showInfo('Riwayat', 'Fitur riwayat catatan akan menampilkan semua laporan yang telah Anda kirim.')),
+              _actionRowModern(icon: Icons.shield_outlined, title: 'Keamanan Akun', subtitle: 'Ubah kata sandi', isDark: isDark, onTap: () => _showInfo('Keamanan', 'Hubungi pengurus TP PKK untuk ubah kata sandi.')),
+              _actionRowModern(icon: Icons.info_outline_rounded, title: 'Tentang e-PKK', subtitle: 'Versi 1.0.0', isDark: isDark, onTap: () => _showInfo('Tentang', 'e-PKK Kab. Tasikmalaya\nVersi 1.0.0 (2026)\nDigitalisasi pendataan Dasawisma & Pokja.')),
+
+              const SizedBox(height: 28),
               SizedBox(
-                width: double.infinity, height: 48,
+                width: double.infinity, height: 50,
                 child: OutlinedButton.icon(
                   onPressed: _loggingOut ? null : _handleLogout,
                   icon: _loggingOut ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFFEF4444))) : const Icon(Icons.logout_rounded, size: 18, color: Color(0xFFEF4444)),
-                  label: Text(_loggingOut ? 'Memproses...' : 'Keluar Akun', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13, color: const Color(0xFFEF4444))),
-                  style: OutlinedButton.styleFrom(side: const BorderSide(color: Color(0xFFFECACA)), backgroundColor: isDark ? const Color(0xFFEF4444).withValues(alpha: 0.08) : const Color(0xFFFEF2F2), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24))),
+                  label: Text(_loggingOut ? 'Memproses...' : 'Keluar Akun', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 14, color: const Color(0xFFEF4444))),
+                  style: OutlinedButton.styleFrom(side: const BorderSide(color: Color(0xFFFECACA), width: 1.5), backgroundColor: isDark ? const Color(0xFFEF4444).withValues(alpha: 0.08) : const Color(0xFFFEF2F2), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
                 ),
               ),
-              const SizedBox(height: 12),
-              Text('TP PKK Kab. Tasikmalaya • v1.0.0', style: GoogleFonts.plusJakartaSans(fontSize: 11, color: sub)),
+              const SizedBox(height: 16),
+              Text('TP PKK Kab. Tasikmalaya • v1.0.0', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: sub)),
             ]),
           );
         },
@@ -338,50 +334,79 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _stat(String v, String label, IconData icon, bool isDark, Color primary, Color sub) => Expanded(child: Column(children: [
-    Row(mainAxisSize: MainAxisSize.min, children: [Icon(icon, size: 14, color: primary), const SizedBox(width: 5), Text(v, style: GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.w800, color: isDark ? Colors.white : const Color(0xFF0F172A)))]),
-    const SizedBox(height: 3), Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 10.5, color: sub, fontWeight: FontWeight.w600)),
-  ]));
-  Widget _divider(bool isDark) => Container(height: 28, width: 1, color: isDark ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFE2E8F0));
-
-  Widget _sectionCard({required String title, required IconData icon, required bool isDark, required Color cardBg, required Color border, required Color sub, required Color primary, required List<Widget> items}) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(20), border: Border.all(color: border)),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Container(padding: const EdgeInsets.all(7), decoration: BoxDecoration(color: primary.withValues(alpha: 0.10), borderRadius: BorderRadius.circular(10)), child: Icon(icon, size: 15, color: primary)),
-          const SizedBox(width: 10), Text(title, style: GoogleFonts.plusJakartaSans(fontSize: 13.5, fontWeight: FontWeight.w800, color: isDark ? Colors.white : const Color(0xFF0F172A))),
-        ]),
-        const SizedBox(height: 10), Divider(height: 1, color: isDark ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFF1F5F9)), const SizedBox(height: 6),
-        ...items,
-      ]),
-    );
-  }
-
-  Widget _infoRow(String label, String value, bool isDark) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 7),
-    child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 12.5, color: isDark ? Colors.white60 : const Color(0xFF64748B))),
-      Flexible(child: Text(value, textAlign: TextAlign.end, style: GoogleFonts.plusJakartaSans(fontSize: 12.5, fontWeight: FontWeight.w700, color: isDark ? Colors.white : const Color(0xFF0F172A)))),
+  Widget _statInsideBlue(String val, String label) => Expanded(
+    child: Column(children: [
+      Text(val, style: GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.white)),
+      const SizedBox(height: 4),
+      Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 11, color: Colors.white70)),
     ]),
   );
 
-  Widget _actionRow({required IconData icon, required String title, required String subtitle, required bool isDark, required VoidCallback onTap}) => Material(
-    color: Colors.transparent,
+  Widget _dividerInsideBlue() => Container(height: 32, width: 1, color: Colors.white.withValues(alpha: 0.2));
+
+  Widget _sectionTitle(String title, bool isDark) => Row(
+    children: [
+      Text(title, style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w800, color: isDark ? Colors.white : const Color(0xFF0F172A))),
+    ],
+  );
+
+  Widget _actionRowModern({required IconData icon, required String title, required String subtitle, required bool isDark, required VoidCallback onTap}) => Padding(
+    padding: const EdgeInsets.only(bottom: 12),
     child: InkWell(
-      borderRadius: BorderRadius.circular(12),
       onTap: onTap,
-      child: Padding(padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 2), child: Row(children: [
-        Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: isDark ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFF1F5F9), borderRadius: BorderRadius.circular(10)), child: Icon(icon, size: 16, color: isDark ? Colors.white70 : const Color(0xFF64748B))),
-        const SizedBox(width: 12),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(title, style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w600, color: isDark ? Colors.white : const Color(0xFF1E293B))),
-          const SizedBox(height: 1), Text(subtitle, style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: isDark ? Colors.white60 : const Color(0xFF64748B))),
-        ])),
-        Icon(Icons.chevron_right_rounded, size: 18, color: isDark ? Colors.white24 : const Color(0xFFCBD5E1)),
-      ])),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1E242D) : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFF1F5F9)),
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 8, offset: const Offset(0, 2))],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFF8FAFC),
+                shape: BoxShape.circle,
+                border: Border.all(color: isDark ? Colors.transparent : const Color(0xFFE2E8F0)),
+              ),
+              child: Icon(icon, size: 20, color: isDark ? Colors.white70 : const Color(0xFF475569)),
+            ),
+            const SizedBox(width: 14),
+            Expanded(child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.w700, color: isDark ? Colors.white : const Color(0xFF0F172A))),
+                const SizedBox(height: 2),
+                Text(subtitle, style: GoogleFonts.plusJakartaSans(fontSize: 12, color: isDark ? Colors.white60 : const Color(0xFF64748B))),
+              ],
+            )),
+            Icon(Icons.chevron_right_rounded, size: 20, color: isDark ? Colors.white24 : const Color(0xFFCBD5E1)),
+          ],
+        ),
+      ),
+    ),
+  );
+
+  Widget _infoRowModern(String label, String value, bool isDark) => Padding(
+    padding: const EdgeInsets.only(bottom: 12),
+    child: Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E242D) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFF1F5F9)),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 8, offset: const Offset(0, 2))],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w600, color: isDark ? Colors.white60 : const Color(0xFF64748B))),
+          Flexible(child: Text(value, textAlign: TextAlign.end, style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w700, color: isDark ? Colors.white : const Color(0xFF0F172A)))),
+        ],
+      ),
     ),
   );
 }
