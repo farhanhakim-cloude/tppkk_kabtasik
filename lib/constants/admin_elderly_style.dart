@@ -15,8 +15,8 @@ class AdminElderlyStyle {
   static const Color darkText = Colors.white;
   static const Color darkSubtext = Color(0xFF8E9BAE);
 
-  static const Color primary = Color(0xFF0D9488);
-  static const Color primaryBright = Color(0xFF2ED9C3);
+  static const Color primary = Color(0xFF0072BC); // 🔵 Biru PKK
+  static const Color primaryBright = Color(0xFFFFC72C); // 🟡 Kuning/Gold PKK
 
   // ── Ukuran font: proporsi awal yang estetik, sedikit dipertajam ──
   static const double greetingSize = 19;

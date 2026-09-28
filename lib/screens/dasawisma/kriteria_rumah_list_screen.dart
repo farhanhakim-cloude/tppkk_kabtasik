@@ -71,7 +71,7 @@ class _KriteriaRumahListScreenState extends State<KriteriaRumahListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final primary = const Color(0xFF0D9488);
+    final primary = const Color(0xFF0072BC);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),

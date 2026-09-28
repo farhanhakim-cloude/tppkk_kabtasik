@@ -115,14 +115,14 @@ class _KaderBeritaScreenState extends State<KaderBeritaScreen> {
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF0D9488)))
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFF0072BC)))
           : _errorMessage.isNotEmpty && _myNews.isEmpty
               ? _buildErrorState()
               : _myNews.isEmpty
                   ? _buildEmptyState()
                   : RefreshIndicator(
                       onRefresh: _fetchMyBerita,
-                      color: const Color(0xFF0D9488),
+                      color: const Color(0xFF0072BC),
                       child: ListView.separated(
                         padding: const EdgeInsets.all(16),
                         itemCount: _myNews.length,
@@ -222,7 +222,7 @@ class _KaderBeritaScreenState extends State<KaderBeritaScreen> {
                                         style: GoogleFonts.plusJakartaSans(
                                           fontSize: 12,
                                           fontWeight: FontWeight.w600,
-                                          color: const Color(0xFF0D9488),
+                                          color: const Color(0xFF0072BC),
                                         ),
                                       ),
                                       const Spacer(),
@@ -246,7 +246,7 @@ class _KaderBeritaScreenState extends State<KaderBeritaScreen> {
                     ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openTulisBerita(),
-        backgroundColor: const Color(0xFF0D9488),
+        backgroundColor: const Color(0xFF0072BC),
         icon: const Icon(Icons.edit_note_rounded, color: Colors.white),
         label: Text(
           'Tulis Berita',
@@ -269,10 +269,10 @@ class _KaderBeritaScreenState extends State<KaderBeritaScreen> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: const Color(0xFF0D9488).withValues(alpha: 0.1),
+                color: const Color(0xFF0072BC).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.newspaper_rounded, size: 48, color: Color(0xFF0D9488)),
+              child: const Icon(Icons.newspaper_rounded, size: 48, color: Color(0xFF0072BC)),
             ),
             const SizedBox(height: 16),
             Text(
@@ -328,7 +328,7 @@ class _KaderBeritaScreenState extends State<KaderBeritaScreen> {
             ElevatedButton(
               onPressed: _fetchMyBerita,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0D9488),
+                backgroundColor: const Color(0xFF0072BC),
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),

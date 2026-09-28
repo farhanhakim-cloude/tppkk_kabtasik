@@ -145,10 +145,10 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    const primaryTeal = Color(0xFF0D9488);
+    const primaryPkk = Color(0xFF0072BC); // 🔵 Biru PKK
 
     return Scaffold(
-      backgroundColor: primaryTeal,
+      backgroundColor: primaryPkk,
       body: Stack(
         alignment: Alignment.center,
         children: [

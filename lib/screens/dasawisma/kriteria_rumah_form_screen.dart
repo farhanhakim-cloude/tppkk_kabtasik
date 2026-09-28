@@ -159,7 +159,7 @@ class _KriteriaRumahFormScreenState extends State<KriteriaRumahFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final primary = const Color(0xFF0D9488);
+    final primary = const Color(0xFF0072BC);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -190,7 +190,7 @@ class _KriteriaRumahFormScreenState extends State<KriteriaRumahFormScreen> {
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Color(0xFF0D9488), Color(0xFF0284C7)],
+                  colors: [Color(0xFF0072BC), Color(0xFF0284C7)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -501,7 +501,7 @@ class _KriteriaRumahFormScreenState extends State<KriteriaRumahFormScreen> {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFF0D9488), width: 1.5),
+            borderSide: const BorderSide(color: Color(0xFF0072BC), width: 1.5),
           ),
           contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         ),

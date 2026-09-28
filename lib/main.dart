@@ -25,7 +25,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const primaryColor = Color(0xFF0D9488);
+    const primaryColor = Color(0xFF0072BC); // 🔵 Biru PKK
+    const secondaryColor = Color(0xFFFFC72C); // 🟡 Kuning/Gold PKK
 
     final lightTheme = ThemeData(
       useMaterial3: true,
@@ -33,6 +34,7 @@ class MyApp extends StatelessWidget {
       colorScheme: ColorScheme.fromSeed(
         seedColor: primaryColor,
         primary: primaryColor,
+        secondary: secondaryColor,
         surface: Colors.white,
         onSurface: const Color(0xFF0F172A),
       ),
@@ -111,8 +113,8 @@ class MyApp extends StatelessWidget {
         thickness: 1,
         space: 0,
       ),
-      splashColor: const Color(0x0D0D9488),
-      highlightColor: const Color(0x080D9488),
+      splashColor: const Color(0x0D0072BC),
+      highlightColor: const Color(0x080072BC),
     );
 
     final darkTheme = ThemeData(
@@ -121,7 +123,8 @@ class MyApp extends StatelessWidget {
       colorScheme: ColorScheme.fromSeed(
         seedColor: primaryColor,
         brightness: Brightness.dark,
-        primary: const Color(0xFF00FF88),
+        primary: const Color(0xFFFFC72C), // 🟡 Gold PKK aksen di dark mode
+        secondary: primaryColor,
         surface: const Color(0xFF1A1A2E),
         onSurface: Colors.white,
       ),
@@ -158,7 +161,7 @@ class MyApp extends StatelessWidget {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF00FF88),
+          backgroundColor: const Color(0xFFFFC72C),
           foregroundColor: const Color(0xFF0F172A),
           elevation: 0,
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
@@ -187,7 +190,7 @@ class MyApp extends StatelessWidget {
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide:
-              const BorderSide(color: Color(0xFF00FF88), width: 1.5),
+              const BorderSide(color: Color(0xFFFFC72C), width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),

@@ -142,7 +142,7 @@ class _RekapIbuAnakFormScreenState extends State<RekapIbuAnakFormScreen> {
                 : 'Data Ibu & Anak berhasil diperbarui!',
             style: GoogleFonts.plusJakartaSans(),
           ),
-          backgroundColor: const Color(0xFF0D9488),
+          backgroundColor: const Color(0xFF0072BC),
         ),
       );
       Navigator.pop(context, true);

@@ -25,7 +25,7 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
   late Future<List<DataUmumPkkItem>> _futureData;
   bool _isTableView = false;
 
-  static const Color _primary = Color(0xFF0D9488);
+  static const Color _primary = Color(0xFF0072BC);
   static const Color _darkText = Color(0xFF0F172A);
 
   @override
@@ -657,7 +657,7 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
                         ),
                       _cardChip(
                         '🏘️ ${item.jumlahPkkRw} RW • ${item.jumlahPkkRt} RT',
-                        const Color(0xFF0D9488),
+                        const Color(0xFF0072BC),
                       ),
                       _cardChip(
                         '🪴 ${item.jumlahDasaWisma} Dasawisma',

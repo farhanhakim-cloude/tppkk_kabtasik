@@ -27,10 +27,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _loggingOut = false;
   bool _isKaderDark = false;
 
-  // selaras palet kader/admin
-  static const primaryMint = Color(0xFF2ED9C3);
-  static const primaryTeal = Color(0xFF0D9488);
-  static const darkTeal = Color(0xFF0F766E);
+  // selaras palet resmi PKK
+  static const primaryGold = Color(0xFFFFC72C); // 🟡 Kuning/Gold PKK
+  static const primaryBlue = Color(0xFF0072BC); // 🔵 Biru PKK
+  static const darkBlue = Color(0xFF005893);
 
   void _onThemeChanged() {
     final isDark = themeNotifier.value == ThemeMode.dark;
@@ -87,9 +87,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 12),
               Divider(height: 1, color: isDark ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFE2E8F0)),
               const SizedBox(height: 12),
-              _sheetTile(icon: Icons.camera_alt_rounded, title: 'Ambil dari Kamera', subtitle: 'Gunakan kamera ponsel', color: primaryTeal, isDark: isDark, onTap: () => Navigator.pop(context, ImageSource.camera)),
+              _sheetTile(icon: Icons.camera_alt_rounded, title: 'Ambil dari Kamera', subtitle: 'Gunakan kamera ponsel', color: primaryBlue, isDark: isDark, onTap: () => Navigator.pop(context, ImageSource.camera)),
               const SizedBox(height: 8),
-              _sheetTile(icon: Icons.photo_library_rounded, title: 'Pilih dari Galeri', subtitle: 'Pilih dari album foto', color: primaryMint, isDark: isDark, onTap: () => Navigator.pop(context, ImageSource.gallery)),
+              _sheetTile(icon: Icons.photo_library_rounded, title: 'Pilih dari Galeri', subtitle: 'Pilih dari album foto', color: primaryGold, isDark: isDark, onTap: () => Navigator.pop(context, ImageSource.gallery)),
             ]),
           ),
         ),
@@ -103,7 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text('Foto profil diperbarui', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, color: Colors.white)),
-            backgroundColor: primaryTeal,
+            backgroundColor: primaryBlue,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             margin: const EdgeInsets.all(16),
@@ -176,7 +176,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text(title, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 16, color: isDark ? Colors.white : const Color(0xFF0F172A))),
         content: Text(msg, style: GoogleFonts.plusJakartaSans(fontSize: 13.5, color: isDark ? Colors.white70 : const Color(0xFF475569), height: 1.5)),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text('Tutup', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, color: primaryTeal)))],
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text('Tutup', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, color: primaryBlue)))],
       ),
     );
   }
@@ -188,7 +188,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final isDark = _isDark(context);
     final bg = isDark ? const Color(0xFF14181F) : const Color(0xFFF8F9FB);
     final sub = isDark ? const Color(0xFF8E9BAE) : const Color(0xFF64748B);
-    final primaryDark = const Color(0xFF0F326D);
+    final primaryDark = const Color(0xFF0072BC); // 🔵 Biru PKK
 
     return Scaffold(
       backgroundColor: bg,
@@ -272,7 +272,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(6),
                           decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                          child: const Icon(Icons.camera_alt_rounded, size: 14, color: Color(0xFF0F326D)),
+                          child: const Icon(Icons.camera_alt_rounded, size: 14, color: Color(0xFF0072BC)),
                         ),
                       ),
                     ]),

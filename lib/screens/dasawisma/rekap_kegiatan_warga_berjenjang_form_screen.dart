@@ -30,7 +30,7 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
   final _formKey = GlobalKey<FormState>();
   final _service = RekapKegiatanWargaBerjenjangService();
 
-  static const Color _primary = Color(0xFF0D9488);
+  static const Color _primary = Color(0xFF0072BC);
   static const Color _darkText = Color(0xFF0F172A);
 
   // Header controllers
@@ -419,7 +419,7 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
             _buildSectionCard(
               title: 'Informasi Wilayah',
               icon: Icons.location_city_rounded,
-              color: const Color(0xFF0D9488),
+              color: const Color(0xFF0072BC),
               children: [
                 Row(
                   children: [

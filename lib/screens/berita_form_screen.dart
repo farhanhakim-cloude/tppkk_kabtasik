@@ -171,7 +171,7 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
   void _showKecamatanSheet() {
     HapticFeedback.selectionClick();
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final primary = const Color(0xFF0D9488);
+    final primary = const Color(0xFF0072BC);
     final sheetBg = isDarkMode ? const Color(0xFF1E242D) : Colors.white;
     final textColor = isDarkMode ? Colors.white : const Color(0xFF0F172A);
     final subColor = isDarkMode ? Colors.white70 : const Color(0xFF64748B);
@@ -366,12 +366,12 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                 leading: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0D9488).withValues(alpha: 0.1),
+                    color: const Color(0xFF0072BC).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
                     Icons.photo_camera_rounded,
-                    color: Color(0xFF0D9488),
+                    color: Color(0xFF0072BC),
                   ),
                 ),
                 title: Text(
@@ -492,7 +492,7 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
                 ),
               ],
             ),
-            backgroundColor: const Color(0xFF0D9488),
+            backgroundColor: const Color(0xFF0072BC),
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -524,7 +524,7 @@ class _BeritaFormScreenState extends State<BeritaFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final primary = const Color(0xFF0D9488);
+    final primary = const Color(0xFF0072BC);
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     final bgColor = isDarkMode

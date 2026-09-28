@@ -323,8 +323,8 @@ class _NotifikasiPage extends StatelessWidget {
                     const SizedBox(height: 10),
                     _NotifItem(
                       icon: Icons.assignment_turned_in_rounded,
-                      iconColor: const Color(0xFF0D9488),
-                      bgColor: const Color(0xFFF0FDFA),
+                      iconColor: const Color(0xFF0072BC),
+                      bgColor: const Color(0xFFE6F1F9),
                       title: 'Laporan PKK Siap Diunduh',
                       subtitle:
                           'Laporan bulanan Pokja I–IV sudah dapat dicetak atau diunduh.',
@@ -627,7 +627,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                   ),
                   child: const Icon(
                     Icons.notifications_active_outlined,
-                    color: Color(0xFF0D9488),
+                    color: Color(0xFF0072BC),
                     size: 24,
                   ),
                 ),
@@ -783,7 +783,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                                     const Icon(
                                       Icons.location_on_rounded,
                                       size: 14,
-                                      color: Color(0xFF0D9488),
+                                      color: Color(0xFF0072BC),
                                     ),
                                     const SizedBox(width: 4),
                                     Text(
@@ -840,7 +840,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                           ),
                           child: const CircleAvatar(
                             radius: 22,
-                            backgroundColor: Color(0xFF0D9488),
+                            backgroundColor: Color(0xFF0072BC),
                             child: Icon(
                               Icons.person_rounded,
                               color: Colors.white,
@@ -1034,7 +1034,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                     ),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF0D9488), Color(0xFF10B981)],
+                        colors: [Color(0xFF0072BC), Color(0xFF10B981)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -1042,7 +1042,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                       boxShadow: [
                         BoxShadow(
                           color: const Color(
-                            0xFF0D9488,
+                            0xFF0072BC,
                           ).withValues(alpha: 0.25),
                           blurRadius: 14,
                           offset: const Offset(0, 6),
@@ -1131,7 +1131,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                                         child: const Icon(
                                           Icons.verified_rounded,
                                           size: 14,
-                                          color: Color(0xFF0D9488),
+                                          color: Color(0xFF0072BC),
                                         ),
                                       ),
                                       const SizedBox(width: 6),
@@ -1327,13 +1327,13 @@ class _BerandaPageState extends State<_BerandaPage> {
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 12.5,
                                 fontWeight: FontWeight.w700,
-                                color: const Color(0xFF0D9488),
+                                color: const Color(0xFF0072BC),
                               ),
                             ),
                             const Icon(
                               Icons.chevron_right_rounded,
                               size: 16,
-                              color: Color(0xFF0D9488),
+                              color: Color(0xFF0072BC),
                             ),
                           ],
                         ),
@@ -1375,7 +1375,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                               ),
                               child: const Icon(
                                 Icons.medical_services_outlined,
-                                color: Color(0xFF0D9488),
+                                color: Color(0xFF0072BC),
                                 size: 22,
                               ),
                             ),

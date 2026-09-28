@@ -155,13 +155,13 @@ class _LoginScreenState extends State<LoginScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFF0FDF4),
+                color: const Color(0xFF0072BC).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFFBBF7D0)),
+                border: Border.all(color: const Color(0xFF0072BC).withValues(alpha: 0.25)),
               ),
               child: const Icon(
                 Icons.lock_reset_rounded,
-                color: Color(0xFF0D9488),
+                color: Color(0xFF0072BC),
                 size: 32,
               ),
             ),
@@ -223,8 +223,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const tealFocusColor = Color(0xFF14B8A6);
-    const darkNavyColor = Color(0xFF0B132B);
+    const pkkBlueColor = Color(0xFF0072BC);
+    const pkkGoldColor = Color(0xFFFFC72C);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -238,7 +238,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Color(0xFFE8F9F5),
+                    Color(0xFFEBF5FB),
                     Color(0xFFF1F5F9),
                     Color(0xFFF8FAFC),
                   ],
@@ -257,7 +257,7 @@ class _LoginScreenState extends State<LoginScreen> {
               height: 180,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF14B8A6).withValues(alpha: 0.12),
+                color: pkkGoldColor.withValues(alpha: 0.15),
               ),
             ),
           ),
@@ -269,7 +269,7 @@ class _LoginScreenState extends State<LoginScreen> {
               height: 130,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFF0D9488).withValues(alpha: 0.08),
+                color: pkkBlueColor.withValues(alpha: 0.10),
               ),
             ),
           ),
@@ -321,7 +321,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       errorBuilder: (context, error, stackTrace) => const Icon(
                         Icons.diversity_1_rounded,
                         size: 56,
-                        color: Color(0xFF0D9488),
+                        color: Color(0xFF0072BC),
                       ),
                     ),
                     const SizedBox(height: 14),
@@ -329,20 +329,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0D9488).withValues(alpha: 0.1),
+                        color: const Color(0xFF0072BC).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: const Color(0xFF0D9488).withValues(alpha: 0.25),
+                          color: const Color(0xFFFFC72C).withValues(alpha: 0.6),
                         ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Container(
-                            width: 6,
-                            height: 6,
+                            width: 7,
+                            height: 7,
                             decoration: const BoxDecoration(
-                              color: Color(0xFF0D9488),
+                              color: Color(0xFFFFC72C),
                               shape: BoxShape.circle,
                             ),
                           ),
@@ -352,7 +352,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: GoogleFonts.plusJakartaSans(
                               fontSize: 10.5,
                               fontWeight: FontWeight.w800,
-                              color: const Color(0xFF0F766E),
+                              color: const Color(0xFF0072BC),
                               letterSpacing: 0.6,
                             ),
                           ),
@@ -378,7 +378,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 13.5,
                         fontWeight: FontWeight.w600,
-                        color: const Color(0xFF0D9488),
+                        color: const Color(0xFF0072BC),
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -514,7 +514,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: const BorderSide(
-                                    color: tealFocusColor,
+                                    color: pkkBlueColor,
                                     width: 1.8,
                                   ),
                                 ),
@@ -561,7 +561,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     style: GoogleFonts.plusJakartaSans(
                                       fontSize: 12.5,
                                       fontWeight: FontWeight.w700,
-                                      color: const Color(0xFF0D9488),
+                                      color: const Color(0xFF0072BC),
                                     ),
                                   ),
                                 ),
@@ -625,7 +625,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12),
                                   borderSide: const BorderSide(
-                                    color: tealFocusColor,
+                                    color: pkkBlueColor,
                                     width: 1.8,
                                   ),
                                 ),
@@ -667,7 +667,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     onChanged: (val) {
                                       setState(() => _rememberMe = val ?? false);
                                     },
-                                    activeColor: darkNavyColor,
+                                    activeColor: pkkBlueColor,
                                     side: const BorderSide(
                                       color: Color(0xFF94A3B8),
                                       width: 1.5,
@@ -702,7 +702,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: ElevatedButton(
                                 onPressed: _loading ? null : _handleLogin,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: darkNavyColor,
+                                  backgroundColor: pkkBlueColor,
                                   foregroundColor: Colors.white,
                                   elevation: 0,
                                   shape: RoundedRectangleBorder(
@@ -733,7 +733,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           const Icon(
                                             Icons.arrow_forward_rounded,
                                             size: 18,
-                                            color: Colors.white,
+                                            color: pkkGoldColor,
                                           ),
                                         ],
                                       ),
@@ -749,7 +749,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 const Icon(
                                   Icons.gpp_good_outlined,
                                   size: 17,
-                                  color: Color(0xFF0D9488),
+                                  color: pkkBlueColor,
                                 ),
                                 const SizedBox(width: 8),
                                 Expanded(

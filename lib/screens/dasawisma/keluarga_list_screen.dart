@@ -45,7 +45,7 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const primary = Color(0xFF0D9488);
+    const primary = Color(0xFF0072BC);
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: widget.embedded

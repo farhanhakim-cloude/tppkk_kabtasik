@@ -26,7 +26,7 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
   late Future<List<DataKesehatan>> _future;
 
   // Single unified Blue color theme
-  static const Color _primaryBlue = Color(0xFF0D9488);
+  static const Color _primaryBlue = Color(0xFF0072BC);
 
   final _kategoriList = [
     KategoriKesehatan.ibuHamil,

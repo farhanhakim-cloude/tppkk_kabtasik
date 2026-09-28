@@ -30,7 +30,7 @@ class _RekapIbuAnakListScreenState extends State<RekapIbuAnakListScreen> {
   late Future<RekapIbuAnakSummary> _summaryFuture;
   late Future<List<RekapBumilBerjenjangItem>> _futureBerjenjang;
 
-  static const Color _primary = Color(0xFF0D9488);
+  static const Color _primary = Color(0xFF0072BC);
   static const Color _darkText = Color(0xFF0F172A);
 
   @override
@@ -272,7 +272,7 @@ class _RekapIbuAnakListScreenState extends State<RekapIbuAnakListScreen> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        _SummaryChip(label: 'Ibu Hamil', val: '${summary?.jumlahHamil ?? 0}', color: const Color(0xFF0D9488)),
+                        _SummaryChip(label: 'Ibu Hamil', val: '${summary?.jumlahHamil ?? 0}', color: const Color(0xFF0072BC)),
                         _SummaryChip(label: 'Melahirkan', val: '${summary?.jumlahMelahirkan ?? 0}', color: const Color(0xFF0284C7)),
                         _SummaryChip(label: 'Ibu Nifas', val: '${summary?.jumlahNifas ?? 0}', color: const Color(0xFF8B5CF6)),
                         _SummaryChip(label: 'Bayi Lahir', val: '${summary?.jumlahBayiLahir ?? 0}', color: const Color(0xFF10B981)),
@@ -504,7 +504,7 @@ class _RekapIbuAnakListScreenState extends State<RekapIbuAnakListScreen> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        _SummaryChip(label: 'Ibu Hamil', val: '$tHamil', color: const Color(0xFF0D9488)),
+                        _SummaryChip(label: 'Ibu Hamil', val: '$tHamil', color: const Color(0xFF0072BC)),
                         _SummaryChip(label: 'Melahirkan', val: '$tLahir', color: const Color(0xFF0284C7)),
                         _SummaryChip(label: 'Ibu Nifas', val: '$tNifas', color: const Color(0xFF8B5CF6)),
                         _SummaryChip(label: 'Bayi Lahir', val: '$tBayiLahir', color: const Color(0xFF10B981)),
@@ -713,8 +713,8 @@ class _StatusBadge extends StatelessWidget {
     Color fg = primary;
 
     if (status.toLowerCase().contains('hamil')) {
-      bg = const Color(0xFF0D9488).withValues(alpha: 0.12);
-      fg = const Color(0xFF0D9488);
+      bg = const Color(0xFF0072BC).withValues(alpha: 0.12);
+      fg = const Color(0xFF0072BC);
     } else if (status.toLowerCase().contains('lahir')) {
       bg = const Color(0xFF0284C7).withValues(alpha: 0.12);
       fg = const Color(0xFF0284C7);

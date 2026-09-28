@@ -21,7 +21,7 @@ class KesehatanKeibuanScreen extends StatefulWidget {
 class _KesehatanKeibuanScreenState extends State<KesehatanKeibuanScreen> {
   late int _selectedTab;
 
-  static const Color _tealPrimary = Color(0xFF0D9488);
+  static const Color _tealPrimary = Color(0xFF0072BC);
   static const Color _pinkAccent = Color(0xFFE11D48);
 
   @override

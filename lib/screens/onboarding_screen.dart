@@ -21,7 +21,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           'Mendukung gerak kader Dasawisma mewujudkan keluarga sehat, mandiri, dan berdaya di Kabupaten Tasikmalaya.',
       icon: Icons.diversity_1_rounded,
       badgeText: '10 Program PKK',
-      gradientColors: [Color(0xFF0D9488), Color(0xFF14B8A6)],
+      gradientColors: [Color(0xFF0072BC), Color(0xFF005893)],
       secondaryIcon: Icons.favorite_rounded,
     ),
     OnboardingItem(
@@ -30,7 +30,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           'Input 8 form Dasawisma (Data Keluarga, Catatan Keluarga, Kegiatan Warga, Pemanfaatan Tanah, Industri, Ibu & Anak) secara praktis dan langsung rekap otomatis ke RT/RW/Desa.',
       icon: Icons.groups_rounded,
       badgeText: '8 Form Dasawisma',
-      gradientColors: [Color(0xFF0284C7), Color(0xFF38BDF8)],
+      gradientColors: [Color(0xFFFFC72C), Color(0xFFE5A800)],
       secondaryIcon: Icons.table_chart_rounded,
     ),
     OnboardingItem(
@@ -39,7 +39,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           'Rekapitulasi data dan pelaporan kegiatan TP PKK Kabupaten Tasikmalaya tersinkronisasi secara real-time.',
       icon: Icons.analytics_rounded,
       badgeText: 'Monitoring Digital',
-      gradientColors: [Color(0xFF059669), Color(0xFF34D399)],
+      gradientColors: [Color(0xFF0072BC), Color(0xFFFFC72C)],
       secondaryIcon: Icons.verified_rounded,
     ),
   ];
@@ -81,7 +81,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const primaryColor = Color(0xFF0D9488);
+    const primaryColor = Color(0xFF0072BC); // 🔵 Biru PKK
 
     return Scaffold(
       backgroundColor: Colors.white,

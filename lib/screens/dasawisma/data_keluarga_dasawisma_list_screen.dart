@@ -32,7 +32,7 @@ class _DataKeluargaDasawismaListScreenState
   late Future<List<DataKeluargaDasawisma>> _futureDasawisma;
   late Future<List<RekapKegiatanWargaBerjenjangItem>> _futureBerjenjang;
 
-  static const Color _primary = Color(0xFF0D9488);
+  static const Color _primary = Color(0xFF0072BC);
   static const Color _darkText = Color(0xFF0F172A);
 
   @override
@@ -221,7 +221,7 @@ class _DataKeluargaDasawismaListScreenState
                       fontWeight: FontWeight.w800, fontSize: 17, color: const Color(0xFF0F172A))),
               actions: [
                 IconButton(
-                    icon: const Icon(Icons.refresh_rounded, color: Color(0xFF0D9488)),
+                    icon: const Icon(Icons.refresh_rounded, color: Color(0xFF0072BC)),
                     onPressed: _reload)
               ],
             ),
@@ -567,7 +567,7 @@ class _DataKeluargaDasawismaListScreenState
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        _SummaryChip(label: 'Total KRT', val: '$tKrt', color: const Color(0xFF0D9488)),
+                        _SummaryChip(label: 'Total KRT', val: '$tKrt', color: const Color(0xFF0072BC)),
                         _SummaryChip(label: 'Total KK', val: '$tKk', color: const Color(0xFF0284C7)),
                         _SummaryChip(label: 'Total Jiwa', val: '$tWarga', color: const Color(0xFF6366F1)),
                         _SummaryChip(label: 'PUS / WUS', val: '$tPus / $tWus', color: const Color(0xFF8B5CF6)),

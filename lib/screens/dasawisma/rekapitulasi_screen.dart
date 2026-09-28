@@ -49,7 +49,7 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
 
   @override
   Widget build(BuildContext context) {
-    const primary = Color(0xFF0D9488);
+    const primary = Color(0xFF0072BC);
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
@@ -117,7 +117,7 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Expanded(flex: 3, child: KecamatanDropdownField(controller: _kecCtrl, allowEmpty: true, isCompact: true, prefixIcon: const Icon(Icons.map_outlined, size: 16, color: Color(0xFF0D9488)))),
+                    Expanded(flex: 3, child: KecamatanDropdownField(controller: _kecCtrl, allowEmpty: true, isCompact: true, prefixIcon: const Icon(Icons.map_outlined, size: 16, color: Color(0xFF0072BC)))),
                     const SizedBox(width: 6),
                     Expanded(
                       flex: 2,
@@ -191,7 +191,7 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
           decoration: InputDecoration(
             labelText: label,
             labelStyle: GoogleFonts.plusJakartaSans(fontSize: 10, color: const Color(0xFF64748B)),
-            prefixIcon: Icon(icon, size: 14, color: const Color(0xFF0D9488)),
+            prefixIcon: Icon(icon, size: 14, color: const Color(0xFF0072BC)),
             border: InputBorder.none,
             contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
             isDense: true,
@@ -211,7 +211,7 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
         tahun: _tahun,
       ),
       builder: (context, totalSnap) {
-        if (!totalSnap.hasData) return const Center(child: CircularProgressIndicator(color: Color(0xFF0D9488)));
+        if (!totalSnap.hasData) return const Center(child: CircularProgressIndicator(color: Color(0xFF0072BC)));
         final total = totalSnap.data!;
 
         return FutureBuilder<List<RekapRow>>(
@@ -232,7 +232,7 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
 
             return RefreshIndicator(
               onRefresh: () async => setState(() {}),
-              color: const Color(0xFF0D9488),
+              color: const Color(0xFF0072BC),
               child: ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
@@ -271,7 +271,7 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
                       _StatItem('Balita', '${total.balitaL + total.balitaP}', Icons.child_care_rounded, const Color(0xFFF59E0B)),
                       _StatItem('Pasangan PUS', '${total.pus}', Icons.favorite_rounded, const Color(0xFFE11D48)),
                       _StatItem('Wanita WUS', '${total.wus}', Icons.woman_rounded, const Color(0xFF8B5CF6)),
-                      _StatItem('Ibu Hamil', '${total.ibuHamil}', Icons.pregnant_woman_rounded, const Color(0xFF0D9488)),
+                      _StatItem('Ibu Hamil', '${total.ibuHamil}', Icons.pregnant_woman_rounded, const Color(0xFF0072BC)),
                       _StatItem('Ibu Menyusui', '${total.ibuMenyusui}', Icons.child_friendly_rounded, const Color(0xFF06B6D4)),
                       _StatItem('Lansia', '${total.lansia}', Icons.elderly_rounded, const Color(0xFF64748B)),
                       _StatItem('3 Buta', '${total.tigaButaL + total.tigaButaP}', Icons.visibility_off_rounded, const Color(0xFFD97706)),
@@ -291,7 +291,7 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
                       _StatItem('Tempat Sampah', '${total.punyaTempatSampah}', Icons.delete_outline_rounded, const Color(0xFF10B981)),
                       _StatItem('Saluran SPAL', '${total.punyaSpal}', Icons.water_rounded, const Color(0xFF0284C7)),
                       _StatItem('Air PDAM', '${total.sumberAirPdam}', Icons.water_drop_rounded, const Color(0xFF2563EB)),
-                      _StatItem('Air Sumur', '${total.sumberAirSumur}', Icons.waves_rounded, const Color(0xFF0D9488)),
+                      _StatItem('Air Sumur', '${total.sumberAirSumur}', Icons.waves_rounded, const Color(0xFF0072BC)),
                       _StatItem('Air Lainnya', '${total.sumberAirLainnya}', Icons.opacity_rounded, const Color(0xFF64748B)),
                     ],
                   ),
@@ -308,7 +308,7 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
                       _StatItem('Aktif UP2K', '${total.up2k}', Icons.store_rounded, const Color(0xFFDB2777)),
                       _StatItem('Tanah Pekarangan', '${total.tanahPekarangan}', Icons.grass_rounded, const Color(0xFF16A34A)),
                       _StatItem('Industri Rumah Tangga', '${total.industriRumah}', Icons.precision_manufacturing_rounded, const Color(0xFF7C3AED)),
-                      _StatItem('Kesehatan Lingkungan', '${total.kesehatanLingkungan}', Icons.eco_rounded, const Color(0xFF0D9488)),
+                      _StatItem('Kesehatan Lingkungan', '${total.kesehatanLingkungan}', Icons.eco_rounded, const Color(0xFF0072BC)),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -332,12 +332,12 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
         tahun: _tahun,
       ),
       builder: (context, snap) {
-        if (!snap.hasData) return const Center(child: CircularProgressIndicator(color: Color(0xFF0D9488)));
+        if (!snap.hasData) return const Center(child: CircularProgressIndicator(color: Color(0xFF0072BC)));
         final r = snap.data!;
 
         return RefreshIndicator(
           onRefresh: () async => setState(() {}),
-          color: const Color(0xFF0D9488),
+          color: const Color(0xFF0072BC),
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [

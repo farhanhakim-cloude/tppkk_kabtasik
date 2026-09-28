@@ -26,7 +26,7 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final _service = DataUmumPkkService();
 
-  static const Color _primary = Color(0xFF0D9488);
+  static const Color _primary = Color(0xFF0072BC);
   static const Color _darkText = Color(0xFF0F172A);
 
   // Controllers Header

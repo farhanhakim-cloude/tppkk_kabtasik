@@ -1448,12 +1448,12 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                   width: 46,
                   height: 46,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0D9488).withValues(alpha: 0.12),
+                    color: const Color(0xFF0072BC).withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: const Icon(
                     Icons.auto_awesome_rounded,
-                    color: Color(0xFF0D9488),
+                    color: Color(0xFF0072BC),
                     size: 22,
                   ),
                 ),
@@ -1587,7 +1587,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFF0D9488).withValues(alpha: 0.08),
+              color: const Color(0xFF0072BC).withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(14),
             ),
             child: Row(
@@ -1595,7 +1595,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                 const Icon(
                   Icons.lightbulb_rounded,
                   size: 16,
-                  color: Color(0xFF0D9488),
+                  color: Color(0xFF0072BC),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
@@ -1603,7 +1603,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                     'Tips: kamu bisa ganti Pokja lagi nanti lewat tombol di atas form.',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 11.5,
-                      color: const Color(0xFF0D9488),
+                      color: const Color(0xFF0072BC),
                       height: 1.3,
                     ),
                   ),

@@ -18,7 +18,7 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final _service = KesehatanService();
 
-  static const Color _primaryBlue = Color(0xFF0D9488);
+  static const Color _primaryBlue = Color(0xFF0072BC);
 
   late KategoriKesehatan _kategori;
   late final TextEditingController _namaIbuController;

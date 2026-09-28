@@ -169,8 +169,8 @@ class _DataKeluargaDasawismaFormScreenState extends State<DataKeluargaDasawismaF
               Row(children: [
                 Container(
                   padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(color: const Color(0xFF0D9488).withValues(alpha: 0.12), borderRadius: BorderRadius.circular(12)),
-                  child: const Icon(Icons.person_add_rounded, color: Color(0xFF0D9488), size: 20),
+                  decoration: BoxDecoration(color: const Color(0xFF0072BC).withValues(alpha: 0.12), borderRadius: BorderRadius.circular(12)),
+                  child: const Icon(Icons.person_add_rounded, color: Color(0xFF0072BC), size: 20),
                 ),
                 const SizedBox(width: 12),
                 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -225,7 +225,7 @@ class _DataKeluargaDasawismaFormScreenState extends State<DataKeluargaDasawismaF
                     });
                     Navigator.pop(context);
                   },
-                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0D9488), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0072BC), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                   child: Text(editIndex == null ? 'Tambah' : 'Simpan', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, color: Colors.white)),
                 )),
               ]),
@@ -240,7 +240,7 @@ class _DataKeluargaDasawismaFormScreenState extends State<DataKeluargaDasawismaF
         onTap: tap,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(color: sel ? const Color(0xFF0D9488) : Colors.white, borderRadius: BorderRadius.circular(20), border: Border.all(color: sel ? const Color(0xFF0D9488) : const Color(0xFFE2E8F0))),
+          decoration: BoxDecoration(color: sel ? const Color(0xFF0072BC) : Colors.white, borderRadius: BorderRadius.circular(20), border: Border.all(color: sel ? const Color(0xFF0072BC) : const Color(0xFFE2E8F0))),
           child: Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 12.5, fontWeight: FontWeight.w700, color: sel ? Colors.white : const Color(0xFF475569))),
         ),
       );
@@ -254,7 +254,7 @@ class _DataKeluargaDasawismaFormScreenState extends State<DataKeluargaDasawismaF
         contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
         enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF0D9488), width: 1.2)),
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF0072BC), width: 1.2)),
       );
 
   Widget _sheetDropdown(String label, String value, List<String> items, ValueChanged<String?> onChanged) => DropdownButtonFormField<String>(
@@ -326,7 +326,7 @@ class _DataKeluargaDasawismaFormScreenState extends State<DataKeluargaDasawismaF
 
   @override
   Widget build(BuildContext context) {
-    const primary = Color(0xFF0D9488);
+    const primary = Color(0xFF0072BC);
     const bg = Color(0xFFF8FAFC);
     final inputFill = const Color(0xFFF8FAFC);
 
@@ -534,7 +534,7 @@ class _DataKeluargaDasawismaFormScreenState extends State<DataKeluargaDasawismaF
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Expanded(child: Text(title, style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w600, color: const Color(0xFF1E293B)))),
-          Switch(value: value, onChanged: onChanged, activeThumbColor: const Color(0xFF0D9488)),
+          Switch(value: value, onChanged: onChanged, activeThumbColor: const Color(0xFF0072BC)),
         ]),
       );
 }

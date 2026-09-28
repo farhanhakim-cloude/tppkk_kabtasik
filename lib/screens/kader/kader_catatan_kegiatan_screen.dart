@@ -218,13 +218,13 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                     Container(
                       padding: const EdgeInsets.all(9),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0D9488).withValues(alpha: 0.12),
+                        color: const Color(0xFF0072BC).withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
                         Icons.tune_rounded,
                         size: 18,
-                        color: Color(0xFF0D9488),
+                        color: Color(0xFF0072BC),
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -262,7 +262,7 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                           'Semua Pokja',
                           'Tampilkan semua kategori',
                           Icons.apps_rounded,
-                          const Color(0xFF0D9488),
+                          const Color(0xFF0072BC),
                           ctx,
                         ),
                         const SizedBox(height: 8),
@@ -423,8 +423,8 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
         : const Color(0xFFF3F5F7);
     final cardBg = _isDarkMode ? const Color(0xFF1E242D) : Colors.white;
     final primaryAccent = _isDarkMode
-        ? const Color(0xFF2ED9C3)
-        : const Color(0xFF0D9488);
+        ? const Color(0xFF4DA6E0)
+        : const Color(0xFF0072BC);
     final textColor = _isDarkMode ? Colors.white : const Color(0xFF14181D);
     final subtextColor = _isDarkMode
         ? const Color(0xFF8E9BAE)

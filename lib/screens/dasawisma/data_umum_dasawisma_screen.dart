@@ -25,7 +25,7 @@ class _DataUmumDasawismaScreenState extends State<DataUmumDasawismaScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  static const Color _primaryAccent = Color(0xFF0D9488);
+  static const Color _primaryAccent = Color(0xFF0072BC);
   static const Color _darkText = Color(0xFF0F172A);
 
   @override

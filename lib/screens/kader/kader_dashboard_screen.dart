@@ -99,8 +99,9 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
     // Definisi Warna Dinamis untuk Dark Mode dan Light Mode
     final bgColor = _isDarkMode ? const Color(0xFF14181F) : const Color(0xFFF3F5F7);
     final cardBg = _isDarkMode ? const Color(0xFF1E242D) : Colors.white;
-    const primaryMint = Color(0xFF2ED9C3);
-    final primaryMintAccent = _isDarkMode ? const Color(0xFF2ED9C3) : const Color(0xFF0D9488);
+    const primaryPkk = Color(0xFF0072BC); // 🔵 Biru PKK
+    const goldPkk = Color(0xFFFFC72C); // 🟡 Kuning/Gold PKK
+    final primaryMintAccent = _isDarkMode ? const Color(0xFFFFC72C) : const Color(0xFF0072BC);
     final textColor = _isDarkMode ? Colors.white : const Color(0xFF14181D);
     final subtextColor = _isDarkMode ? const Color(0xFF8E9BAE) : const Color(0xFF64748B);
     final borderColor = _isDarkMode
@@ -173,14 +174,14 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
-                                  colors: [Color(0xFF2ED9C3), Color(0xFF1FBFA8)],
+                                  colors: [Color(0xFF0072BC), Color(0xFF005893)],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),
                                 borderRadius: BorderRadius.circular(22),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: primaryMint.withValues(alpha: _isDarkMode ? 0.28 : 0.2),
+                                    color: primaryPkk.withValues(alpha: _isDarkMode ? 0.35 : 0.25),
                                     blurRadius: 20,
                                     offset: const Offset(0, 8),
                                   ),
@@ -200,7 +201,7 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
                                             width: 46,
                                             height: 46,
                                             decoration: BoxDecoration(
-                                              color: Colors.white.withValues(alpha: 0.25),
+                                              color: Colors.white.withValues(alpha: 0.20),
                                               borderRadius: BorderRadius.circular(15),
                                             ),
                                             child: Stack(
@@ -209,7 +210,7 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
                                                 Positioned(
                                                   top: 7,
                                                   right: 8,
-                                                  child: Icon(Icons.wb_sunny_rounded, color: Color(0xFFFBBF24), size: 18),
+                                                  child: Icon(Icons.wb_sunny_rounded, color: Color(0xFFFFC72C), size: 18),
                                                 ),
                                                 Positioned(
                                                   bottom: 6,
@@ -228,7 +229,7 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
                                                   Text(
                                                     'Cerah Berawan',
                                                     style: GoogleFonts.plusJakartaSans(
-                                                      color: const Color(0xFF0D3E38),
+                                                      color: Colors.white,
                                                       fontWeight: FontWeight.w800,
                                                       fontSize: 16,
                                                     ),
@@ -237,14 +238,14 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
                                                   Container(
                                                     padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                                                     decoration: BoxDecoration(
-                                                      color: Colors.black.withValues(alpha: 0.12),
+                                                      color: const Color(0xFFFFC72C),
                                                       borderRadius: BorderRadius.circular(8),
                                                     ),
                                                     child: Text(
                                                       'Kader Aktif',
                                                       style: GoogleFonts.plusJakartaSans(
-                                                        color: const Color(0xFF0A2E2A),
-                                                        fontWeight: FontWeight.w700,
+                                                        color: const Color(0xFF0F172A),
+                                                        fontWeight: FontWeight.w800,
                                                         fontSize: 10,
                                                       ),
                                                     ),
@@ -255,7 +256,7 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
                                               Text(
                                                 _desaKecamatan,
                                                 style: GoogleFonts.plusJakartaSans(
-                                                  color: const Color(0xFF0D3E38).withValues(alpha: 0.85),
+                                                  color: Colors.white.withValues(alpha: 0.90),
                                                   fontSize: 12,
                                                   fontWeight: FontWeight.w600,
                                                 ),
@@ -268,7 +269,7 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
                                       Text(
                                         '28°',
                                         style: GoogleFonts.plusJakartaSans(
-                                          color: const Color(0xFF0D3E38),
+                                          color: Colors.white,
                                           fontWeight: FontWeight.w900,
                                           fontSize: 32,
                                           height: 1,
@@ -459,7 +460,7 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
         Text(
           value,
           style: GoogleFonts.plusJakartaSans(
-            color: const Color(0xFF0D3E38),
+            color: Colors.white,
             fontWeight: FontWeight.w800,
             fontSize: 13.5,
           ),
@@ -468,7 +469,7 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
         Text(
           label,
           style: GoogleFonts.plusJakartaSans(
-            color: const Color(0xFF0D3E38).withValues(alpha: 0.75),
+            color: Colors.white.withValues(alpha: 0.80),
             fontSize: 11,
             fontWeight: FontWeight.w600,
           ),
@@ -481,7 +482,7 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
     return Container(
       width: 1,
       height: 26,
-      color: Colors.black.withValues(alpha: 0.1),
+      color: Colors.white.withValues(alpha: 0.25),
     );
   }
 

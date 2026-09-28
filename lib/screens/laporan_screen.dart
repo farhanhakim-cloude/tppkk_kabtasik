@@ -116,7 +116,7 @@ class _LaporanScreenState extends State<LaporanScreen> {
                               const Icon(
                                 Icons.calendar_today_rounded,
                                 size: 16,
-                                color: Color(0xFF0D9488),
+                                color: Color(0xFF0072BC),
                               ),
                               const SizedBox(width: 10),
                               Text(
