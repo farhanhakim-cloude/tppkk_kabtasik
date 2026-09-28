@@ -268,7 +268,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final bgColor = _isDarkMode ? const Color(0xFF14181F) : const Color(0xFFF8F9FB);
-    final primaryDark = const Color(0xFF0F326D);
+    final primaryDark = const Color(0xFF0072BC);
 
     final pages = [
       _buildBeranda(bgColor, primaryDark),
@@ -312,7 +312,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
   Widget _navItem(int idx, IconData icon, String label) {
     final sel = _navIndex == idx;
-    final color = sel ? const Color(0xFF0F326D) : const Color(0xFF94A3B8);
+    final color = sel ? const Color(0xFF0072BC) : const Color(0xFF94A3B8);
     return InkWell(
       onTap: () { setState(() => _navIndex = idx); },
       borderRadius: BorderRadius.circular(16),

@@ -134,7 +134,7 @@ class _VerifikasiBeritaScreenState extends State<VerifikasiBeritaScreen> {
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: isApprove
-                  ? const Color(0xFF0F326D)
+                  ? const Color(0xFF0072BC)
                   : const Color(0xFFEF4444),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -268,7 +268,7 @@ class _VerifikasiBeritaScreenState extends State<VerifikasiBeritaScreen> {
     final appBarBg = bgColor;
     final textColor = _isDarkMode ? Colors.white : const Color(0xFF0F172A);
     final subtextColor = _isDarkMode ? const Color(0xFF8E9BAE) : const Color(0xFF64748B);
-    final primaryAccent = const Color(0xFF0F326D);
+    final primaryAccent = const Color(0xFF0072BC);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -576,7 +576,7 @@ class _VerifikasiBeritaScreenState extends State<VerifikasiBeritaScreen> {
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: const Color(0xFF0F326D),
+                    color: const Color(0xFF0072BC),
                   ),
                 ),
               ),
@@ -622,7 +622,7 @@ class _VerifikasiBeritaScreenState extends State<VerifikasiBeritaScreen> {
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0F326D),
+                    backgroundColor: const Color(0xFF0072BC),
                     foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(

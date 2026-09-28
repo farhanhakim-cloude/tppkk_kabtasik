@@ -1,10 +1,10 @@
 // lib/screens/kader/kader_dashboard_screen.dart
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 import '../../main.dart';
 
 import '../../models/catatan_kegiatan.dart';
@@ -30,18 +30,53 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
   String _userName = 'Kader PKK';
   String _desaKecamatan = 'Kab. Tasikmalaya';
   String? _pokjaRole;
-  int _selectedCategoryIndex = 0; // 0: Semua, 1: Pokja I, 2: Pokja II, 3: Pokja III, 4: Pokja IV
-  int _selectedBottomNavIndex = 0;
-  bool _isDarkMode = false; // ikut global themeNotifier (default light)
+  int _navIndex = 0;
+  bool _isDarkMode = false;
+  
+  int _totalKegiatan = 0;
+  int _totalBerita = 0;
+  bool _isLoading = true;
 
-  // ignore: unused_field
-  final List<String> _categories = const [
-    'Semua',
-    'Pokja I',
-    'Pokja II',
-    'Pokja III',
-    'Pokja IV',
-  ];
+  String _weatherCity = 'Tasikmalaya';
+  String _weatherCondition = 'Cerah Berawan';
+  int _weatherTemp = 28;
+  int _weatherHumidity = 65;
+
+  String _getFormattedDate() {
+    final now = DateTime.now();
+    const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    final dayName = days[now.weekday - 1];
+    final monthName = months[now.month - 1];
+    return '$dayName, ${now.day} $monthName ${now.year}';
+  }
+
+  Future<void> _loadWeather() async {
+    try {
+      final res = await http.get(Uri.parse('https://api.open-meteo.com/v1/forecast?latitude=-7.3274&longitude=108.2207&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code&timezone=Asia%2FJakarta')).timeout(const Duration(seconds: 8));
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body);
+        final current = data['current'];
+        final temp = (current['temperature_2m'] as num).round();
+        final humidity = (current['relative_humidity_2m'] as num).round();
+        final code = current['weather_code'] as int;
+        String condition;
+        if (code == 0) condition = 'Cerah';
+        else if (code <= 3) condition = 'Berawan';
+        else if (code <= 48) condition = 'Berkabut';
+        else if (code <= 67) condition = 'Hujan';
+        else if (code <= 77) condition = 'Salju';
+        else if (code <= 99) condition = 'Badai';
+        else condition = 'Cerah Berawan';
+        if (!mounted) return;
+        setState(() {
+          _weatherTemp = temp;
+          _weatherHumidity = humidity;
+          _weatherCondition = condition;
+        });
+      }
+    } catch (_) {}
+  }
 
   void _onThemeChanged() {
     final isDark = themeNotifier.value == ThemeMode.dark;
@@ -54,6 +89,7 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
     _isDarkMode = themeNotifier.value == ThemeMode.dark;
     themeNotifier.addListener(_onThemeChanged);
     _loadUserInfo();
+    _loadData();
   }
 
   @override
@@ -75,859 +111,415 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
       setState(() {
         _userName = nama;
         _desaKecamatan = desa.isNotEmpty ? '$desa, $kec' : 'Kec. $kec';
-        _pokjaRole = ['pokja1', 'pokja2', 'pokja3', 'pokja4'].contains(role)
-            ? role
-            : null;
+        _pokjaRole = ['pokja1', 'pokja2', 'pokja3', 'pokja4'].contains(role) ? role : null;
       });
     } catch (_) {}
   }
-
-  String _getFormattedDate() {
-    final now = DateTime.now();
-    const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-      'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
-    ];
-    final dayName = days[now.weekday - 1];
-    final monthName = months[now.month - 1];
-    return '$dayName, $monthName ${now.day}, ${now.year}';
+  
+  Future<void> _loadData() async {
+    _loadWeather();
+    try {
+      final catatan = await _catatanService.getAll();
+      final berita = await _beritaService.getMyBerita();
+      if (mounted) {
+        setState(() {
+          _totalKegiatan = catatan.length;
+          _totalBerita = berita.length;
+          _isLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Definisi Warna Dinamis untuk Dark Mode dan Light Mode
-    final bgColor = _isDarkMode ? const Color(0xFF14181F) : const Color(0xFFF3F5F7);
-    final cardBg = _isDarkMode ? const Color(0xFF1E242D) : Colors.white;
-    const primaryPkk = Color(0xFF0072BC); // 🔵 Biru PKK
-    const goldPkk = Color(0xFFFFC72C); // 🟡 Kuning/Gold PKK
-    final primaryMintAccent = _isDarkMode ? const Color(0xFFFFC72C) : const Color(0xFF0072BC);
-    final textColor = _isDarkMode ? Colors.white : const Color(0xFF14181D);
-    final subtextColor = _isDarkMode ? const Color(0xFF8E9BAE) : const Color(0xFF64748B);
-    final borderColor = _isDarkMode
-        ? Colors.white.withValues(alpha: 0.08)
-        : Colors.black.withValues(alpha: 0.06);
+    final bgColor = _isDarkMode ? const Color(0xFF14181F) : const Color(0xFFF8F9FB);
+    final primaryDark = const Color(0xFF0072BC);
 
-    final formattedDate = _getFormattedDate();
+    final pages = [
+      _buildBeranda(bgColor, primaryDark),
+      const KaderCatatanKegiatanScreen(),
+      const KaderBeritaScreen(),
+      const ProfileScreen(embedded: true),
+    ];
 
     return Scaffold(
       backgroundColor: bgColor,
-      body: SafeArea(
-        child: FutureBuilder<List<CatatanKegiatan>>(
-          future: _catatanService.getAll(),
-          builder: (context, catSnapshot) {
-            final totalKegiatan = catSnapshot.data?.length ?? 0;
+      body: IndexedStack(index: _navIndex, children: pages),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await Navigator.push(context, MaterialPageRoute(builder: (_) => const CatatanKegiatanFormScreen()));
+          _loadData();
+        },
+        backgroundColor: primaryDark,
+        shape: const CircleBorder(),
+        elevation: 8,
+        child: const Icon(Icons.add_rounded, color: Colors.white, size: 32),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        color: _isDarkMode ? const Color(0xFF1E242D) : Colors.white,
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 8,
+        elevation: 10,
+        height: 70,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _navItem(0, Icons.grid_view_rounded, 'Beranda'),
+            _navItem(1, Icons.assignment_rounded, 'Catatan'),
+            const SizedBox(width: 40),
+            _navItem(2, Icons.article_rounded, 'Berita'),
+            _navItem(3, Icons.person_outline_rounded, 'Profil'),
+          ],
+        ),
+      ),
+    );
+  }
 
-            return FutureBuilder(
-              future: _beritaService.getMyBerita(),
-              builder: (context, berSnapshot) {
-                final totalBerita = berSnapshot.data?.length ?? 0;
+  Widget _navItem(int idx, IconData icon, String label) {
+    final sel = _navIndex == idx;
+    final color = sel ? const Color(0xFF0072BC) : const Color(0xFF94A3B8);
+    return InkWell(
+      onTap: () { setState(() => _navIndex = idx); },
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 24, color: color),
+            const SizedBox(height: 4),
+            Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: sel ? FontWeight.w800 : FontWeight.w600, color: color)),
+          ],
+        ),
+      ),
+    );
+  }
 
-                return Column(
-                  children: [
-                    Expanded(
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-                        child: Column(
+  Widget _buildBeranda(Color bgColor, Color primaryDark) {
+    final cardBg = _isDarkMode ? const Color(0xFF1E242D) : Colors.white;
+    final textCol = _isDarkMode ? Colors.white : const Color(0xFF0F172A);
+    final sub = _isDarkMode ? const Color(0xFF8E9BAE) : const Color(0xFF64748B);
+    final border = _isDarkMode ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFE2E8F0);
+
+    return SafeArea(
+      child: RefreshIndicator(
+        onRefresh: _loadData,
+        color: primaryDark,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(12), border: Border.all(color: border)),
+                    child: Icon(Icons.grid_view_rounded, size: 20, color: textCol),
+                  ),
+                  Text('Beranda Kader', style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w700, color: textCol)),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(12), border: Border.all(color: border)),
+                    child: Stack(
+                      children: [
+                        Icon(Icons.notifications_none_rounded, size: 20, color: textCol),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              
+              // Greeting & Cuaca
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Hi ${_userName.split(' ').first}!', style: GoogleFonts.plusJakartaSans(fontSize: 28, fontWeight: FontWeight.w800, color: textCol)),
+                      const SizedBox(height: 4),
+                      Text(_getFormattedDate(), style: GoogleFonts.plusJakartaSans(fontSize: 14, color: sub, fontWeight: FontWeight.w500)),
+                    ],
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: primaryDark.withValues(alpha: 0.08),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          _weatherCondition.toLowerCase().contains('hujan') ? Icons.cloud_rounded : Icons.wb_sunny_rounded,
+                          color: _weatherCondition.toLowerCase().contains('hujan') ? Colors.blueGrey : const Color(0xFFFBBF24),
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // ─── Header: Hey, [Name] — tombol mode & keluar dipindah ke Profil ───
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                RichText(
-                                  text: TextSpan(
-                                    style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 19,
-                                      fontWeight: FontWeight.w500,
-                                      color: textColor,
-                                    ),
-                                    children: [
-                                      const TextSpan(text: 'Hey, '),
-                                      TextSpan(
-                                        text: _userName.split(' ').first,
-                                        style: GoogleFonts.plusJakartaSans(
-                                          fontWeight: FontWeight.w700,
-                                          color: primaryMintAccent,
-                                        ),
-                                      ),
-                                      const TextSpan(text: '!'),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 3),
-                                Text(
-                                  formattedDate,
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 12,
-                                    color: subtextColor,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
+                            Text(
+                              '$_weatherTemp°C',
+                              style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.w800, color: textCol, height: 1),
                             ),
-                            const SizedBox(height: 20),
-
-                            // ─── Banner Cuaca & Highlight Card (Persis Referensi Gambar) ───
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(20),
-                              decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [Color(0xFF0072BC), Color(0xFF005893)],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                                borderRadius: BorderRadius.circular(22),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: primaryPkk.withValues(alpha: _isDarkMode ? 0.35 : 0.25),
-                                    blurRadius: 20,
-                                    offset: const Offset(0, 8),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  // Row Atas: Icon Cuaca Awan Cerah, Teks Cuaca, Lokasi, dan Suhu 28°
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Container(
-                                            width: 46,
-                                            height: 46,
-                                            decoration: BoxDecoration(
-                                              color: Colors.white.withValues(alpha: 0.20),
-                                              borderRadius: BorderRadius.circular(15),
-                                            ),
-                                            child: Stack(
-                                              alignment: Alignment.center,
-                                              children: const [
-                                                Positioned(
-                                                  top: 7,
-                                                  right: 8,
-                                                  child: Icon(Icons.wb_sunny_rounded, color: Color(0xFFFFC72C), size: 18),
-                                                ),
-                                                Positioned(
-                                                  bottom: 6,
-                                                  left: 7,
-                                                  child: Icon(Icons.cloud_rounded, color: Colors.white, size: 24),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          const SizedBox(width: 12),
-                                          Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Text(
-                                                    'Cerah Berawan',
-                                                    style: GoogleFonts.plusJakartaSans(
-                                                      color: Colors.white,
-                                                      fontWeight: FontWeight.w800,
-                                                      fontSize: 16,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 6),
-                                                  Container(
-                                                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                                                    decoration: BoxDecoration(
-                                                      color: const Color(0xFFFFC72C),
-                                                      borderRadius: BorderRadius.circular(8),
-                                                    ),
-                                                    child: Text(
-                                                      'Kader Aktif',
-                                                      style: GoogleFonts.plusJakartaSans(
-                                                        color: const Color(0xFF0F172A),
-                                                        fontWeight: FontWeight.w800,
-                                                        fontSize: 10,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 2),
-                                              Text(
-                                                _desaKecamatan,
-                                                style: GoogleFonts.plusJakartaSans(
-                                                  color: Colors.white.withValues(alpha: 0.90),
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                      // Derajat Suhu
-                                      Text(
-                                        '28°',
-                                        style: GoogleFonts.plusJakartaSans(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w900,
-                                          fontSize: 32,
-                                          height: 1,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 18),
-
-                                  // Row Bawah: 4 Indikator
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      _buildWeatherCardStat(
-                                        label: 'Catatan',
-                                        value: '$totalKegiatan Lap',
-                                      ),
-                                      _buildBannerDivider(),
-                                      _buildWeatherCardStat(
-                                        label: 'Berita',
-                                        value: '$totalBerita Pos',
-                                      ),
-                                      _buildBannerDivider(),
-                                      _buildWeatherCardStat(
-                                        label: 'Kelembapan',
-                                        value: '65%',
-                                      ),
-                                      _buildBannerDivider(),
-                                      _buildWeatherCardStat(
-                                        label: 'Status',
-                                        value: _pokjaRole == null
-                                            ? 'Siap 4 Pokja'
-                                            : 'Akses ${_pokjaLabel(_pokjaRole!)}',
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                            Text(
+                              _weatherCity,
+                              style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.w600, color: sub),
                             ),
-                            const SizedBox(height: 16),
-
-                            // ─── 2 FITUR UTAMA KADER (Grid 2 Kolom) ───
-                            Row(
-                              children: [
-                                // Fitur 1: Catatan Kegiatan Pokja (Aksen Mint / Teal)
-                                Expanded(
-                                  child: _buildMainFeatureTile(
-                                    title: 'Catatan Kegiatan',
-                                    subtitle: '$totalKegiatan Laporan',
-                                    icon: Icons.assignment_outlined,
-                                    badgeText: _pokjaRole == null
-                                        ? 'Pokja I - IV'
-                                        : _pokjaLabel(_pokjaRole!),
-                                    isMintTheme: true,
-                                    primaryColor: primaryMintAccent,
-                                    cardBg: cardBg,
-                                    textColor: textColor,
-                                    subtextColor: subtextColor,
-                                    borderColor: borderColor,
-                                    onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (_) => const KaderCatatanKegiatanScreen()),
-                                    ),
-                                    onTapAction: () async {
-                                      await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (_) => const CatatanKegiatanFormScreen()),
-                                      );
-                                      setState(() {});
-                                    },
-                                    actionLabel: '+ Input',
-                                  ),
-                                ),
-                                const SizedBox(width: 14),
-
-                                // Fitur 2: Tulis & Publikasi Berita
-                                Expanded(
-                                  child: _buildMainFeatureTile(
-                                    title: 'Kabar Berita',
-                                    subtitle: '$totalBerita Terkirim',
-                                    icon: Icons.newspaper_rounded,
-                                    badgeText: 'Publikasi',
-                                    isMintTheme: false,
-                                    primaryColor: primaryMintAccent,
-                                    cardBg: cardBg,
-                                    textColor: textColor,
-                                    subtextColor: subtextColor,
-                                    borderColor: borderColor,
-                                    onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (_) => const KaderBeritaScreen()),
-                                    ),
-                                    onTapAction: () async {
-                                      await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (_) => const BeritaFormScreen()),
-                                      );
-                                      setState(() {});
-                                    },
-                                    actionLabel: '+ Tulis',
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 24),
-
-                            // ─── Akses Cepat Pokja (Filtered or All) ───
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'AKSES CEPAT PER POKJA',
-                                  style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w800,
-                                    letterSpacing: 0.8,
-                                    color: subtextColor,
-                                  ),
-                                ),
-                                if (_selectedCategoryIndex != 0)
-                                  GestureDetector(
-                                    onTap: () => setState(() => _selectedCategoryIndex = 0),
-                                    child: Text(
-                                      'Lihat Semua',
-                                      style: GoogleFonts.plusJakartaSans(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,
-                                        color: primaryMintAccent,
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-
-                            ..._buildPokjaList(cardBg, textColor, subtextColor, borderColor),
                           ],
-                        ),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+
+              // Search Bar
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(30), border: Border.all(color: border), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 10, offset: const Offset(0, 4))]),
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Cari laporan atau berita...',
+                    hintStyle: GoogleFonts.plusJakartaSans(color: sub, fontSize: 14),
+                    prefixIcon: Icon(Icons.search_rounded, color: sub),
+                    border: InputBorder.none,
+                    prefixIconConstraints: const BoxConstraints(minWidth: 40),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Welcome Card
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: cardBg,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: primaryDark, width: 1.2),
+                  boxShadow: [BoxShadow(color: primaryDark.withValues(alpha: 0.08), blurRadius: 15, offset: const Offset(0, 5))],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Selamat Datang!', style: GoogleFonts.plusJakartaSans(fontSize: 17, fontWeight: FontWeight.w800, color: textCol)),
+                          const SizedBox(height: 8),
+                          Text('Anda telah mencatat $_totalKegiatan kegiatan.\nTerus semangat!', style: GoogleFonts.plusJakartaSans(fontSize: 13, color: sub, height: 1.4)),
+                        ],
                       ),
                     ),
-
-                    // ─── Modern Floating Bottom Navigation Bar ───
-                    _buildBottomNavigationBar(cardBg, primaryMintAccent, borderColor, textColor, subtextColor),
+                    Icon(Icons.assignment_ind_rounded, size: 64, color: primaryDark), 
                   ],
-                );
-              },
-            );
-          },
+                ),
+              ),
+              const SizedBox(height: 28),
+
+              // Menu Utama
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Menu Utama', style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w800, color: textCol)),
+                  Text('Lihat Semua', style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w600, color: sub)),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              // Design Cards for Menu
+              GridView.count(
+                crossAxisCount: 2,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+                childAspectRatio: 0.85,
+                children: [
+                  _buildDesignCard(
+                    title: 'Catatan',
+                    subtitle: 'Kegiatan Pokja',
+                    count: _totalKegiatan,
+                    icon: Icons.assignment_rounded,
+                    isActive: true,
+                    primaryDark: primaryDark,
+                    cardBg: cardBg,
+                    textCol: textCol,
+                    sub: sub,
+                    onTap: () { setState(() => _navIndex = 1); },
+                  ),
+                  _buildDesignCard(
+                    title: 'Kabar',
+                    subtitle: 'Berita',
+                    count: _totalBerita,
+                    icon: Icons.article_rounded,
+                    isActive: false,
+                    primaryDark: primaryDark,
+                    cardBg: cardBg,
+                    textCol: textCol,
+                    sub: sub,
+                    onTap: () { setState(() => _navIndex = 2); },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 28),
+
+              // Akses Cepat Per Pokja
+              Text('Akses Cepat Per Pokja', style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w800, color: textCol)),
+              const SizedBox(height: 12),
+              _buildPokjaGrid(cardBg: cardBg, textCol: textCol, sub: sub, border: border),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // ignore: unused_element
-  Widget _buildCircleActionBtn({
-    required IconData icon,
-    required String tooltip,
-    required Color cardBg,
-    required Color iconColor,
-    required Color borderColor,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
-      child: Tooltip(
-        message: tooltip,
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: cardBg,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: borderColor),
-          ),
-          child: Icon(icon, color: iconColor, size: 20),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildWeatherCardStat({
-    required String label,
-    required String value,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          value,
-          style: GoogleFonts.plusJakartaSans(
-            color: Colors.white,
-            fontWeight: FontWeight.w800,
-            fontSize: 13.5,
-          ),
-        ),
-        const SizedBox(height: 1),
-        Text(
-          label,
-          style: GoogleFonts.plusJakartaSans(
-            color: Colors.white.withValues(alpha: 0.80),
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBannerDivider() {
-    return Container(
-      width: 1,
-      height: 26,
-      color: Colors.white.withValues(alpha: 0.25),
-    );
-  }
-
-  Widget _buildMainFeatureTile({
+  Widget _buildDesignCard({
     required String title,
     required String subtitle,
+    required int count,
     required IconData icon,
-    required String badgeText,
-    required bool isMintTheme,
-    required Color primaryColor,
+    required bool isActive,
+    required Color primaryDark,
     required Color cardBg,
-    required Color textColor,
-    required Color subtextColor,
-    required Color borderColor,
+    required Color textCol,
+    required Color sub,
     required VoidCallback onTap,
-    required VoidCallback onTapAction,
-    required String actionLabel,
   }) {
-    final activeBg = isMintTheme
-        ? primaryColor.withValues(alpha: _isDarkMode ? 0.16 : 0.12)
-        : cardBg;
-    final activeBorder = isMintTheme
-        ? primaryColor.withValues(alpha: 0.6)
-        : borderColor;
+    final bgColor = isActive ? primaryDark : cardBg;
+    final titleColor = isActive ? Colors.white : textCol;
+    final subColor = isActive ? Colors.white70 : sub;
+    final iconBgColor = isActive ? Colors.white.withValues(alpha: 0.2) : primaryDark.withValues(alpha: 0.1);
+    final iconColor = isActive ? Colors.white : primaryDark;
+    final borderColor = _isDarkMode ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFE2E8F0);
 
-    return Container(
-      height: 195,
-      decoration: BoxDecoration(
-        color: activeBg,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: activeBorder, width: 1.2),
-        boxShadow: isMintTheme
-            ? [
-                BoxShadow(
-                  color: primaryColor.withValues(alpha: 0.15),
-                  blurRadius: 16,
-                  offset: const Offset(0, 4),
-                ),
-              ]
-            : [
-                if (!_isDarkMode)
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
-                    blurRadius: 10,
-                    offset: const Offset(0, 3),
-                  ),
-              ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(20),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Top row: Icon & Chip
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: isMintTheme
-                            ? primaryColor.withValues(alpha: 0.25)
-                            : (_isDarkMode ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFF1F5F9)),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        icon,
-                        color: isMintTheme ? primaryColor : (_isDarkMode ? Colors.white : const Color(0xFF334155)),
-                        size: 22,
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: isMintTheme
-                            ? primaryColor.withValues(alpha: 0.2)
-                            : (_isDarkMode ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFE2E8F0)),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        badgeText,
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: isMintTheme
-                              ? primaryColor
-                              : (_isDarkMode ? Colors.white70 : const Color(0xFF475569)),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                // Middle: Title & Subtitle
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.plusJakartaSans(
-                        color: textColor,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14.5,
-                        height: 1.2,
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      subtitle,
-                      style: GoogleFonts.plusJakartaSans(
-                        color: subtextColor,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-
-                // Bottom row: Quick action button + indicator
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'BUKA',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w800,
-                        color: isMintTheme
-                            ? primaryColor
-                            : (_isDarkMode ? Colors.white54 : const Color(0xFF94A3B8)),
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                    InkWell(
-                      onTap: onTapAction,
-                      borderRadius: BorderRadius.circular(10),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: isMintTheme
-                              ? primaryColor
-                              : (_isDarkMode ? Colors.white.withValues(alpha: 0.12) : const Color(0xFFE2E8F0)),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(
-                          actionLabel,
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 11.5,
-                            fontWeight: FontWeight.w700,
-                            color: isMintTheme
-                                ? (_isDarkMode ? const Color(0xFF0A2E2A) : Colors.white)
-                                : (_isDarkMode ? Colors.white : const Color(0xFF1E293B)),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(24),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: isActive ? Colors.transparent : borderColor),
+          boxShadow: [
+            if (isActive) BoxShadow(color: primaryDark.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 6))
+            else BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 4)),
+          ],
         ),
-      ),
-    );
-  }
-
-  List<Widget> _buildPokjaList(
-    Color cardBg,
-    Color textColor,
-    Color subtextColor,
-    Color borderColor,
-  ) {
-    final allPokjas = [
-      _PokjaItem(
-        pokja: PokjaKategori.pokja1,
-        title: 'Pokja I',
-        desc: 'Penghayatan Pancasila & Gotong Royong',
-        color: const Color(0xFF38BDF8),
-        icon: Icons.groups_rounded,
-        index: 1,
-      ),
-      _PokjaItem(
-        pokja: PokjaKategori.pokja2,
-        title: 'Pokja II',
-        desc: 'Pendidikan, Keterampilan & UP2K',
-        color: const Color(0xFF10B981),
-        icon: Icons.school_rounded,
-        index: 2,
-      ),
-      _PokjaItem(
-        pokja: PokjaKategori.pokja3,
-        title: 'Pokja III',
-        desc: 'Pangan, Sandang & Perumahan',
-        color: const Color(0xFFF59E0B),
-        icon: Icons.cottage_rounded,
-        index: 3,
-      ),
-      _PokjaItem(
-        pokja: PokjaKategori.pokja4,
-        title: 'Pokja IV',
-        desc: 'Kesehatan, Kelestarian Lingkungan',
-        color: const Color(0xFFEF4444),
-        icon: Icons.health_and_safety_rounded,
-        index: 4,
-      ),
-      _PokjaItem(
-        pokja: PokjaKategori.pokja4Pyd,
-        title: 'Kunjungan PYD',
-        desc: 'Data Kunjungan PYD per Bulan',
-        color: const Color(0xFF8B5CF6),
-        icon: Icons.child_friendly_rounded,
-        index: 4,
-      ),
-      _PokjaItem(
-        pokja: PokjaKategori.pokja4Posyandu,
-        title: 'Kegiatan Posyandu',
-        desc: 'Data Kegiatan Posyandu per Bulan',
-        color: const Color(0xFF06B6D4),
-        icon: Icons.local_hospital_rounded,
-        index: 4,
-      ),
-      _PokjaItem(
-        pokja: PokjaKategori.pokja4Rekap,
-        title: 'Rekapitulasi',
-        desc: 'Rekap Ibu Hamil, Melahirkan & Nifas',
-        color: const Color(0xFFEC4899),
-        icon: Icons.assignment_rounded,
-        index: 4,
-      ),
-    ];
-
-    final roleIndex = _pokjaRole == null
-        ? null
-        : int.tryParse(_pokjaRole!.substring('pokja'.length));
-    final filtered = roleIndex != null
-        ? allPokjas.where((p) => p.index == roleIndex).toList()
-        : (_selectedCategoryIndex == 0
-            ? allPokjas
-            : allPokjas.where((p) => p.index == _selectedCategoryIndex).toList());
-
-    return filtered.map((item) {
-      return Padding(
-        padding: const EdgeInsets.only(bottom: 10),
-        child: InkWell(
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => KaderCatatanKegiatanScreen(pokjaDefault: item.pokja),
-            ),
-          ),
-          borderRadius: BorderRadius.circular(16),
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-            decoration: BoxDecoration(
-              color: cardBg,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: borderColor),
-              boxShadow: [
-                if (!_isDarkMode)
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.03),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-              ],
-            ),
-            child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: item.color.withValues(alpha: 0.15),
+                    color: iconBgColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(item.icon, size: 20, color: item.color),
+                  child: Icon(icon, color: iconColor, size: 24),
                 ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.title,
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: textColor,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        item.desc,
-                        style: GoogleFonts.plusJakartaSans(
-                          fontSize: 11.5,
-                          color: subtextColor,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Icon(Icons.chevron_right_rounded, size: 20, color: subtextColor.withValues(alpha: 0.6)),
+                Icon(Icons.more_vert_rounded, color: subColor, size: 20),
               ],
             ),
-          ),
-        ),
-      );
-    }).toList();
-  }
-
-  String _pokjaLabel(String role) {
-    switch (role) {
-      case 'pokja1':
-        return 'Pokja I';
-      case 'pokja2':
-        return 'Pokja II';
-      case 'pokja3':
-        return 'Pokja III';
-      case 'pokja4':
-        return 'Pokja IV';
-      default:
-        return 'Pokja';
-    }
-  }
-
-  Widget _buildBottomNavigationBar(
-    Color cardBg,
-    Color primaryColor,
-    Color borderColor,
-    Color textColor,
-    Color subtextColor,
-  ) {
-    // nav ala contoh: pill putih, icon di atas label, selected ada pill background soft
-    final navItems = [
-      (Icons.home_rounded, Icons.home_outlined, 'Home'),
-      (Icons.assignment_rounded, Icons.assignment_outlined, 'Catatan'),
-      (Icons.newspaper_rounded, Icons.newspaper_outlined, 'Berita'),
-      (Icons.person_rounded, Icons.person_outline_rounded, 'Profil'),
-    ];
-
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 0, 16, 14),
-      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
-      decoration: BoxDecoration(
-        color: cardBg,
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: borderColor),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: _isDarkMode ? 0.35 : 0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Row(
-        children: List.generate(navItems.length, (index) {
-          final isSelected = _selectedBottomNavIndex == index;
-          final (iconFilled, iconOut, label) = navItems[index];
-          return Expanded(
-            child: InkWell(
-              onTap: () {
-                HapticFeedback.selectionClick();
-                setState(() => _selectedBottomNavIndex = index);
-                if (index == 1) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const KaderCatatanKegiatanScreen()),
-                  );
-                } else if (index == 2) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const KaderBeritaScreen()),
-                  );
-                } else if (index == 3) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const ProfileScreen()),
-                  ).then((_) {
-                    _loadUserInfo();
-                    if (mounted) setState(() => _selectedBottomNavIndex = 0);
-                  });
-                }
-              },
-              borderRadius: BorderRadius.circular(20),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 220),
-                curve: Curves.easeOut,
-                padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 4),
-                decoration: BoxDecoration(
-                  color: isSelected ? primaryColor.withValues(alpha: _isDarkMode ? 0.18 : 0.12) : Colors.transparent,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.w800, color: titleColor)),
+                const SizedBox(height: 2),
+                Text(subtitle, style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w500, color: subColor)),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Total', style: GoogleFonts.plusJakartaSans(fontSize: 10, color: subColor)),
+                const SizedBox(height: 6),
+                Stack(
                   children: [
-                    Icon(
-                      isSelected ? iconFilled : iconOut,
-                      color: isSelected ? primaryColor : (_isDarkMode ? Colors.white54 : const Color(0xFF94A3B8)),
-                      size: 22,
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      label,
-                      maxLines: 1,
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 10.5,
-                        fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
-                        color: isSelected ? primaryColor : (_isDarkMode ? Colors.white54 : const Color(0xFF64748B)),
-                        letterSpacing: 0.1,
-                      ),
-                    ),
+                    Container(height: 4, decoration: BoxDecoration(color: subColor.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(2))),
+                    FractionallySizedBox(widthFactor: count > 0 ? (count > 10 ? 0.8 : count / 10) : 0.1, child: Container(height: 4, decoration: BoxDecoration(color: titleColor, borderRadius: BorderRadius.circular(2)))),
                   ],
                 ),
-              ),
-            ),
-          );
-        }),
+                const SizedBox(height: 6),
+                Text('$count Data', style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.w700, color: titleColor)),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
 
-}
+  Widget _buildPokjaGrid({required Color cardBg, required Color textCol, required Color sub, required Color border}) {
+    final allPokjas = [
+      (PokjaKategori.pokja1, 'Pokja I', const Color(0xFF38BDF8), Icons.groups_rounded, 1),
+      (PokjaKategori.pokja2, 'Pokja II', const Color(0xFF10B981), Icons.school_rounded, 2),
+      (PokjaKategori.pokja3, 'Pokja III', const Color(0xFFF59E0B), Icons.cottage_rounded, 3),
+      (PokjaKategori.pokja4, 'Pokja IV', const Color(0xFFEF4444), Icons.health_and_safety_rounded, 4),
+    ];
 
-class _PokjaItem {
-  final PokjaKategori pokja;
-  final String title;
-  final String desc;
-  final Color color;
-  final IconData icon;
-  final int index;
+    final roleIndex = _pokjaRole == null ? null : int.tryParse(_pokjaRole!.substring(5));
+    final filtered = roleIndex != null ? allPokjas.where((p) => p.$5 == roleIndex).toList() : allPokjas;
 
-  _PokjaItem({
-    required this.pokja,
-    required this.title,
-    required this.desc,
-    required this.color,
-    required this.icon,
-    required this.index,
-  });
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: filtered.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+        childAspectRatio: 0.75,
+      ),
+      itemBuilder: (context, index) {
+        final item = filtered[index];
+        return InkWell(
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (_) => KaderCatatanKegiatanScreen(pokjaDefault: item.$1)));
+          },
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            decoration: BoxDecoration(
+              color: cardBg,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: border),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: item.$3.withValues(alpha: 0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(item.$4, color: item.$3, size: 20),
+                ),
+                const SizedBox(height: 8),
+                Text(item.$2, style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w700, color: textCol)),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 }

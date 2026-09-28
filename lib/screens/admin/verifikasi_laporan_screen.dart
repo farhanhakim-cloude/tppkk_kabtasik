@@ -133,7 +133,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
               decoration: BoxDecoration(
                 color:
                     (isApprove
-                            ? const Color(0xFF0F326D)
+                            ? const Color(0xFF0072BC)
                             : const Color(0xFFEF4444))
                         .withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(10),
@@ -141,7 +141,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
               child: Icon(
                 isApprove ? Icons.check_circle_rounded : Icons.cancel_rounded,
                 color: isApprove
-                    ? const Color(0xFF0F326D)
+                    ? const Color(0xFF0072BC)
                     : const Color(0xFFEF4444),
                 size: 24,
               ),
@@ -186,7 +186,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
             onPressed: () => Navigator.pop(context, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: isApprove
-                  ? const Color(0xFF0F326D)
+                  ? const Color(0xFF0072BC)
                   : const Color(0xFFEF4444),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -337,7 +337,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
     final appBarBg = bgColor;
     final textColor = _isDarkMode ? Colors.white : const Color(0xFF0F172A);
     final subtextColor = _isDarkMode ? const Color(0xFF8E9BAE) : const Color(0xFF64748B);
-    final primaryAccent = const Color(0xFF0F326D);
+    final primaryAccent = const Color(0xFF0072BC);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -448,7 +448,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
   Widget _chip(String label, PokjaKategori? pokja, int count) {
     final selected = _filterPokja == pokja;
     final accent = pokja == null
-        ? const Color(0xFF0F326D)
+        ? const Color(0xFF0072BC)
         : _pokjaColor(pokja);
     final bg = selected
         ? accent
@@ -559,7 +559,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
   }
 
   Widget _buildBody() {
-    final primaryAccent = const Color(0xFF0F326D);
+    final primaryAccent = const Color(0xFF0072BC);
     if (_isLoading)
       return Center(
         child: CircularProgressIndicator(
@@ -614,7 +614,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
   Widget _buildErrorState() {
     final textColor = _isDarkMode ? Colors.white : const Color(0xFF0F172A);
     final subtextColor = _isDarkMode ? const Color(0xFF8E9BAE) : const Color(0xFF64748B);
-    final primaryAccent = const Color(0xFF0F326D);
+    final primaryAccent = const Color(0xFF0072BC);
 
     return Center(
       child: Padding(
@@ -688,7 +688,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
   Widget _buildEmptyState() {
     final textColor = _isDarkMode ? Colors.white : const Color(0xFF0F172A);
     final subtextColor = _isDarkMode ? const Color(0xFF8E9BAE) : const Color(0xFF64748B);
-    final accent = const Color(0xFF0F326D);
+    final accent = const Color(0xFF0072BC);
 
     return Center(
       child: Padding(
@@ -894,7 +894,7 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF0F326D),
+                      backgroundColor: const Color(0xFF0072BC),
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
