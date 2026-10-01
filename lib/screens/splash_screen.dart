@@ -1,6 +1,6 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../services/auth_service.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -11,26 +11,14 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen>
-    with TickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   final _authService = AuthService();
+  late final AnimationController _controller;
+  late final Animation<double> _fade;
+  late final Animation<double> _scale;
 
-  // 1. Controller untuk Liquid / Circular Reveal (Mekar dari kecil ke bentuk biasa)
-  late AnimationController _revealController;
-  late Animation<double> _revealAnimation;
-  late Animation<double> _liquidWobble;
-
-  // 2. Controller Riak Lingkaran Cairan Setelah Terbuka
-  late AnimationController _liquidSplashController;
-  late Animation<double> _liquidSplashRadius;
-  late Animation<double> _liquidSplashOpacity;
-
-  // 3. Controller untuk Logo Mengambang & Bernapas (Setelah reveal selesai)
-  late AnimationController _idleController;
-  late Animation<double> _idleScale;
-  late Animation<double> _idleFloat;
-
-  // 4. Controller Bouncing Dots Loading di Bawah
-  late AnimationController _dotController;
+  static const _pkkBlue = Color(0xFF0072BC);
+  static const _pkkGold = Color(0xFFFFC72C);
 
   @override
   void initState() {
@@ -42,67 +30,22 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
 
-    // 1. Inisialisasi Liquid Circular Reveal
-    _revealController = AnimationController(
+    _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 900),
+      duration: const Duration(milliseconds: 700),
     );
 
-    _revealAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _revealController, curve: Curves.easeOutBack),
+    _fade = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
+    _scale = Tween<double>(begin: 0.96, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
     );
 
-    _liquidWobble = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _revealController, curve: Curves.easeInOutSine),
-    );
-
-    // 2. Inisialisasi Percikan Riak Gelembung Cairan di Sekitar Logo
-    _liquidSplashController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 650),
-    );
-    _liquidSplashRadius = Tween<double>(begin: 20.0, end: 56.0).animate(
-      CurvedAnimation(parent: _liquidSplashController, curve: Curves.easeOutCubic),
-    );
-    _liquidSplashOpacity = Tween<double>(begin: 0.7, end: 0.0).animate(
-      CurvedAnimation(parent: _liquidSplashController, curve: Curves.easeOut),
-    );
-
-    // 3. Inisialisasi Idle Float & Breathing Logo
-    _idleController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1500),
-    );
-    _idleScale = Tween<double>(begin: 0.98, end: 1.03).animate(
-      CurvedAnimation(parent: _idleController, curve: Curves.easeInOutSine),
-    );
-    _idleFloat = Tween<double>(begin: -4.0, end: 4.0).animate(
-      CurvedAnimation(parent: _idleController, curve: Curves.easeInOutSine),
-    );
-
-    // 4. Inisialisasi Bouncing Dots
-    _dotController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    );
-
-    // Jalankan urutan animasi
-    _revealController.forward().then((_) {
-      if (mounted) {
-        // Meletupkan percikan riak cairan sekali saat logo mekar penuh
-        _liquidSplashController.forward();
-        // Lanjutkan animasi pernapasan mengambang dan titik loading
-        _idleController.repeat(reverse: true);
-        _dotController.repeat();
-      }
-    });
-
+    _controller.forward();
     _checkNextScreen();
   }
 
   Future<void> _checkNextScreen() async {
-    // Tampilkan animasi splash selama 2.5 detik
-    await Future.delayed(const Duration(milliseconds: 2500));
+    await Future.delayed(const Duration(milliseconds: 2000));
     if (!mounted) return;
 
     final isLoggedIn = await _authService.isLoggedIn();
@@ -113,11 +56,11 @@ class _SplashScreenState extends State<SplashScreen>
       return;
     }
 
-    // Sudah login → arahkan sesuai role (3 role)
     try {
       final user = await _authService.getCurrentUser();
       final rolesLower = user.roles.map((r) => r.toLowerCase()).toList();
-      final isAdmin = rolesLower.any((r) => r.contains('admin') || r.contains('super'));
+      final isAdmin =
+          rolesLower.any((r) => r.contains('admin') || r.contains('super'));
       final isDasawisma = rolesLower.any((r) => r.contains('dasawisma'));
 
       if (!mounted) return;
@@ -136,179 +79,94 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void dispose() {
-    _revealController.dispose();
-    _liquidSplashController.dispose();
-    _idleController.dispose();
-    _dotController.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    const primaryPkk = Color(0xFF0072BC); // 🔵 Biru PKK
-
     return Scaffold(
-      backgroundColor: primaryPkk,
-      body: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Efek Percikan Riak Cairan yang meletup saat circular reveal mencapai bentuk biasa
-          AnimatedBuilder(
-            animation: _liquidSplashController,
-            builder: (context, _) {
-              if (_liquidSplashController.value == 0 || _liquidSplashController.isCompleted) {
-                return const SizedBox.shrink();
-              }
-              return Container(
-                width: _liquidSplashRadius.value * 2,
-                height: _liquidSplashRadius.value * 2,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: _liquidSplashOpacity.value),
-                    width: 2.5,
-                  ),
-                ),
-              );
-            },
-          ),
-
-          // Konten Tengah: Liquid / Circular Reveal Logo
-          Center(
-            child: AnimatedBuilder(
-              animation: Listenable.merge([_revealController, _idleController]),
-              builder: (context, child) {
-                final reveal = _revealAnimation.value;
-                final wobble = _liquidWobble.value;
-                final floatY = _revealController.isCompleted ? _idleFloat.value : 0.0;
-                final scale = _revealController.isCompleted ? _idleScale.value : 1.0;
-
-                return Transform.translate(
-                  offset: Offset(0, floatY),
+      backgroundColor: _pkkBlue,
+      body: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) {
+          return Stack(
+            children: [
+              Center(
+                child: Opacity(
+                  opacity: _fade.value,
                   child: Transform.scale(
-                    scale: scale,
-                    child: ClipPath(
-                      clipper: _LiquidCircularRevealClipper(
-                        revealProgress: reveal.clamp(0.0, 1.0),
-                        wobble: wobble,
-                      ),
-                      child: SizedBox(
-                        width: 95,
-                        height: 95,
-                        child: Center(
-                          child: Image.asset(
-                            'assets/images/logo.png',
-                            width: 85,
-                            height: 85,
-                            fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) => const Icon(
-                              Icons.diversity_1_rounded,
-                              size: 60,
-                              color: Colors.white,
-                            ),
+                    scale: _scale.value,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Image.asset(
+                          'assets/images/logo.png',
+                          width: 96,
+                          height: 96,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(
+                            Icons.diversity_1_rounded,
+                            size: 72,
+                            color: Colors.white,
                           ),
                         ),
+                        const SizedBox(height: 18),
+                        Text(
+                          'TP PKK',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                            letterSpacing: 2.2,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'KABUPATEN TASIKMALAYA',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white.withValues(alpha: 0.92),
+                            letterSpacing: 1.1,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Container(
+                          width: 36,
+                          height: 2,
+                          color: _pkkGold,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: MediaQuery.paddingOf(context).bottom + 36,
+                child: Opacity(
+                  opacity: _fade.value,
+                  child: const Center(
+                    child: SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 1.8,
+                        color: Colors.white,
                       ),
                     ),
                   ),
-                );
-              },
-            ),
-          ),
-
-          // Indikator Loading 3 Titik Memantul di Bawah
-          Positioned(
-            bottom: 60,
-            child: AnimatedBuilder(
-              animation: _dotController,
-              builder: (context, _) {
-                return Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: List.generate(3, (index) {
-                    final delay = index * 0.2;
-                    final animValue = (_dotController.value - delay) % 1.0;
-                    final bounce = (animValue >= 0 && animValue <= 0.5)
-                        ? math.sin(animValue * math.pi * 2) * -8.0
-                        : 0.0;
-                    final opacity = (animValue >= 0 && animValue <= 0.5)
-                        ? 0.95
-                        : 0.40;
-
-                    return Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 4.5),
-                      child: Transform.translate(
-                        offset: Offset(0, bounce),
-                        child: Container(
-                          width: 8.5,
-                          height: 8.5,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: opacity),
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ),
-                    );
-                  }),
-                );
-              },
-            ),
-          ),
-        ],
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// CUSTOM CLIPPER: LIQUID / CIRCULAR REVEAL DARI KECIL KE BENTUK BIASA
-// ─────────────────────────────────────────────────────────────────────────────
-class _LiquidCircularRevealClipper extends CustomClipper<Path> {
-  final double revealProgress;
-  final double wobble;
-
-  _LiquidCircularRevealClipper({
-    required this.revealProgress,
-    required this.wobble,
-  });
-
-  @override
-  Path getClip(Size size) {
-    if (revealProgress <= 0.001) return Path();
-
-    final center = Offset(size.width / 2, size.height / 2);
-    final baseRadius = (size.width / 2) * revealProgress;
-
-    // Jika sudah mekar sempurna, kembalikan lingkaran murni yang bersih
-    if (revealProgress >= 0.999) {
-      return Path()..addOval(Rect.fromCircle(center: center, radius: size.width / 2));
-    }
-
-    final path = Path();
-    const int segments = 48;
-
-    // Formula kontur cairan (liquid bubble dynamic curve)
-    for (int i = 0; i <= segments; i++) {
-      final double theta = (i / segments) * 2 * math.pi;
-      final double liquidWave = math.sin(theta * 4 + wobble * math.pi * 3) *
-          (1.0 - revealProgress) *
-          6.0;
-      final double r = (baseRadius + liquidWave).clamp(0.0, size.width / 2);
-      final double x = center.dx + r * math.cos(theta);
-      final double y = center.dy + r * math.sin(theta);
-
-      if (i == 0) {
-        path.moveTo(x, y);
-      } else {
-        path.lineTo(x, y);
-      }
-    }
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(covariant _LiquidCircularRevealClipper oldClipper) {
-    return oldClipper.revealProgress != revealProgress || oldClipper.wobble != wobble;
-  }
-}
-
