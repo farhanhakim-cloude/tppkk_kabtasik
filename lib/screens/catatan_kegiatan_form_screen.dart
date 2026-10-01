@@ -125,7 +125,15 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
       setState(() {
         _restrictedPokja = pokja;
         if (widget.catatan == null) {
-          _kategori = pokja;
+          final requestedCategory = widget.pokjaAwal;
+          if (pokja == PokjaKategori.pokja4 &&
+              requestedCategory != null &&
+              (requestedCategory == PokjaKategori.pokja4 ||
+                  requestedCategory.isPokja4Sheet)) {
+            _kategori = requestedCategory;
+          } else {
+            _kategori = pokja;
+          }
         }
       });
     } catch (_) {}

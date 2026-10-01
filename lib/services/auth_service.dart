@@ -214,9 +214,14 @@ class AuthService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString(AppConstants.tokenKey) ?? '';
+      if (token.isEmpty) {
+        throw Exception('Sesi login tidak ditemukan. Silakan login kembali.');
+      }
 
       final response = await _client.post(
-        Uri.parse('${AppConstants.baseUrl}change-password'),
+        Uri.parse(
+          '${AppConstants.baseUrl}${AppConstants.changePassword}',
+        ),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -235,7 +240,18 @@ class AuthService {
         // Coba parse pesan error dari backend
         try {
           final err = jsonDecode(response.body);
-          final msg = err['message'] ?? err['error'] ?? 'Gagal mengganti password';
+          final errors = err['errors'];
+          final fieldErrors = errors is Map ? errors.values : null;
+          final validationMessage =
+              fieldErrors != null && fieldErrors.isNotEmpty
+              ? fieldErrors.first
+              : null;
+          final msg = validationMessage is List && validationMessage.isNotEmpty
+              ? validationMessage.first
+              : validationMessage ??
+                    err['message'] ??
+                    err['error'] ??
+                    'Gagal mengganti password';
           throw Exception(msg);
         } catch (e) {
           if (e is Exception && !e.toString().contains('FormatException')) {
@@ -256,4 +272,3 @@ class AuthService {
     _client.close();
   }
 }
-

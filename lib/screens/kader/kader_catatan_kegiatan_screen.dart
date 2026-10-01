@@ -67,10 +67,15 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
       if (index == null || index < 1 || index > 4) return;
 
       final pokja = PokjaKategori.values[index - 1];
+      final requestedFilter = widget.pokjaDefault;
       if (!mounted) return;
       setState(() {
         _restrictedPokja = pokja;
-        _selectedFilter = pokja;
+        _selectedFilter = pokja == PokjaKategori.pokja4 &&
+                (requestedFilter == PokjaKategori.pokja4 ||
+                    requestedFilter?.isPokja4Sheet == true)
+            ? requestedFilter
+            : pokja;
       });
     } catch (_) {}
   }

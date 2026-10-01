@@ -25,6 +25,7 @@ class AppConstants {
   static const String login = "login";
   static const String logout = "logout";
   static const String me = "me";
+  static const String changePassword = "change-password";
 
   // Data PKK
   static const String pokja1 = "pokja-1";

@@ -229,12 +229,12 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
                   controller: _newPasswordController,
                   obscureText: _obscureNew,
                   style: GoogleFonts.plusJakartaSans(fontSize: 14, color: textCol),
-                  decoration: _inputDecoration('Minimal 6 karakter', _obscureNew, () {
+                  decoration: _inputDecoration('Minimal 8 karakter', _obscureNew, () {
                     setState(() => _obscureNew = !_obscureNew);
                   }),
                   validator: (v) {
                     if (v == null || v.isEmpty) return 'Kata sandi baru wajib diisi';
-                    if (v.length < 6) return 'Minimal 6 karakter';
+                    if (v.length < 8) return 'Minimal 8 karakter';
                     return null;
                   },
                 ),
