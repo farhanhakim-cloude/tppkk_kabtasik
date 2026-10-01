@@ -265,13 +265,15 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     }
   }
 
+  String _selectedCategory = 'Semua';
+
   @override
   Widget build(BuildContext context) {
-    final bgColor = _isDarkMode ? const Color(0xFF14181F) : const Color(0xFFF8F9FB);
-    final primaryDark = const Color(0xFF0072BC);
+    final bgColor = _isDarkMode ? const Color(0xFF10141D) : const Color(0xFFF1F4F9);
+    const brandBlue = Color(0xFF0072BC); // Biru resmi TP PKK sesuai tombol login
 
     final pages = [
-      _buildBeranda(bgColor, primaryDark),
+      _buildBeranda(bgColor, brandBlue),
       const VerifikasiBeritaScreen(),
       const VerifikasiLaporanScreen(),
       const ProfileScreen(embedded: true),
@@ -281,250 +283,369 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       backgroundColor: bgColor,
       body: IndexedStack(index: _navIndex, children: pages),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const BeritaFormScreen(isAdminMode: true)));
+        onPressed: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const BeritaFormScreen(isAdminMode: true),
+            ),
+          );
+          _loadPendingCounts();
         },
-        backgroundColor: primaryDark,
+        backgroundColor: brandBlue,
         shape: const CircleBorder(),
-        elevation: 8,
-        child: const Icon(Icons.add_rounded, color: Colors.white, size: 32),
+        elevation: 6,
+        child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        color: _isDarkMode ? const Color(0xFF1E242D) : Colors.white,
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 8,
-        elevation: 10,
-        height: 70,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _navItem(0, Icons.grid_view_rounded, 'Beranda'),
-            _navItem(1, Icons.article_rounded, 'Berita'),
-            const SizedBox(width: 40),
-            _navItem(2, Icons.rule_folder_rounded, 'Laporan'),
-            _navItem(3, Icons.person_outline_rounded, 'Profil'),
+      bottomNavigationBar: Container(
+        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        decoration: BoxDecoration(
+          color: brandBlue,
+          borderRadius: BorderRadius.circular(36),
+          boxShadow: [
+            BoxShadow(
+              color: brandBlue.withValues(alpha: 0.35),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
           ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(36),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _navItem(0, Icons.home_rounded, 'Beranda'),
+                _navItem(1, Icons.article_outlined, 'Berita'),
+                const SizedBox(width: 44),
+                _navItem(2, Icons.rule_folder_outlined, 'Laporan'),
+                _navItem(3, Icons.person_outline_rounded, 'Profil'),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 
   Widget _navItem(int idx, IconData icon, String label) {
-    final sel = _navIndex == idx;
-    final color = sel ? const Color(0xFF0072BC) : const Color(0xFF94A3B8);
+    final isSelected = _navIndex == idx;
     return InkWell(
-      onTap: () { setState(() => _navIndex = idx); },
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+      onTap: () => setState(() => _navIndex = idx),
+      borderRadius: BorderRadius.circular(20),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 24, color: color),
-            const SizedBox(height: 4),
-            Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: sel ? FontWeight.w800 : FontWeight.w600, color: color)),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+              decoration: BoxDecoration(
+                color: isSelected ? Colors.white : Colors.transparent,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(
+                icon,
+                size: 22,
+                color: isSelected ? const Color(0xFF0072BC) : Colors.white.withValues(alpha: 0.7),
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 10.5,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.75),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildBeranda(Color bgColor, Color primaryDark) {
-    final cardBg = _isDarkMode ? const Color(0xFF1E242D) : Colors.white;
+  Widget _buildBeranda(Color bgColor, Color brandBlue) {
+    final cardBg = _isDarkMode ? const Color(0xFF1E242F) : Colors.white;
     final textCol = _isDarkMode ? Colors.white : const Color(0xFF0F172A);
-    final sub = _isDarkMode ? const Color(0xFF8E9BAE) : const Color(0xFF64748B);
-    final border = _isDarkMode ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFE2E8F0);
+    final sub = _isDarkMode ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
+    final border = _isDarkMode ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFE2E8F0);
 
     return SafeArea(
+      bottom: false,
       child: RefreshIndicator(
         onRefresh: () async => await Future.wait([_loadPendingCounts(), _loadWeather()]),
-        color: primaryDark,
+        color: brandBlue,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 110),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(12), border: Border.all(color: border)),
-                    child: Icon(Icons.grid_view_rounded, size: 20, color: textCol),
-                  ),
-                  Text('Beranda Admin', style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w700, color: textCol)),
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(12), border: Border.all(color: border)),
-                    child: Stack(
-                      children: [
-                        Icon(Icons.notifications_none_rounded, size: 20, color: textCol),
-                        if (_pendingBeritaCount > 0 || _pendingLaporanCount > 0)
-                          Positioned(right: 0, top: 0, child: Container(width: 8, height: 8, decoration: const BoxDecoration(color: Colors.redAccent, shape: BoxShape.circle)))
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 28),
-              
-              // Greeting & Cuaca
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Hi Admin!', style: GoogleFonts.plusJakartaSans(fontSize: 28, fontWeight: FontWeight.w800, color: textCol)),
-                      const SizedBox(height: 4),
-                      Text(_getFormattedDate(), style: GoogleFonts.plusJakartaSans(fontSize: 14, color: sub, fontWeight: FontWeight.w500)),
-                    ],
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: primaryDark.withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          _weatherCondition.toLowerCase().contains('hujan') ? Icons.cloud_rounded : Icons.wb_sunny_rounded,
-                          color: _weatherCondition.toLowerCase().contains('hujan') ? Colors.blueGrey : const Color(0xFFFBBF24),
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '$_weatherTemp°C',
-                              style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.w800, color: textCol, height: 1),
-                            ),
-                            Text(
-                              _weatherCity,
-                              style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.w600, color: sub),
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-
-              // Search Bar
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(30), border: Border.all(color: border), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 10, offset: const Offset(0, 4))]),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Cari laporan atau berita...',
-                    hintStyle: GoogleFonts.plusJakartaSans(color: sub, fontSize: 14),
-                    prefixIcon: Icon(Icons.search_rounded, color: sub),
-                    border: InputBorder.none,
-                    prefixIconConstraints: const BoxConstraints(minWidth: 40),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // Welcome Card
+              // 1. KOP PROFIL DINAS (Admin TP PKK Kab. Tasikmalaya)
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: cardBg,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: primaryDark, width: 1.2),
-                  boxShadow: [BoxShadow(color: primaryDark.withValues(alpha: 0.08), blurRadius: 15, offset: const Offset(0, 5))],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: border),
                 ),
                 child: Row(
                   children: [
+                    CircleAvatar(
+                      radius: 22,
+                      backgroundColor: brandBlue,
+                      child: const Icon(Icons.admin_panel_settings_rounded, color: Colors.white, size: 24),
+                    ),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Selamat Datang!', style: GoogleFonts.plusJakartaSans(fontSize: 17, fontWeight: FontWeight.w800, color: textCol)),
-                          const SizedBox(height: 8),
-                          Text('Ada ${_pendingBeritaCount + _pendingLaporanCount} antrean yang\nmenunggu verifikasi Anda.', style: GoogleFonts.plusJakartaSans(fontSize: 13, color: sub, height: 1.4)),
+                          Text(
+                            'Administrator TP PKK',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              color: textCol,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Sekretariat Kab. Tasikmalaya',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 12,
+                              color: sub,
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                    Icon(Icons.admin_panel_settings_rounded, size: 64, color: primaryDark), 
+                    IconButton(
+                      icon: Icon(Icons.notifications_none_rounded, color: sub, size: 22),
+                      onPressed: () {},
+                      tooltip: 'Pemberitahuan',
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 14),
 
-              // Menunggu Verifikasi
+              // 2. RINGKASAN ANTREAN RESMI (2 KARTU UTAMA: Laporan & Berita)
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Menunggu Verifikasi', style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w800, color: textCol)),
-                  Text('Lihat Semua', style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w600, color: sub)),
+                  Expanded(
+                    child: InkWell(
+                      onTap: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const VerifikasiLaporanScreen()),
+                        );
+                        _loadPendingCounts();
+                      },
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                        decoration: BoxDecoration(
+                          color: cardBg,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: border),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('Lap. Pending', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: sub, fontWeight: FontWeight.w500)),
+                                Icon(Icons.assignment_outlined, color: brandBlue, size: 18),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '$_pendingLaporanCount',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800,
+                                color: textCol,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: InkWell(
+                      onTap: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const VerifikasiBeritaScreen()),
+                        );
+                        _loadPendingCounts();
+                      },
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                        decoration: BoxDecoration(
+                          color: cardBg,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: border),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('Kbr. Pending', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: sub, fontWeight: FontWeight.w500)),
+                                Icon(Icons.newspaper_outlined, color: brandBlue, size: 18),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '$_pendingBeritaCount',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800,
+                                color: textCol,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
 
-              // Design Cards for Verifikasi
-              GridView.count(
-                crossAxisCount: 2,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                childAspectRatio: 0.85,
-                children: [
-                  _buildDesignCard(
-                    title: 'Verifikasi',
-                    subtitle: 'Berita',
-                    count: _pendingBeritaCount,
-                    icon: Icons.article_rounded,
-                    isActive: true,
-                    primaryDark: primaryDark,
-                    cardBg: cardBg,
-                    textCol: textCol,
-                    sub: sub,
-                    onTap: () async {
-                      await Navigator.push(context, MaterialPageRoute(builder: (_) => const VerifikasiBeritaScreen()));
-                      _loadPendingCounts();
-                    },
+              // 3. TOMBOL AKSI UTAMA ADMIN (BUAT PENGUMUMAN BARU)
+              SizedBox(
+                width: double.infinity,
+                height: 46,
+                child: ElevatedButton.icon(
+                  onPressed: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const BeritaFormScreen(isAdminMode: true),
+                      ),
+                    );
+                    _loadPendingCounts();
+                  },
+                  icon: const Icon(Icons.add_rounded, size: 20, color: Colors.white),
+                  label: Text(
+                    '+ Buat Pengumuman Baru',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
                   ),
-                  _buildDesignCard(
-                    title: 'Verifikasi',
-                    subtitle: 'Laporan Pokja',
-                    count: _pendingLaporanCount,
-                    icon: Icons.assignment_rounded,
-                    isActive: false,
-                    primaryDark: primaryDark,
-                    cardBg: cardBg,
-                    textCol: textCol,
-                    sub: sub,
-                    onTap: () async {
-                      await Navigator.push(context, MaterialPageRoute(builder: (_) => const VerifikasiLaporanScreen()));
-                      _loadPendingCounts();
-                    },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: brandBlue,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // 4. ANTREAN VERIFIKASI RESMI
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Antrean Verifikasi',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 14.5,
+                      fontWeight: FontWeight.w800,
+                      color: textCol,
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () => setState(() => _navIndex = 2),
+                    child: Text(
+                      'Kelola Semua',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w700,
+                        color: brandBlue,
+                      ),
+                    ),
                   ),
                 ],
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 10),
 
-              // Rincian Antrean Pokja
-              Text('Antrean Per Pokja', style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w800, color: textCol)),
-              const SizedBox(height: 12),
+              // Kartu 1: Verifikasi Laporan Pokja
+              _buildSimpleDinasCard(
+                title: 'Verifikasi Laporan Pokja',
+                subtitle: 'Laporan kegiatan kader Pokja I - IV',
+                badgeText: '$_pendingLaporanCount Pending',
+                icon: Icons.assignment_outlined,
+                brandBlue: brandBlue,
+                cardBg: cardBg,
+                textCol: textCol,
+                sub: sub,
+                border: border,
+                onTap: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const VerifikasiLaporanScreen()),
+                  );
+                  _loadPendingCounts();
+                },
+              ),
+              const SizedBox(height: 10),
+
+              // Kartu 2: Verifikasi Berita Warga
+              _buildSimpleDinasCard(
+                title: 'Verifikasi Berita Warga',
+                subtitle: 'Publikasi artikel & agenda kegiatan',
+                badgeText: '$_pendingBeritaCount Pending',
+                icon: Icons.newspaper_outlined,
+                brandBlue: brandBlue,
+                cardBg: cardBg,
+                textCol: textCol,
+                sub: sub,
+                border: border,
+                onTap: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const VerifikasiBeritaScreen()),
+                  );
+                  _loadPendingCounts();
+                },
+              ),
+              const SizedBox(height: 20),
+
+              // 5. RINCIAN ANTREAN PER POKJA
+              Text(
+                'Rincian Antrean Pokja',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 14.5,
+                  fontWeight: FontWeight.w800,
+                  color: textCol,
+                ),
+              ),
+              const SizedBox(height: 10),
               _buildRincianAntreanCard(
-                  cardBg: cardBg,
-                  textColor: textCol,
-                  subtextColor: sub,
-                  borderColor: border,
-                  primaryMintAccent: primaryDark,
+                cardBg: cardBg,
+                textColor: textCol,
+                subtextColor: sub,
+                borderColor: border,
+                primaryMintAccent: brandBlue,
               ),
             ],
           ),
@@ -533,196 +654,39 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     );
   }
 
-  Widget _buildDesignCard({
+  Widget _buildSimpleDinasCard({
     required String title,
     required String subtitle,
-    required int count,
+    required String badgeText,
     required IconData icon,
-    required bool isActive,
-    required Color primaryDark,
+    required Color brandBlue,
     required Color cardBg,
     required Color textCol,
     required Color sub,
-    required VoidCallback onTap,
-  }) {
-    final bgColor = isActive ? primaryDark : cardBg;
-    final titleColor = isActive ? Colors.white : textCol;
-    final subColor = isActive ? Colors.white70 : sub;
-    final iconBgColor = isActive ? Colors.white.withValues(alpha: 0.2) : primaryDark.withValues(alpha: 0.1);
-    final iconColor = isActive ? Colors.white : primaryDark;
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(24),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: isActive ? Colors.transparent : (_isDarkMode ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFE2E8F0))),
-          boxShadow: [
-            if (isActive) BoxShadow(color: primaryDark.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 6))
-            else BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 4)),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: iconBgColor,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(icon, color: iconColor, size: 24),
-                ),
-                Icon(Icons.more_vert_rounded, color: subColor, size: 20),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.w800, color: titleColor)),
-                const SizedBox(height: 2),
-                Text(subtitle, style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w500, color: subColor)),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Menunggu', style: GoogleFonts.plusJakartaSans(fontSize: 10, color: subColor)),
-                const SizedBox(height: 6),
-                Stack(
-                  children: [
-                    Container(height: 4, decoration: BoxDecoration(color: subColor.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(2))),
-                    FractionallySizedBox(widthFactor: count > 0 ? (count > 10 ? 0.8 : count / 10) : 0.1, child: Container(height: 4, decoration: BoxDecoration(color: titleColor, borderRadius: BorderRadius.circular(2)))),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Text('$count Antrean', style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.w700, color: titleColor)),
-              ],
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPendingCard({
-    required String title,
-    required int count,
-    required IconData icon,
-    required Color color,
-    required Color cardBg,
-    required Color borderColor,
-    required Color textColor,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 14),
-      decoration: BoxDecoration(
-        color: cardBg,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: borderColor, width: 1.1),
-        boxShadow: AdminElderlyStyle.cardShadow(_isDarkMode),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(9),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(icon, color: color, size: 21),
-              ),
-              if (count > 0)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 7,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFEF4444).withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(7),
-                  ),
-                  child: Text(
-                    'Baru',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFFDC2626),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            count.toString(),
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: AdminElderlyStyle.countBigSize,
-              fontWeight: FontWeight.w900,
-              color: textColor,
-              height: 1,
-            ),
-          ),
-          const SizedBox(height: 3),
-          Text(
-            title,
-            style: GoogleFonts.plusJakartaSans(
-              fontSize: 13.5,
-              fontWeight: FontWeight.w700,
-              color: _isDarkMode
-                  ? AdminElderlyStyle.darkSubtext
-                  : AdminElderlyStyle.lightSubtext,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionTile({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required Color color,
-    required Color cardBg,
-    required Color borderColor,
-    required Color textColor,
-    required Color subtextColor,
+    required Color border,
     required VoidCallback onTap,
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(10),
       child: Container(
-        padding: const EdgeInsets.all(15),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: cardBg,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: borderColor, width: 1.1),
-          boxShadow: AdminElderlyStyle.cardShadow(_isDarkMode),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: border),
         ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(12),
+                color: const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(icon, size: 22, color: color),
+              child: Icon(icon, color: brandBlue, size: 20),
             ),
-            const SizedBox(width: 13),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -732,35 +696,46 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.plusJakartaSans(
-                      fontSize: 14.5,
-                      fontWeight: FontWeight.w800,
-                      color: textColor,
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w700,
+                      color: textCol,
                     ),
                   ),
-                  const SizedBox(height: 3),
+                  const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    maxLines: 2,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 12.5,
-                      height: 1.4,
-                      color: subtextColor,
-                    ),
+                    style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: sub),
                   ),
                 ],
               ),
             ),
-            Icon(
-              Icons.chevron_right_rounded,
-              size: 22,
-              color: subtextColor.withValues(alpha: 0.7),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: border),
+              ),
+              child: Text(
+                badgeText,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: textCol,
+                ),
+              ),
             ),
+            const SizedBox(width: 4),
+            Icon(Icons.chevron_right_rounded, size: 18, color: sub),
           ],
         ),
       ),
     );
   }
+
 
   // ============================================================
   // FIX: switch sekarang mencakup semua 7 nilai PokjaKategori
@@ -768,19 +743,19 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   Color _pokjaColor(PokjaKategori p) {
     switch (p) {
       case PokjaKategori.pokja1:
-        return const Color(0xFF38BDF8);
+        return const Color(0xFF0072BC);
       case PokjaKategori.pokja2:
-        return const Color(0xFF10B981);
+        return const Color(0xFF0284C7);
       case PokjaKategori.pokja3:
-        return const Color(0xFFF59E0B);
+        return const Color(0xFF0369A1);
       case PokjaKategori.pokja4:
-        return const Color(0xFFEF4444);
+        return const Color(0xFF075985);
       case PokjaKategori.pokja4Pyd:
-        return const Color(0xFF8B5CF6);
+        return const Color(0xFF0E7490);
       case PokjaKategori.pokja4Posyandu:
-        return const Color(0xFF06B6D4);
+        return const Color(0xFF0891B2);
       case PokjaKategori.pokja4Rekap:
-        return const Color(0xFFEC4899);
+        return const Color(0xFF155E75);
     }
   }
 

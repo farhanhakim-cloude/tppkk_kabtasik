@@ -165,11 +165,7 @@ class _IndustriRumahTanggaListScreenState
                 margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF7C3AED), Color(0xFF9F67FA)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  color: const Color(0xFF0072BC),
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(

@@ -173,11 +173,7 @@ class _RekapIbuAnakFormScreenState extends State<RekapIbuAnakFormScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [primary, primary.withValues(alpha: 0.85)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  color: primary,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(

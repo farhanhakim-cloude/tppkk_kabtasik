@@ -554,13 +554,11 @@ class _BeritaCardState extends State<_BeritaCard>
                   ],
                 )
               else
-                // Gradient accent bar
+                // Accent bar
                 Container(
                   height: 4,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [primary, primary.withValues(alpha: 0.4)],
-                    ),
+                    color: primary,
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(18),
                     ),
@@ -576,11 +574,7 @@ class _BeritaCardState extends State<_BeritaCard>
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [primary.withValues(alpha: 0.8), primary],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
+                            color: primary,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Icon(
@@ -860,9 +854,7 @@ class _BeritaCardState extends State<_BeritaCard>
                         height: 4,
                         width: 60,
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [primary, primary.withValues(alpha: 0.4)],
-                          ),
+                          color: primary,
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),

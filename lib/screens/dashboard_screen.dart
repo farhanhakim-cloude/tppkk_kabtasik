@@ -1033,11 +1033,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                       horizontal: 10,
                     ),
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF0072BC), Color(0xFF10B981)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
+                      color: const Color(0xFF0072BC),
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
@@ -2024,19 +2020,9 @@ class _KesehatanIbuBayiChart extends StatelessWidget {
                               height: barHeight,
                               width: double.infinity,
                               decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: item.isWarning
-                                      ? [
-                                          const Color(0xFFEF4444),
-                                          const Color(0xFFB91C1C),
-                                        ]
-                                      : [
-                                          item.color,
-                                          item.color.withValues(alpha: 0.75),
-                                        ],
-                                ),
+                                color: item.isWarning
+                                    ? const Color(0xFFEF4444)
+                                    : item.color,
                                 borderRadius: BorderRadius.circular(8),
                                 boxShadow: item.isWarning
                                     ? [
@@ -2476,11 +2462,7 @@ class _ImageFallback extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [primary, primary.withValues(alpha: 0.7)],
-        ),
+        color: primary,
       ),
       child: Center(
         child: Icon(

@@ -13,6 +13,8 @@ final themeNotifier = ValueNotifier<ThemeMode>(ThemeMode.light);
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Biarkan runtime fetching tetap aktif tapi cegah blocking berulang
+  GoogleFonts.config.allowRuntimeFetching = true;
   // Muat preferensi tema yang tersimpan — cek kedua key untuk sinkron kader/admin
   final prefs = await SharedPreferences.getInstance();
   final isDark = prefs.getBool('kader_dark_mode') ?? prefs.getBool('isDarkMode') ?? false;

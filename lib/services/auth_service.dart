@@ -1,4 +1,4 @@
-﻿// lib/services/auth_service.dart
+// lib/services/auth_service.dart
 
 // ignore_for_file: avoid_print
 import 'dart:convert';
@@ -202,6 +202,51 @@ class AuthService {
       email: 'kader@tasikmalayakab.go.id',
       roles: [],
     );
+  }
+
+  // ============================================================
+  // GANTI PASSWORD
+  // ============================================================
+  Future<bool> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString(AppConstants.tokenKey) ?? '';
+
+      final response = await _client.post(
+        Uri.parse('${AppConstants.baseUrl}change-password'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          if (token.isNotEmpty) 'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'current_password': oldPassword,
+          'password': newPassword,
+          'password_confirmation': newPassword,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        // Coba parse pesan error dari backend
+        try {
+          final err = jsonDecode(response.body);
+          final msg = err['message'] ?? err['error'] ?? 'Gagal mengganti password';
+          throw Exception(msg);
+        } catch (e) {
+          if (e is Exception && !e.toString().contains('FormatException')) {
+            rethrow;
+          }
+          throw Exception('Gagal mengganti password (${response.statusCode})');
+        }
+      }
+    } catch (e) {
+      rethrow;
+    }
   }
 
   // ============================================================

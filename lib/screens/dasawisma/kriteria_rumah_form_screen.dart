@@ -189,11 +189,7 @@ class _KriteriaRumahFormScreenState extends State<KriteriaRumahFormScreen> {
               padding: const EdgeInsets.all(14),
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF0072BC), Color(0xFF0284C7)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color: const Color(0xFF0072BC),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(

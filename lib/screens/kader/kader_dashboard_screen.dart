@@ -11,7 +11,6 @@ import '../../models/catatan_kegiatan.dart';
 import '../../services/catatan_kegiatan_service.dart';
 import '../../services/berita_service.dart';
 import '../catatan_kegiatan_form_screen.dart';
-import '../berita_form_screen.dart';
 import 'kader_catatan_kegiatan_screen.dart';
 import 'kader_berita_screen.dart';
 import '../profile_screen.dart';
@@ -133,13 +132,15 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
     }
   }
 
+  String _selectedCategory = 'Semua';
+
   @override
   Widget build(BuildContext context) {
-    final bgColor = _isDarkMode ? const Color(0xFF14181F) : const Color(0xFFF8F9FB);
-    final primaryDark = const Color(0xFF0072BC);
+    final bgColor = _isDarkMode ? const Color(0xFF10141D) : const Color(0xFFF1F4F9);
+    const brandBlue = Color(0xFF0072BC); // Biru resmi TP PKK seperti tombol login
 
     final pages = [
-      _buildBeranda(bgColor, primaryDark),
+      _buildBeranda(bgColor, brandBlue),
       const KaderCatatanKegiatanScreen(),
       const KaderBeritaScreen(),
       const ProfileScreen(embedded: true),
@@ -148,239 +149,349 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
     return Scaffold(
       backgroundColor: bgColor,
       body: IndexedStack(index: _navIndex, children: pages),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await Navigator.push(context, MaterialPageRoute(builder: (_) => const CatatanKegiatanFormScreen()));
-          _loadData();
-        },
-        backgroundColor: primaryDark,
-        shape: const CircleBorder(),
-        elevation: 8,
-        child: const Icon(Icons.add_rounded, color: Colors.white, size: 32),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        color: _isDarkMode ? const Color(0xFF1E242D) : Colors.white,
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 8,
-        elevation: 10,
-        height: 70,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _navItem(0, Icons.grid_view_rounded, 'Beranda'),
-            _navItem(1, Icons.assignment_rounded, 'Catatan'),
-            const SizedBox(width: 40),
-            _navItem(2, Icons.article_rounded, 'Berita'),
-            _navItem(3, Icons.person_outline_rounded, 'Profil'),
+      bottomNavigationBar: Container(
+        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        decoration: BoxDecoration(
+          color: brandBlue,
+          borderRadius: BorderRadius.circular(36),
+          boxShadow: [
+            BoxShadow(
+              color: brandBlue.withValues(alpha: 0.35),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
           ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(36),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _navItem(0, Icons.home_rounded, 'Beranda'),
+                _navItem(1, Icons.assignment_outlined, 'Catatan'),
+                _navInputButton(),
+                _navItem(2, Icons.newspaper_rounded, 'Kabar'),
+                _navItem(3, Icons.person_outline_rounded, 'Profil'),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 
   Widget _navItem(int idx, IconData icon, String label) {
-    final sel = _navIndex == idx;
-    final color = sel ? const Color(0xFF0072BC) : const Color(0xFF94A3B8);
+    final isSelected = _navIndex == idx;
     return InkWell(
-      onTap: () { setState(() => _navIndex = idx); },
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+      onTap: () => setState(() => _navIndex = idx),
+      borderRadius: BorderRadius.circular(20),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 24, color: color),
-            const SizedBox(height: 4),
-            Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: sel ? FontWeight.w800 : FontWeight.w600, color: color)),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+              decoration: BoxDecoration(
+                color: isSelected ? Colors.white : Colors.transparent,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(
+                icon,
+                size: 22,
+                color: isSelected ? const Color(0xFF0072BC) : Colors.white.withValues(alpha: 0.7),
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 10.5,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.75),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildBeranda(Color bgColor, Color primaryDark) {
-    final cardBg = _isDarkMode ? const Color(0xFF1E242D) : Colors.white;
+  Widget _navInputButton() {
+    return InkWell(
+      onTap: () async {
+        PokjaKategori? awal;
+        if (_pokjaRole == 'pokja1') awal = PokjaKategori.pokja1;
+        if (_pokjaRole == 'pokja2') awal = PokjaKategori.pokja2;
+        if (_pokjaRole == 'pokja3') awal = PokjaKategori.pokja3;
+        if (_pokjaRole == 'pokja4') awal = PokjaKategori.pokja4;
+
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => CatatanKegiatanFormScreen(pokjaAwal: awal),
+          ),
+        );
+        _loadData();
+      },
+      borderRadius: BorderRadius.circular(28),
+      child: Container(
+        width: 56,
+        height: 56,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.2),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: const Icon(Icons.add_rounded, size: 28, color: Color(0xFF0072BC)),
+      ),
+    );
+  }
+
+  Widget _buildBeranda(Color bgColor, Color brandBlue) {
+    final cardBg = _isDarkMode ? const Color(0xFF1E242F) : Colors.white;
     final textCol = _isDarkMode ? Colors.white : const Color(0xFF0F172A);
-    final sub = _isDarkMode ? const Color(0xFF8E9BAE) : const Color(0xFF64748B);
-    final border = _isDarkMode ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFE2E8F0);
+    final sub = _isDarkMode ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
+    final border = _isDarkMode ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFE2E8F0);
 
     return SafeArea(
+      bottom: false,
       child: RefreshIndicator(
         onRefresh: _loadData,
-        color: primaryDark,
+        color: brandBlue,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 110),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(12), border: Border.all(color: border)),
-                    child: Icon(Icons.grid_view_rounded, size: 20, color: textCol),
-                  ),
-                  Text('Beranda Kader', style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w700, color: textCol)),
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(12), border: Border.all(color: border)),
-                    child: Stack(
-                      children: [
-                        Icon(Icons.notifications_none_rounded, size: 20, color: textCol),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              
-              // Greeting & Cuaca
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Hi ${_userName.split(' ').first}!', style: GoogleFonts.plusJakartaSans(fontSize: 28, fontWeight: FontWeight.w800, color: textCol)),
-                      const SizedBox(height: 4),
-                      Text(_getFormattedDate(), style: GoogleFonts.plusJakartaSans(fontSize: 14, color: sub, fontWeight: FontWeight.w500)),
-                    ],
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: primaryDark.withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          _weatherCondition.toLowerCase().contains('hujan') ? Icons.cloud_rounded : Icons.wb_sunny_rounded,
-                          color: _weatherCondition.toLowerCase().contains('hujan') ? Colors.blueGrey : const Color(0xFFFBBF24),
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '$_weatherTemp°C',
-                              style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.w800, color: textCol, height: 1),
-                            ),
-                            Text(
-                              _weatherCity,
-                              style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.w600, color: sub),
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-
-              // Search Bar
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(30), border: Border.all(color: border), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 10, offset: const Offset(0, 4))]),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Cari laporan atau berita...',
-                    hintStyle: GoogleFonts.plusJakartaSans(color: sub, fontSize: 14),
-                    prefixIcon: Icon(Icons.search_rounded, color: sub),
-                    border: InputBorder.none,
-                    prefixIconConstraints: const BoxConstraints(minWidth: 40),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // Welcome Card
+              // 1. KOP PROFIL DINAS (Bersih, Rapi & Elegan)
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: cardBg,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: primaryDark, width: 1.2),
-                  boxShadow: [BoxShadow(color: primaryDark.withValues(alpha: 0.08), blurRadius: 15, offset: const Offset(0, 5))],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: border),
                 ),
                 child: Row(
                   children: [
+                    CircleAvatar(
+                      radius: 22,
+                      backgroundColor: brandBlue,
+                      child: const Icon(Icons.person_rounded, color: Colors.white, size: 24),
+                    ),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Selamat Datang!', style: GoogleFonts.plusJakartaSans(fontSize: 17, fontWeight: FontWeight.w800, color: textCol)),
-                          const SizedBox(height: 8),
-                          Text('Anda telah mencatat $_totalKegiatan kegiatan.\nTerus semangat!', style: GoogleFonts.plusJakartaSans(fontSize: 13, color: sub, height: 1.4)),
+                          Text(
+                            _userName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              color: textCol,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            _pokjaRole != null
+                                ? '${_pokjaRole!.toUpperCase()} • $_desaKecamatan'
+                                : 'Kader PKK • $_desaKecamatan',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 12,
+                              color: sub,
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                    Icon(Icons.assignment_ind_rounded, size: 64, color: primaryDark), 
+                    IconButton(
+                      icon: Icon(Icons.notifications_none_rounded, color: sub, size: 22),
+                      onPressed: () {},
+                      tooltip: 'Pemberitahuan',
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 14),
 
-              // Menu Utama
+              // 2. RINGKASAN DATA RESMI (2 KARTU UTAMA: Kegiatan & Kabar)
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Menu Utama', style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w800, color: textCol)),
-                  Text('Lihat Semua', style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w600, color: sub)),
+                  Expanded(
+                    child: InkWell(
+                      onTap: () => setState(() => _navIndex = 1),
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                        decoration: BoxDecoration(
+                          color: cardBg,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: border),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('Total Kegiatan', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: sub, fontWeight: FontWeight.w500)),
+                                Icon(Icons.assignment_outlined, color: brandBlue, size: 18),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '$_totalKegiatan',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800,
+                                color: textCol,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: InkWell(
+                      onTap: () => setState(() => _navIndex = 2),
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                        decoration: BoxDecoration(
+                          color: cardBg,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: border),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('Kabar / Berita', style: GoogleFonts.plusJakartaSans(fontSize: 12, color: sub, fontWeight: FontWeight.w500)),
+                                Icon(Icons.newspaper_outlined, color: brandBlue, size: 18),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '$_totalBerita',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800,
+                                color: textCol,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
 
-              // Design Cards for Menu
-              GridView.count(
-                crossAxisCount: 2,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                childAspectRatio: 0.85,
-                children: [
-                  _buildDesignCard(
-                    title: 'Catatan',
-                    subtitle: 'Kegiatan Pokja',
-                    count: _totalKegiatan,
-                    icon: Icons.assignment_rounded,
-                    isActive: true,
-                    primaryDark: primaryDark,
-                    cardBg: cardBg,
-                    textCol: textCol,
-                    sub: sub,
-                    onTap: () { setState(() => _navIndex = 1); },
-                  ),
-                  _buildDesignCard(
-                    title: 'Kabar',
-                    subtitle: 'Berita',
-                    count: _totalBerita,
-                    icon: Icons.article_rounded,
-                    isActive: false,
-                    primaryDark: primaryDark,
-                    cardBg: cardBg,
-                    textCol: textCol,
-                    sub: sub,
-                    onTap: () { setState(() => _navIndex = 2); },
-                  ),
-                ],
-              ),
-              const SizedBox(height: 28),
+              // 3. CATATAN KEGIATAN TERKINI (DATA YANG SUDAH DI INPUT)
+              FutureBuilder<List<CatatanKegiatan>>(
+                future: _catatanService.getAll(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const SizedBox(
+                      height: 100,
+                      child: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+                  final allList = snapshot.data ?? [];
+                  final filteredList = _pokjaRole != null
+                      ? allList.where((item) {
+                          final roleNum = _pokjaRole!.replaceAll('pokja', '');
+                          final targetKategori = roleNum == '1'
+                              ? PokjaKategori.pokja1
+                              : roleNum == '2'
+                                  ? PokjaKategori.pokja2
+                                  : roleNum == '3'
+                                      ? PokjaKategori.pokja3
+                                      : PokjaKategori.pokja4;
+                          return item.kategori == targetKategori;
+                        }).toList()
+                      : allList;
 
-              // Akses Cepat Per Pokja
-              Text('Akses Cepat Per Pokja', style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w800, color: textCol)),
-              const SizedBox(height: 12),
-              _buildPokjaGrid(cardBg: cardBg, textCol: textCol, sub: sub, border: border),
+                  if (filteredList.isEmpty) {
+                    return _buildSimpleDinasCard(
+                      title: _pokjaRole != null
+                          ? 'Belum Ada Kegiatan ${_pokjaRole!.toUpperCase()}'
+                          : 'Belum Ada Kegiatan Pokja',
+                      subtitle: 'Tekan tombol di atas untuk mencatat kegiatan pertama',
+                      badgeText: '0 Data',
+                      icon: Icons.assignment_outlined,
+                      brandBlue: brandBlue,
+                      cardBg: cardBg,
+                      textCol: textCol,
+                      sub: sub,
+                      border: border,
+                      onTap: () => setState(() => _navIndex = 1),
+                    );
+                  }
+
+                  final recentList = filteredList.take(3).toList();
+                  return Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Catatan Kegiatan Terkini',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 14.5,
+                              fontWeight: FontWeight.w800,
+                              color: textCol,
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () => setState(() => _navIndex = 1),
+                            child: Text(
+                              'Lihat Semua',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.w700,
+                                color: brandBlue,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      ...recentList.map((item) => Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: _buildSimpleActivityCard(
+                          item: item,
+                          cardBg: cardBg,
+                          textCol: textCol,
+                          sub: sub,
+                          border: border,
+                          brandBlue: brandBlue,
+                        ),
+                      )),
+                    ],
+                  );
+                },
+              ),
             ],
           ),
         ),
@@ -388,138 +499,254 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
     );
   }
 
-  Widget _buildDesignCard({
+  Widget _buildSimpleDinasCard({
     required String title,
     required String subtitle,
-    required int count,
+    required String badgeText,
     required IconData icon,
-    required bool isActive,
-    required Color primaryDark,
+    required Color brandBlue,
     required Color cardBg,
     required Color textCol,
     required Color sub,
+    required Color border,
     required VoidCallback onTap,
   }) {
-    final bgColor = isActive ? primaryDark : cardBg;
-    final titleColor = isActive ? Colors.white : textCol;
-    final subColor = isActive ? Colors.white70 : sub;
-    final iconBgColor = isActive ? Colors.white.withValues(alpha: 0.2) : primaryDark.withValues(alpha: 0.1);
-    final iconColor = isActive ? Colors.white : primaryDark;
-    final borderColor = _isDarkMode ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFE2E8F0);
-
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(24),
+      borderRadius: BorderRadius.circular(10),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: isActive ? Colors.transparent : borderColor),
-          boxShadow: [
-            if (isActive) BoxShadow(color: primaryDark.withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 6))
-            else BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 4)),
-          ],
+          color: cardBg,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: border),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Row(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: iconBgColor,
-                    borderRadius: BorderRadius.circular(12),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(icon, color: brandBlue, size: 20),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w700,
+                      color: textCol,
+                    ),
                   ),
-                  child: Icon(icon, color: iconColor, size: 24),
-                ),
-                Icon(Icons.more_vert_rounded, color: subColor, size: 20),
-              ],
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: sub),
+                  ),
+                ],
+              ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.w800, color: titleColor)),
-                const SizedBox(height: 2),
-                Text(subtitle, style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w500, color: subColor)),
-              ],
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Total', style: GoogleFonts.plusJakartaSans(fontSize: 10, color: subColor)),
-                const SizedBox(height: 6),
-                Stack(
-                  children: [
-                    Container(height: 4, decoration: BoxDecoration(color: subColor.withValues(alpha: 0.3), borderRadius: BorderRadius.circular(2))),
-                    FractionallySizedBox(widthFactor: count > 0 ? (count > 10 ? 0.8 : count / 10) : 0.1, child: Container(height: 4, decoration: BoxDecoration(color: titleColor, borderRadius: BorderRadius.circular(2)))),
-                  ],
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF1F5F9),
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: border),
+              ),
+              child: Text(
+                badgeText,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: textCol,
                 ),
-                const SizedBox(height: 6),
-                Text('$count Data', style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.w700, color: titleColor)),
-              ],
-            )
+              ),
+            ),
+            const SizedBox(width: 4),
+            Icon(Icons.chevron_right_rounded, size: 18, color: sub),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildPokjaGrid({required Color cardBg, required Color textCol, required Color sub, required Color border}) {
-    final allPokjas = [
-      (PokjaKategori.pokja1, 'Pokja I', const Color(0xFF38BDF8), Icons.groups_rounded, 1),
-      (PokjaKategori.pokja2, 'Pokja II', const Color(0xFF10B981), Icons.school_rounded, 2),
-      (PokjaKategori.pokja3, 'Pokja III', const Color(0xFFF59E0B), Icons.cottage_rounded, 3),
-      (PokjaKategori.pokja4, 'Pokja IV', const Color(0xFFEF4444), Icons.health_and_safety_rounded, 4),
-    ];
+  Widget _buildSimpleActivityCard({
+    required CatatanKegiatan item,
+    required Color cardBg,
+    required Color textCol,
+    required Color sub,
+    required Color border,
+    required Color brandBlue,
+  }) {
+    final statusColor = item.status == StatusKegiatan.dibaca
+        ? const Color(0xFF10B981)
+        : const Color(0xFFD97706);
+    final statusLabel = item.status == StatusKegiatan.dibaca ? 'Disetujui' : 'Menunggu';
+    final statusBg = item.status == StatusKegiatan.dibaca
+        ? const Color(0xFFECFDF5)
+        : const Color(0xFFFFF7ED);
+    final pokjaColor = _getPokjaColor(item.kategori);
 
-    final roleIndex = _pokjaRole == null ? null : int.tryParse(_pokjaRole!.substring(5));
-    final filtered = roleIndex != null ? allPokjas.where((p) => p.$5 == roleIndex).toList() : allPokjas;
-
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: filtered.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        childAspectRatio: 0.75,
+    return InkWell(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => KaderCatatanKegiatanScreen(pokjaDefault: item.kategori),
+        ),
       ),
-      itemBuilder: (context, index) {
-        final item = filtered[index];
-        return InkWell(
-          onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => KaderCatatanKegiatanScreen(pokjaDefault: item.$1)));
-          },
-          borderRadius: BorderRadius.circular(16),
-          child: Container(
-            decoration: BoxDecoration(
-              color: cardBg,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: border),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: cardBg,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: border),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: item.$3.withValues(alpha: 0.15),
-                    shape: BoxShape.circle,
+                    color: statusBg,
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(item.$4, color: item.$3, size: 20),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 5,
+                        height: 5,
+                        decoration: BoxDecoration(
+                          color: statusColor,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        statusLabel,
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w700,
+                          color: statusColor,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 8),
-                Text(item.$2, style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w700, color: textCol)),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: pokjaColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    item.kategori.shortLabel,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: pokjaColor,
+                    ),
+                  ),
+                ),
               ],
             ),
-          ),
-        );
-      },
+            const SizedBox(height: 8),
+            Text(
+              item.judul.isNotEmpty ? item.judul : 'Tanpa judul',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 13.5,
+                fontWeight: FontWeight.w700,
+                color: textCol,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              item.deskripsiSingkat.isNotEmpty
+                  ? item.deskripsiSingkat
+                  : 'Ketuk untuk lihat detail',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 11.5,
+                color: sub,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(Icons.calendar_today_rounded, size: 12, color: sub),
+                const SizedBox(width: 4),
+                Text(
+                  _formatDate(item.tanggal),
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 11,
+                    color: sub,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                if (item.desa != null && item.desa!.isNotEmpty) ...[
+                  Icon(Icons.location_on_rounded, size: 12, color: sub),
+                  const SizedBox(width: 4),
+                  Text(
+                    item.desa!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 11,
+                      color: sub,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
+      ),
     );
+  }
+
+  String _formatDate(DateTime date) {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+      'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+    ];
+    return '${date.day} ${months[date.month - 1]} ${date.year}';
+  }
+
+  Color _getPokjaColor(PokjaKategori pokja) {
+    switch (pokja) {
+      case PokjaKategori.pokja1:
+        return const Color(0xFF6366F1);
+      case PokjaKategori.pokja2:
+        return const Color(0xFF10B981);
+      case PokjaKategori.pokja3:
+        return const Color(0xFFF59E0B);
+      case PokjaKategori.pokja4:
+        return const Color(0xFFEF4444);
+      case PokjaKategori.pokja4Pyd:
+        return const Color(0xFF8B5CF6);
+      case PokjaKategori.pokja4Posyandu:
+        return const Color(0xFF06B6D4);
+      case PokjaKategori.pokja4Rekap:
+        return const Color(0xFFEC4899);
+    }
   }
 }
