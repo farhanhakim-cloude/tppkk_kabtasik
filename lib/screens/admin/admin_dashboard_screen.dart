@@ -282,27 +282,31 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     return Scaffold(
       backgroundColor: bgColor,
       body: IndexedStack(index: _navIndex, children: pages),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const BeritaFormScreen(isAdminMode: true),
-            ),
-          );
-          _loadPendingCounts();
-        },
-        backgroundColor: brandBlue,
-        shape: const CircleBorder(),
-        elevation: 6,
-        child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
+      floatingActionButton: SizedBox(
+        width: 60,
+        height: 60,
+        child: FloatingActionButton(
+          onPressed: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const BeritaFormScreen(isAdminMode: true),
+              ),
+            );
+            _loadPendingCounts();
+          },
+          backgroundColor: brandBlue,
+          shape: const CircleBorder(),
+          elevation: 4,
+          child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Container(
-        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
         decoration: BoxDecoration(
           color: brandBlue,
-          borderRadius: BorderRadius.circular(36),
+          borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
               color: brandBlue.withValues(alpha: 0.35),
@@ -312,18 +316,36 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(36),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _navItem(0, Icons.home_rounded, 'Beranda'),
-                _navItem(1, Icons.article_outlined, 'Berita'),
-                const SizedBox(width: 44),
-                _navItem(2, Icons.rule_folder_outlined, 'Laporan'),
-                _navItem(3, Icons.person_outline_rounded, 'Profil'),
-              ],
+          borderRadius: BorderRadius.circular(30),
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Left group
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _navItem(0, Icons.home_rounded, 'Beranda'),
+                      const SizedBox(width: 4),
+                      _navItem(1, Icons.article_outlined, 'Berita'),
+                    ],
+                  ),
+                  // Center gap for FAB (match FAB diameter)
+                  const SizedBox(width: 60),
+                  // Right group
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _navItem(2, Icons.rule_folder_outlined, 'Laporan'),
+                      const SizedBox(width: 4),
+                      _navItem(3, Icons.person_outline_rounded, 'Profil'),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -335,25 +357,25 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final isSelected = _navIndex == idx;
     return InkWell(
       onTap: () => setState(() => _navIndex = idx),
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(16),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
                 color: isSelected ? Colors.white : Colors.transparent,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(
                 icon,
-                size: 22,
+                size: 20,
                 color: isSelected ? const Color(0xFF0072BC) : Colors.white.withValues(alpha: 0.7),
               ),
             ),
-            const SizedBox(height: 2),
+            const SizedBox(height: 1),
             Text(
               label,
               style: GoogleFonts.plusJakartaSans(
@@ -528,38 +550,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-
-              // 3. TOMBOL AKSI UTAMA ADMIN (BUAT PENGUMUMAN BARU)
-              SizedBox(
-                width: double.infinity,
-                height: 46,
-                child: ElevatedButton.icon(
-                  onPressed: () async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const BeritaFormScreen(isAdminMode: true),
-                      ),
-                    );
-                    _loadPendingCounts();
-                  },
-                  icon: const Icon(Icons.add_rounded, size: 20, color: Colors.white),
-                  label: Text(
-                    '+ Buat Pengumuman Baru',
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: brandBlue,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
 
               // 4. ANTREAN VERIFIKASI RESMI
               Row(

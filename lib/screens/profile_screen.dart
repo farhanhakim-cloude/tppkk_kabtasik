@@ -31,6 +31,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   static const brandBlue = Color(0xFF0072BC);
   static const brandBlueDark = Color(0xFF005893);
+  static const textPrimary = Color(0xFF0F172A);
+  static const textSecondary = Color(0xFF64748B);
 
   void _onThemeChanged() {
     final isDark = themeNotifier.value == ThemeMode.dark;
@@ -221,171 +223,153 @@ class _ProfileScreenState extends State<ProfileScreen> {
             physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 110),
             child: Column(children: [
-              // 1. HERO BLUE PROFILE & STAT CARD (Sesuai tema baru)
-              Stack(
-                alignment: Alignment.bottomCenter,
-                clipBehavior: Clip.none,
-                children: [
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.fromLTRB(18, 16, 18, 22),
-                    decoration: BoxDecoration(
-                      color: brandBlue,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: brandBlue.withValues(alpha: 0.25),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
+              // 1. HERO PROFILE CARD (Plain / Polos)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.fromLTRB(18, 16, 18, 22),
+                decoration: BoxDecoration(
+                  color: cardBg,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: border),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.02),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
                     ),
-                    child: Column(
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    // Top bar inside card: mode gelap toggle
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Top bar inside card: mode gelap toggle
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.2),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              child: Text(
-                                user.roles.isNotEmpty ? user.roles.first.toUpperCase() : 'ANGGOTA',
-                                style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 10.5,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.white,
-                                  letterSpacing: 0.5,
-                                ),
-                              ),
-                            ),
-                            InkWell(
-                              onTap: () async {
-                                HapticFeedback.selectionClick();
-                                final newVal = !isDark;
-                                setState(() => _isKaderDark = newVal);
-                                themeNotifier.value = newVal ? ThemeMode.dark : ThemeMode.light;
-                                final prefs = await SharedPreferences.getInstance();
-                                await prefs.setBool('kader_dark_mode', newVal);
-                                await prefs.setBool('isDarkMode', newVal);
-                              },
-                              borderRadius: BorderRadius.circular(16),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.2),
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded, size: 14, color: Colors.white),
-                                    const SizedBox(width: 5),
-                                    Text(
-                                      isDark ? 'Gelap' : 'Terang',
-                                      style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 14),
-
-                        // Avatar
-                        GestureDetector(
-                          onTap: _pilihFotoProfil,
-                          child: Stack(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(3),
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.white.withValues(alpha: 0.35), width: 2),
-                                ),
-                                child: CircleAvatar(
-                                  radius: 40,
-                                  backgroundColor: Colors.white.withValues(alpha: 0.2),
-                                  backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
-                                  child: _profileImage == null
-                                      ? Text(
-                                          user.nama.isNotEmpty ? user.nama[0].toUpperCase() : 'P',
-                                          style: GoogleFonts.plusJakartaSans(
-                                            fontSize: 30,
-                                            fontWeight: FontWeight.w800,
-                                            color: Colors.white,
-                                          ),
-                                        )
-                                      : null,
-                                ),
-                              ),
-                              Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: Container(
-                                  padding: const EdgeInsets.all(5),
-                                  decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                                  child: const Icon(Icons.camera_alt_rounded, size: 13, color: brandBlue),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-
-                        Text(
-                          user.nama,
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.plusJakartaSans(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          '${user.jabatan} • TP PKK Kab. Tasikmalaya',
-                          style: GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.white.withValues(alpha: 0.85)),
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Pill Badge
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.22),
-                            borderRadius: BorderRadius.circular(20),
+                            color: brandBlue.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(16),
                           ),
                           child: Text(
-                            'Status Akun Terverifikasi',
+                            user.roles.isNotEmpty ? user.roles.first.toUpperCase() : 'ANGGOTA',
                             style: GoogleFonts.plusJakartaSans(
-                              fontSize: 11.5,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
+                              fontSize: 10.5,
+                              fontWeight: FontWeight.w800,
+                              color: brandBlue,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () async {
+                            HapticFeedback.selectionClick();
+                            final newVal = !isDark;
+                            setState(() => _isKaderDark = newVal);
+                            themeNotifier.value = newVal ? ThemeMode.dark : ThemeMode.light;
+                            final prefs = await SharedPreferences.getInstance();
+                            await prefs.setBool('kader_dark_mode', newVal);
+                            await prefs.setBool('isDarkMode', newVal);
+                          },
+                          borderRadius: BorderRadius.circular(16),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: sub.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded, size: 14, color: sub),
+                                const SizedBox(width: 5),
+                                Text(
+                                  isDark ? 'Gelap' : 'Terang',
+                                  style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w700, color: sub),
+                                ),
+                              ],
                             ),
                           ),
                         ),
                       ],
                     ),
-                  ),
+                    const SizedBox(height: 14),
 
-                  Positioned(
-                    bottom: -8,
-                    child: Container(
-                      padding: const EdgeInsets.all(3),
-                      decoration: BoxDecoration(
-                        color: brandBlue,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: bg, width: 2),
+                    // Avatar
+                    GestureDetector(
+                      onTap: _pilihFotoProfil,
+                      child: Stack(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: brandBlue.withValues(alpha: 0.3), width: 2),
+                            ),
+                            child: CircleAvatar(
+                              radius: 40,
+                              backgroundColor: brandBlue.withValues(alpha: 0.1),
+                              backgroundImage: _profileImage != null ? FileImage(_profileImage!) : null,
+                              child: _profileImage == null
+                                  ? Text(
+                                      user.nama.isNotEmpty ? user.nama[0].toUpperCase() : 'P',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 30,
+                                        fontWeight: FontWeight.w800,
+                                        color: brandBlue,
+                                      ),
+                                    )
+                                  : null,
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(color: brandBlue, shape: BoxShape.circle),
+                              child: const Icon(Icons.camera_alt_rounded, size: 13, color: Colors.white),
+                            ),
+                          ),
+                        ],
                       ),
-                      child: const Icon(Icons.keyboard_arrow_up_rounded, color: Colors.white, size: 14),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 12),
+
+                    Text(
+                      user.nama,
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: textCol,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      '${user.jabatan} • TP PKK Kab. Tasikmalaya',
+                      style: GoogleFonts.plusJakartaSans(fontSize: 12, color: sub),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Pill Badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: brandBlue.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        'Status Akun Terverifikasi',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w700,
+                          color: brandBlue,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 24),
 
@@ -404,7 +388,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               _buildModernInfoCard(
                 icon: Icons.location_on_outlined,
                 label: 'Wilayah Penugasan',
-                value: 'Kec. Singaparna, Kab. Tasikmalaya',
+                value: 'Kabupaten Tasikmalaya',
                 cardBg: cardBg,
                 textCol: textCol,
                 sub: sub,

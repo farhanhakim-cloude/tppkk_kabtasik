@@ -109,7 +109,7 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
 
       setState(() {
         _userName = nama;
-        _desaKecamatan = desa.isNotEmpty ? '$desa, $kec' : 'Kec. $kec';
+        _desaKecamatan = 'Kabupaten Tasikmalaya';
         _pokjaRole = ['pokja1', 'pokja2', 'pokja3', 'pokja4'].contains(role) ? role : null;
       });
     } catch (_) {}
@@ -149,11 +149,37 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
     return Scaffold(
       backgroundColor: bgColor,
       body: IndexedStack(index: _navIndex, children: pages),
+      floatingActionButton: SizedBox(
+        width: 60,
+        height: 60,
+        child: FloatingActionButton(
+          onPressed: () async {
+            PokjaKategori? awal;
+            if (_pokjaRole == 'pokja1') awal = PokjaKategori.pokja1;
+            if (_pokjaRole == 'pokja2') awal = PokjaKategori.pokja2;
+            if (_pokjaRole == 'pokja3') awal = PokjaKategori.pokja3;
+            if (_pokjaRole == 'pokja4') awal = PokjaKategori.pokja4;
+
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => CatatanKegiatanFormScreen(pokjaAwal: awal),
+              ),
+            );
+            _loadData();
+          },
+          backgroundColor: Colors.white,
+          shape: const CircleBorder(),
+          elevation: 4,
+          child: const Icon(Icons.add_rounded, size: 28, color: Color(0xFF0072BC)),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Container(
-        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
         decoration: BoxDecoration(
           color: brandBlue,
-          borderRadius: BorderRadius.circular(36),
+          borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
               color: brandBlue.withValues(alpha: 0.35),
@@ -163,18 +189,36 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(36),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _navItem(0, Icons.home_rounded, 'Beranda'),
-                _navItem(1, Icons.assignment_outlined, 'Catatan'),
-                _navInputButton(),
-                _navItem(2, Icons.newspaper_rounded, 'Kabar'),
-                _navItem(3, Icons.person_outline_rounded, 'Profil'),
-              ],
+          borderRadius: BorderRadius.circular(30),
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Left group
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _navItem(0, Icons.home_rounded, 'Beranda'),
+                      const SizedBox(width: 4),
+                      _navItem(1, Icons.assignment_outlined, 'Catatan'),
+                    ],
+                  ),
+                  // Center gap for FAB (match FAB diameter)
+                  const SizedBox(width: 60),
+                  // Right group
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _navItem(2, Icons.newspaper_rounded, 'Kabar'),
+                      const SizedBox(width: 4),
+                      _navItem(3, Icons.person_outline_rounded, 'Profil'),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -186,17 +230,17 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
     final isSelected = _navIndex == idx;
     return InkWell(
       onTap: () => setState(() => _navIndex = idx),
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(16),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
                 color: isSelected ? Colors.white : Colors.transparent,
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(
                 icon,
@@ -215,43 +259,6 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _navInputButton() {
-    return InkWell(
-      onTap: () async {
-        PokjaKategori? awal;
-        if (_pokjaRole == 'pokja1') awal = PokjaKategori.pokja1;
-        if (_pokjaRole == 'pokja2') awal = PokjaKategori.pokja2;
-        if (_pokjaRole == 'pokja3') awal = PokjaKategori.pokja3;
-        if (_pokjaRole == 'pokja4') awal = PokjaKategori.pokja4;
-
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => CatatanKegiatanFormScreen(pokjaAwal: awal),
-          ),
-        );
-        _loadData();
-      },
-      borderRadius: BorderRadius.circular(28),
-      child: Container(
-        width: 56,
-        height: 56,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.2),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: const Icon(Icons.add_rounded, size: 28, color: Color(0xFF0072BC)),
       ),
     );
   }
