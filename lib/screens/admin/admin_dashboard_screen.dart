@@ -286,6 +286,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         width: 60,
         height: 60,
         child: FloatingActionButton(
+          heroTag: 'fab-admin-dashboard',
           onPressed: () async {
             await Navigator.push(
               context,

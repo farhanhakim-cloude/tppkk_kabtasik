@@ -85,6 +85,7 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
       floatingActionButton: widget.embedded
           ? null
           : FloatingActionButton.extended(
+              heroTag: 'fab-keluarga-list',
               onPressed: () => _open(null),
               backgroundColor: primary,
               foregroundColor: Colors.white,

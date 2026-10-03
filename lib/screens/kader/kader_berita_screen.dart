@@ -245,6 +245,7 @@ class _KaderBeritaScreenState extends State<KaderBeritaScreen> {
                       ),
                     ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'fab-kader-berita',
         onPressed: () => _openTulisBerita(),
         backgroundColor: const Color(0xFF0072BC),
         icon: const Icon(Icons.edit_note_rounded, color: Colors.white),

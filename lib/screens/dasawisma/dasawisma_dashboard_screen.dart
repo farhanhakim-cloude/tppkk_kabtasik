@@ -99,6 +99,7 @@ class _DasawismaDashboardScreenState extends State<DasawismaDashboardScreen> {
       backgroundColor: bg,
       body: IndexedStack(index: _navIndex, children: pages),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'fab-dasawisma-dashboard',
         onPressed: () {
           // Aksi FAB, mungkin menambah catatan kegiatan atau menuju ke suatu form
           Navigator.push(context, MaterialPageRoute(builder: (_) => const KegiatanWargaMainScreen()));

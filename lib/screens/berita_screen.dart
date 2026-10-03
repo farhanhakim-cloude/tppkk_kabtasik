@@ -231,7 +231,7 @@ class _BeritaScreenState extends State<BeritaScreen>
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       floatingActionButton: FloatingActionButton.extended(
-        heroTag: null,
+        heroTag: 'fab-berita',
         onPressed: _openTulisBerita,
         backgroundColor: primary,
         icon: const Icon(

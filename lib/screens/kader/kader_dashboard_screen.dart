@@ -153,6 +153,7 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
         width: 60,
         height: 60,
         child: FloatingActionButton(
+          heroTag: 'fab-kader-dashboard', // ✅ FIX: heroTag unik — biar ga warning Multiple heroes
           onPressed: () async {
             PokjaKategori? awal;
             if (_pokjaRole == 'pokja1') awal = PokjaKategori.pokja1;

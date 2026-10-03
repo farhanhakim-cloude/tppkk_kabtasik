@@ -39,6 +39,7 @@ dependencies:
   image_picker: ^1.1.2
   google_fonts: ^6.2.1
   shimmer: ^3.0.0  # 🔥 UBAH DARI ^4.0.0 KE ^3.0.0 (STABIL)
+  device_info_plus: ^13.3.0
 
 dev_dependencies:
   flutter_test:

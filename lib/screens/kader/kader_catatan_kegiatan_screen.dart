@@ -828,6 +828,7 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
       floatingActionButton: ScaleTransition(
         scale: CurvedAnimation(parent: _fabAnim, curve: Curves.elasticOut),
         child: FloatingActionButton.extended(
+          heroTag: 'fab-catatan-kegiatan',
           onPressed: () =>
               _openForm(pokjaAwal: _selectedFilter ?? PokjaKategori.pokja1),
           backgroundColor: primaryAccent,

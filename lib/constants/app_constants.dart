@@ -50,7 +50,8 @@ class AppConstants {
   static const String galeri = "galeri";
   static const String agenda = "agenda";
 
-  // Laporan
+  // ✅ FIX — Laporan (HAPUS /api/ di depan)
+  static const String myLaporan = "laporan-kegiatan/my-laporan";
   static const String laporanKegiatan = "laporan-kegiatan";
 
   // ============================================================

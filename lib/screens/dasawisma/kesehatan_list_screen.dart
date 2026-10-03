@@ -97,7 +97,7 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
                   style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
             ),
       floatingActionButton: FloatingActionButton.extended(
-        heroTag: null,
+        heroTag: 'fab-kesehatan-list',
         onPressed: () => _openForm(),
         backgroundColor: _primaryBlue,
         icon: const Icon(Icons.add, color: Colors.white),
@@ -465,4 +465,3 @@ class _StatusGiziBadge extends StatelessWidget {
     );
   }
 }
-

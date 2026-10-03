@@ -134,6 +134,7 @@ class _IndustriRumahTanggaListScreenState
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'fab-industri-rumah-tangga-list',
         onPressed: () async {
           HapticFeedback.mediumImpact();
           final result = await Navigator.push<bool>(
