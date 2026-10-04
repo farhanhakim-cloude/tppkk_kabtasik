@@ -1,4 +1,4 @@
-﻿// lib/models/catatan_kegiatan.dart
+// lib/models/catatan_kegiatan.dart
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -12,9 +12,11 @@ enum PokjaKategori {
   pokja2,
   pokja3,
   pokja4,
-  pokja4Pyd, // âœ… BARU
-  pokja4Posyandu, // âœ… BARU
-  pokja4Rekap, // âœ… BARU
+  pokja4Pyd, // ✅ BARU
+  pokja4Posyandu, // ✅ BARU
+  pokja4Rekap, // ✅ BARU
+  pokja4DataDukung, // ✅ BARU
+  pokja4DataProgram, // ✅ BARU
 }
 
 extension PokjaKategoriLabel on PokjaKategori {
@@ -34,6 +36,10 @@ extension PokjaKategoriLabel on PokjaKategori {
         return 'Pokja IV - Kegiatan Posyandu';
       case PokjaKategori.pokja4Rekap:
         return 'Pokja IV - Rekapitulasi';
+      case PokjaKategori.pokja4DataDukung:
+        return 'Pokja IV - Data Dukung';
+      case PokjaKategori.pokja4DataProgram:
+        return 'Pokja IV - Data Program';
     }
   }
 
@@ -53,6 +59,10 @@ extension PokjaKategoriLabel on PokjaKategori {
         return 'Kegiatan Posyandu';
       case PokjaKategori.pokja4Rekap:
         return 'Rekapitulasi';
+      case PokjaKategori.pokja4DataDukung:
+        return 'Data Dukung';
+      case PokjaKategori.pokja4DataProgram:
+        return 'Data Program';
     }
   }
 
@@ -73,6 +83,10 @@ extension PokjaKategoriLabel on PokjaKategori {
         return 'IV-POSYANDU';
       case PokjaKategori.pokja4Rekap:
         return 'IV-REKAP';
+      case PokjaKategori.pokja4DataDukung:
+        return 'IV-DATADUKUNG';
+      case PokjaKategori.pokja4DataProgram:
+        return 'IV-DATAPROGRAM';
     }
   }
 
@@ -80,7 +94,9 @@ extension PokjaKategoriLabel on PokjaKategori {
   bool get isPokja4Sheet {
     return this == PokjaKategori.pokja4Pyd ||
         this == PokjaKategori.pokja4Posyandu ||
-        this == PokjaKategori.pokja4Rekap;
+        this == PokjaKategori.pokja4Rekap ||
+        this == PokjaKategori.pokja4DataDukung ||
+        this == PokjaKategori.pokja4DataProgram;
   }
 
   String get apiEndpoint {
@@ -96,7 +112,9 @@ extension PokjaKategoriLabel on PokjaKategori {
       case PokjaKategori.pokja4Pyd:
       case PokjaKategori.pokja4Posyandu:
       case PokjaKategori.pokja4Rekap:
-        return '/api/pokja4'; // placeholder â€” ga dipakai POST
+      case PokjaKategori.pokja4DataDukung:
+      case PokjaKategori.pokja4DataProgram:
+        return '/api/pokja4'; // placeholder — ga dipakai POST
     }
   }
 
@@ -116,6 +134,10 @@ extension PokjaKategoriLabel on PokjaKategori {
         return 'pokja4_kegiatan_posyandu';
       case PokjaKategori.pokja4Rekap:
         return 'pokja4_rekapitulasi';
+      case PokjaKategori.pokja4DataDukung:
+        return 'pokja4_data_dukung';
+      case PokjaKategori.pokja4DataProgram:
+        return 'pokja4_data_program';
     }
   }
 
@@ -153,6 +175,37 @@ extension PokjaKategoriLabel on PokjaKategori {
           'kf',
           'paud',
           'koperasi_berbadan_hukum',
+          'warga_belajar_paket_a',
+          'warga_belajar_paket_b',
+          'warga_belajar_paket_c',
+          'warga_belajar_kf',
+          'taman_bacaan',
+          'kelompok_bkb',
+          'peserta_bkb',
+          'ape_bkb',
+          'kelompok_simulasi_bkb',
+          'tutor_kf',
+          'tutor_paud',
+          'kader_bkb',
+          'kelompok_kader_koperasi',
+          'kader_keterampilan',
+          'kader_dilatih_pengelolaan',
+          'kader_dilatih_tp_pkk',
+          'kader_dilatih_damas',
+          'up2k_pemula_kelompok',
+          'up2k_pemula_peserta',
+          'up2k_madya_kelompok',
+          'up2k_madya_peserta',
+          'up2k_utama_kelompok',
+          'up2k_utama_peserta',
+          'up2k_mandiri_kelompok',
+          'up2k_mandiri_peserta',
+          'anggota_koperasi',
+          'ibu_set_bkb',
+          'lp3_pkk',
+          'tp3_pkk',
+          'damas_pkk',
+          'keterangan',
         ];
       case PokjaKategori.pokja3:
         return [
@@ -279,32 +332,142 @@ extension PokjaKategoriLabel on PokjaKategori {
           'balita_meninggal_p',
           'keterangan',
         ];
+      case PokjaKategori.pokja4DataDukung:
+        return [
+          'jumlah_penduduk',
+          'jumlah_kk',
+          'jumlah_rumah',
+          'jumlah_laki',
+          'jumlah_perempuan',
+          'jumlah_usia_produktif',
+          'jumlah_pus',
+          'jumlah_ibu_hamil',
+          'jumlah_bayi_0_2',
+          'jumlah_bayi_asi',
+          'jumlah_balita',
+          'jumlah_anak',
+          'jumlah_lansia',
+          'jumlah_kb_aktif',
+          'jumlah_ibu_menyusui',
+          'jumlah_keluarga_sejahtera',
+          'jumlah_keluarga_pra_sejahtera',
+          'jumlah_mbr',
+          'jumlah_kader_pkk_rt_rw',
+          'jumlah_kader_pkk_kesehatan',
+          'jumlah_dasa_wisma',
+          'jumlah_kader_dasa_wisma',
+          'jumlah_posyandu_aktif',
+          'jumlah_bidan_desa',
+          'jumlah_bank_sampah',
+          'jumlah_posko_bencana',
+        ];
+      case PokjaKategori.pokja4DataProgram:
+        return [
+          // I. Stunting
+          'bayi_prematur',
+          'bayi_bblr',
+          'balita_kurang_gizi',
+          'balita_stunting',
+          'bayi_balita_periksa',
+          'ibu_lahir_jarak_dekat',
+          'hamil_tidak_direncanakan',
+          // II. PHBS
+          'penduduk_tbc',
+          'rumah_jamban_sehat',
+          'rumah_bak_air',
+          'kasus_diare',
+          'keluarga_sadar_gizi',
+          'rumah_tanpa_asap_rokok',
+          'penduduk_babs',
+          // III. Kesehatan Keluarga
+          'ibu_hamil_periksa',
+          'ayah_merokok',
+          'kematian_ibu_nifas',
+          'kanker_serviks',
+          'bayi_balita_imunisasi',
+          'bayi_balita_sakit',
+          'kematian_bayi_balita',
+          // IV. Siaga Kebakaran
+          'kebakaran_rumah_tangga',
+          'rumah_listrik_standar',
+          'rumah_alat_pemadam',
+          'rumah_semi_permanen',
+          'rumah_kotak_p3k',
+          'rumah_info_mitigasi_kebakaran',
+          'kader_edukasi_kebakaran',
+          // V. Mitigasi Bencana Alam
+          'relawan_bencana_alam',
+          'rumah_info_mitigasi_alam',
+          'kader_edukasi_alam',
+          'fasilitas_posko_bencana',
+          'relawan_bencana_alam_2',
+          'rumah_tas_siaga',
+          'kerusakan_fasilitas_umum',
+          // VI. Peduli Lingkungan
+          'keluarga_bak_sampah',
+          'keluarga_anggota_bank_sampah',
+          'keluarga_spal',
+          'kasus_banjir',
+          'bak_sampah_desa',
+          'rumah_sehat',
+          'kasus_klb',
+          // VII. Keluarga Sehat Berkualitas
+          'keluarga_2_anak',
+          'penduduk_berobat',
+          'penyakit_menular',
+          'penyakit_tidak_menular',
+          'bayi_lahir_sehat',
+          'bayi_cukup_bulan',
+          'keluarga_gangguan_jiwa',
+          // VIII. Keuangan Sehat
+          'keluarga_asuransi',
+          'kk_pengangguran',
+          'kk_tidak_tetap',
+          'kk_penghasilan_tetap',
+          'ibu_hamil_tabulin',
+          'keluarga_tabungan',
+          'keluarga_aset_investasi',
+          // IX. Pasangan Usia Subur (PUS)
+          'ibu_melahirkan_bayi_sehat',
+          'wanita_peserta_kb',
+          'pria_peserta_kb',
+          'pus_masalah_reproduksi',
+          'pus_nikah_di_bawah_19',
+          'wus_hamil_beresiko',
+          'pus_penyakit_seksual',
+        ];
     }
   }
 
   // Label untuk field
   String getLabelForField(String field) {
     switch (field) {
-      case 'pkbn_l':
-        return 'PKBN Laki-laki';
-      case 'pkbn_p':
-        return 'PKBN Perempuan';
-      case 'pkdrt_l':
-        return 'PKDRT Laki-laki';
-      case 'pkdrt_p':
-        return 'PKDRT Perempuan';
-      case 'pola_asuh_l':
-        return 'Pola Asuh Laki-laki';
-      case 'pola_asuh_p':
-        return 'Pola Asuh Perempuan';
-      case 'lansia_l':
-        return 'Lansia Laki-laki';
-      case 'lansia_p':
-        return 'Lansia Perempuan';
-      case 'kader_pokja1_l':
-        return 'Kader Pokja I Laki-laki';
-      case 'kader_pokja1_p':
-        return 'Kader Pokja I Perempuan';
+      case 'kader_umum': return 'Kader Umum';
+      case 'kader_khusus': return 'Kader Khusus';
+      case 'kisah_kegiatan': return 'KISAH (Kegiatan)';
+      case 'kisah_volume': return 'KISAH (Volume)';
+      case 'kisah_metode': return 'KISAH (Metode)';
+      case 'kisah_sasaran': return 'KISAH (Sasaran)';
+      case 'kilas_kegiatan': return 'KILAS (Kegiatan)';
+      case 'kilas_volume': return 'KILAS (Volume)';
+      case 'kilas_metode': return 'KILAS (Metode)';
+      case 'kilas_sasaran': return 'KILAS (Sasaran)';
+      case 'krisan_kegiatan': return 'KRISAN (Kegiatan)';
+      case 'krisan_volume': return 'KRISAN (Volume)';
+      case 'krisan_metode': return 'KRISAN (Metode)';
+      case 'krisan_sasaran': return 'KRISAN (Sasaran)';
+      case 'kiat_kegiatan': return 'KIAT (Kegiatan)';
+      case 'kiat_volume': return 'KIAT (Volume)';
+      case 'kiat_metode': return 'KIAT (Metode)';
+      case 'kiat_sasaran': return 'KIAT (Sasaran)';
+      case 'kisak_kegiatan': return 'KISAK (Kegiatan)';
+      case 'kisak_volume': return 'KISAK (Volume)';
+      case 'kisak_metode': return 'KISAK (Metode)';
+      case 'kisak_sasaran': return 'KISAK (Sasaran)';
+      case 'pkbn_kegiatan': return 'PKBN (Kegiatan)';
+      case 'pkbn_volume': return 'PKBN (Volume)';
+      case 'pkbn_metode': return 'PKBN (Metode)';
+      case 'pkbn_sasaran': return 'PKBN (Sasaran)';
       case 'posyandu':
         return 'Jumlah Posyandu';
       case 'akseptor_kb':
@@ -359,6 +522,45 @@ extension PokjaKategoriLabel on PokjaKategori {
         return 'Program Lingkungan';
       case 'program_perencanaan':
         return 'Program Perencanaan';
+      case 'warga_buta_l': return 'Warga Buta Aksara (L)';
+      case 'warga_buta_p': return 'Warga Buta Aksara (P)';
+      case 'kelompok_belajar_paket_a': return 'Kelompok Belajar Paket A';
+      case 'kelompok_belajar_paket_b': return 'Kelompok Belajar Paket B';
+      case 'kelompok_belajar_paket_c': return 'Kelompok Belajar Paket C';
+      case 'kf': return 'Keaksaraan Fungsional (KF)';
+      case 'paud': return 'PAUD';
+      case 'koperasi_berbadan_hukum': return 'Koperasi Berbadan Hukum';
+      case 'warga_belajar_paket_a': return 'Warga Belajar Paket A';
+      case 'warga_belajar_paket_b': return 'Warga Belajar Paket B';
+      case 'warga_belajar_paket_c': return 'Warga Belajar Paket C';
+      case 'warga_belajar_kf': return 'Warga Belajar KF';
+      case 'taman_bacaan': return 'Taman Bacaan';
+      case 'kelompok_bkb': return 'Kelompok BKB';
+      case 'peserta_bkb': return 'Peserta BKB';
+      case 'ape_bkb': return 'APE BKB';
+      case 'kelompok_simulasi_bkb': return 'Kelompok Simulasi BKB';
+      case 'tutor_kf': return 'Tutor KF';
+      case 'tutor_paud': return 'Tutor PAUD';
+      case 'kader_bkb': return 'Kader BKB';
+      case 'kelompok_kader_koperasi': return 'Kelompok Kader Koperasi';
+      case 'kader_keterampilan': return 'Kader Keterampilan';
+      case 'kader_dilatih_pengelolaan': return 'Kader Dilatih Pengelolaan';
+      case 'kader_dilatih_tp_pkk': return 'Kader Dilatih TP PKK';
+      case 'kader_dilatih_damas': return 'Kader Dilatih Damas';
+      case 'up2k_pemula_kelompok': return 'UP2K Pemula Kelompok';
+      case 'up2k_pemula_peserta': return 'UP2K Pemula Peserta';
+      case 'up2k_madya_kelompok': return 'UP2K Madya Kelompok';
+      case 'up2k_madya_peserta': return 'UP2K Madya Peserta';
+      case 'up2k_utama_kelompok': return 'UP2K Utama Kelompok';
+      case 'up2k_utama_peserta': return 'UP2K Utama Peserta';
+      case 'up2k_mandiri_kelompok': return 'UP2K Mandiri Kelompok';
+      case 'up2k_mandiri_peserta': return 'UP2K Mandiri Peserta';
+      case 'anggota_koperasi': return 'Anggota Koperasi';
+      case 'ibu_set_bkb': return 'Ibu SET BKB';
+      case 'lp3_pkk': return 'LP3 PKK';
+      case 'tp3_pkk': return 'TP3 PKK';
+      case 'damas_pkk': return 'Damas PKK';
+      case 'keterangan': return 'Keterangan';
       default:
         return field;
     }

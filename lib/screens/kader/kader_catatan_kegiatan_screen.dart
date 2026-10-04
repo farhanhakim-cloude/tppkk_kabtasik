@@ -130,6 +130,10 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
         return const Color(0xFF06B6D4);
       case PokjaKategori.pokja4Rekap:
         return const Color(0xFFEC4899);
+      case PokjaKategori.pokja4DataDukung:
+        return const Color(0xFFF59E0B);
+      case PokjaKategori.pokja4DataProgram:
+        return const Color(0xFF14B8A6);
     }
   }
 
@@ -149,6 +153,10 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
         return Icons.local_hospital_rounded;
       case PokjaKategori.pokja4Rekap:
         return Icons.assignment_rounded;
+      case PokjaKategori.pokja4DataDukung:
+        return Icons.library_books_rounded;
+      case PokjaKategori.pokja4DataProgram:
+        return Icons.bar_chart_rounded;
     }
   }
 
@@ -178,6 +186,8 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
         PokjaKategori.pokja4Pyd,
         PokjaKategori.pokja4Posyandu,
         PokjaKategori.pokja4Rekap,
+        PokjaKategori.pokja4DataDukung,
+        PokjaKategori.pokja4DataProgram,
       ];
     }
     return [_restrictedPokja!];
@@ -418,6 +428,10 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
         return 'Data Kegiatan Posyandu per Bulan';
       case PokjaKategori.pokja4Rekap:
         return 'Rekap Ibu Hamil, Melahirkan & Nifas';
+      case PokjaKategori.pokja4DataDukung:
+        return 'Data Umum & Laporan Pelaksanaan';
+      case PokjaKategori.pokja4DataProgram:
+        return 'Data Program (Stunting, PHBS, Bencana)';
     }
   }
 

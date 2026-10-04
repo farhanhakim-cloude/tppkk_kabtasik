@@ -420,6 +420,10 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
         return const Color(0xFF06B6D4);
       case PokjaKategori.pokja4Rekap:
         return const Color(0xFFEC4899);
+      case PokjaKategori.pokja4DataDukung:
+        return const Color(0xFFF59E0B);
+      case PokjaKategori.pokja4DataProgram:
+        return const Color(0xFF14B8A6);
     }
   }
 

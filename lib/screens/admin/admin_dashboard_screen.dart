@@ -226,6 +226,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
             kat = PokjaKategori.pokja4Posyandu;
           else if (kategoriRaw.contains('rekap'))
             kat = PokjaKategori.pokja4Rekap;
+          else if (kategoriRaw.contains('datadukung') || kategoriRaw.contains('data_dukung') || kategoriRaw.contains('data dukung'))
+            kat = PokjaKategori.pokja4DataDukung;
+          else if (kategoriRaw.contains('dataprogram') || kategoriRaw.contains('data_program') || kategoriRaw.contains('data program'))
+            kat = PokjaKategori.pokja4DataProgram;
           else if (kode == 'I' ||
               kategoriRaw.contains('pokja1') ||
               kategoriRaw.contains('pokja 1'))
@@ -747,6 +751,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         return const Color(0xFF0891B2);
       case PokjaKategori.pokja4Rekap:
         return const Color(0xFF155E75);
+      case PokjaKategori.pokja4DataDukung:
+        return const Color(0xFF0C4A6E);
+      case PokjaKategori.pokja4DataProgram:
+        return const Color(0xFF0F766E);
     }
   }
 
@@ -766,6 +774,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         return Icons.local_hospital_rounded;
       case PokjaKategori.pokja4Rekap:
         return Icons.assignment_rounded;
+      case PokjaKategori.pokja4DataDukung:
+        return Icons.library_books_rounded;
+      case PokjaKategori.pokja4DataProgram:
+        return Icons.bar_chart_rounded;
     }
   }
 
