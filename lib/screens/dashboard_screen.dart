@@ -13,7 +13,6 @@ import '../services/kesehatan_service.dart';
 import '../services/kriteria_rumah_service.dart';
 import '../services/rekap_ibu_anak_service.dart';
 import 'catatan_kegiatan_form_screen.dart';
-import 'dasawisma/keluarga_list_screen.dart';
 import 'dasawisma/kesehatan_list_screen.dart';
 import 'laporan_screen.dart';
 import 'profile_screen.dart';
@@ -112,8 +111,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       future: _roleFuture,
       builder: (context, snapshot) {
         final role = snapshot.data ?? 'loading';
-        // Jika bukan admin, langsung arahkan ke dashboard masing-masing tanpa pakai _BerandaPage
-        // _BerandaPage (Hello Kader) jadi orphan — tidak dibawa kemana-mana sesuai request
+        // Jika bukan admin, langsung arahkan ke dashboard masing-masing
         if (role == 'dasawisma') {
           return const DasawismaDashboardScreen();
         }
@@ -128,7 +126,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             body: Center(child: CircularProgressIndicator()),
           );
         }
-        
+
         final isAdmin = false;
         final currentItems = _navItems;
         final numPages = currentItems.length;
@@ -169,7 +167,7 @@ class _NavItem {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// FLOATING PILL NAV — ala contoh Home/Tracker/Habits/Settings (icon atas, label bawah)
+// FLOATING PILL NAV
 // ─────────────────────────────────────────────────────────────────────────────
 class _BottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -185,7 +183,6 @@ class _BottomNavBar extends StatelessWidget {
   });
 
   IconData _filledIcon(IconData icon) {
-    // mapping outline -> filled biar lebih menarik saat active
     if (icon == Icons.home_rounded) return Icons.home_rounded;
     if (icon == Icons.notifications_rounded) return Icons.notifications_rounded;
     if (icon == Icons.description_rounded) return Icons.description_rounded;
@@ -267,7 +264,7 @@ class _BottomNavBar extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// NOTIFIKASI PAGE (Notifikasi Tab)
+// NOTIFIKASI PAGE
 // ─────────────────────────────────────────────────────────────────────────────
 class _NotifikasiPage extends StatelessWidget {
   const _NotifikasiPage();
@@ -441,7 +438,7 @@ class _NotifItem extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// MENU NAV CARD (Used in Home page grid)
+// MENU NAV CARD
 // ─────────────────────────────────────────────────────────────────────────────
 class _MenuNavCard extends StatelessWidget {
   final IconData icon;
@@ -530,7 +527,7 @@ class _MenuNavCard extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// BERANDA PAGE (Home Tab)
+// BERANDA PAGE (Home Tab) — ORPHAN, tapi tetap dipertahankan
 // ─────────────────────────────────────────────────────────────────────────────
 class _BerandaPage extends StatefulWidget {
   const _BerandaPage();
@@ -557,33 +554,12 @@ class _BerandaPageState extends State<_BerandaPage> {
   int _weatherVersion = 0;
 
   String _getDayName(int weekday) {
-    const days = [
-      'Senin',
-      'Selasa',
-      'Rabu',
-      'Kamis',
-      'Jumat',
-      'Sabtu',
-      'Minggu',
-    ];
+    const days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
     return days[(weekday - 1) % 7];
   }
 
   String _getMonthName(int month) {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'Mei',
-      'Jun',
-      'Jul',
-      'Agu',
-      'Sep',
-      'Okt',
-      'Nov',
-      'Des',
-    ];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
     return months[(month - 1) % 12];
   }
 
@@ -593,100 +569,6 @@ class _BerandaPageState extends State<_BerandaPage> {
     if (hour >= 11 && hour < 15) return 'Selamat Siang';
     if (hour >= 15 && hour < 18) return 'Selamat Sore';
     return 'Selamat Malam';
-  }
-
-  void _showNotificationSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (_) => Container(
-        padding: const EdgeInsets.all(24),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: const Color(0xFFCBD5E1),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF1F5F9),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: const Icon(
-                    Icons.notifications_active_outlined,
-                    color: Color(0xFF0072BC),
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Pemberitahuan',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: const Color(0xFF0F172A),
-                      ),
-                    ),
-                    Text(
-                      'Semua data Posyandu tersinkronisasi',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 13,
-                        color: const Color(0xFF64748B),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF8FAFC),
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: const Color(0xFFE2E8F0)),
-              ),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.check_circle_rounded,
-                    color: Color(0xFF10B981),
-                    size: 20,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Tidak ada agenda mendesak hari ini. Tetap semangat melayani masyarakat!',
-                      style: GoogleFonts.plusJakartaSans(
-                        fontSize: 13,
-                        color: const Color(0xFF334155),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-          ],
-        ),
-      ),
-    );
   }
 
   @override
@@ -740,7 +622,7 @@ class _BerandaPageState extends State<_BerandaPage> {
           parent: BouncingScrollPhysics(),
         ),
         slivers: [
-          // ── HEADER TOP BAR (Sesuai Referensi Gambar: Tanpa Notif di Atas) ──
+          // Header Top Bar
           SliverToBoxAdapter(
             child: Container(
               color: const Color(0xFFF8FAFC),
@@ -752,7 +634,6 @@ class _BerandaPageState extends State<_BerandaPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // Sapaan & Lokasi (Kab. Tasikmalaya)
                       Expanded(
                         child: FutureBuilder<User>(
                           future: _userFuture,
@@ -808,8 +689,6 @@ class _BerandaPageState extends State<_BerandaPage> {
                         ),
                       ),
                       const SizedBox(width: 12),
-
-                      // Avatar Profil Saja (Tanpa Ikon Notifikasi sesuai Permintaan)
                       GestureDetector(
                         onTap: () {
                           HapticFeedback.lightImpact();
@@ -830,9 +709,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(
-                                  0xFF0F172A,
-                                ).withValues(alpha: 0.06),
+                                color: const Color(0xFF0F172A).withValues(alpha: 0.06),
                                 blurRadius: 8,
                                 offset: const Offset(0, 2),
                               ),
@@ -856,22 +733,16 @@ class _BerandaPageState extends State<_BerandaPage> {
             ),
           ),
 
-          // ── SEARCH BAR PILL (Sesuai Referensi Gambar) ──
+          // Search Bar
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(30),
-                  border: Border.all(
-                    color: const Color(0xFFE2E8F0),
-                    width: 1.2,
-                  ),
+                  border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
                   boxShadow: [
                     BoxShadow(
                       color: const Color(0xFF0F172A).withValues(alpha: 0.03),
@@ -882,11 +753,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(
-                      Icons.search_rounded,
-                      size: 20,
-                      color: Color(0xFF94A3B8),
-                    ),
+                    const Icon(Icons.search_rounded, size: 20, color: Color(0xFF94A3B8)),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
@@ -904,7 +771,7 @@ class _BerandaPageState extends State<_BerandaPage> {
             ),
           ),
 
-          // ── CUACA KAB. TASIKMALAYA (Open-Meteo API) ──
+          // Cuaca
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.only(bottom: 4),
@@ -912,13 +779,12 @@ class _BerandaPageState extends State<_BerandaPage> {
             ),
           ),
 
-          // ── MENU KATEGORI 2x3 (Sesuai Grid Gambar Referensi) ──
+          // Menu Kategori 2x3
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 children: [
-                  // Baris 1: 3 Menu
                   Row(
                     children: [
                       Expanded(
@@ -940,10 +806,11 @@ class _BerandaPageState extends State<_BerandaPage> {
                           icon: Icons.people_alt_rounded,
                           label: 'Data Keluarga',
                           color: const Color(0xFF10B981),
+                          // ✅ FIXED: KeluargaListScreen → DataKeluargaDasawismaListScreen
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const KeluargaListScreen(),
+                              builder: (_) => const DataKeluargaDasawismaListScreen(),
                             ),
                           ),
                         ),
@@ -965,7 +832,6 @@ class _BerandaPageState extends State<_BerandaPage> {
                     ],
                   ),
                   const SizedBox(height: 10),
-                  // Baris 2: 3 Menu
                   Row(
                     children: [
                       Expanded(
@@ -976,8 +842,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) =>
-                                  const DataKeluargaDasawismaListScreen(),
+                              builder: (_) => const DataKeluargaDasawismaListScreen(),
                             ),
                           ),
                         ),
@@ -1005,8 +870,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) =>
-                                  const IndustriRumahTanggaListScreen(),
+                              builder: (_) => const IndustriRumahTanggaListScreen(),
                             ),
                           ),
                         ),
@@ -1018,28 +882,22 @@ class _BerandaPageState extends State<_BerandaPage> {
             ),
           ),
 
-          // ── KARTU TANGGAL HIJAU & REKAP DASAWISMA (Sesuai Referensi Gambar) ──
+          // Kartu Tanggal & Rekap
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
               child: Row(
                 children: [
-                  // Kartu Tanggal Hijau (Kiri)
                   Container(
                     width: 105,
                     height: 108,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 10,
-                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
                     decoration: BoxDecoration(
                       color: const Color(0xFF0072BC),
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(
-                            0xFF0072BC,
-                          ).withValues(alpha: 0.25),
+                          color: const Color(0xFF0072BC).withValues(alpha: 0.25),
                           blurRadius: 14,
                           offset: const Offset(0, 6),
                         ),
@@ -1080,7 +938,6 @@ class _BerandaPageState extends State<_BerandaPage> {
                   ),
                   const SizedBox(width: 10),
 
-                  // Kartu Ringkasan Binaan Dasawisma (Kanan)
                   Expanded(
                     child: Container(
                       height: 108,
@@ -1088,15 +945,10 @@ class _BerandaPageState extends State<_BerandaPage> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: const Color(0xFFE2E8F0),
-                          width: 1.2,
-                        ),
+                        border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(
-                              0xFF0F172A,
-                            ).withValues(alpha: 0.03),
+                            color: const Color(0xFF0F172A).withValues(alpha: 0.03),
                             blurRadius: 10,
                             offset: const Offset(0, 3),
                           ),
@@ -1111,8 +963,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Row(
                                     children: [
@@ -1120,9 +971,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                                         padding: const EdgeInsets.all(4),
                                         decoration: BoxDecoration(
                                           color: const Color(0xFFF1F5F9),
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
+                                          borderRadius: BorderRadius.circular(8),
                                         ),
                                         child: const Icon(
                                           Icons.verified_rounded,
@@ -1141,34 +990,6 @@ class _BerandaPageState extends State<_BerandaPage> {
                                       ),
                                     ],
                                   ),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 6,
-                                      vertical: 2,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFECFDF5),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.star_rounded,
-                                          size: 12,
-                                          color: Color(0xFFF59E0B),
-                                        ),
-                                        const SizedBox(width: 2),
-                                        Text(
-                                          '4.9',
-                                          style: GoogleFonts.plusJakartaSans(
-                                            fontSize: 10.5,
-                                            fontWeight: FontWeight.w800,
-                                            color: const Color(0xFF065F46),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
                                 ],
                               ),
                               Row(
@@ -1178,46 +999,33 @@ class _BerandaPageState extends State<_BerandaPage> {
                                       onTap: () => Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (_) =>
-                                              const KriteriaRumahListScreen(),
+                                          builder: (_) => const KriteriaRumahListScreen(),
                                         ),
                                       ),
                                       child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 6,
-                                          horizontal: 8,
-                                        ),
+                                        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
                                         decoration: BoxDecoration(
                                           color: const Color(0xFFFFF7ED),
-                                          borderRadius: BorderRadius.circular(
-                                            10,
-                                          ),
+                                          borderRadius: BorderRadius.circular(10),
                                         ),
                                         child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               '${data?.rumah ?? 0}',
-                                              style:
-                                                  GoogleFonts.plusJakartaSans(
-                                                    fontSize: 15,
-                                                    fontWeight: FontWeight.w800,
-                                                    color: const Color(
-                                                      0xFFEA580C,
-                                                    ),
-                                                  ),
+                                              style: GoogleFonts.plusJakartaSans(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w800,
+                                                color: const Color(0xFFEA580C),
+                                              ),
                                             ),
                                             Text(
                                               'Rumah',
-                                              style:
-                                                  GoogleFonts.plusJakartaSans(
-                                                    fontSize: 10,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: const Color(
-                                                      0xFF9A3412,
-                                                    ),
-                                                  ),
+                                              style: GoogleFonts.plusJakartaSans(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w600,
+                                                color: const Color(0xFF9A3412),
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -1227,49 +1035,37 @@ class _BerandaPageState extends State<_BerandaPage> {
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: GestureDetector(
+                                      // ✅ FIXED: KeluargaListScreen → DataKeluargaDasawismaListScreen
                                       onTap: () => Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (_) =>
-                                              const KeluargaListScreen(),
+                                          builder: (_) => const DataKeluargaDasawismaListScreen(),
                                         ),
                                       ),
                                       child: Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          vertical: 6,
-                                          horizontal: 8,
-                                        ),
+                                        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
                                         decoration: BoxDecoration(
                                           color: const Color(0xFFF0FDF4),
-                                          borderRadius: BorderRadius.circular(
-                                            10,
-                                          ),
+                                          borderRadius: BorderRadius.circular(10),
                                         ),
                                         child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               '${data?.keluarga ?? 0}',
-                                              style:
-                                                  GoogleFonts.plusJakartaSans(
-                                                    fontSize: 15,
-                                                    fontWeight: FontWeight.w800,
-                                                    color: const Color(
-                                                      0xFF16A34A,
-                                                    ),
-                                                  ),
+                                              style: GoogleFonts.plusJakartaSans(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w800,
+                                                color: const Color(0xFF16A34A),
+                                              ),
                                             ),
                                             Text(
                                               'Kepala Keluarga',
-                                              style:
-                                                  GoogleFonts.plusJakartaSans(
-                                                    fontSize: 10,
-                                                    fontWeight: FontWeight.w600,
-                                                    color: const Color(
-                                                      0xFF166534,
-                                                    ),
-                                                  ),
+                                              style: GoogleFonts.plusJakartaSans(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w600,
+                                                color: const Color(0xFF166534),
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -1289,7 +1085,7 @@ class _BerandaPageState extends State<_BerandaPage> {
             ),
           ),
 
-          // ── UPCOMING APPOINTMENTS / AGENDA KEGIATAN PKK ──
+          // Agenda & Kegiatan PKK
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 6),
@@ -1337,21 +1133,15 @@ class _BerandaPageState extends State<_BerandaPage> {
                     ],
                   ),
                   const SizedBox(height: 10),
-                  // Kartu Floating Appointment Card (Sesuai Referensi Gambar)
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: const Color(0xFFE2E8F0),
-                        width: 1.2,
-                      ),
+                      border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(
-                            0xFF0F172A,
-                          ).withValues(alpha: 0.04),
+                          color: const Color(0xFF0F172A).withValues(alpha: 0.04),
                           blurRadius: 14,
                           offset: const Offset(0, 4),
                         ),
@@ -1392,15 +1182,10 @@ class _BerandaPageState extends State<_BerandaPage> {
                                   Row(
                                     children: [
                                       Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 7,
-                                          vertical: 2,
-                                        ),
+                                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                                         decoration: BoxDecoration(
                                           color: const Color(0xFFECFDF5),
-                                          borderRadius: BorderRadius.circular(
-                                            6,
-                                          ),
+                                          borderRadius: BorderRadius.circular(6),
                                         ),
                                         child: Text(
                                           '● Terjadwal',
@@ -1436,24 +1221,15 @@ class _BerandaPageState extends State<_BerandaPage> {
                           children: [
                             Expanded(
                               child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 8,
-                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                                 decoration: BoxDecoration(
                                   color: const Color(0xFFF8FAFC),
                                   borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                    color: const Color(0xFFF1F5F9),
-                                  ),
+                                  border: Border.all(color: const Color(0xFFF1F5F9)),
                                 ),
                                 child: Row(
                                   children: [
-                                    const Icon(
-                                      Icons.calendar_today_rounded,
-                                      size: 14,
-                                      color: Color(0xFF64748B),
-                                    ),
+                                    const Icon(Icons.calendar_today_rounded, size: 14, color: Color(0xFF64748B)),
                                     const SizedBox(width: 6),
                                     Text(
                                       '${DateTime.now().day} ${_getMonthName(DateTime.now().month)}, ${DateTime.now().year}',
@@ -1470,24 +1246,15 @@ class _BerandaPageState extends State<_BerandaPage> {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 8,
-                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                                 decoration: BoxDecoration(
                                   color: const Color(0xFFF8FAFC),
                                   borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                    color: const Color(0xFFF1F5F9),
-                                  ),
+                                  border: Border.all(color: const Color(0xFFF1F5F9)),
                                 ),
                                 child: Row(
                                   children: [
-                                    const Icon(
-                                      Icons.access_time_rounded,
-                                      size: 14,
-                                      color: Color(0xFF64748B),
-                                    ),
+                                    const Icon(Icons.access_time_rounded, size: 14, color: Color(0xFF64748B)),
                                     const SizedBox(width: 6),
                                     Text(
                                       '08:30 WIB',
@@ -1511,7 +1278,7 @@ class _BerandaPageState extends State<_BerandaPage> {
             ),
           ),
 
-          // ── STATISTIK KESEHATAN IBU & BAYI ──
+          // Statistik Kesehatan Ibu & Bayi
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
@@ -1562,10 +1329,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                           );
                         },
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 11,
-                            vertical: 6,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
                           decoration: BoxDecoration(
                             color: primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(20),
@@ -1582,11 +1346,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              Icon(
-                                Icons.arrow_forward_rounded,
-                                size: 14,
-                                color: primary,
-                              ),
+                              Icon(Icons.arrow_forward_rounded, size: 14, color: primary),
                             ],
                           ),
                         ),
@@ -1600,7 +1360,7 @@ class _BerandaPageState extends State<_BerandaPage> {
             ),
           ),
 
-          // ── BERITA (paling bawah) ──
+          // Berita
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
@@ -1655,10 +1415,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                               }
                             },
                             child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 7,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                               margin: const EdgeInsets.only(right: 8),
                               decoration: BoxDecoration(
                                 color: primary.withValues(alpha: 0.09),
@@ -1666,11 +1423,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                               ),
                               child: Row(
                                 children: [
-                                  Icon(
-                                    Icons.edit_note_rounded,
-                                    size: 15,
-                                    color: primary,
-                                  ),
+                                  Icon(Icons.edit_note_rounded, size: 15, color: primary),
                                   const SizedBox(width: 4),
                                   Text(
                                     'Tulis',
@@ -1696,17 +1449,11 @@ class _BerandaPageState extends State<_BerandaPage> {
                               _onRefresh();
                             },
                             child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 7,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(20),
-                                border: Border.all(
-                                  color: const Color(0xFFE2E8F0),
-                                  width: 1.2,
-                                ),
+                                border: Border.all(color: const Color(0xFFE2E8F0), width: 1.2),
                               ),
                               child: Row(
                                 children: [
@@ -1719,11 +1466,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                                     ),
                                   ),
                                   const SizedBox(width: 4),
-                                  Icon(
-                                    Icons.arrow_forward_rounded,
-                                    size: 14,
-                                    color: primary,
-                                  ),
+                                  Icon(Icons.arrow_forward_rounded, size: 14, color: primary),
                                 ],
                               ),
                             ),
@@ -1770,12 +1513,8 @@ class _BerandaPageState extends State<_BerandaPage> {
                                   scale: isCenter ? 1.0 : 0.96,
                                   duration: const Duration(milliseconds: 250),
                                   child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 6,
-                                    ),
-                                    child: _BeritaCard(
-                                      berita: beritaList[index],
-                                    ),
+                                    padding: const EdgeInsets.symmetric(horizontal: 6),
+                                    child: _BeritaCard(berita: beritaList[index]),
                                   ),
                                 );
                               },
@@ -1789,9 +1528,7 @@ class _BerandaPageState extends State<_BerandaPage> {
                               return AnimatedContainer(
                                 duration: const Duration(milliseconds: 250),
                                 curve: Curves.easeOutCubic,
-                                margin: const EdgeInsets.symmetric(
-                                  horizontal: 3,
-                                ),
+                                margin: const EdgeInsets.symmetric(horizontal: 3),
                                 width: isActive ? 24 : 7,
                                 height: 7,
                                 decoration: BoxDecoration(
@@ -1832,7 +1569,7 @@ class _BerandaPageState extends State<_BerandaPage> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// NUTRITION AREA WAVE CHART (Custom Painter - Persis Gambar Referensi)
+// NUTRITION AREA WAVE CHART
 // ─────────────────────────────────────────────────────────────────────────────
 class _KesehatanIbuBayiChart extends StatelessWidget {
   final Color primary;
@@ -1843,8 +1580,7 @@ class _KesehatanIbuBayiChart extends StatelessWidget {
     return FutureBuilder<RekapIbuAnakSummary>(
       future: RekapIbuAnakService().getSummary(),
       builder: (context, snapshot) {
-        final summary =
-            snapshot.data ??
+        final summary = snapshot.data ??
             RekapIbuAnakSummary(
               jumlahHamil: 2,
               jumlahMelahirkan: 1,
@@ -1856,42 +1592,15 @@ class _KesehatanIbuBayiChart extends StatelessWidget {
             );
 
         final items = [
-          _ChartBarItem(
-            label: 'Ibu Hamil',
-            value: summary.jumlahHamil,
-            color: const Color(0xFF3B82F6), // Biru
-          ),
-          _ChartBarItem(
-            label: 'Melahirkan',
-            value: summary.jumlahMelahirkan,
-            color: const Color(0xFF10B981), // Hijau Zamrud
-          ),
-          _ChartBarItem(
-            label: 'Nifas',
-            value: summary.jumlahNifas,
-            color: const Color(0xFFF59E0B), // Amber / Kuning Emas
-          ),
-          _ChartBarItem(
-            label: 'Bayi Lahir',
-            value: summary.jumlahBayiLahir,
-            color: const Color(0xFF06B6D4), // Cyan
-          ),
-          _ChartBarItem(
-            label: 'Bayi Wafat',
-            value: summary.jumlahBayiMeninggal + summary.jumlahBalitaMeninggal,
-            color: const Color(0xFFFB7185), // Rose
-          ),
-          _ChartBarItem(
-            label: 'Ibu Wafat',
-            value: summary.jumlahIbuMeninggal,
-            color: const Color(0xFFEF4444), // MERAH MENCOLOK KHUSUS
-            isWarning: true,
-          ),
+          _ChartBarItem(label: 'Ibu Hamil', value: summary.jumlahHamil, color: const Color(0xFF3B82F6)),
+          _ChartBarItem(label: 'Melahirkan', value: summary.jumlahMelahirkan, color: const Color(0xFF10B981)),
+          _ChartBarItem(label: 'Nifas', value: summary.jumlahNifas, color: const Color(0xFFF59E0B)),
+          _ChartBarItem(label: 'Bayi Lahir', value: summary.jumlahBayiLahir, color: const Color(0xFF06B6D4)),
+          _ChartBarItem(label: 'Bayi Wafat', value: summary.jumlahBayiMeninggal + summary.jumlahBalitaMeninggal, color: const Color(0xFFFB7185)),
+          _ChartBarItem(label: 'Ibu Wafat', value: summary.jumlahIbuMeninggal, color: const Color(0xFFEF4444), isWarning: true),
         ];
 
-        final maxValue = items
-            .map((e) => e.value)
-            .reduce((a, b) => a > b ? a : b);
+        final maxValue = items.map((e) => e.value).reduce((a, b) => a > b ? a : b);
         final chartMax = maxValue < 5 ? 5 : maxValue + 1;
 
         return Container(
@@ -1911,7 +1620,6 @@ class _KesehatanIbuBayiChart extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header Ringkasan Atas (Tanpa icon)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -1927,21 +1635,13 @@ class _KesehatanIbuBayiChart extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  // Indikator Spesial Ibu Meninggal
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 9,
-                      vertical: 4,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
                     decoration: BoxDecoration(
-                      color: summary.jumlahIbuMeninggal > 0
-                          ? const Color(0xFFFEE2E2)
-                          : const Color(0xFFF1F5F9),
+                      color: summary.jumlahIbuMeninggal > 0 ? const Color(0xFFFEE2E2) : const Color(0xFFF1F5F9),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: summary.jumlahIbuMeninggal > 0
-                            ? const Color(0xFFEF4444)
-                            : const Color(0xFFE2E8F0),
+                        color: summary.jumlahIbuMeninggal > 0 ? const Color(0xFFEF4444) : const Color(0xFFE2E8F0),
                         width: 1,
                       ),
                     ),
@@ -1962,9 +1662,7 @@ class _KesehatanIbuBayiChart extends StatelessWidget {
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 11,
                             fontWeight: FontWeight.w800,
-                            color: summary.jumlahIbuMeninggal > 0
-                                ? const Color(0xFFDC2626)
-                                : const Color(0xFF64748B),
+                            color: summary.jumlahIbuMeninggal > 0 ? const Color(0xFFDC2626) : const Color(0xFF64748B),
                           ),
                         ),
                       ],
@@ -1972,10 +1670,7 @@ class _KesehatanIbuBayiChart extends StatelessWidget {
                   ),
                 ],
               ),
-
               const SizedBox(height: 18),
-
-              // ── DIAGRAM BATANG VISUAL (Tanpa icon & tanpa teks di bawah batang) ──
               SizedBox(
                 height: 110,
                 child: Row(
@@ -1990,16 +1685,10 @@ class _KesehatanIbuBayiChart extends StatelessWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            // Angka di atas batang
                             Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 2,
-                              ),
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
-                                color: item.isWarning
-                                    ? const Color(0xFFEF4444)
-                                    : item.color.withValues(alpha: 0.12),
+                                color: item.isWarning ? const Color(0xFFEF4444) : item.color.withValues(alpha: 0.12),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
@@ -2007,48 +1696,33 @@ class _KesehatanIbuBayiChart extends StatelessWidget {
                                 style: GoogleFonts.plusJakartaSans(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w800,
-                                  color: item.isWarning
-                                      ? Colors.white
-                                      : item.color,
+                                  color: item.isWarning ? Colors.white : item.color,
                                 ),
                               ),
                             ),
                             const SizedBox(height: 6),
-
-                            // Batang Grafik Polos (Tanpa Icon)
                             Container(
                               height: barHeight,
                               width: double.infinity,
                               decoration: BoxDecoration(
-                                color: item.isWarning
-                                    ? const Color(0xFFEF4444)
-                                    : item.color,
+                                color: item.isWarning ? const Color(0xFFEF4444) : item.color,
                                 borderRadius: BorderRadius.circular(8),
                                 boxShadow: item.isWarning
                                     ? [
                                         BoxShadow(
-                                          color: const Color(
-                                            0xFFEF4444,
-                                          ).withValues(alpha: 0.4),
+                                          color: const Color(0xFFEF4444).withValues(alpha: 0.4),
                                           blurRadius: 8,
                                           offset: const Offset(0, 2),
                                         ),
                                       ]
                                     : [
                                         BoxShadow(
-                                          color: item.color.withValues(
-                                            alpha: 0.2,
-                                          ),
+                                          color: item.color.withValues(alpha: 0.2),
                                           blurRadius: 4,
                                           offset: const Offset(0, 2),
                                         ),
                                       ],
-                                border: item.isWarning
-                                    ? Border.all(
-                                        color: Colors.white,
-                                        width: 1.5,
-                                      )
-                                    : null,
+                                border: item.isWarning ? Border.all(color: Colors.white, width: 1.5) : null,
                               ),
                             ),
                           ],
@@ -2058,12 +1732,9 @@ class _KesehatanIbuBayiChart extends StatelessWidget {
                   }).toList(),
                 ),
               ),
-
               const SizedBox(height: 14),
               const Divider(height: 1, color: Color(0xFFF1F5F9)),
               const SizedBox(height: 12),
-
-              // Legend / Tanda Keterangan Bawah (Menggunakan Wrap agar tidak pernah overflow)
               Center(
                 child: Wrap(
                   spacing: 12,
@@ -2075,11 +1746,7 @@ class _KesehatanIbuBayiChart extends StatelessWidget {
                     _legendDot(const Color(0xFFF59E0B), 'Nifas'),
                     _legendDot(const Color(0xFF06B6D4), 'Bayi Lahir'),
                     _legendDot(const Color(0xFFFB7185), 'Bayi Wafat'),
-                    _legendDot(
-                      const Color(0xFFEF4444),
-                      'Ibu Wafat',
-                      isRed: true,
-                    ),
+                    _legendDot(const Color(0xFFEF4444), 'Ibu Wafat', isRed: true),
                   ],
                 ),
               ),
@@ -2174,7 +1841,6 @@ class _StatCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Baris atas: Ikon badge di kiri, badge status / tren di kanan
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -2188,17 +1854,11 @@ class _StatCard extends StatelessWidget {
                   ),
                   if (trend.isNotEmpty)
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 7,
-                        vertical: 3,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                       decoration: BoxDecoration(
                         color: color.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: color.withValues(alpha: 0.2),
-                          width: 1,
-                        ),
+                        border: Border.all(color: color.withValues(alpha: 0.2), width: 1),
                       ),
                       child: Text(
                         trend,
@@ -2212,8 +1872,6 @@ class _StatCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 10),
-
-              // Nilai angka metrik
               Text(
                 value,
                 style: GoogleFonts.plusJakartaSans(
@@ -2225,8 +1883,6 @@ class _StatCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 2),
-
-              // Judul kartu
               Text(
                 label,
                 style: GoogleFonts.plusJakartaSans(
@@ -2235,8 +1891,6 @@ class _StatCard extends StatelessWidget {
                   color: const Color(0xFF1E293B),
                 ),
               ),
-
-              // Keterangan bawah
               if (sublabel.isNotEmpty) ...[
                 const SizedBox(height: 4),
                 Row(
@@ -2253,11 +1907,7 @@ class _StatCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      size: 9,
-                      color: color,
-                    ),
+                    Icon(Icons.arrow_forward_ios_rounded, size: 9, color: color),
                   ],
                 ),
               ],
@@ -2353,27 +2003,22 @@ class _BeritaCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(20),
-              ),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
               child: SizedBox(
                 height: 110,
                 width: double.infinity,
                 child: hasImage
-                    ? (berita.gambar!.startsWith('http://') ||
-                              berita.gambar!.startsWith('https://')
+                    ? (berita.gambar!.startsWith('http://') || berita.gambar!.startsWith('https://')
                           ? Image.network(
                               berita.gambar!,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, _, _) =>
-                                  _ImageFallback(primary: primary),
+                              errorBuilder: (_, _, _) => _ImageFallback(primary: primary),
                             )
                           : (File(berita.gambar!).existsSync()
                                 ? Image.file(
                                     File(berita.gambar!),
                                     fit: BoxFit.cover,
-                                    errorBuilder: (_, _, _) =>
-                                        _ImageFallback(primary: primary),
+                                    errorBuilder: (_, _, _) => _ImageFallback(primary: primary),
                                   )
                                 : _ImageFallback(primary: primary)))
                     : _ImageFallback(primary: primary),
@@ -2387,10 +2032,7 @@ class _BeritaCard extends StatelessWidget {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 7,
-                          vertical: 3,
-                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                         decoration: BoxDecoration(
                           color: primary.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(6),
@@ -2406,11 +2048,7 @@ class _BeritaCard extends StatelessWidget {
                         ),
                       ),
                       const Spacer(),
-                      Icon(
-                        Icons.access_time_rounded,
-                        size: 11,
-                        color: Colors.grey[400],
-                      ),
+                      Icon(Icons.access_time_rounded, size: 11, color: Colors.grey[400]),
                       const SizedBox(width: 3),
                       Text(
                         berita.tanggal,

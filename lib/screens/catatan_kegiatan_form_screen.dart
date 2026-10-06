@@ -582,11 +582,6 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
             },
           ),
         ];
-              'Bank Sampah': 'jumlah_bank_sampah',
-              'Posko Bencana': 'jumlah_posko_bencana',
-            },
-          ),
-        ];
 
       case PokjaKategori.pokja4DataProgram:
         return const [

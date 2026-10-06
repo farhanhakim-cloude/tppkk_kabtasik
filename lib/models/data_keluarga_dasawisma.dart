@@ -67,6 +67,7 @@ class AnggotaKeluargaItem {
 
 class DataKeluargaDasawisma {
   final int id;
+  final String status;
   final String dasaWisma;
   final String rt;
   final String rw;
@@ -81,6 +82,10 @@ class DataKeluargaDasawisma {
   final String alamat;
   final int jumlahLakiLaki;
   final int jumlahPerempuan;
+  final int jumlahAnggota;
+
+  int get totalAnggota =>
+      jumlahAnggota > 0 ? jumlahAnggota : jumlahLakiLaki + jumlahPerempuan;
 
   // 1-2 Rekapitulasi
   final int jumlahKk;
@@ -117,6 +122,7 @@ class DataKeluargaDasawisma {
 
   DataKeluargaDasawisma({
     required this.id,
+    this.status = 'pending',
     required this.dasaWisma,
     required this.rt,
     required this.rw,
@@ -131,6 +137,7 @@ class DataKeluargaDasawisma {
     this.alamat = '',
     this.jumlahLakiLaki = 2,
     this.jumlahPerempuan = 2,
+    this.jumlahAnggota = 0,
     this.jumlahKk = 1,
     this.jumlahBalita = 1,
     this.jumlahBalitaL = 0,
@@ -162,6 +169,7 @@ class DataKeluargaDasawisma {
 
   DataKeluargaDasawisma copyWith({
     int? id,
+    String? status,
     String? dasaWisma,
     String? rt,
     String? rw,
@@ -176,6 +184,7 @@ class DataKeluargaDasawisma {
     String? alamat,
     int? jumlahLakiLaki,
     int? jumlahPerempuan,
+    int? jumlahAnggota,
     int? jumlahKk,
     int? jumlahBalita,
     int? jumlahBalitaL,
@@ -206,6 +215,7 @@ class DataKeluargaDasawisma {
   }) {
     return DataKeluargaDasawisma(
       id: id ?? this.id,
+      status: status ?? this.status,
       dasaWisma: dasaWisma ?? this.dasaWisma,
       rt: rt ?? this.rt,
       rw: rw ?? this.rw,
@@ -221,6 +231,7 @@ class DataKeluargaDasawisma {
       alamat: alamat ?? this.alamat,
       jumlahLakiLaki: jumlahLakiLaki ?? this.jumlahLakiLaki,
       jumlahPerempuan: jumlahPerempuan ?? this.jumlahPerempuan,
+      jumlahAnggota: jumlahAnggota ?? this.jumlahAnggota,
       jumlahKk: jumlahKk ?? this.jumlahKk,
       jumlahBalita: jumlahBalita ?? this.jumlahBalita,
       jumlahBalitaL: jumlahBalitaL ?? this.jumlahBalitaL,
@@ -265,6 +276,7 @@ class DataKeluargaDasawisma {
   factory DataKeluargaDasawisma.fromJson(Map<String, dynamic> j) =>
       DataKeluargaDasawisma(
         id: _p(j['id']),
+        status: j['status']?.toString() ?? 'pending',
         dasaWisma: j['dasaWisma']?.toString() ?? '',
         rt: j['rt']?.toString() ?? '',
         rw: j['rw']?.toString() ?? '',
@@ -275,6 +287,7 @@ class DataKeluargaDasawisma {
         namaKepalaRumahTangga: j['namaKepalaRumahTangga']?.toString() ?? '',
         jumlahLakiLaki: _p(j['jumlahLakiLaki']),
         jumlahPerempuan: _p(j['jumlahPerempuan']),
+        jumlahAnggota: _p(j['jumlahAnggota']),
         jumlahKk: _p(j['jumlahKk']),
         jumlahBalita: _p(j['jumlahBalita']),
         jumlahAnak: _p(j['jumlahAnak']),
@@ -307,8 +320,67 @@ class DataKeluargaDasawisma {
             j['aktifitasKesehatanLingkungan'] == 1,
       );
 
+  factory DataKeluargaDasawisma.fromDaftarWargaJson(Map<String, dynamic> j) =>
+      DataKeluargaDasawisma(
+        id: _p(j['id']),
+        status: j['status']?.toString() ?? 'pending',
+        dasaWisma: j['dasawisma']?.toString() ?? '',
+        rt: j['rt']?.toString() ?? '',
+        rw: j['rw']?.toString() ?? '',
+        dusun: j['dusun']?.toString() ?? '',
+        desa: j['desa']?.toString() ?? '',
+        kecamatan: j['kecamatan']?.toString() ?? '',
+        namaKepalaRumahTangga: j['nama_kepala_keluarga']?.toString() ?? '',
+        nomorKk: j['no_kk']?.toString() ?? '',
+        nikKepalaKeluarga: j['nik']?.toString() ?? '',
+        alamat: j['alamat']?.toString() ?? '',
+        jumlahAnggota: _p(j['jumlah_anggota']),
+        jumlahLakiLaki: _p(j['jumlah_laki_laki']),
+        jumlahPerempuan: _p(j['jumlah_perempuan']),
+        jumlahKk: _p(j['jumlah_kk']) == 0 ? 1 : _p(j['jumlah_kk']),
+        jumlahBalita: 0,
+        jumlahBalitaL: 0,
+        jumlahBalitaP: 0,
+        jumlahAnak: 0,
+        jumlahPus: 0,
+        jumlahWus: 0,
+        jumlahTigaButa: 0,
+        jumlahTigaButaL: 0,
+        jumlahTigaButaP: 0,
+        jumlahIbuHamil: 0,
+        jumlahIbuMenyusui: 0,
+        jumlahLansia: 0,
+        anggotaList: const [],
+        mempunyaiMck: false,
+        jumlahMckSepticTank: 0,
+        memilikiTempatSampah: false,
+        mempunyaiSpal: false,
+        memilikiStikerP4k: false,
+        aktifitasUp2k: false,
+        aktifitasKesehatanLingkungan: false,
+        aktifitasTanahPekarangan: false,
+        aktifitasIndustriRumahTangga: false,
+      );
+
+  Map<String, dynamic> toDaftarWargaJson() => {
+    'nama_kepala_keluarga': namaKepalaRumahTangga,
+    'nik': nikKepalaKeluarga.isEmpty ? null : nikKepalaKeluarga,
+    'no_kk': nomorKk.isEmpty ? null : nomorKk,
+    'dusun': dusun.isEmpty ? null : dusun,
+    'rt': rt.isEmpty ? null : rt,
+    'rw': rw.isEmpty ? null : rw,
+    'dasawisma': dasaWisma.isEmpty ? null : dasaWisma,
+    'alamat': alamat.isEmpty ? null : alamat,
+    'jumlah_anggota': totalAnggota > 0 ? totalAnggota : 1,
+    'jumlah_kk': jumlahKk > 0 ? jumlahKk : 1,
+    'jumlah_laki_laki': jumlahLakiLaki,
+    'jumlah_perempuan': jumlahPerempuan,
+    'kategori': 'warga',
+  };
+
   Map<String, dynamic> toJson() => {
     'id': id,
+    'status': status,
     'dasaWisma': dasaWisma,
     'rt': rt,
     'rw': rw,
@@ -319,6 +391,7 @@ class DataKeluargaDasawisma {
     'namaKepalaRumahTangga': namaKepalaRumahTangga,
     'jumlahLakiLaki': jumlahLakiLaki,
     'jumlahPerempuan': jumlahPerempuan,
+    'jumlahAnggota': jumlahAnggota,
     'jumlahKk': jumlahKk,
     'jumlahBalita': jumlahBalita,
     'jumlahAnak': jumlahAnak,

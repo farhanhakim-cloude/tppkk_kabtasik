@@ -1,4 +1,11 @@
+// lib/services/rekap_ibu_anak_service.dart
+// ✅ FIXED: parsing manual — tidak butuh fromJson/toJson dari model
+
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/rekap_ibu_anak.dart';
+import '../constants/app_constants.dart';
 
 class RekapIbuAnakSummary {
   final int jumlahHamil;
@@ -25,133 +32,133 @@ class RekapIbuAnakService {
   factory RekapIbuAnakService() => _instance;
   RekapIbuAnakService._internal();
 
-  final List<RekapIbuAnak> _items = [
-    RekapIbuAnak(
-      id: 1,
-      kelompokDasaWisma: 'Mawar 01',
-      rt: '02',
-      rw: '05',
-      dusun: 'Cikunir',
-      desa: 'Singaparna',
-      bulan: 'September',
-      tahun: '2026',
-      namaIbu: 'Siti Rohmah',
-      namaSuami: 'Ahmad Hidayat',
-      statusIbu: 'Hamil',
-      adaKelahiran: false,
-      adaKematian: false,
-      keterangan: 'Usia kandungan 7 bulan',
-    ),
-    RekapIbuAnak(
-      id: 2,
-      kelompokDasaWisma: 'Mawar 01',
-      rt: '02',
-      rw: '05',
-      dusun: 'Cikunir',
-      desa: 'Singaparna',
-      bulan: 'September',
-      tahun: '2026',
-      namaIbu: 'Dewi Kartika',
-      namaSuami: 'Budi Santoso',
-      statusIbu: 'Melahirkan',
-      adaKelahiran: true,
-      namaBayi: 'Anindya Putri',
-      jenisKelaminBayi: 'P',
-      tanggalLahir: '02-09-2026',
-      hasAktaKelahiran: true,
-      adaKematian: false,
-      keterangan: 'Kelahiran normal di Puskesmas',
-    ),
-    RekapIbuAnak(
-      id: 3,
-      kelompokDasaWisma: 'Mawar 02',
-      rt: '03',
-      rw: '05',
-      dusun: 'Cikunir',
-      desa: 'Singaparna',
-      bulan: 'September',
-      tahun: '2026',
-      namaIbu: 'Rina Maryana',
-      namaSuami: 'Hendra Gunawan',
-      statusIbu: 'Nifas',
-      adaKelahiran: true,
-      namaBayi: 'Muhamad Fathan',
-      jenisKelaminBayi: 'L',
-      tanggalLahir: '20-08-2026',
-      hasAktaKelahiran: false,
-      adaKematian: false,
-      keterangan: 'Proses pengurusan Akta',
-    ),
-    RekapIbuAnak(
-      id: 4,
-      kelompokDasaWisma: 'Mawar 02',
-      rt: '01',
-      rw: '05',
-      dusun: 'Cikunir',
-      desa: 'Singaparna',
-      bulan: 'September',
-      tahun: '2026',
-      namaIbu: 'Nurhayati',
-      namaSuami: 'Dedi Kurnia',
-      statusIbu: 'Hamil',
-      adaKelahiran: false,
-      adaKematian: false,
-      keterangan: 'Usia kandungan 4 bulan',
-    ),
-  ];
+  String get _endpoint => '${AppConstants.baseUrl}rekap-bumil';
 
-  Future<List<RekapIbuAnak>> getAll({String? query}) async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    if (query == null || query.trim().isEmpty) {
-      return List.from(_items);
-    }
-    final q = query.toLowerCase();
-    return _items.where((item) {
-      return item.namaIbu.toLowerCase().contains(q) ||
-          item.namaSuami.toLowerCase().contains(q) ||
-          item.namaBayi.toLowerCase().contains(q) ||
-          item.kelompokDasaWisma.toLowerCase().contains(q) ||
-          item.rt.contains(q) ||
-          item.rw.contains(q);
-    }).toList();
+  Future<String?> _getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(AppConstants.tokenKey);
   }
 
+  Future<Map<String, String>> _headers() async {
+    final token = await _getToken();
+    return {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
+    };
+  }
+
+  Future<List<RekapIbuAnak>> getAll({String? query}) async {
+    try {
+      final url = (query != null && query.isNotEmpty) ? '$_endpoint?search=$query' : _endpoint;
+      final response = await http.get(Uri.parse(url), headers: await _headers());
+
+      print('🔍 GET rekap-bumil → ${response.statusCode}');
+
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+
+        List list = [];
+        if (decoded is List) {
+          list = decoded;
+        } else if (decoded is Map) {
+          final data = decoded['data'];
+          if (data is List) {
+            list = data;
+          } else if (data is Map && data['data'] is List) {
+            list = data['data'] as List;
+          }
+        }
+
+        print('🔍 Parsed ${list.length} bumil');
+
+        // ✅ Parsing manual — tanpa fromJson
+        return list.map((e) {
+          final m = e as Map<String, dynamic>;
+          return RekapIbuAnak(
+            id: _toInt(m['id']),
+            kelompokDasaWisma: _toStr(m['kelompok_dasa_wisma'] ?? m['kelompokDasaWisma']),
+            rt: _toStr(m['rt']),
+            rw: _toStr(m['rw']),
+            dusun: _toStr(m['dusun']),
+            desa: _toStr(m['desa']),
+            bulan: _toStr(m['bulan']),
+            tahun: _toStr(m['tahun']),
+            namaIbu: _toStr(m['nama_ibu'] ?? m['namaIbu']),
+            namaSuami: _toStr(m['nama_suami'] ?? m['namaSuami']),
+            statusIbu: _toStr(m['status_ibu'] ?? m['statusIbu']),
+            adaKelahiran: _toBool(m['ada_kelahiran'] ?? m['adaKelahiran']),
+            namaBayi: _toStr(m['nama_bayi'] ?? m['namaBayi']),
+            jenisKelaminBayi: _toStr(m['jenis_kelamin_bayi'] ?? m['jenisKelaminBayi']),
+            tanggalLahir: _toStr(m['tanggal_lahir'] ?? m['tanggalLahir']),
+            hasAktaKelahiran: _toBool(m['has_akta_kelahiran'] ?? m['hasAktaKelahiran']),
+            adaKematian: _toBool(m['ada_kematian'] ?? m['adaKematian']),
+            statusMeninggal: _toStr(m['status_meninggal'] ?? m['statusMeninggal']),
+            keterangan: _toStr(m['keterangan']),
+          );
+        }).toList();
+      }
+      return [];
+    } catch (e, st) {
+      print('❌ rekap-bumil error: $e');
+      print('❌ Stack: $st');
+      return [];
+    }
+  }
+
+  /// POST — kirim data rekap bumil
   Future<void> save(RekapIbuAnak item) async {
-    await Future.delayed(const Duration(milliseconds: 150));
-    final index = _items.indexWhere((e) => e.id == item.id);
-    if (index >= 0) {
-      _items[index] = item;
-    } else {
-      final newId = _items.isEmpty ? 1 : (_items.map((e) => e.id).reduce((a, b) => a > b ? a : b) + 1);
-      _items.insert(0, item.copyWith(id: newId));
+    try {
+      // ✅ Parsing manual — tanpa toJson
+      final body = {
+        'kelompok_dasa_wisma': item.kelompokDasaWisma,
+        'rt': item.rt,
+        'rw': item.rw,
+        'dusun': item.dusun,
+        'desa': item.desa,
+        'bulan': item.bulan,
+        'tahun': item.tahun,
+        'nama_ibu': item.namaIbu,
+        'nama_suami': item.namaSuami,
+        'status_ibu': item.statusIbu,
+        'ada_kelahiran': item.adaKelahiran,
+        'nama_bayi': item.namaBayi,
+        'jenis_kelamin_bayi': item.jenisKelaminBayi,
+        'tanggal_lahir': item.tanggalLahir,
+        'has_akta_kelahiran': item.hasAktaKelahiran,
+        'ada_kematian': item.adaKematian,
+        'status_meninggal': item.statusMeninggal,
+        'keterangan': item.keterangan,
+      };
+
+      print('📤 POST rekap-bumil → $body');
+
+      await http.post(
+        Uri.parse(_endpoint),
+        headers: await _headers(),
+        body: jsonEncode(body),
+      );
+    } catch (e) {
+      print('❌ POST rekap-bumil error: $e');
     }
   }
 
   Future<void> delete(int id) async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    _items.removeWhere((e) => e.id == id);
+    try {
+      await http.delete(Uri.parse('$_endpoint/$id'), headers: await _headers());
+    } catch (_) {}
   }
 
   Future<RekapIbuAnakSummary> getSummary() async {
-    await Future.delayed(const Duration(milliseconds: 50));
-    int hamil = 0;
-    int melahirkan = 0;
-    int nifas = 0;
-    int ibuMeninggal = 0;
-    int bayiLahir = 0;
-    int bayiMeninggal = 0;
-    int balitaMeninggal = 0;
-
-    for (var item in _items) {
+    final list = await getAll();
+    int hamil = 0, melahirkan = 0, nifas = 0, ibuMeninggal = 0;
+    int bayiLahir = 0, bayiMeninggal = 0, balitaMeninggal = 0;
+    for (final item in list) {
       final st = item.statusIbu.toLowerCase();
       if (st.contains('hamil')) hamil++;
       if (st.contains('lahir')) melahirkan++;
       if (st.contains('nifas')) nifas++;
-
-      if (item.adaKelahiran) {
-        bayiLahir++;
-      }
-
+      if (item.adaKelahiran) bayiLahir++;
       if (item.adaKematian) {
         final stK = item.statusMeninggal.toLowerCase();
         if (stK.contains('ibu')) ibuMeninggal++;
@@ -159,7 +166,6 @@ class RekapIbuAnakService {
         if (stK.contains('balita')) balitaMeninggal++;
       }
     }
-
     return RekapIbuAnakSummary(
       jumlahHamil: hamil,
       jumlahMelahirkan: melahirkan,
@@ -169,5 +175,27 @@ class RekapIbuAnakService {
       jumlahBayiMeninggal: bayiMeninggal,
       jumlahBalitaMeninggal: balitaMeninggal,
     );
+  }
+
+  // ── Helper parsing ──────────────────────────────────
+  int _toInt(dynamic v) {
+    if (v == null) return 0;
+    if (v is int) return v;
+    if (v is double) return v.toInt();
+    if (v is String) return int.tryParse(v) ?? 0;
+    return 0;
+  }
+
+  String _toStr(dynamic v) {
+    if (v == null) return '';
+    return v.toString();
+  }
+
+  bool _toBool(dynamic v) {
+    if (v == null) return false;
+    if (v is bool) return v;
+    if (v is int) return v == 1;
+    if (v is String) return v.toLowerCase() == 'true' || v == '1';
+    return false;
   }
 }

@@ -1,4 +1,5 @@
 // lib/constants/app_constants.dart
+import 'package:flutter/foundation.dart';
 
 class AppConstants {
   // ============================================================
@@ -6,7 +7,18 @@ class AppConstants {
   // ============================================================
 
   // 🔥 SEMUA DI 1 LAPTOP (Laravel & Flutter Web sama-sama di sini)
-  static const String baseUrl = "http://127.0.0.1:8000/api/";
+  static const String _configuredBaseUrl = String.fromEnvironment('API_BASE_URL');
+  static String get baseUrl {
+    if (_configuredBaseUrl.isNotEmpty) {
+      return _configuredBaseUrl.endsWith('/')
+          ? _configuredBaseUrl
+          : '$_configuredBaseUrl/';
+    }
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) {
+      return 'http://127.0.0.1:8000/api/';
+    }
+    return 'http://10.0.2.2:8000/api/';
+  }
 
   // 📱 UNTUK EMULATOR ANDROID (AVD) - PAKE 10.0.2.2
   // static const String baseUrl = "http://10.0.2.2:8000/api/";

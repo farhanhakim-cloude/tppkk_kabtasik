@@ -12,11 +12,7 @@ class DataUmumPkkFormScreen extends StatefulWidget {
   final String level; // 'desa' atau 'kecamatan'
   final DataUmumPkkItem? item;
 
-  const DataUmumPkkFormScreen({
-    super.key,
-    required this.level,
-    this.item,
-  });
+  const DataUmumPkkFormScreen({super.key, required this.level, this.item});
 
   @override
   State<DataUmumPkkFormScreen> createState() => _DataUmumPkkFormScreenState();
@@ -26,7 +22,7 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final _service = DataUmumPkkService();
 
-  static const Color _primary = Color(0xFF0072BC);
+  static const Color _primary = Color(0xFF0D9488);
   static const Color _darkText = Color(0xFF0F172A);
 
   // Controllers Header
@@ -91,30 +87,60 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
     _namaDusunCtrl = TextEditingController(text: it?.namaDusun ?? '');
     _namaDesaCtrl = TextEditingController(text: it?.namaDesa ?? '');
 
-    _jumlahDusunCtrl = TextEditingController(text: (it?.jumlahDusun ?? 0).toString());
-    _jumlahPkkRwCtrl = TextEditingController(text: (it?.jumlahPkkRw ?? 0).toString());
-    _jumlahPkkRtCtrl = TextEditingController(text: (it?.jumlahPkkRt ?? 0).toString());
-    _jumlahDasaWismaCtrl = TextEditingController(text: (it?.jumlahDasaWisma ?? 0).toString());
+    _jumlahDusunCtrl = TextEditingController(
+      text: (it?.jumlahDusun ?? 0).toString(),
+    );
+    _jumlahPkkRwCtrl = TextEditingController(
+      text: (it?.jumlahPkkRw ?? 0).toString(),
+    );
+    _jumlahPkkRtCtrl = TextEditingController(
+      text: (it?.jumlahPkkRt ?? 0).toString(),
+    );
+    _jumlahDasaWismaCtrl = TextEditingController(
+      text: (it?.jumlahDasaWisma ?? 0).toString(),
+    );
 
-    _jumlahKrtCtrl = TextEditingController(text: (it?.jumlahKrt ?? 0).toString());
+    _jumlahKrtCtrl = TextEditingController(
+      text: (it?.jumlahKrt ?? 0).toString(),
+    );
     _jumlahKkCtrl = TextEditingController(text: (it?.jumlahKk ?? 0).toString());
 
     _jiwaLCtrl = TextEditingController(text: (it?.jiwaL ?? 0).toString());
     _jiwaPCtrl = TextEditingController(text: (it?.jiwaP ?? 0).toString());
 
-    _kaderTpPkkLCtrl = TextEditingController(text: (it?.kaderTpPkkL ?? 0).toString());
-    _kaderTpPkkPCtrl = TextEditingController(text: (it?.kaderTpPkkP ?? 0).toString());
+    _kaderTpPkkLCtrl = TextEditingController(
+      text: (it?.kaderTpPkkL ?? 0).toString(),
+    );
+    _kaderTpPkkPCtrl = TextEditingController(
+      text: (it?.kaderTpPkkP ?? 0).toString(),
+    );
 
-    _kaderUmumLCtrl = TextEditingController(text: (it?.kaderUmumL ?? 0).toString());
-    _kaderUmumPCtrl = TextEditingController(text: (it?.kaderUmumP ?? 0).toString());
+    _kaderUmumLCtrl = TextEditingController(
+      text: (it?.kaderUmumL ?? 0).toString(),
+    );
+    _kaderUmumPCtrl = TextEditingController(
+      text: (it?.kaderUmumP ?? 0).toString(),
+    );
 
-    _kaderKhususLCtrl = TextEditingController(text: (it?.kaderKhususL ?? 0).toString());
-    _kaderKhususPCtrl = TextEditingController(text: (it?.kaderKhususP ?? 0).toString());
+    _kaderKhususLCtrl = TextEditingController(
+      text: (it?.kaderKhususL ?? 0).toString(),
+    );
+    _kaderKhususPCtrl = TextEditingController(
+      text: (it?.kaderKhususP ?? 0).toString(),
+    );
 
-    _sekretariatHonorerLCtrl = TextEditingController(text: (it?.sekretariatHonorerL ?? 0).toString());
-    _sekretariatHonorerPCtrl = TextEditingController(text: (it?.sekretariatHonorerP ?? 0).toString());
-    _sekretariatBantuanLCtrl = TextEditingController(text: (it?.sekretariatBantuanL ?? 0).toString());
-    _sekretariatBantuanPCtrl = TextEditingController(text: (it?.sekretariatBantuanP ?? 0).toString());
+    _sekretariatHonorerLCtrl = TextEditingController(
+      text: (it?.sekretariatHonorerL ?? 0).toString(),
+    );
+    _sekretariatHonorerPCtrl = TextEditingController(
+      text: (it?.sekretariatHonorerP ?? 0).toString(),
+    );
+    _sekretariatBantuanLCtrl = TextEditingController(
+      text: (it?.sekretariatBantuanL ?? 0).toString(),
+    );
+    _sekretariatBantuanPCtrl = TextEditingController(
+      text: (it?.sekretariatBantuanP ?? 0).toString(),
+    );
 
     _keteranganCtrl = TextEditingController(text: it?.keterangan ?? '');
   }
@@ -166,7 +192,9 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
       desa: widget.level == 'desa' ? _desaCtrl.text.trim() : '',
       namaDusun: widget.level == 'desa' ? _namaDusunCtrl.text.trim() : '',
       namaDesa: widget.level == 'kecamatan' ? _namaDesaCtrl.text.trim() : '',
-      jumlahDusun: widget.level == 'kecamatan' ? _parseInt(_jumlahDusunCtrl.text) : 0,
+      jumlahDusun: widget.level == 'kecamatan'
+          ? _parseInt(_jumlahDusunCtrl.text)
+          : 0,
       jumlahPkkRw: _parseInt(_jumlahPkkRwCtrl.text),
       jumlahPkkRt: _parseInt(_jumlahPkkRtCtrl.text),
       jumlahDasaWisma: _parseInt(_jumlahDasaWismaCtrl.text),
@@ -174,6 +202,7 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
       jumlahKk: _parseInt(_jumlahKkCtrl.text),
       jiwaL: _parseInt(_jiwaLCtrl.text),
       jiwaP: _parseInt(_jiwaPCtrl.text),
+      jiwaTidakTerpilah: widget.item?.jiwaTidakTerpilah ?? 0,
       kaderTpPkkL: _parseInt(_kaderTpPkkLCtrl.text),
       kaderTpPkkP: _parseInt(_kaderTpPkkPCtrl.text),
       kaderUmumL: _parseInt(_kaderUmumLCtrl.text),
@@ -208,8 +237,12 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
   Widget build(BuildContext context) {
     final isDesa = widget.level == 'desa';
     final title = isDesa
-        ? (widget.item == null ? 'Tambah Data Umum Desa' : 'Edit Data Umum Desa')
-        : (widget.item == null ? 'Tambah Data Umum Kecamatan' : 'Edit Data Umum Kecamatan');
+        ? (widget.item == null
+              ? 'Tambah Data Umum Desa'
+              : 'Edit Data Umum Desa')
+        : (widget.item == null
+              ? 'Tambah Data Umum Kecamatan'
+              : 'Edit Data Umum Kecamatan');
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -226,7 +259,11 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
               shape: BoxShape.circle,
               border: Border.all(color: const Color(0xFFE2E8F0)),
             ),
-            child: const Icon(Icons.arrow_back_rounded, size: 20, color: _darkText),
+            child: const Icon(
+              Icons.arrow_back_rounded,
+              size: 20,
+              color: _darkText,
+            ),
           ),
         ),
         title: Column(
@@ -234,7 +271,7 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
           children: [
             Text(
               title,
-              style: GoogleFonts.plusJakartaSans(
+              style: GoogleFonts.poppins(
                 fontSize: 16.5,
                 fontWeight: FontWeight.w800,
                 color: _darkText,
@@ -244,7 +281,7 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
               isDesa
                   ? 'DATA UMUM PKK • TP PKK DESA (20 Kolom)'
                   : 'DATA UMUM PKK • KECAMATAN (21 Kolom)',
-              style: GoogleFonts.plusJakartaSans(
+              style: GoogleFonts.poppins(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
                 color: _primary,
@@ -270,18 +307,23 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
           style: ElevatedButton.styleFrom(
             backgroundColor: _primary,
             padding: const EdgeInsets.symmetric(vertical: 14),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
             elevation: 0,
           ),
           child: _isSaving
               ? const SizedBox(
                   height: 20,
                   width: 20,
-                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2,
+                  ),
                 )
               : Text(
                   widget.item == null ? 'Simpan Data' : 'Simpan Perubahan',
-                  style: GoogleFonts.plusJakartaSans(
+                  style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w800,
                     fontSize: 14,
                     color: Colors.white,
@@ -303,13 +345,21 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                 if (isDesa)
                   TextFormField(
                     controller: _desaCtrl,
-                    style: GoogleFonts.plusJakartaSans(fontSize: 13.5, fontWeight: FontWeight.w600),
-                    decoration: _inputDecoration('TP PKK Desa', 'Contoh: Singaparna'),
+                    style: GoogleFonts.poppins(
+                      fontSize: 13.5,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    decoration: _inputDecoration(
+                      'TP PKK Desa',
+                      'Contoh: Singaparna',
+                    ),
                     validator: (v) => v!.isEmpty ? 'Wajib diisi' : null,
                   ),
                 if (isDesa) const SizedBox(height: 12),
                 KecamatanDropdownField(
-                  value: _kecCtrl.text.isNotEmpty ? _kecCtrl.text : 'Singaparna',
+                  value: _kecCtrl.text.isNotEmpty
+                      ? _kecCtrl.text
+                      : 'Singaparna',
                   controller: _kecCtrl,
                   onChanged: (val) {
                     if (val != null) setState(() => _kecCtrl.text = val);
@@ -321,8 +371,11 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                     Expanded(
                       child: TextFormField(
                         controller: _kabCtrl,
-                        style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
-                        decoration: _inputDecoration('Kabupaten', 'TASIKMALAYA'),
+                        style: GoogleFonts.poppins(fontSize: 13.5),
+                        decoration: _inputDecoration(
+                          'Kabupaten',
+                          'TASIKMALAYA',
+                        ),
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -330,7 +383,7 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                       child: TextFormField(
                         controller: _tahunCtrl,
                         keyboardType: TextInputType.number,
-                        style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
+                        style: GoogleFonts.poppins(fontSize: 13.5),
                         decoration: _inputDecoration('Tahun', '2026'),
                       ),
                     ),
@@ -351,16 +404,30 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                 if (isDesa)
                   TextFormField(
                     controller: _namaDusunCtrl,
-                    style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.w700),
-                    decoration: _inputDecoration('Nama Dusun / Lingkungan', 'Contoh: Dusun Cikunir / Dusun 01'),
-                    validator: (v) => v!.isEmpty ? 'Nama Dusun tidak boleh kosong' : null,
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    decoration: _inputDecoration(
+                      'Nama Dusun / Lingkungan',
+                      'Contoh: Dusun Cikunir / Dusun 01',
+                    ),
+                    validator: (v) =>
+                        v!.isEmpty ? 'Nama Dusun tidak boleh kosong' : null,
                   )
                 else
                   TextFormField(
                     controller: _namaDesaCtrl,
-                    style: GoogleFonts.plusJakartaSans(fontSize: 14, fontWeight: FontWeight.w700),
-                    decoration: _inputDecoration('Nama Desa', 'Contoh: Desa Singaparna / Desa Cintaraja'),
-                    validator: (v) => v!.isEmpty ? 'Nama Desa tidak boleh kosong' : null,
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    decoration: _inputDecoration(
+                      'Nama Desa',
+                      'Contoh: Desa Singaparna / Desa Cintaraja',
+                    ),
+                    validator: (v) =>
+                        v!.isEmpty ? 'Nama Desa tidak boleh kosong' : null,
                   ),
               ],
             ),
@@ -376,7 +443,10 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                   TextFormField(
                     controller: _jumlahDusunCtrl,
                     keyboardType: TextInputType.number,
-                    decoration: _inputDecoration('Kolom 3: Jumlah Dusun / Lingkungan', '0'),
+                    decoration: _inputDecoration(
+                      'Kolom 3: Jumlah Dusun / Lingkungan',
+                      '0',
+                    ),
                   ),
                   const SizedBox(height: 12),
                 ],
@@ -386,7 +456,10 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                       child: TextFormField(
                         controller: _jumlahPkkRwCtrl,
                         keyboardType: TextInputType.number,
-                        decoration: _inputDecoration(isDesa ? 'Kol 3: PKK RW' : 'Kol 4: PKK RW', '0'),
+                        decoration: _inputDecoration(
+                          isDesa ? 'Kol 3: PKK RW' : 'Kol 4: PKK RW',
+                          '0',
+                        ),
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -394,7 +467,10 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                       child: TextFormField(
                         controller: _jumlahPkkRtCtrl,
                         keyboardType: TextInputType.number,
-                        decoration: _inputDecoration(isDesa ? 'Kol 4: PKK RT' : 'Kol 5: PKK RT', '0'),
+                        decoration: _inputDecoration(
+                          isDesa ? 'Kol 4: PKK RT' : 'Kol 5: PKK RT',
+                          '0',
+                        ),
                       ),
                     ),
                   ],
@@ -403,7 +479,12 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                 TextFormField(
                   controller: _jumlahDasaWismaCtrl,
                   keyboardType: TextInputType.number,
-                  decoration: _inputDecoration(isDesa ? 'Kolom 5: Jumlah Kelompok Dasa Wisma' : 'Kolom 6: Jumlah Kelompok Dasa Wisma', '0'),
+                  decoration: _inputDecoration(
+                    isDesa
+                        ? 'Kolom 5: Jumlah Kelompok Dasa Wisma'
+                        : 'Kolom 6: Jumlah Kelompok Dasa Wisma',
+                    '0',
+                  ),
                 ),
               ],
             ),
@@ -421,7 +502,10 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                       child: TextFormField(
                         controller: _jumlahKrtCtrl,
                         keyboardType: TextInputType.number,
-                        decoration: _inputDecoration(isDesa ? 'Kol 6: Jumlah KRT' : 'Kol 7: Jumlah KRT', '0'),
+                        decoration: _inputDecoration(
+                          isDesa ? 'Kol 6: Jumlah KRT' : 'Kol 7: Jumlah KRT',
+                          '0',
+                        ),
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -429,7 +513,10 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                       child: TextFormField(
                         controller: _jumlahKkCtrl,
                         keyboardType: TextInputType.number,
-                        decoration: _inputDecoration(isDesa ? 'Kol 7: Jumlah KK' : 'Kol 8: Jumlah KK', '0'),
+                        decoration: _inputDecoration(
+                          isDesa ? 'Kol 7: Jumlah KK' : 'Kol 8: Jumlah KK',
+                          '0',
+                        ),
                       ),
                     ),
                   ],
@@ -441,7 +528,10 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                       child: TextFormField(
                         controller: _jiwaLCtrl,
                         keyboardType: TextInputType.number,
-                        decoration: _inputDecoration(isDesa ? 'Kol 8: Jiwa (L)' : 'Kol 9: Jiwa (L)', '0'),
+                        decoration: _inputDecoration(
+                          isDesa ? 'Kol 8: Jiwa (L)' : 'Kol 9: Jiwa (L)',
+                          '0',
+                        ),
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -449,7 +539,10 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                       child: TextFormField(
                         controller: _jiwaPCtrl,
                         keyboardType: TextInputType.number,
-                        decoration: _inputDecoration(isDesa ? 'Kol 9: Jiwa (P)' : 'Kol 10: Jiwa (P)', '0'),
+                        decoration: _inputDecoration(
+                          isDesa ? 'Kol 9: Jiwa (P)' : 'Kol 10: Jiwa (P)',
+                          '0',
+                        ),
                       ),
                     ),
                   ],
@@ -471,7 +564,10 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                       child: TextFormField(
                         controller: _kaderTpPkkLCtrl,
                         keyboardType: TextInputType.number,
-                        decoration: _inputDecoration(isDesa ? 'Kol 10: L' : 'Kol 11: L', '0'),
+                        decoration: _inputDecoration(
+                          isDesa ? 'Kol 10: L' : 'Kol 11: L',
+                          '0',
+                        ),
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -479,7 +575,10 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                       child: TextFormField(
                         controller: _kaderTpPkkPCtrl,
                         keyboardType: TextInputType.number,
-                        decoration: _inputDecoration(isDesa ? 'Kol 11: P' : 'Kol 12: P', '0'),
+                        decoration: _inputDecoration(
+                          isDesa ? 'Kol 11: P' : 'Kol 12: P',
+                          '0',
+                        ),
                       ),
                     ),
                   ],
@@ -492,7 +591,10 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                       child: TextFormField(
                         controller: _kaderUmumLCtrl,
                         keyboardType: TextInputType.number,
-                        decoration: _inputDecoration(isDesa ? 'Kol 12: L' : 'Kol 13: L', '0'),
+                        decoration: _inputDecoration(
+                          isDesa ? 'Kol 12: L' : 'Kol 13: L',
+                          '0',
+                        ),
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -500,7 +602,10 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                       child: TextFormField(
                         controller: _kaderUmumPCtrl,
                         keyboardType: TextInputType.number,
-                        decoration: _inputDecoration(isDesa ? 'Kol 13: P' : 'Kol 14: P', '0'),
+                        decoration: _inputDecoration(
+                          isDesa ? 'Kol 13: P' : 'Kol 14: P',
+                          '0',
+                        ),
                       ),
                     ),
                   ],
@@ -513,7 +618,10 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                       child: TextFormField(
                         controller: _kaderKhususLCtrl,
                         keyboardType: TextInputType.number,
-                        decoration: _inputDecoration(isDesa ? 'Kol 14: L' : 'Kol 15: L', '0'),
+                        decoration: _inputDecoration(
+                          isDesa ? 'Kol 14: L' : 'Kol 15: L',
+                          '0',
+                        ),
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -521,7 +629,10 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                       child: TextFormField(
                         controller: _kaderKhususPCtrl,
                         keyboardType: TextInputType.number,
-                        decoration: _inputDecoration(isDesa ? 'Kol 15: P' : 'Kol 16: P', '0'),
+                        decoration: _inputDecoration(
+                          isDesa ? 'Kol 15: P' : 'Kol 16: P',
+                          '0',
+                        ),
                       ),
                     ),
                   ],
@@ -543,7 +654,10 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                       child: TextFormField(
                         controller: _sekretariatHonorerLCtrl,
                         keyboardType: TextInputType.number,
-                        decoration: _inputDecoration(isDesa ? 'Kol 16: L' : 'Kol 17: L', '0'),
+                        decoration: _inputDecoration(
+                          isDesa ? 'Kol 16: L' : 'Kol 17: L',
+                          '0',
+                        ),
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -551,7 +665,10 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                       child: TextFormField(
                         controller: _sekretariatHonorerPCtrl,
                         keyboardType: TextInputType.number,
-                        decoration: _inputDecoration(isDesa ? 'Kol 17: P' : 'Kol 18: P', '0'),
+                        decoration: _inputDecoration(
+                          isDesa ? 'Kol 17: P' : 'Kol 18: P',
+                          '0',
+                        ),
                       ),
                     ),
                   ],
@@ -564,7 +681,10 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                       child: TextFormField(
                         controller: _sekretariatBantuanLCtrl,
                         keyboardType: TextInputType.number,
-                        decoration: _inputDecoration(isDesa ? 'Kol 18: L' : 'Kol 19: L', '0'),
+                        decoration: _inputDecoration(
+                          isDesa ? 'Kol 18: L' : 'Kol 19: L',
+                          '0',
+                        ),
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -572,7 +692,10 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                       child: TextFormField(
                         controller: _sekretariatBantuanPCtrl,
                         keyboardType: TextInputType.number,
-                        decoration: _inputDecoration(isDesa ? 'Kol 19: P' : 'Kol 20: P', '0'),
+                        decoration: _inputDecoration(
+                          isDesa ? 'Kol 19: P' : 'Kol 20: P',
+                          '0',
+                        ),
                       ),
                     ),
                   ],
@@ -590,8 +713,11 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                 TextFormField(
                   controller: _keteranganCtrl,
                   maxLines: 3,
-                  style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
-                  decoration: _inputDecoration('Catatan / Keterangan', 'Tambahkan informasi tambahan bila ada...'),
+                  style: GoogleFonts.poppins(fontSize: 13.5),
+                  decoration: _inputDecoration(
+                    'Catatan / Keterangan',
+                    'Tambahkan informasi tambahan bila ada...',
+                  ),
                 ),
               ],
             ),
@@ -637,7 +763,7 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
               Expanded(
                 child: Text(
                   title,
-                  style: GoogleFonts.plusJakartaSans(
+                  style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w800,
                     fontSize: 13.5,
                     color: _darkText,
@@ -658,7 +784,7 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
       padding: const EdgeInsets.only(bottom: 6),
       child: Text(
         label,
-        style: GoogleFonts.plusJakartaSans(
+        style: GoogleFonts.poppins(
           fontSize: 12,
           fontWeight: FontWeight.w700,
           color: const Color(0xFF475569),
@@ -670,9 +796,15 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
   InputDecoration _inputDecoration(String label, String hint) {
     return InputDecoration(
       labelText: label,
-      labelStyle: GoogleFonts.plusJakartaSans(fontSize: 13, color: const Color(0xFF64748B)),
+      labelStyle: GoogleFonts.poppins(
+        fontSize: 13,
+        color: const Color(0xFF64748B),
+      ),
       hintText: hint,
-      hintStyle: GoogleFonts.plusJakartaSans(fontSize: 12.5, color: const Color(0xFF94A3B8)),
+      hintStyle: GoogleFonts.poppins(
+        fontSize: 12.5,
+        color: const Color(0xFF94A3B8),
+      ),
       filled: true,
       fillColor: const Color(0xFFF8FAFC),
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),

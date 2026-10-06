@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../models/data_keluarga_dasawisma.dart';
-import '../../services/data_keluarga_dasawisma_service.dart';
+import '../../services/daftar_warga_service.dart';
 import 'data_keluarga_dasawisma_form_screen.dart';
 
 class KeluargaListScreen extends StatefulWidget {
@@ -18,7 +18,7 @@ class KeluargaListScreen extends StatefulWidget {
 }
 
 class _KeluargaListScreenState extends State<KeluargaListScreen> {
-  final _service = DataKeluargaDasawismaService();
+  final _service = DaftarWargaService();
   final _search = TextEditingController();
   late Future<List<DataKeluargaDasawisma>> _future;
 
@@ -45,7 +45,7 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const primary = Color(0xFF0072BC);
+    const primary = Color(0xFF0D9488);
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: widget.embedded
@@ -65,7 +65,7 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
               ),
               title: Text(
                 'Data KK',
-                style: GoogleFonts.plusJakartaSans(
+                style: GoogleFonts.poppins(
                   fontSize: 17,
                   fontWeight: FontWeight.w700,
                   color: const Color(0xFF0F172A),
@@ -91,7 +91,7 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
               foregroundColor: Colors.white,
               label: Text(
                 'Tambah Data KK',
-                style: GoogleFonts.plusJakartaSans(
+                style: GoogleFonts.poppins(
                   fontWeight: FontWeight.w700,
                   fontSize: 14,
                 ),
@@ -105,7 +105,7 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
             child: TextField(
               controller: _search,
               onChanged: (_) => _reload(),
-              style: GoogleFonts.plusJakartaSans(
+              style: GoogleFonts.poppins(
                 fontSize: 13,
                 color: const Color(0xFF0F172A),
               ),
@@ -116,7 +116,7 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
                   color: Color(0xFF64748B),
                 ),
                 hintText: 'Cari kepala keluarga, Dusun, RT, atau RW',
-                hintStyle: GoogleFonts.plusJakartaSans(
+                hintStyle: GoogleFonts.poppins(
                   fontSize: 13,
                   color: const Color(0xFF64748B),
                 ),
@@ -145,6 +145,40 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
                     ),
                   );
                 }
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(
+                            Icons.cloud_off_rounded,
+                            size: 42,
+                            color: Color(0xFFDC2626),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            snapshot.error.toString().replaceFirst(
+                              'Exception: ',
+                              '',
+                            ),
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.poppins(
+                              color: const Color(0xFF475569),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          OutlinedButton.icon(
+                            onPressed: _reload,
+                            icon: const Icon(Icons.refresh_rounded),
+                            label: const Text('Coba lagi'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
                 final items = snapshot.data ?? [];
                 if (items.isEmpty) {
                   return Center(
@@ -168,7 +202,7 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
                           const SizedBox(height: 16),
                           Text(
                             'Belum Ada Data KK',
-                            style: GoogleFonts.plusJakartaSans(
+                            style: GoogleFonts.poppins(
                               fontSize: 17,
                               fontWeight: FontWeight.w700,
                               color: const Color(0xFF0F172A),
@@ -178,7 +212,7 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
                           Text(
                             'Tambah data KK dari keluarga binaan.',
                             textAlign: TextAlign.center,
-                            style: GoogleFonts.plusJakartaSans(
+                            style: GoogleFonts.poppins(
                               fontSize: 13,
                               color: const Color(0xFF64748B),
                             ),
@@ -193,7 +227,7 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
                   itemCount: items.length,
                   itemBuilder: (_, index) {
                     final item = items[index];
-                    final jiwa = item.jumlahLakiLaki + item.jumlahPerempuan;
+                    final jiwa = item.totalAnggota;
                     return Container(
                       margin: const EdgeInsets.only(bottom: 12),
                       decoration: BoxDecoration(
@@ -238,7 +272,7 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
                                           : 'Tanpa nama',
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: GoogleFonts.plusJakartaSans(
+                                      style: GoogleFonts.poppins(
                                         fontSize: 15,
                                         fontWeight: FontWeight.w700,
                                         color: const Color(0xFF0F172A),
@@ -247,7 +281,7 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
                                     const SizedBox(height: 3),
                                     Text(
                                       'KK ${item.nomorKk.isEmpty ? '-' : item.nomorKk} • $jiwa jiwa',
-                                      style: GoogleFonts.plusJakartaSans(
+                                      style: GoogleFonts.poppins(
                                         fontSize: 12.5,
                                         fontWeight: FontWeight.w600,
                                         color: primary,
@@ -258,9 +292,40 @@ class _KeluargaListScreenState extends State<KeluargaListScreen> {
                                       '${item.dusun.isEmpty ? 'Dusun belum diisi' : item.dusun} • RT ${item.rt}/RW ${item.rw}',
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: GoogleFonts.plusJakartaSans(
+                                      style: GoogleFonts.poppins(
                                         fontSize: 12,
                                         color: const Color(0xFF64748B),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 3,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: item.status == 'approved'
+                                            ? const Color(0xFFDCFCE7)
+                                            : item.status == 'rejected'
+                                            ? const Color(0xFFFEE2E2)
+                                            : const Color(0xFFFFF7ED),
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Text(
+                                        item.status == 'approved'
+                                            ? 'Disetujui'
+                                            : item.status == 'rejected'
+                                            ? 'Perlu diperbaiki'
+                                            : 'Menunggu persetujuan',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w700,
+                                          color: item.status == 'approved'
+                                              ? const Color(0xFF15803D)
+                                              : item.status == 'rejected'
+                                              ? const Color(0xFFB91C1C)
+                                              : const Color(0xFFC2410C),
+                                        ),
                                       ),
                                     ),
                                   ],

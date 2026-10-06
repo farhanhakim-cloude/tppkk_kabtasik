@@ -1,6 +1,5 @@
 // lib/services/auth_service.dart
 
-// ignore_for_file: avoid_print
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,53 +13,62 @@ class AuthService {
   // LOGIN - KONEK KE API LARAVEL
   // ============================================================
   Future<Map<String, dynamic>> login(String username, String password) async {
+    final response = await _client.post(
+      Uri.parse('${AppConstants.baseUrl}${AppConstants.login}'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: jsonEncode({
+        'username': username,
+        'password': password,
+      }),
+    );
+
+    final Map<String, dynamic> responseData;
     try {
-      final response = await _client.post(
-        Uri.parse('${AppConstants.baseUrl}${AppConstants.login}'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: jsonEncode({
-          'username': username,
-          'password': password,
-        }),
-      );
-
-      print('ðŸ” LOGIN RESPONSE [${response.statusCode}]: ${response.body}');
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-
-        // Ambil token & user dari response
-        final token = data['data']['token'] ?? '';
-        final userData = data['data']['user'] ?? {};
-
-        print('ðŸ” TOKEN SAVED: "$token"');
-
-        // Simpan token dan user data ke SharedPreferences
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString(AppConstants.tokenKey, token);
-        await prefs.setString(AppConstants.userKey, jsonEncode(userData));
-        await prefs.setBool('isLoggedIn', true);
-
-        return data;
-      } else if (response.statusCode == 401 || response.statusCode == 403) {
-        // Coba ambil pesan error dari response
-        try {
-          final err = jsonDecode(response.body);
-          throw Exception(err['message'] ?? 'Username atau password salah');
-        } catch (_) {
-          throw Exception('Username atau password salah');
-        }
-      } else if (response.statusCode == 422) {
-        throw Exception('Validasi gagal. Cek username & password.');
-      } else {
-        throw Exception('Login gagal: ${response.statusCode}');
+      final decoded = jsonDecode(response.body);
+      if (decoded is! Map<String, dynamic>) {
+        throw const FormatException('Format respons server tidak sesuai.');
       }
-    } catch (e) {
-      throw Exception('Terjadi kesalahan: $e');
+      responseData = decoded;
+    } on FormatException {
+      throw Exception('Server mengirim respons yang tidak valid.');
     }
+
+    if (response.statusCode != 200) {
+      final message = responseData['message'];
+      if (message is String && message.isNotEmpty) {
+        throw Exception(message);
+      }
+      if (response.statusCode == 401) {
+        throw Exception('Username atau password salah.');
+      }
+      if (response.statusCode == 403) {
+        throw Exception('Akun ini tidak memiliki akses ke aplikasi mobile.');
+      }
+      if (response.statusCode == 422) {
+        throw Exception('Validasi login gagal. Periksa username dan password.');
+      }
+      throw Exception('Login gagal (HTTP ${response.statusCode}).');
+    }
+
+    final payload = responseData['data'];
+    if (payload is! Map<String, dynamic> ||
+        payload['token'] is! String ||
+        (payload['token'] as String).isEmpty ||
+        payload['user'] is! Map<String, dynamic>) {
+      throw Exception('Respons login server tidak berisi token dan data akun yang valid.');
+    }
+
+    final token = payload['token'] as String;
+    final userData = payload['user'] as Map<String, dynamic>;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(AppConstants.tokenKey, token);
+    await prefs.setString(AppConstants.userKey, jsonEncode(userData));
+    await prefs.setBool(AppConstants.isLoggedInKey, true);
+
+    return responseData;
   }
 
   // ============================================================

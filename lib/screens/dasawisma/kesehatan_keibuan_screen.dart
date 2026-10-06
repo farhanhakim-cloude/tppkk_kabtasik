@@ -21,7 +21,7 @@ class KesehatanKeibuanScreen extends StatefulWidget {
 class _KesehatanKeibuanScreenState extends State<KesehatanKeibuanScreen> {
   late int _selectedTab;
 
-  static const Color _tealPrimary = Color(0xFF0072BC);
+  static const Color _tealPrimary = Color(0xFF0D9488);
   static const Color _pinkAccent = Color(0xFFE11D48);
 
   @override
@@ -75,7 +75,7 @@ class _KesehatanKeibuanScreenState extends State<KesehatanKeibuanScreen> {
                   title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.plusJakartaSans(
+                  style: GoogleFonts.poppins(
                     fontSize: 12.5,
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                     color: isSelected ? activeColor : const Color(0xFF64748B),
@@ -105,7 +105,7 @@ class _KesehatanKeibuanScreenState extends State<KesehatanKeibuanScreen> {
                 children: [
                   Text(
                     'Kesehatan Balita & Keibuan',
-                    style: GoogleFonts.plusJakartaSans(
+                    style: GoogleFonts.poppins(
                       fontSize: 17,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFF0F172A),
@@ -114,7 +114,7 @@ class _KesehatanKeibuanScreenState extends State<KesehatanKeibuanScreen> {
                   ),
                   Text(
                     'Catatan Kelahiran, Ibu & Pemantauan Balita',
-                    style: GoogleFonts.plusJakartaSans(
+                    style: GoogleFonts.poppins(
                       fontSize: 11.5,
                       color: const Color(0xFF64748B),
                       fontWeight: FontWeight.w500,

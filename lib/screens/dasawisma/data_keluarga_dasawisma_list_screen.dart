@@ -32,7 +32,7 @@ class _DataKeluargaDasawismaListScreenState
   late Future<List<DataKeluargaDasawisma>> _futureDasawisma;
   late Future<List<RekapKegiatanWargaBerjenjangItem>> _futureBerjenjang;
 
-  static const Color _primary = Color(0xFF0072BC);
+  static const Color _primary = Color(0xFF0D9488);
   static const Color _darkText = Color(0xFF0F172A);
 
   @override
@@ -83,10 +83,10 @@ class _DataKeluargaDasawismaListScreenState
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text('Hitung Otomatis dari Dasawisma?',
-            style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800)),
+            style: GoogleFonts.poppins(fontWeight: FontWeight.w800)),
         content: Text(
             'Sistem akan merekap dan mengkalkulasi otomatis seluruh data warga & kegiatan ke form ${_getTingkatLabel(_selectedTingkat)}.',
-            style: GoogleFonts.plusJakartaSans(fontSize: 13)),
+            style: GoogleFonts.poppins(fontSize: 13)),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Batal')),
           ElevatedButton(
@@ -118,7 +118,7 @@ class _DataKeluargaDasawismaListScreenState
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text('Hapus Data Rekapitulasi?',
-            style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800)),
+            style: GoogleFonts.poppins(fontWeight: FontWeight.w800)),
         content: const Text('Data yang dihapus tidak dapat dikembalikan.'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Batal')),
@@ -217,11 +217,11 @@ class _DataKeluargaDasawismaListScreenState
                 ),
               ),
               title: Text('Data & Kegiatan Warga',
-                  style: GoogleFonts.plusJakartaSans(
+                  style: GoogleFonts.poppins(
                       fontWeight: FontWeight.w800, fontSize: 17, color: const Color(0xFF0F172A))),
               actions: [
                 IconButton(
-                    icon: const Icon(Icons.refresh_rounded, color: Color(0xFF0072BC)),
+                    icon: const Icon(Icons.refresh_rounded, color: Color(0xFF0D9488)),
                     onPressed: _reload)
               ],
             ),
@@ -241,7 +241,7 @@ class _DataKeluargaDasawismaListScreenState
           _selectedTingkat == 'dasawisma'
               ? 'Tambah Data Warga'
               : 'Catat Rekap ${_selectedTingkat.toUpperCase()}',
-          style: GoogleFonts.plusJakartaSans(
+          style: GoogleFonts.poppins(
               fontWeight: FontWeight.w700, color: Colors.white, fontSize: 13.5),
         ),
       ),
@@ -265,7 +265,7 @@ class _DataKeluargaDasawismaListScreenState
         ),
         child: Text(
           label,
-          style: GoogleFonts.plusJakartaSans(
+          style: GoogleFonts.poppins(
             fontSize: 12.5,
             fontWeight: sel ? FontWeight.w800 : FontWeight.w600,
             color: sel ? Colors.white : const Color(0xFF475569),
@@ -302,13 +302,13 @@ class _DataKeluargaDasawismaListScreenState
                   children: [
                     Text(
                       'Data & Kegiatan Warga',
-                      style: GoogleFonts.plusJakartaSans(
+                      style: GoogleFonts.poppins(
                           fontWeight: FontWeight.w800, fontSize: 15, color: _darkText),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       'Format Binaan Perorangan Kelompok Dasa Wisma',
-                      style: GoogleFonts.plusJakartaSans(
+                      style: GoogleFonts.poppins(
                           fontSize: 11.5, color: const Color(0xFF64748B)),
                     ),
                   ],
@@ -318,7 +318,7 @@ class _DataKeluargaDasawismaListScreenState
                 onPressed: () => _openDasawismaForm(),
                 icon: const Icon(Icons.add_rounded, size: 18, color: Colors.white),
                 label: Text('Tambah Data',
-                    style: GoogleFonts.plusJakartaSans(
+                    style: GoogleFonts.poppins(
                         fontWeight: FontWeight.w700, fontSize: 12.5, color: Colors.white)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _primary,
@@ -343,10 +343,10 @@ class _DataKeluargaDasawismaListScreenState
             ),
             child: TextField(
               controller: _searchController,
-              style: GoogleFonts.plusJakartaSans(fontSize: 13.5, color: _darkText),
+              style: GoogleFonts.poppins(fontSize: 13.5, color: _darkText),
               decoration: InputDecoration(
                 hintText: 'Cari kepala RT, Dasa Wisma, desa...',
-                hintStyle: GoogleFonts.plusJakartaSans(fontSize: 13, color: const Color(0xFF94A3B8)),
+                hintStyle: GoogleFonts.poppins(fontSize: 13, color: const Color(0xFF94A3B8)),
                 prefixIcon: const Icon(Icons.search_rounded, size: 20, color: Color(0xFF94A3B8)),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
@@ -387,19 +387,19 @@ class _DataKeluargaDasawismaListScreenState
                       ),
                       const SizedBox(height: 16),
                       Text('Belum ada data Dasawisma',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: GoogleFonts.poppins(
                               fontSize: 16, fontWeight: FontWeight.w800, color: _darkText)),
                       const SizedBox(height: 6),
                       Text('Mulai catat Dasa Wisma, RT/RW dan anggota keluarga',
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.plusJakartaSans(
+                          style: GoogleFonts.poppins(
                               fontSize: 13, color: const Color(0xFF64748B), height: 1.4)),
                       const SizedBox(height: 18),
                       ElevatedButton.icon(
                         onPressed: () => _openDasawismaForm(),
                         icon: const Icon(Icons.add_rounded, size: 18, color: Colors.white),
                         label: Text('Input Dasawisma',
-                            style: GoogleFonts.plusJakartaSans(
+                            style: GoogleFonts.poppins(
                                 fontWeight: FontWeight.w700, color: Colors.white)),
                         style: ElevatedButton.styleFrom(
                             backgroundColor: _primary,
@@ -525,7 +525,7 @@ class _DataKeluargaDasawismaListScreenState
                     children: [
                       Text(
                         'Rekapitulasi ${_getTingkatLabel(level)}',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: GoogleFonts.poppins(
                             fontWeight: FontWeight.w800, fontSize: 13.5, color: _darkText),
                       ),
                       Row(
@@ -534,7 +534,7 @@ class _DataKeluargaDasawismaListScreenState
                             onPressed: _autoFillFromDasawisma,
                             icon: const Icon(Icons.auto_awesome_rounded, size: 14, color: _primary),
                             label: Text('Auto-Isi',
-                                style: GoogleFonts.plusJakartaSans(
+                                style: GoogleFonts.poppins(
                                     fontSize: 11.5, fontWeight: FontWeight.w700, color: _primary)),
                             style: OutlinedButton.styleFrom(
                               side: const BorderSide(color: _primary),
@@ -547,7 +547,7 @@ class _DataKeluargaDasawismaListScreenState
                             onPressed: () => _openTierForm(),
                             icon: const Icon(Icons.add_rounded, size: 16, color: Colors.white),
                             label: Text('Catat Data',
-                                style: GoogleFonts.plusJakartaSans(
+                                style: GoogleFonts.poppins(
                                     fontWeight: FontWeight.w700,
                                     fontSize: 11.5,
                                     color: Colors.white)),
@@ -567,7 +567,7 @@ class _DataKeluargaDasawismaListScreenState
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        _SummaryChip(label: 'Total KRT', val: '$tKrt', color: const Color(0xFF0072BC)),
+                        _SummaryChip(label: 'Total KRT', val: '$tKrt', color: const Color(0xFF0D9488)),
                         _SummaryChip(label: 'Total KK', val: '$tKk', color: const Color(0xFF0284C7)),
                         _SummaryChip(label: 'Total Jiwa', val: '$tWarga', color: const Color(0xFF6366F1)),
                         _SummaryChip(label: 'PUS / WUS', val: '$tPus / $tWus', color: const Color(0xFF8B5CF6)),
@@ -586,10 +586,10 @@ class _DataKeluargaDasawismaListScreenState
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 6),
               child: TextField(
                 controller: _searchController,
-                style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
+                style: GoogleFonts.poppins(fontSize: 13.5),
                 decoration: InputDecoration(
                   hintText: 'Cari nama pengenal, RT, RW, atau dusun...',
-                  hintStyle: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[400]),
+                  hintStyle: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[400]),
                   prefixIcon: const Icon(Icons.search, size: 20),
                   filled: true,
                   fillColor: Colors.white,
@@ -611,7 +611,7 @@ class _DataKeluargaDasawismaListScreenState
                           Icon(Icons.folder_off_outlined, size: 56, color: Colors.grey[300]),
                           const SizedBox(height: 12),
                           Text('Belum ada data rekap untuk ${_getTingkatLabel(level)}',
-                              style: GoogleFonts.plusJakartaSans(color: Colors.grey[500])),
+                              style: GoogleFonts.poppins(color: Colors.grey[500])),
                           const SizedBox(height: 12),
                           ElevatedButton.icon(
                             onPressed: () => _openTierForm(),
@@ -694,7 +694,7 @@ class _DataKeluargaDasawismaListScreenState
                                                 Expanded(
                                                   child: Text(
                                                     title,
-                                                    style: GoogleFonts.plusJakartaSans(
+                                                    style: GoogleFonts.poppins(
                                                         fontWeight: FontWeight.w800,
                                                         fontSize: 15,
                                                         color: _darkText),
@@ -706,7 +706,7 @@ class _DataKeluargaDasawismaListScreenState
                                             const SizedBox(height: 3),
                                             Text(
                                               subtitle,
-                                              style: GoogleFonts.plusJakartaSans(
+                                              style: GoogleFonts.poppins(
                                                   fontSize: 12, color: Colors.grey[600]),
                                             ),
                                           ],
@@ -811,7 +811,7 @@ class _DasawismaCard extends StatelessWidget {
                             item.namaKepalaRumahTangga.isNotEmpty
                                 ? item.namaKepalaRumahTangga
                                 : 'Kepala Rumah Tangga',
-                            style: GoogleFonts.plusJakartaSans(
+                            style: GoogleFonts.poppins(
                                 fontWeight: FontWeight.w800,
                                 fontSize: 14.5,
                                 color: const Color(0xFF0F172A)),
@@ -819,7 +819,7 @@ class _DasawismaCard extends StatelessWidget {
                           const SizedBox(height: 2),
                           Text(
                             'Kelompok ${item.dasaWisma} • RT ${item.rt}/RW ${item.rw}',
-                            style: GoogleFonts.plusJakartaSans(
+                            style: GoogleFonts.poppins(
                                 fontSize: 11.5, color: const Color(0xFF64748B)),
                           ),
                         ],
@@ -835,7 +835,7 @@ class _DasawismaCard extends StatelessWidget {
                       ),
                       child: Text(
                         item.kriteriaRumah,
-                        style: GoogleFonts.plusJakartaSans(
+                        style: GoogleFonts.poppins(
                           fontSize: 10.5,
                           fontWeight: FontWeight.w700,
                           color: item.kriteriaRumah == 'Sehat'
@@ -854,7 +854,7 @@ class _DasawismaCard extends StatelessWidget {
                     _MiniBadge(label: '${item.jumlahKk} KK', color: const Color(0xFF2563EB)),
                     _MiniBadge(
                         label: '${item.jumlahLakiLaki + item.jumlahPerempuan} Jiwa',
-                        color: const Color(0xFF7C3AED)),
+                        color: const Color(0xFF0D9488)),
                     _MiniBadge(label: '${item.jumlahBalita} Balita', color: const Color(0xFF059669)),
                     if (item.jumlahIbuHamil > 0)
                       _MiniBadge(
@@ -888,7 +888,7 @@ class _MetricChip extends StatelessWidget {
           Icon(icon, size: 14, color: color),
           const SizedBox(width: 5),
           Text(label,
-              style: GoogleFonts.plusJakartaSans(
+              style: GoogleFonts.poppins(
                   fontSize: 11.5, fontWeight: FontWeight.w700, color: color)),
         ],
       ),
@@ -912,7 +912,7 @@ class _MiniBadge extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: GoogleFonts.plusJakartaSans(
+        style: GoogleFonts.poppins(
             fontSize: 10.5, fontWeight: FontWeight.w700, color: color),
       ),
     );
@@ -940,10 +940,10 @@ class _SummaryChip extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text('$label: ',
-              style: GoogleFonts.plusJakartaSans(
+              style: GoogleFonts.poppins(
                   fontSize: 11, fontWeight: FontWeight.w600, color: color)),
           Text(val,
-              style: GoogleFonts.plusJakartaSans(
+              style: GoogleFonts.poppins(
                   fontSize: 12, fontWeight: FontWeight.w900, color: color)),
         ],
       ),
@@ -967,7 +967,7 @@ class _StatusBadge extends StatelessWidget {
       ),
       child: Text(
         status,
-        style: GoogleFonts.plusJakartaSans(
+        style: GoogleFonts.poppins(
             fontSize: 11, fontWeight: FontWeight.w700, color: primary),
       ),
     );
@@ -990,7 +990,7 @@ class _Chip extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: GoogleFonts.plusJakartaSans(
+        style: GoogleFonts.poppins(
             fontSize: 11, fontWeight: FontWeight.w700, color: color),
       ),
     );

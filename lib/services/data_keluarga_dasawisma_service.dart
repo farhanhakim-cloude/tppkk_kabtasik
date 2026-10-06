@@ -1,5 +1,5 @@
 // lib/services/data_keluarga_dasawisma_service.dart
-// ✅ Pakai SharedPreferences — data tetap tersimpan walau app ditutup
+// Pakai SharedPreferences agar data rekap Dasawisma tetap tersedia lokal.
 
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,9 +15,6 @@ class DataKeluargaDasawismaService {
   List<DataKeluargaDasawisma> _cache = [];
   bool _loaded = false;
 
-  // ─────────────────────────────────────────────────────────
-  // LOAD dari SharedPreferences
-  // ─────────────────────────────────────────────────────────
   Future<void> _ensureLoaded() async {
     if (_loaded) return;
     try {
@@ -37,9 +34,6 @@ class DataKeluargaDasawismaService {
     _loaded = true;
   }
 
-  // ─────────────────────────────────────────────────────────
-  // SIMPAN ke SharedPreferences
-  // ─────────────────────────────────────────────────────────
   Future<void> _persist() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -48,9 +42,6 @@ class DataKeluargaDasawismaService {
     } catch (_) {}
   }
 
-  // ─────────────────────────────────────────────────────────
-  // GET ALL
-  // ─────────────────────────────────────────────────────────
   Future<List<DataKeluargaDasawisma>> getAll({String query = ''}) async {
     await _ensureLoaded();
     if (query.trim().isEmpty) return List.from(_cache);
@@ -65,9 +56,6 @@ class DataKeluargaDasawismaService {
     }).toList();
   }
 
-  // ─────────────────────────────────────────────────────────
-  // GET BY ID
-  // ─────────────────────────────────────────────────────────
   Future<DataKeluargaDasawisma?> getById(int id) async {
     await _ensureLoaded();
     try {
@@ -77,9 +65,6 @@ class DataKeluargaDasawismaService {
     }
   }
 
-  // ─────────────────────────────────────────────────────────
-  // SAVE (INSERT / UPDATE)
-  // ─────────────────────────────────────────────────────────
   Future<DataKeluargaDasawisma> save(DataKeluargaDasawisma item) async {
     await _ensureLoaded();
     final idx = _cache.indexWhere((e) => e.id == item.id);
@@ -87,29 +72,23 @@ class DataKeluargaDasawismaService {
       _cache[idx] = item;
       await _persist();
       return item;
-    } else {
-      final newId = _cache.isEmpty
-          ? 1
-          : (_cache.map((e) => e.id).reduce((a, b) => a > b ? a : b) + 1);
-      final newItem = item.copyWith(id: newId);
-      _cache.insert(0, newItem);
-      await _persist();
-      return newItem;
     }
+
+    final newId = _cache.isEmpty
+        ? 1
+        : (_cache.map((e) => e.id).reduce((a, b) => a > b ? a : b) + 1);
+    final newItem = item.copyWith(id: newId);
+    _cache.insert(0, newItem);
+    await _persist();
+    return newItem;
   }
 
-  // ─────────────────────────────────────────────────────────
-  // DELETE
-  // ─────────────────────────────────────────────────────────
   Future<void> delete(int id) async {
     await _ensureLoaded();
     _cache.removeWhere((e) => e.id == id);
     await _persist();
   }
 
-  // ─────────────────────────────────────────────────────────
-  // CLEAR CACHE (reload dari disk)
-  // ─────────────────────────────────────────────────────────
   void invalidate() {
     _loaded = false;
     _cache = [];

@@ -25,7 +25,7 @@ class _IndustriRumahTanggaListScreenState
   bool _loading = true;
   String _query = '';
 
-  static const Color _primary = Color(0xFF7C3AED);
+  static const Color _primary = Color(0xFF0D9488);
   static const Color _primaryLight = Color(0xFFF5F3FF);
 
   late AnimationController _animController;
@@ -68,17 +68,17 @@ class _IndustriRumahTanggaListScreenState
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           'Hapus Data?',
-          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800),
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w800),
         ),
         content: Text(
           'Data industri atas nama ${d.namaKepalaKeluarga} akan dihapus permanen.',
-          style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
+          style: GoogleFonts.poppins(fontSize: 13.5),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
             child: Text('Batal',
-                style: GoogleFonts.plusJakartaSans(color: Colors.grey[600])),
+                style: GoogleFonts.poppins(color: Colors.grey[600])),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, true),
@@ -90,7 +90,7 @@ class _IndustriRumahTanggaListScreenState
               ),
             ),
             child: Text('Hapus',
-                style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
+                style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
           ),
         ],
       ),
@@ -117,7 +117,7 @@ class _IndustriRumahTanggaListScreenState
           children: [
             Text(
               'Industri Rumah Tangga',
-              style: GoogleFonts.plusJakartaSans(
+              style: GoogleFonts.poppins(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
                 color: const Color(0xFF0F172A),
@@ -125,7 +125,7 @@ class _IndustriRumahTanggaListScreenState
             ),
             Text(
               'Data komoditi & volume usaha',
-              style: GoogleFonts.plusJakartaSans(
+              style: GoogleFonts.poppins(
                 fontSize: 11,
                 color: const Color(0xFF64748B),
               ),
@@ -151,7 +151,7 @@ class _IndustriRumahTanggaListScreenState
         icon: const Icon(Icons.add_rounded),
         label: Text(
           'Tambah Data',
-          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700),
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w700),
         ),
       ),
       body: Column(
@@ -166,7 +166,7 @@ class _IndustriRumahTanggaListScreenState
                 margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0072BC),
+                  color: const Color(0xFF0D9488),
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
@@ -194,14 +194,14 @@ class _IndustriRumahTanggaListScreenState
                         children: [
                           Text(
                             'Total Pelaku Usaha',
-                            style: GoogleFonts.plusJakartaSans(
+                            style: GoogleFonts.poppins(
                               fontSize: 12,
                               color: Colors.white70,
                             ),
                           ),
                           Text(
                             '$total Keluarga',
-                            style: GoogleFonts.plusJakartaSans(
+                            style: GoogleFonts.poppins(
                               fontSize: 22,
                               fontWeight: FontWeight.w900,
                               color: Colors.white,
@@ -215,7 +215,7 @@ class _IndustriRumahTanggaListScreenState
                       children: [
                         Text(
                           '$totalKomoditi',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: GoogleFonts.poppins(
                             fontSize: 20,
                             fontWeight: FontWeight.w900,
                             color: Colors.white,
@@ -223,7 +223,7 @@ class _IndustriRumahTanggaListScreenState
                         ),
                         Text(
                           'Total Komoditi',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: GoogleFonts.poppins(
                             fontSize: 11,
                             color: Colors.white70,
                           ),
@@ -258,10 +258,10 @@ class _IndustriRumahTanggaListScreenState
                   _query = v;
                   _loadData();
                 },
-                style: GoogleFonts.plusJakartaSans(fontSize: 14),
+                style: GoogleFonts.poppins(fontSize: 14),
                 decoration: InputDecoration(
                   hintText: 'Cari nama, dasa wisma, komoditi...',
-                  hintStyle: GoogleFonts.plusJakartaSans(
+                  hintStyle: GoogleFonts.poppins(
                     fontSize: 13,
                     color: Colors.grey[400],
                   ),
@@ -378,7 +378,7 @@ class _IndustriRumahTanggaListScreenState
                       children: [
                         Text(
                           d.namaKepalaKeluarga,
-                          style: GoogleFonts.plusJakartaSans(
+                          style: GoogleFonts.poppins(
                             fontSize: 14,
                             fontWeight: FontWeight.w800,
                             color: const Color(0xFF0F172A),
@@ -386,7 +386,7 @@ class _IndustriRumahTanggaListScreenState
                         ),
                         Text(
                           'RT ${d.rt}/RW ${d.rw} · ${d.dasaWisma.isEmpty ? "Dasa Wisma" : d.dasaWisma} · ${d.bulan} ${d.tahun}',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: GoogleFonts.poppins(
                             fontSize: 11.5,
                             color: const Color(0xFF64748B),
                           ),
@@ -420,7 +420,7 @@ class _IndustriRumahTanggaListScreenState
                                 size: 16, color: Color(0xFF64748B)),
                             const SizedBox(width: 8),
                             Text('Lihat Detail',
-                                style: GoogleFonts.plusJakartaSans()),
+                                style: GoogleFonts.poppins()),
                           ],
                         ),
                       ),
@@ -429,11 +429,11 @@ class _IndustriRumahTanggaListScreenState
                         child: Row(
                           children: [
                             const Icon(Icons.edit_outlined,
-                                size: 16, color: Color(0xFF7C3AED)),
+                                size: 16, color: Color(0xFF0D9488)),
                             const SizedBox(width: 8),
                             Text('Edit',
-                                style: GoogleFonts.plusJakartaSans(
-                                    color: const Color(0xFF7C3AED))),
+                                style: GoogleFonts.poppins(
+                                    color: const Color(0xFF0D9488))),
                           ],
                         ),
                       ),
@@ -445,7 +445,7 @@ class _IndustriRumahTanggaListScreenState
                                 size: 16, color: Colors.red[600]),
                             const SizedBox(width: 8),
                             Text('Hapus',
-                                style: GoogleFonts.plusJakartaSans(
+                                style: GoogleFonts.poppins(
                                     color: Colors.red[600])),
                           ],
                         ),
@@ -479,7 +479,7 @@ class _IndustriRumahTanggaListScreenState
                           width: 28,
                           child: Text(
                             'No',
-                            style: GoogleFonts.plusJakartaSans(
+                            style: GoogleFonts.poppins(
                               fontSize: 10.5,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
@@ -490,7 +490,7 @@ class _IndustriRumahTanggaListScreenState
                           flex: 3,
                           child: Text(
                             'Kategori',
-                            style: GoogleFonts.plusJakartaSans(
+                            style: GoogleFonts.poppins(
                               fontSize: 10.5,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
@@ -501,7 +501,7 @@ class _IndustriRumahTanggaListScreenState
                           flex: 3,
                           child: Text(
                             'Komoditi',
-                            style: GoogleFonts.plusJakartaSans(
+                            style: GoogleFonts.poppins(
                               fontSize: 10.5,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
@@ -513,7 +513,7 @@ class _IndustriRumahTanggaListScreenState
                           child: Text(
                             'Volume',
                             textAlign: TextAlign.right,
-                            style: GoogleFonts.plusJakartaSans(
+                            style: GoogleFonts.poppins(
                               fontSize: 10.5,
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
@@ -546,7 +546,7 @@ class _IndustriRumahTanggaListScreenState
                               width: 28,
                               child: Text(
                                 '${i + 1}',
-                                style: GoogleFonts.plusJakartaSans(
+                                style: GoogleFonts.poppins(
                                   fontSize: 11,
                                   fontWeight: FontWeight.w600,
                                   color: _primary,
@@ -557,7 +557,7 @@ class _IndustriRumahTanggaListScreenState
                               flex: 3,
                               child: Text(
                                 item.kategori.isEmpty ? '-' : item.kategori,
-                                style: GoogleFonts.plusJakartaSans(
+                                style: GoogleFonts.poppins(
                                   fontSize: 11,
                                   color: const Color(0xFF475569),
                                 ),
@@ -568,7 +568,7 @@ class _IndustriRumahTanggaListScreenState
                               flex: 3,
                               child: Text(
                                 item.komoditi.isEmpty ? '-' : item.komoditi,
-                                style: GoogleFonts.plusJakartaSans(
+                                style: GoogleFonts.poppins(
                                   fontSize: 11,
                                   color: const Color(0xFF0F172A),
                                   fontWeight: FontWeight.w600,
@@ -581,7 +581,7 @@ class _IndustriRumahTanggaListScreenState
                               child: Text(
                                 item.volume.isEmpty ? '-' : item.volume,
                                 textAlign: TextAlign.right,
-                                style: GoogleFonts.plusJakartaSans(
+                                style: GoogleFonts.poppins(
                                   fontSize: 11,
                                   color: const Color(0xFF475569),
                                 ),
@@ -609,7 +609,7 @@ class _IndustriRumahTanggaListScreenState
                         child: Text(
                           '+ ${d.items.length - 3} komoditi lainnya • Lihat Semua',
                           textAlign: TextAlign.center,
-                          style: GoogleFonts.plusJakartaSans(
+                          style: GoogleFonts.poppins(
                             fontSize: 11.5,
                             fontWeight: FontWeight.w700,
                             color: _primary,
@@ -639,7 +639,7 @@ class _IndustriRumahTanggaListScreenState
                   const SizedBox(width: 4),
                   Text(
                     '${d.totalKomoditi} komoditi',
-                    style: GoogleFonts.plusJakartaSans(
+                    style: GoogleFonts.poppins(
                       fontSize: 11.5,
                       color: const Color(0xFF94A3B8),
                     ),
@@ -652,7 +652,7 @@ class _IndustriRumahTanggaListScreenState
                     Expanded(
                       child: Text(
                         d.catatan,
-                        style: GoogleFonts.plusJakartaSans(
+                        style: GoogleFonts.poppins(
                           fontSize: 11.5,
                           color: const Color(0xFF94A3B8),
                         ),
@@ -697,7 +697,7 @@ class _IndustriRumahTanggaListScreenState
             _query.isNotEmpty
                 ? 'Tidak ditemukan'
                 : 'Belum ada data industri',
-            style: GoogleFonts.plusJakartaSans(
+            style: GoogleFonts.poppins(
               fontSize: 16,
               fontWeight: FontWeight.w700,
               color: const Color(0xFF475569),
@@ -709,7 +709,7 @@ class _IndustriRumahTanggaListScreenState
                 ? 'Coba kata kunci yang berbeda'
                 : 'Tekan "Tambah Data" untuk menambahkan\ndata industri rumah tangga pertama',
             textAlign: TextAlign.center,
-            style: GoogleFonts.plusJakartaSans(
+            style: GoogleFonts.poppins(
               fontSize: 13,
               color: const Color(0xFF94A3B8),
             ),
@@ -725,7 +725,7 @@ class _DetailSheet extends StatelessWidget {
   final IndustriRumahTangga data;
   const _DetailSheet({required this.data});
 
-  static const Color _primary = Color(0xFF7C3AED);
+  static const Color _primary = Color(0xFF0D9488);
 
   @override
   Widget build(BuildContext context) {
@@ -761,7 +761,7 @@ class _DetailSheet extends StatelessWidget {
                       children: [
                         Text(
                           data.namaKepalaKeluarga,
-                          style: GoogleFonts.plusJakartaSans(
+                          style: GoogleFonts.poppins(
                             fontSize: 16,
                             fontWeight: FontWeight.w800,
                             color: const Color(0xFF0F172A),
@@ -769,7 +769,7 @@ class _DetailSheet extends StatelessWidget {
                         ),
                         Text(
                           'RT ${data.rt}/RW ${data.rw} · ${data.dasaWisma} · ${data.bulan} ${data.tahun}',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: GoogleFonts.poppins(
                             fontSize: 12,
                             color: const Color(0xFF64748B),
                           ),
@@ -786,7 +786,7 @@ class _DetailSheet extends StatelessWidget {
                     ),
                     child: Text(
                       '${data.totalKomoditi} Komoditi',
-                      style: GoogleFonts.plusJakartaSans(
+                      style: GoogleFonts.poppins(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
                         color: _primary,
@@ -816,7 +816,7 @@ class _DetailSheet extends StatelessWidget {
                         SizedBox(
                           width: 32,
                           child: Text('No.',
-                              style: GoogleFonts.plusJakartaSans(
+                              style: GoogleFonts.poppins(
                                   fontSize: 11.5,
                                   fontWeight: FontWeight.w800,
                                   color: Colors.white)),
@@ -824,7 +824,7 @@ class _DetailSheet extends StatelessWidget {
                         Expanded(
                           flex: 3,
                           child: Text('Kategori',
-                              style: GoogleFonts.plusJakartaSans(
+                              style: GoogleFonts.poppins(
                                   fontSize: 11.5,
                                   fontWeight: FontWeight.w800,
                                   color: Colors.white)),
@@ -832,7 +832,7 @@ class _DetailSheet extends StatelessWidget {
                         Expanded(
                           flex: 3,
                           child: Text('Komoditi',
-                              style: GoogleFonts.plusJakartaSans(
+                              style: GoogleFonts.poppins(
                                   fontSize: 11.5,
                                   fontWeight: FontWeight.w800,
                                   color: Colors.white)),
@@ -841,7 +841,7 @@ class _DetailSheet extends StatelessWidget {
                           flex: 2,
                           child: Text('Volume',
                               textAlign: TextAlign.right,
-                              style: GoogleFonts.plusJakartaSans(
+                              style: GoogleFonts.poppins(
                                   fontSize: 11.5,
                                   fontWeight: FontWeight.w800,
                                   color: Colors.white)),
@@ -869,7 +869,7 @@ class _DetailSheet extends StatelessWidget {
                           SizedBox(
                             width: 32,
                             child: Text('${i + 1}.',
-                                style: GoogleFonts.plusJakartaSans(
+                                style: GoogleFonts.poppins(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w700,
                                     color: _primary)),
@@ -878,7 +878,7 @@ class _DetailSheet extends StatelessWidget {
                             flex: 3,
                             child: Text(
                               item.kategori.isEmpty ? '-' : item.kategori,
-                              style: GoogleFonts.plusJakartaSans(
+                              style: GoogleFonts.poppins(
                                   fontSize: 12.5,
                                   color: const Color(0xFF475569)),
                             ),
@@ -887,7 +887,7 @@ class _DetailSheet extends StatelessWidget {
                             flex: 3,
                             child: Text(
                               item.komoditi.isEmpty ? '-' : item.komoditi,
-                              style: GoogleFonts.plusJakartaSans(
+                              style: GoogleFonts.poppins(
                                   fontSize: 12.5,
                                   fontWeight: FontWeight.w600,
                                   color: const Color(0xFF0F172A)),
@@ -898,7 +898,7 @@ class _DetailSheet extends StatelessWidget {
                             child: Text(
                               item.volume.isEmpty ? '-' : item.volume,
                               textAlign: TextAlign.right,
-                              style: GoogleFonts.plusJakartaSans(
+                              style: GoogleFonts.poppins(
                                   fontSize: 12.5,
                                   color: const Color(0xFF475569)),
                             ),
@@ -926,7 +926,7 @@ class _DetailSheet extends StatelessWidget {
                           Expanded(
                             child: Text(
                               data.catatan,
-                              style: GoogleFonts.plusJakartaSans(
+                              style: GoogleFonts.poppins(
                                   fontSize: 12.5,
                                   color: const Color(0xFF475569)),
                             ),
