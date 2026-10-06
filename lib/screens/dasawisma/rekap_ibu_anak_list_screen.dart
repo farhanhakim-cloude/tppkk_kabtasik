@@ -30,7 +30,7 @@ class _RekapIbuAnakListScreenState extends State<RekapIbuAnakListScreen> {
   late Future<RekapIbuAnakSummary> _summaryFuture;
   late Future<List<RekapBumilBerjenjangItem>> _futureBerjenjang;
 
-  static const Color _primary = Color(0xFF0072BC);
+  static const Color _primary = Color(0xFF0D9488);
   static const Color _darkText = Color(0xFF0F172A);
 
   @override
@@ -79,8 +79,8 @@ class _RekapIbuAnakListScreenState extends State<RekapIbuAnakListScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text('Hitung Otomatis dari Dasawisma?', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800)),
-        content: Text('Sistem akan merekap dan mengisi data otomatis ke form ${_getTingkatLabel(_selectedTingkat)}.', style: GoogleFonts.plusJakartaSans(fontSize: 13)),
+        title: Text('Hitung Otomatis dari Dasawisma?', style: GoogleFonts.poppins(fontWeight: FontWeight.w800)),
+        content: Text('Sistem akan merekap dan mengisi data otomatis ke form ${_getTingkatLabel(_selectedTingkat)}.', style: GoogleFonts.poppins(fontSize: 13)),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Batal')),
           ElevatedButton(
@@ -139,7 +139,7 @@ class _RekapIbuAnakListScreenState extends State<RekapIbuAnakListScreen> {
               scrolledUnderElevation: 0,
               title: Text(
                 'Rekap Ibu Hamil & Bayi',
-                style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 16, color: _darkText),
+                style: GoogleFonts.poppins(fontWeight: FontWeight.w800, fontSize: 16, color: _darkText),
               ),
               actions: [
                 IconButton(icon: const Icon(Icons.refresh_rounded, color: _primary), onPressed: _reload),
@@ -158,7 +158,7 @@ class _RekapIbuAnakListScreenState extends State<RekapIbuAnakListScreen> {
         icon: const Icon(Icons.add, color: Colors.white),
         label: Text(
           _selectedTingkat == 'dasawisma' ? 'Catat Ibu & Anak' : 'Catat Data ${_selectedTingkat.toUpperCase()}',
-          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, color: Colors.white),
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w700, color: Colors.white),
         ),
       ),
       body: Column(
@@ -215,7 +215,7 @@ class _RekapIbuAnakListScreenState extends State<RekapIbuAnakListScreen> {
         ),
         child: Text(
           label,
-          style: GoogleFonts.plusJakartaSans(
+          style: GoogleFonts.poppins(
             fontSize: 12.5,
             fontWeight: sel ? FontWeight.w800 : FontWeight.w600,
             color: sel ? Colors.white : const Color(0xFF475569),
@@ -252,12 +252,12 @@ class _RekapIbuAnakListScreenState extends State<RekapIbuAnakListScreen> {
                     children: [
                       Text(
                         'Rekapitulasi Dasa Wisma',
-                        style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 13, color: _darkText),
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w800, fontSize: 13, color: _darkText),
                       ),
                       ElevatedButton.icon(
                         onPressed: () => _openDasawismaForm(),
                         icon: const Icon(Icons.add_rounded, size: 16, color: Colors.white),
-                        label: Text('Catat Data', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 11.5, color: Colors.white)),
+                        label: Text('Catat Data', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 11.5, color: Colors.white)),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: _primary,
                           elevation: 0,
@@ -272,7 +272,7 @@ class _RekapIbuAnakListScreenState extends State<RekapIbuAnakListScreen> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        _SummaryChip(label: 'Ibu Hamil', val: '${summary?.jumlahHamil ?? 0}', color: const Color(0xFF0072BC)),
+                        _SummaryChip(label: 'Ibu Hamil', val: '${summary?.jumlahHamil ?? 0}', color: const Color(0xFF0D9488)),
                         _SummaryChip(label: 'Melahirkan', val: '${summary?.jumlahMelahirkan ?? 0}', color: const Color(0xFF0284C7)),
                         _SummaryChip(label: 'Ibu Nifas', val: '${summary?.jumlahNifas ?? 0}', color: const Color(0xFF8B5CF6)),
                         _SummaryChip(label: 'Bayi Lahir', val: '${summary?.jumlahBayiLahir ?? 0}', color: const Color(0xFF10B981)),
@@ -292,10 +292,10 @@ class _RekapIbuAnakListScreenState extends State<RekapIbuAnakListScreen> {
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 6),
           child: TextField(
             controller: _searchController,
-            style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
+            style: GoogleFonts.poppins(fontSize: 13.5),
             decoration: InputDecoration(
               hintText: 'Cari nama ibu, suami, atau Dasa Wisma...',
-              hintStyle: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[400]),
+              hintStyle: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[400]),
               prefixIcon: const Icon(Icons.search, size: 20),
               filled: true,
               fillColor: Colors.white,
@@ -322,7 +322,7 @@ class _RekapIbuAnakListScreenState extends State<RekapIbuAnakListScreen> {
                     children: [
                       Icon(Icons.folder_off_outlined, size: 56, color: Colors.grey[300]),
                       const SizedBox(height: 12),
-                      Text('Belum ada data Ibu & Anak di Dasawisma', style: GoogleFonts.plusJakartaSans(color: Colors.grey[500])),
+                      Text('Belum ada data Ibu & Anak di Dasawisma', style: GoogleFonts.poppins(color: Colors.grey[500])),
                       const SizedBox(height: 12),
                       ElevatedButton.icon(
                         onPressed: () => _openDasawismaForm(),
@@ -373,7 +373,7 @@ class _RekapIbuAnakListScreenState extends State<RekapIbuAnakListScreen> {
                                           Expanded(
                                             child: Text(
                                               item.namaIbu,
-                                              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 15, color: _darkText),
+                                              style: GoogleFonts.poppins(fontWeight: FontWeight.w800, fontSize: 15, color: _darkText),
                                             ),
                                           ),
                                           _StatusBadge(status: item.statusIbu, primary: _primary),
@@ -382,7 +382,7 @@ class _RekapIbuAnakListScreenState extends State<RekapIbuAnakListScreen> {
                                       const SizedBox(height: 3),
                                       Text(
                                         'Suami: ${item.namaSuami} • RT ${item.rt}/RW ${item.rw}',
-                                        style: GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.grey[600]),
+                                        style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[600]),
                                       ),
                                     ],
                                   ),
@@ -469,14 +469,14 @@ class _RekapIbuAnakListScreenState extends State<RekapIbuAnakListScreen> {
                     children: [
                       Text(
                         'Rekapitulasi ${_getTingkatLabel(level)}',
-                        style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 13.5, color: _darkText),
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w800, fontSize: 13.5, color: _darkText),
                       ),
                       Row(
                         children: [
                           OutlinedButton.icon(
                             onPressed: _autoFillFromDasawisma,
                             icon: const Icon(Icons.auto_awesome_rounded, size: 14, color: _primary),
-                            label: Text('Auto-Isi', style: GoogleFonts.plusJakartaSans(fontSize: 11.5, fontWeight: FontWeight.w700, color: _primary)),
+                            label: Text('Auto-Isi', style: GoogleFonts.poppins(fontSize: 11.5, fontWeight: FontWeight.w700, color: _primary)),
                             style: OutlinedButton.styleFrom(
                               side: const BorderSide(color: _primary),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -487,7 +487,7 @@ class _RekapIbuAnakListScreenState extends State<RekapIbuAnakListScreen> {
                           ElevatedButton.icon(
                             onPressed: () => _openTierForm(),
                             icon: const Icon(Icons.add_rounded, size: 16, color: Colors.white),
-                            label: Text('Catat Data', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 11.5, color: Colors.white)),
+                            label: Text('Catat Data', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 11.5, color: Colors.white)),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: _primary,
                               elevation: 0,
@@ -504,7 +504,7 @@ class _RekapIbuAnakListScreenState extends State<RekapIbuAnakListScreen> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        _SummaryChip(label: 'Ibu Hamil', val: '$tHamil', color: const Color(0xFF0072BC)),
+                        _SummaryChip(label: 'Ibu Hamil', val: '$tHamil', color: const Color(0xFF0D9488)),
                         _SummaryChip(label: 'Melahirkan', val: '$tLahir', color: const Color(0xFF0284C7)),
                         _SummaryChip(label: 'Ibu Nifas', val: '$tNifas', color: const Color(0xFF8B5CF6)),
                         _SummaryChip(label: 'Bayi Lahir', val: '$tBayiLahir', color: const Color(0xFF10B981)),
@@ -523,10 +523,10 @@ class _RekapIbuAnakListScreenState extends State<RekapIbuAnakListScreen> {
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 6),
               child: TextField(
                 controller: _searchController,
-                style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
+                style: GoogleFonts.poppins(fontSize: 13.5),
                 decoration: InputDecoration(
                   hintText: 'Cari nama pengenal, RT, RW, atau wilayah...',
-                  hintStyle: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[400]),
+                  hintStyle: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[400]),
                   prefixIcon: const Icon(Icons.search, size: 20),
                   filled: true,
                   fillColor: Colors.white,
@@ -546,7 +546,7 @@ class _RekapIbuAnakListScreenState extends State<RekapIbuAnakListScreen> {
                         children: [
                           Icon(Icons.folder_off_outlined, size: 56, color: Colors.grey[300]),
                           const SizedBox(height: 12),
-                          Text('Belum ada data untuk ${_getTingkatLabel(level)}', style: GoogleFonts.plusJakartaSans(color: Colors.grey[500])),
+                          Text('Belum ada data untuk ${_getTingkatLabel(level)}', style: GoogleFonts.poppins(color: Colors.grey[500])),
                           const SizedBox(height: 12),
                           ElevatedButton.icon(
                             onPressed: () => _openTierForm(),
@@ -619,7 +619,7 @@ class _RekapIbuAnakListScreenState extends State<RekapIbuAnakListScreen> {
                                                 Expanded(
                                                   child: Text(
                                                     title,
-                                                    style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 15, color: _darkText),
+                                                    style: GoogleFonts.poppins(fontWeight: FontWeight.w800, fontSize: 15, color: _darkText),
                                                   ),
                                                 ),
                                                 _StatusBadge(status: '${item.ibuHamil} Bumil', primary: _primary),
@@ -628,7 +628,7 @@ class _RekapIbuAnakListScreenState extends State<RekapIbuAnakListScreen> {
                                             const SizedBox(height: 3),
                                             Text(
                                               subtitle,
-                                              style: GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.grey[600]),
+                                              style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[600]),
                                             ),
                                           ],
                                         ),
@@ -693,8 +693,8 @@ class _SummaryChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('$label: ', style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.grey[700])),
-          Text(val, style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w800, color: color)),
+          Text('$label: ', style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.grey[700])),
+          Text(val, style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w800, color: color)),
         ],
       ),
     );
@@ -713,8 +713,8 @@ class _StatusBadge extends StatelessWidget {
     Color fg = primary;
 
     if (status.toLowerCase().contains('hamil')) {
-      bg = const Color(0xFF0072BC).withValues(alpha: 0.12);
-      fg = const Color(0xFF0072BC);
+      bg = const Color(0xFF0D9488).withValues(alpha: 0.12);
+      fg = const Color(0xFF0D9488);
     } else if (status.toLowerCase().contains('lahir')) {
       bg = const Color(0xFF0284C7).withValues(alpha: 0.12);
       fg = const Color(0xFF0284C7);
@@ -726,7 +726,7 @@ class _StatusBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(8)),
-      child: Text(status, style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w700, color: fg)),
+      child: Text(status, style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w700, color: fg)),
     );
   }
 }
@@ -742,7 +742,7 @@ class _Chip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(color: color.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(6)),
-      child: Text(text, style: GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w600, color: color)),
+      child: Text(text, style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w600, color: color)),
     );
   }
 }

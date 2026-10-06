@@ -7,6 +7,8 @@ import 'screens/splash_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/kader/kader_dashboard_screen.dart';
 import 'screens/dasawisma/dasawisma_dashboard_screen.dart';
+// ✅ NEW: Form Input Dasawisma
+import 'screens/dasawisma/input_keluarga_dasawisma_screen.dart';
 
 // 🌙 Global ThemeMode notifier — dapat diakses dari mana saja
 final themeNotifier = ValueNotifier<ThemeMode>(ThemeMode.light);
@@ -227,6 +229,9 @@ class MyApp extends StatelessWidget {
             '/dashboard': (context) => const DashboardScreen(),
             '/kader': (context) => const KaderDashboardScreen(),
             '/dasawisma': (context) => const DasawismaDashboardScreen(),
+            // ✅ NEW: Form Input Data Keluarga Dasawisma
+            '/dasawisma/input-keluarga': (context) =>
+                const InputKeluargaDasawismaScreen(),
           },
         );
       },

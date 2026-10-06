@@ -26,7 +26,7 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
   late Future<List<DataKesehatan>> _future;
 
   // Single unified Blue color theme
-  static const Color _primaryBlue = Color(0xFF0072BC);
+  static const Color _primaryBlue = Color(0xFF0D9488);
 
   final _kategoriList = [
     KategoriKesehatan.ibuHamil,
@@ -94,7 +94,7 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
           ? null
           : AppBar(
               title: Text('Kesehatan Ibu & Anak (KIA)',
-                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
+                  style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
             ),
       floatingActionButton: FloatingActionButton.extended(
         heroTag: 'fab-kesehatan-list',
@@ -103,7 +103,7 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
         icon: const Icon(Icons.add, color: Colors.white),
         label: Text(
           'Catat ${currentKategori.label}',
-          style: GoogleFonts.plusJakartaSans(
+          style: GoogleFonts.poppins(
             fontWeight: FontWeight.w700,
             color: Colors.white,
           ),
@@ -125,7 +125,7 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
                       children: [
                         Text(
                           'Kesehatan Ibu & Anak',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: GoogleFonts.poppins(
                             fontSize: 22,
                             fontWeight: FontWeight.w800,
                             color: const Color(0xFF0F172A),
@@ -135,7 +135,7 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
                         const SizedBox(height: 2),
                         Text(
                           'Pemantauan tumbuh kembang & posyandu',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: GoogleFonts.poppins(
                             fontSize: 12.5,
                             color: Colors.grey[500],
                             fontWeight: FontWeight.w500,
@@ -153,10 +153,10 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
             padding: const EdgeInsets.fromLTRB(16, 10, 16, 6),
             child: TextField(
               controller: _searchController,
-              style: GoogleFonts.plusJakartaSans(fontSize: 14),
+              style: GoogleFonts.poppins(fontSize: 14),
               decoration: InputDecoration(
                 hintText: 'Cari nama ibu, anak, atau RT/RW...',
-                hintStyle: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[400]),
+                hintStyle: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[400]),
                 prefixIcon: const Icon(Icons.search, size: 20, color: _primaryBlue),
                 filled: true,
                 fillColor: Colors.white,
@@ -222,7 +222,7 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
                         const SizedBox(width: 6),
                         Text(
                           kat.label,
-                          style: GoogleFonts.plusJakartaSans(
+                          style: GoogleFonts.poppins(
                             fontSize: 12.5,
                             fontWeight: FontWeight.w700,
                             color: isSelected ? Colors.white : const Color(0xFF334155),
@@ -247,7 +247,7 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
                 if (snapshot.hasError) {
                   return Center(
                     child: Text('Gagal memuat data: ${snapshot.error}',
-                        style: GoogleFonts.plusJakartaSans()),
+                        style: GoogleFonts.poppins()),
                   );
                 }
 
@@ -279,7 +279,7 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
                         const SizedBox(height: 14),
                         Text(
                           'Belum Ada Data ${currentKategori.label}',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: GoogleFonts.poppins(
                             fontWeight: FontWeight.w700,
                             fontSize: 16,
                             color: const Color(0xFF0F172A),
@@ -288,7 +288,7 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
                         const SizedBox(height: 4),
                         Text(
                           'Ketuk tombol tambah untuk mencatat data baru',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: GoogleFonts.poppins(
                               fontSize: 12.5, color: Colors.grey[500]),
                         ),
                       ],
@@ -330,7 +330,7 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
                                 width: 50,
                                 height: 50,
                                 decoration: BoxDecoration(
-                                  color: const Color(0xFF0072BC),
+                                  color: const Color(0xFF0D9488),
                                   borderRadius: BorderRadius.circular(16),
                                   boxShadow: [
                                     BoxShadow(
@@ -358,7 +358,7 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
                                         Expanded(
                                           child: Text(
                                             isChild ? d.namaAnak : d.namaIbu,
-                                            style: GoogleFonts.plusJakartaSans(
+                                            style: GoogleFonts.poppins(
                                               fontWeight: FontWeight.w800,
                                               fontSize: 15,
                                               color: const Color(0xFF0F172A),
@@ -374,7 +374,7 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
                                       isChild
                                           ? 'Ibu: ${d.namaIbu} • Usia: ${d.usiaKehamilanAtauAnak}'
                                           : 'Usia: ${d.usiaKehamilanAtauAnak}',
-                                      style: GoogleFonts.plusJakartaSans(
+                                      style: GoogleFonts.poppins(
                                         fontSize: 12.5,
                                         color: Colors.grey[600],
                                         fontWeight: FontWeight.w500,
@@ -392,7 +392,7 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
                                           ),
                                           child: Text(
                                             'RT ${d.rt}/RW ${d.rw}',
-                                            style: GoogleFonts.plusJakartaSans(
+                                            style: GoogleFonts.poppins(
                                               fontSize: 11,
                                               fontWeight: FontWeight.w700,
                                               color: const Color(0xFF475569),
@@ -409,7 +409,7 @@ class _KesehatanListScreenState extends State<KesehatanListScreen>
                                           ),
                                           child: Text(
                                             d.kategori.label,
-                                            style: GoogleFonts.plusJakartaSans(
+                                            style: GoogleFonts.poppins(
                                               fontSize: 11,
                                               fontWeight: FontWeight.w700,
                                               color: _primaryBlue,
@@ -456,7 +456,7 @@ class _StatusGiziBadge extends StatelessWidget {
       ),
       child: Text(
         'Gizi $status',
-        style: GoogleFonts.plusJakartaSans(
+        style: GoogleFonts.poppins(
           fontSize: 10.5,
           fontWeight: FontWeight.w800,
           color: const Color(0xFF2563EB),

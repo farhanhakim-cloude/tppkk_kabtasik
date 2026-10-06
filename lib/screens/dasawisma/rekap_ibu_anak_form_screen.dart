@@ -140,9 +140,9 @@ class _RekapIbuAnakFormScreenState extends State<RekapIbuAnakFormScreen> {
             widget.item == null
                 ? 'Data Ibu & Anak berhasil disimpan!'
                 : 'Data Ibu & Anak berhasil diperbarui!',
-            style: GoogleFonts.plusJakartaSans(),
+            style: GoogleFonts.poppins(),
           ),
-          backgroundColor: const Color(0xFF0072BC),
+          backgroundColor: const Color(0xFF0D9488),
         ),
       );
       Navigator.pop(context, true);
@@ -158,7 +158,7 @@ class _RekapIbuAnakFormScreenState extends State<RekapIbuAnakFormScreen> {
       appBar: AppBar(
         title: Text(
           widget.item == null ? 'Input Data Ibu & Anak' : 'Edit Data Ibu & Anak',
-          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700),
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w700),
         ),
       ),
       body: Form(
@@ -181,7 +181,7 @@ class _RekapIbuAnakFormScreenState extends State<RekapIbuAnakFormScreen> {
                   children: [
                     Text(
                       'Buku Catatan Ibu & Anak',
-                      style: GoogleFonts.plusJakartaSans(
+                      style: GoogleFonts.poppins(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
                         color: Colors.white,
@@ -190,7 +190,7 @@ class _RekapIbuAnakFormScreenState extends State<RekapIbuAnakFormScreen> {
                     const SizedBox(height: 4),
                     Text(
                       'Rekapitulasi Ibu Hamil, Melahirkan, Nifas, Kelahiran Bayi & Kematian Dasa Wisma',
-                      style: GoogleFonts.plusJakartaSans(
+                      style: GoogleFonts.poppins(
                         fontSize: 12,
                         color: Colors.white.withValues(alpha: 0.9),
                       ),
@@ -306,7 +306,7 @@ class _RekapIbuAnakFormScreenState extends State<RekapIbuAnakFormScreen> {
                       const SizedBox(height: 14),
                       Text(
                         'Status Ibu:',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: GoogleFonts.poppins(
                           fontWeight: FontWeight.w700,
                           fontSize: 13,
                         ),
@@ -320,7 +320,7 @@ class _RekapIbuAnakFormScreenState extends State<RekapIbuAnakFormScreen> {
                             label: Text(st),
                             selected: isSelected,
                             selectedColor: primary.withValues(alpha: 0.15),
-                            labelStyle: GoogleFonts.plusJakartaSans(
+                            labelStyle: GoogleFonts.poppins(
                               color: isSelected ? primary : Colors.grey[700],
                               fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                             ),
@@ -350,11 +350,11 @@ class _RekapIbuAnakFormScreenState extends State<RekapIbuAnakFormScreen> {
                         contentPadding: EdgeInsets.zero,
                         title: Text(
                           'Ada Kelahiran Bayi?',
-                          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 14),
+                          style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 14),
                         ),
                         subtitle: Text(
                           'Aktifkan jika ada bayi lahir di periode ini',
-                          style: GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.grey[600]),
+                          style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[600]),
                         ),
                         value: _adaKelahiran,
                         onChanged: (val) => setState(() => _adaKelahiran = val),
@@ -383,7 +383,7 @@ class _RekapIbuAnakFormScreenState extends State<RekapIbuAnakFormScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text('Jenis Kelamin:',
-                                      style: GoogleFonts.plusJakartaSans(
+                                      style: GoogleFonts.poppins(
                                           fontSize: 12.5, fontWeight: FontWeight.w600)),
                                   Row(
                                     children: [
@@ -417,7 +417,7 @@ class _RekapIbuAnakFormScreenState extends State<RekapIbuAnakFormScreen> {
                         const SizedBox(height: 12),
                         SwitchListTile(
                           contentPadding: EdgeInsets.zero,
-                          title: Text('Memiliki Akta Kelahiran?', style: GoogleFonts.plusJakartaSans(fontSize: 13.5, fontWeight: FontWeight.w600)),
+                          title: Text('Memiliki Akta Kelahiran?', style: GoogleFonts.poppins(fontSize: 13.5, fontWeight: FontWeight.w600)),
                           value: _hasAkta,
                           onChanged: (val) => setState(() => _hasAkta = val),
                         ),
@@ -442,11 +442,11 @@ class _RekapIbuAnakFormScreenState extends State<RekapIbuAnakFormScreen> {
                         contentPadding: EdgeInsets.zero,
                         title: Text(
                           'Ada Catatan Kematian?',
-                          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 14),
+                          style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 14),
                         ),
                         subtitle: Text(
                           'Aktifkan jika ada kematian ibu/bayi/balita',
-                          style: GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.grey[600]),
+                          style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[600]),
                         ),
                         value: _adaKematian,
                         onChanged: (val) => setState(() => _adaKematian = val),
@@ -462,7 +462,7 @@ class _RekapIbuAnakFormScreenState extends State<RekapIbuAnakFormScreen> {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        Text('Status:', style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w600)),
+                        Text('Status:', style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600)),
                         const SizedBox(height: 6),
                         Wrap(
                           spacing: 8,
@@ -472,7 +472,7 @@ class _RekapIbuAnakFormScreenState extends State<RekapIbuAnakFormScreen> {
                               label: Text(s),
                               selected: isSel,
                               selectedColor: _roseBg,
-                              labelStyle: GoogleFonts.plusJakartaSans(
+                              labelStyle: GoogleFonts.poppins(
                                 color: isSel ? _roseDark : Colors.grey[700],
                                 fontWeight: isSel ? FontWeight.w700 : FontWeight.w500,
                               ),
@@ -554,7 +554,7 @@ class _RekapIbuAnakFormScreenState extends State<RekapIbuAnakFormScreen> {
                       ? const CircularProgressIndicator(color: Colors.white)
                       : Text(
                           widget.item == null ? 'Simpan Data Ibu & Anak' : 'Simpan Perubahan',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: GoogleFonts.poppins(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
@@ -577,7 +577,7 @@ class _RekapIbuAnakFormScreenState extends State<RekapIbuAnakFormScreen> {
         const SizedBox(width: 8),
         Text(
           title,
-          style: GoogleFonts.plusJakartaSans(
+          style: GoogleFonts.poppins(
             fontSize: 15,
             fontWeight: FontWeight.w700,
             color: const Color(0xFF0F172A),

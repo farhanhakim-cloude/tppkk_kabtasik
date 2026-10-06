@@ -173,4 +173,5 @@ class Keluarga {
       longitude: longitude ?? this.longitude,
     );
   }
+
 }

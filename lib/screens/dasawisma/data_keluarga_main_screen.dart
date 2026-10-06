@@ -21,7 +21,7 @@ class _DataKeluargaMainScreenState extends State<DataKeluargaMainScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  static const Color _primaryAccent = Color(0xFF10B981);
+  static const Color _primaryAccent = Color(0xFF0D9488);
   static const Color _darkText = Color(0xFF0F172A);
 
   @override
@@ -65,7 +65,7 @@ class _DataKeluargaMainScreenState extends State<DataKeluargaMainScreen>
           children: [
             Text(
               'Data Keluarga',
-              style: GoogleFonts.plusJakartaSans(
+              style: GoogleFonts.poppins(
                 fontWeight: FontWeight.w800,
                 fontSize: 16.5,
                 color: _darkText,
@@ -73,7 +73,7 @@ class _DataKeluargaMainScreenState extends State<DataKeluargaMainScreen>
             ),
             Text(
               'Keluarga Binaan & Data KK Warga',
-              style: GoogleFonts.plusJakartaSans(
+              style: GoogleFonts.poppins(
                 fontSize: 11,
                 color: const Color(0xFF64748B),
                 fontWeight: FontWeight.w500,
@@ -94,11 +94,11 @@ class _DataKeluargaMainScreenState extends State<DataKeluargaMainScreen>
               indicatorWeight: 3,
               labelColor: _primaryAccent,
               unselectedLabelColor: const Color(0xFF64748B),
-              labelStyle: GoogleFonts.plusJakartaSans(
+              labelStyle: GoogleFonts.poppins(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
               ),
-              unselectedLabelStyle: GoogleFonts.plusJakartaSans(
+              unselectedLabelStyle: GoogleFonts.poppins(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),

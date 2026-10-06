@@ -21,7 +21,7 @@ class _IndustriRumahTanggaFormScreenState
   final _formKey = GlobalKey<FormState>();
   final _service = IndustriRumahTanggaService();
 
-  static const Color _primary = Color(0xFF7C3AED);
+  static const Color _primary = Color(0xFF0D9488);
   static const Color _primaryLight = Color(0xFFF5F3FF);
 
   // ── Identitas ──
@@ -140,7 +140,7 @@ class _IndustriRumahTanggaFormScreenState
     if (valid.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Isi minimal 1 data industri (kategori & komoditi wajib)',
-            style: GoogleFonts.plusJakartaSans()),
+            style: GoogleFonts.poppins()),
         backgroundColor: Colors.orange[700],
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -182,7 +182,7 @@ class _IndustriRumahTanggaFormScreenState
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
           _isEdit ? 'Data berhasil diperbarui' : 'Data industri berhasil disimpan',
-          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
         ),
         backgroundColor: const Color(0xFF10B981),
         behavior: SnackBarBehavior.floating,
@@ -193,7 +193,7 @@ class _IndustriRumahTanggaFormScreenState
       if (!mounted) return;
       setState(() => _saving = false);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Gagal menyimpan: $e', style: GoogleFonts.plusJakartaSans()),
+        content: Text('Gagal menyimpan: $e', style: GoogleFonts.poppins()),
         backgroundColor: Colors.red[700],
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -215,7 +215,7 @@ class _IndustriRumahTanggaFormScreenState
           children: [
             Text(
               _isEdit ? 'Edit Data Industri' : 'Tambah Industri Rumah Tangga',
-              style: GoogleFonts.plusJakartaSans(
+              style: GoogleFonts.poppins(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
                 color: const Color(0xFF0F172A),
@@ -223,7 +223,7 @@ class _IndustriRumahTanggaFormScreenState
             ),
             Text(
               'Pencatatan Komoditi & Volume Usaha',
-              style: GoogleFonts.plusJakartaSans(
+              style: GoogleFonts.poppins(
                   fontSize: 11, color: const Color(0xFF64748B)),
             ),
           ],
@@ -243,7 +243,7 @@ class _IndustriRumahTanggaFormScreenState
             TextButton(
               onPressed: _save,
               child: Text('Simpan',
-                  style: GoogleFonts.plusJakartaSans(
+                  style: GoogleFonts.poppins(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                       color: _primary)),
@@ -340,7 +340,7 @@ class _IndustriRumahTanggaFormScreenState
               icon: const Icon(Icons.add_circle_outline_rounded, size: 18),
               label: Text(
                 'Tambah Usaha Lainnya',
-                style: GoogleFonts.plusJakartaSans(
+                style: GoogleFonts.poppins(
                     fontWeight: FontWeight.w700, fontSize: 13.5),
               ),
               style: OutlinedButton.styleFrom(
@@ -386,7 +386,7 @@ class _IndustriRumahTanggaFormScreenState
                             strokeWidth: 2.5, color: Colors.white))
                     : Text(
                         _isEdit ? 'Perbarui Data' : 'Simpan Data Industri',
-                        style: GoogleFonts.plusJakartaSans(
+                        style: GoogleFonts.poppins(
                             fontSize: 15, fontWeight: FontWeight.w700),
                       ),
               ),
@@ -453,7 +453,7 @@ class _IndustriRumahTanggaFormScreenState
                 Expanded(
                   child: Text(
                     'Usaha ${index + 1}',
-                    style: GoogleFonts.plusJakartaSans(
+                    style: GoogleFonts.poppins(
                       fontSize: 13.5,
                       fontWeight: FontWeight.w800,
                       color: item.kategori != null
@@ -528,7 +528,7 @@ class _IndustriRumahTanggaFormScreenState
                               ),
                             Text(
                               k,
-                              style: GoogleFonts.plusJakartaSans(
+                              style: GoogleFonts.poppins(
                                 fontSize: 12.5,
                                 fontWeight: selected
                                     ? FontWeight.w700
@@ -593,7 +593,7 @@ class _IndustriRumahTanggaFormScreenState
                                         ),
                                       Text(
                                         k,
-                                        style: GoogleFonts.plusJakartaSans(
+                                        style: GoogleFonts.poppins(
                                           fontSize: 12,
                                           fontWeight: sel
                                               ? FontWeight.w700
@@ -645,7 +645,7 @@ class _IndustriRumahTanggaFormScreenState
                                 ),
                                 child: Text(
                                   'Lainnya...',
-                                  style: GoogleFonts.plusJakartaSans(
+                                  style: GoogleFonts.poppins(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w500,
                                     color: (!komoditiList
@@ -686,13 +686,13 @@ class _IndustriRumahTanggaFormScreenState
                     ),
                     child: TextField(
                       controller: item.volumeCtrl,
-                      style: GoogleFonts.plusJakartaSans(fontSize: 14),
+                      style: GoogleFonts.poppins(fontSize: 14),
                       decoration: InputDecoration(
                         hintText: 'Contoh: 50 kg/bulan, 100 pcs, 200 liter...',
-                        hintStyle: GoogleFonts.plusJakartaSans(
+                        hintStyle: GoogleFonts.poppins(
                             fontSize: 13, color: Colors.grey[400]),
                         prefixIcon: const Icon(Icons.scale_outlined,
-                            size: 18, color: Color(0xFF7C3AED)),
+                            size: 18, color: Color(0xFF0D9488)),
                         border: InputBorder.none,
                         enabledBorder: InputBorder.none,
                         focusedBorder: InputBorder.none,
@@ -713,7 +713,7 @@ class _IndustriRumahTanggaFormScreenState
   Widget _labelText(String text) {
     return Text(
       text,
-      style: GoogleFonts.plusJakartaSans(
+      style: GoogleFonts.poppins(
         fontSize: 13,
         fontWeight: FontWeight.w700,
         color: const Color(0xFF374151),
@@ -735,13 +735,13 @@ class _IndustriRumahTanggaFormScreenState
       child: TextFormField(
         initialValue: value.trim(),
         onChanged: onChanged,
-        style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
+        style: GoogleFonts.poppins(fontSize: 13.5),
         decoration: InputDecoration(
           hintText: hint,
-          hintStyle: GoogleFonts.plusJakartaSans(
+          hintStyle: GoogleFonts.poppins(
               fontSize: 13, color: Colors.grey[400]),
           prefixIcon: const Icon(Icons.edit_outlined,
-              size: 17, color: Color(0xFF7C3AED)),
+              size: 17, color: Color(0xFF0D9488)),
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
@@ -768,12 +768,12 @@ class _IndustriRumahTanggaFormScreenState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(title,
-                style: GoogleFonts.plusJakartaSans(
+                style: GoogleFonts.poppins(
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF0F172A))),
             Text(subtitle,
-                style: GoogleFonts.plusJakartaSans(
+                style: GoogleFonts.poppins(
                     fontSize: 11.5, color: const Color(0xFF64748B))),
           ],
         ),
@@ -801,14 +801,14 @@ class _IndustriRumahTanggaFormScreenState
         validator: validator,
         keyboardType: keyboardType,
         maxLines: maxLines,
-        style: GoogleFonts.plusJakartaSans(fontSize: 14),
+        style: GoogleFonts.poppins(fontSize: 14),
         decoration: InputDecoration(
           labelText: label,
           hintText: hint,
           prefixIcon: Icon(icon, size: 18, color: _primary),
-          hintStyle: GoogleFonts.plusJakartaSans(
+          hintStyle: GoogleFonts.poppins(
               fontSize: 13, color: Colors.grey[400]),
-          labelStyle: GoogleFonts.plusJakartaSans(
+          labelStyle: GoogleFonts.poppins(
               fontSize: 13, color: const Color(0xFF64748B)),
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
@@ -842,7 +842,7 @@ class _IndustriRumahTanggaFormScreenState
         decoration: InputDecoration(
           labelText: label,
           prefixIcon: Icon(icon, size: 18, color: _primary),
-          labelStyle: GoogleFonts.plusJakartaSans(
+          labelStyle: GoogleFonts.poppins(
               fontSize: 13, color: const Color(0xFF64748B)),
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
@@ -853,7 +853,7 @@ class _IndustriRumahTanggaFormScreenState
             .map((i) => DropdownMenuItem(
                   value: i,
                   child: Text(i,
-                      style: GoogleFonts.plusJakartaSans(fontSize: 13.5)),
+                      style: GoogleFonts.poppins(fontSize: 13.5)),
                 ))
             .toList(),
         onChanged: onChanged,

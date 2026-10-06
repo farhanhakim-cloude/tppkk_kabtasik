@@ -25,7 +25,7 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
   late Future<List<DataUmumPkkItem>> _futureData;
   bool _isTableView = false;
 
-  static const Color _primary = Color(0xFF0072BC);
+  static const Color _primary = Color(0xFF0D9488);
   static const Color _darkText = Color(0xFF0F172A);
 
   @override
@@ -65,7 +65,7 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           'Hapus Data Umum?',
-          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800),
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w800),
         ),
         content: const Text('Data yang dihapus tidak dapat dikembalikan.'),
         actions: [
@@ -95,11 +95,11 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           'Tarik & Hitung Otomatis?',
-          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800),
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w800),
         ),
         content: Text(
           'Sistem akan mengkalkulasi otomatis seluruh data kelompok, KRT, KK, dan jiwa ke formulir Data Umum ${_selectedLevel.toUpperCase()}.',
-          style: GoogleFonts.plusJakartaSans(fontSize: 13),
+          style: GoogleFonts.poppins(fontSize: 13),
         ),
         actions: [
           TextButton(
@@ -146,7 +146,7 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
               scrolledUnderElevation: 0,
               title: Text(
                 'Data Umum PKK',
-                style: GoogleFonts.plusJakartaSans(
+                style: GoogleFonts.poppins(
                   fontWeight: FontWeight.w800,
                   fontSize: 16.5,
                   color: _darkText,
@@ -179,7 +179,7 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
         icon: const Icon(Icons.add_rounded, color: Colors.white, size: 20),
         label: Text(
           'Input Data Umum ${_selectedLevel.toUpperCase()}',
-          style: GoogleFonts.plusJakartaSans(
+          style: GoogleFonts.poppins(
             fontWeight: FontWeight.w700,
             color: Colors.white,
             fontSize: 13,
@@ -287,6 +287,7 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
+<<<<<<< HEAD
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -310,6 +311,29 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
                                         fontWeight: FontWeight.w600,
                                         color: const Color(0xFF64748B),
                                       ),
+=======
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _selectedLevel == 'desa'
+                                        ? 'DATA UMUM PKK • TP PKK DESA'
+                                        : 'DATA UMUM PKK • KECAMATAN',
+                                    style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 13,
+                                      color: _darkText,
+                                    ),
+                                  ),
+                                  Text(
+                                    _selectedLevel == 'desa'
+                                        ? 'KABUPATEN: TASIKMALAYA • PROVINSI: JAWA BARAT'
+                                        : 'KABUPATEN: TASIKMALAYA • PROVINSI: JAWA BARAT',
+                                    style: GoogleFonts.poppins(
+                                      fontSize: 10.5,
+                                      fontWeight: FontWeight.w600,
+                                      color: const Color(0xFF64748B),
+>>>>>>> 95a9b9dad2c03998c4d068696e424208dafff536
                                     ),
                                   ],
                                 ),
@@ -325,7 +349,7 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
                                     ),
                                     label: Text(
                                       'Auto-Isi',
-                                      style: GoogleFonts.plusJakartaSans(
+                                      style: GoogleFonts.poppins(
                                         fontSize: 11.5,
                                         fontWeight: FontWeight.w700,
                                         color: _primary,
@@ -399,12 +423,12 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
                       padding: const EdgeInsets.fromLTRB(14, 4, 14, 8),
                       child: TextField(
                         controller: _searchController,
-                        style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
+                        style: GoogleFonts.poppins(fontSize: 13.5),
                         decoration: InputDecoration(
                           hintText: _selectedLevel == 'desa'
                               ? 'Cari nama dusun / lingkungan...'
                               : 'Cari nama desa / kecamatan...',
-                          hintStyle: GoogleFonts.plusJakartaSans(
+                          hintStyle: GoogleFonts.poppins(
                             fontSize: 13,
                             color: Colors.grey[400],
                           ),
@@ -439,7 +463,7 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
                                   const SizedBox(height: 10),
                                   Text(
                                     'Belum ada data umum ${_selectedLevel.toUpperCase()}',
-                                    style: GoogleFonts.plusJakartaSans(
+                                    style: GoogleFonts.poppins(
                                       color: Colors.grey[500],
                                     ),
                                   ),
@@ -501,7 +525,7 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
         ),
         child: Text(
           label,
-          style: GoogleFonts.plusJakartaSans(
+          style: GoogleFonts.poppins(
             fontSize: 12,
             fontWeight: active ? FontWeight.w800 : FontWeight.w600,
             color: active ? Colors.white : const Color(0xFF475569),
@@ -525,7 +549,7 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
         children: [
           Text(
             label,
-            style: GoogleFonts.plusJakartaSans(
+            style: GoogleFonts.poppins(
               fontSize: 10,
               fontWeight: FontWeight.w700,
               color: color,
@@ -533,7 +557,7 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
           ),
           Text(
             val,
-            style: GoogleFonts.plusJakartaSans(
+            style: GoogleFonts.poppins(
               fontSize: 13.5,
               fontWeight: FontWeight.w900,
               color: _darkText,
@@ -606,7 +630,7 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
                           children: [
                             Text(
                               title,
-                              style: GoogleFonts.plusJakartaSans(
+                              style: GoogleFonts.poppins(
                                 fontWeight: FontWeight.w800,
                                 fontSize: 15,
                                 color: _darkText,
@@ -615,7 +639,7 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
                             const SizedBox(height: 3),
                             Text(
                               subtitle,
-                              style: GoogleFonts.plusJakartaSans(
+                              style: GoogleFonts.poppins(
                                 fontSize: 12,
                                 color: Colors.grey[600],
                               ),
@@ -634,7 +658,7 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
                         ),
                         child: Text(
                           '${item.jumlahKk} KK',
-                          style: GoogleFonts.plusJakartaSans(
+                          style: GoogleFonts.poppins(
                             fontSize: 11,
                             fontWeight: FontWeight.w800,
                             color: const Color(0xFF2563EB),
@@ -667,7 +691,7 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
                         ),
                       _cardChip(
                         '🏘️ ${item.jumlahPkkRw} RW • ${item.jumlahPkkRt} RT',
-                        const Color(0xFF0072BC),
+                        const Color(0xFF0D9488),
                       ),
                       _cardChip(
                         '🪴 ${item.jumlahDasaWisma} Dasawisma',
@@ -678,7 +702,7 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
                         const Color(0xFFEC4899),
                       ),
                       _cardChip(
-                        '👥 ${item.totalJiwa} Jiwa (${item.jiwaL}L/${item.jiwaP}P)',
+                        '👥 ${item.totalJiwa} Jiwa (${item.jiwaL}L/${item.jiwaP}P, ${item.jiwaTidakTerpilah} belum terpilah)',
                         const Color(0xFFF59E0B),
                       ),
                       _cardChip(
@@ -715,7 +739,7 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
       ),
       child: Text(
         text,
-        style: GoogleFonts.plusJakartaSans(
+        style: GoogleFonts.poppins(
           fontSize: 11,
           fontWeight: FontWeight.w700,
           color: color,
@@ -737,6 +761,10 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
     final sumKk = list.fold(0, (p, e) => p + e.jumlahKk);
     final sumJiwaL = list.fold(0, (p, e) => p + e.jiwaL);
     final sumJiwaP = list.fold(0, (p, e) => p + e.jiwaP);
+    final sumJiwaTidakTerpilah = list.fold(
+      0,
+      (p, e) => p + e.jiwaTidakTerpilah,
+    );
     final sumKaderTpL = list.fold(0, (p, e) => p + e.kaderTpPkkL);
     final sumKaderTpP = list.fold(0, (p, e) => p + e.kaderTpPkkP);
     final sumKaderUmL = list.fold(0, (p, e) => p + e.kaderUmumL);
@@ -823,6 +851,12 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
               const DataColumn(
                 label: Text(
                   'JIWA (P)',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+              const DataColumn(
+                label: Text(
+                  'JIWA (BELUM TERPILAH)',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
@@ -920,6 +954,7 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
                     DataCell(Text('${e.jumlahKk}')),
                     DataCell(Text('${e.jiwaL}')),
                     DataCell(Text('${e.jiwaP}')),
+                    DataCell(Text('${e.jiwaTidakTerpilah}')),
                     DataCell(Text('${e.kaderTpPkkL}')),
                     DataCell(Text('${e.kaderTpPkkP}')),
                     DataCell(Text('${e.kaderUmumL}')),
@@ -991,6 +1026,12 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
                   DataCell(
                     Text(
                       '$sumJiwaP',
+                      style: const TextStyle(fontWeight: FontWeight.w900),
+                    ),
+                  ),
+                  DataCell(
+                    Text(
+                      '$sumJiwaTidakTerpilah',
                       style: const TextStyle(fontWeight: FontWeight.w900),
                     ),
                   ),

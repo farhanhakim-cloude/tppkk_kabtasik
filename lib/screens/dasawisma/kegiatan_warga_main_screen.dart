@@ -27,7 +27,7 @@ class _KegiatanWargaMainScreenState extends State<KegiatanWargaMainScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  static const Color _primaryAccent = Color(0xFF0EA5E9);
+  static const Color _primaryAccent = Color(0xFF0D9488);
   static const Color _darkText = Color(0xFF0F172A);
 
   @override
@@ -71,7 +71,7 @@ class _KegiatanWargaMainScreenState extends State<KegiatanWargaMainScreen>
           children: [
             Text(
               'Kegiatan Warga',
-              style: GoogleFonts.plusJakartaSans(
+              style: GoogleFonts.poppins(
                 fontWeight: FontWeight.w800,
                 fontSize: 16.5,
                 color: _darkText,
@@ -79,7 +79,7 @@ class _KegiatanWargaMainScreenState extends State<KegiatanWargaMainScreen>
             ),
             Text(
               'Kegiatan, Rumah, Catatan, Pekarangan & Industri RT',
-              style: GoogleFonts.plusJakartaSans(
+              style: GoogleFonts.poppins(
                 fontSize: 11,
                 color: const Color(0xFF64748B),
                 fontWeight: FontWeight.w500,
@@ -102,11 +102,11 @@ class _KegiatanWargaMainScreenState extends State<KegiatanWargaMainScreen>
               indicatorWeight: 3,
               labelColor: _primaryAccent,
               unselectedLabelColor: const Color(0xFF64748B),
-              labelStyle: GoogleFonts.plusJakartaSans(
+              labelStyle: GoogleFonts.poppins(
                 fontSize: 12.5,
                 fontWeight: FontWeight.w700,
               ),
-              unselectedLabelStyle: GoogleFonts.plusJakartaSans(
+              unselectedLabelStyle: GoogleFonts.poppins(
                 fontSize: 12.5,
                 fontWeight: FontWeight.w600,
               ),
