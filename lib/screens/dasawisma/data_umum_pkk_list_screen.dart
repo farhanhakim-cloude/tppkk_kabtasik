@@ -194,10 +194,18 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             child: Row(
               children: [
-                _levelPill('desa', 'TP PKK Desa (Gambar 1)'),
-                const SizedBox(width: 8),
-                _levelPill('kecamatan', 'TP PKK Kecamatan (Gambar 2)'),
-                const Spacer(),
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        _levelPill('desa', 'TP PKK Desa (Gambar 1)'),
+                        const SizedBox(width: 8),
+                        _levelPill('kecamatan', 'TP PKK Kecamatan (Gambar 2)'),
+                      ],
+                    ),
+                  ),
+                ),
                 if (widget.embedded)
                   IconButton(
                     tooltip: _isTableView
@@ -279,30 +287,32 @@ class _DataUmumPkkListScreenState extends State<DataUmumPkkListScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _selectedLevel == 'desa'
-                                        ? 'DATA UMUM PKK • TP PKK DESA'
-                                        : 'DATA UMUM PKK • KECAMATAN',
-                                    style: GoogleFonts.plusJakartaSans(
-                                      fontWeight: FontWeight.w800,
-                                      fontSize: 13,
-                                      color: _darkText,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      _selectedLevel == 'desa'
+                                          ? 'DATA UMUM PKK • TP PKK DESA'
+                                          : 'DATA UMUM PKK • KECAMATAN',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontWeight: FontWeight.w800,
+                                        fontSize: 13,
+                                        color: _darkText,
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                    _selectedLevel == 'desa'
-                                        ? 'KABUPATEN: TASIKMALAYA • PROVINSI: JAWA BARAT'
-                                        : 'KABUPATEN: TASIKMALAYA • PROVINSI: JAWA BARAT',
-                                    style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 10.5,
-                                      fontWeight: FontWeight.w600,
-                                      color: const Color(0xFF64748B),
+                                    Text(
+                                      _selectedLevel == 'desa'
+                                          ? 'KABUPATEN: TASIKMALAYA • PROVINSI: JAWA BARAT'
+                                          : 'KABUPATEN: TASIKMALAYA • PROVINSI: JAWA BARAT',
+                                      style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 10.5,
+                                        fontWeight: FontWeight.w600,
+                                        color: const Color(0xFF64748B),
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                               Row(
                                 children: [

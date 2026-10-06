@@ -351,17 +351,41 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
             deskripsi: 'Warga Buta, Paket A-C, KF, PAUD, Taman Bacaan',
             icon: Icons.school_rounded,
             groupFields: {
-              'Jml. Warga Yang Masih 3 (Tiga) Buta': 'warga_buta_l',
+              'Warga Buta - Jml KLP': 'kelompok_warga_buta',
+              'Jml. Warga Yang Masih 3 Buta': {
+                'Laki-laki': 'warga_buta_l',
+                'Perempuan': 'warga_buta_p',
+              },
               'Paket A - Jml KLP': 'kelompok_belajar_paket_a',
-              'Paket A - Beberapa Warga': 'warga_belajar_paket_a',
+              'Paket A - Warga Belajar': {
+                'Laki-laki': 'warga_belajar_paket_a_l',
+                'Perempuan': 'warga_belajar_paket_a_p',
+              },
               'Paket B - Jml KLP': 'kelompok_belajar_paket_b',
-              'Paket B - Beberapa Warga': 'warga_belajar_paket_b',
+              'Paket B - Warga Belajar': {
+                'Laki-laki': 'warga_belajar_paket_b_l',
+                'Perempuan': 'warga_belajar_paket_b_p',
+              },
               'Paket C - Jml KLP': 'kelompok_belajar_paket_c',
-              'Paket C - Beberapa Warga': 'warga_belajar_paket_c',
+              'Paket C - Warga Belajar': {
+                'Laki-laki': 'warga_belajar_paket_c_l',
+                'Perempuan': 'warga_belajar_paket_c_p',
+              },
               'KF - Jml KLP': 'kf',
-              'KF - Beberapa Warga': 'warga_belajar_kf',
-              'PAUD Sejenis': 'paud',
-              'Taman Bacaan/Perpustakaan': 'taman_bacaan',
+              'KF - Warga Belajar': {
+                'Laki-laki': 'warga_belajar_kf_l',
+                'Perempuan': 'warga_belajar_kf_p',
+              },
+              'PAUD - Jml KLP': 'kelompok_paud',
+              'PAUD Sejenis': {
+                'Laki-laki': 'paud_l',
+                'Perempuan': 'paud_p',
+              },
+              'Taman Bacaan - Jml KLP': 'kelompok_taman_bacaan',
+              'Taman Bacaan/Perpustakaan': {
+                'Laki-laki': 'taman_bacaan_l',
+                'Perempuan': 'taman_bacaan_p',
+              },
             },
           ),
           _PokjaSubItem(
@@ -370,18 +394,57 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
             icon: Icons.badge_rounded,
             groupFields: {
               'BKB - Jml KLP': 'kelompok_bkb',
-              'BKB - Peserta': 'peserta_bkb',
+              'BKB - Peserta': {
+                'Laki-laki': 'peserta_bkb_l',
+                'Perempuan': 'peserta_bkb_p',
+              },
               'BKB - Jml Ibu (SET)': 'ibu_set_bkb',
               'BKB - Jml APE': 'ape_bkb',
-              'BKB - Simulasi': 'kelompok_simulasi_bkb',
-              'Tutor - KF': 'tutor_kf',
-              'Tutor - PAUD Sejenis': 'tutor_paud',
-              'Kader BKB': 'kader_bkb',
-              'Kader Koperasi': 'kelompok_kader_koperasi',
-              'Kader Keterampilan': 'kader_keterampilan',
-              'LP3 PKK': 'lp3_pkk',
-              'TP3 PKK': 'tp3_pkk',
-              'Damas PKK': 'damas_pkk',
+              'BKB - Simulasi Jml KLP': 'kelompok_simulasi_bkb',
+              'BKB - Simulasi': {
+                'Laki-laki': 'kelompok_simulasi_bkb_l',
+                'Perempuan': 'kelompok_simulasi_bkb_p',
+              },
+              'Tutor - KF Jml': 'tutor_kf',
+              'Tutor - KF': {
+                'Laki-laki': 'tutor_kf_l',
+                'Perempuan': 'tutor_kf_p',
+              },
+              'Tutor - PAUD Jml': 'tutor_paud',
+              'Tutor - PAUD Sejenis': {
+                'Laki-laki': 'tutor_paud_l',
+                'Perempuan': 'tutor_paud_p',
+              },
+              'Kader BKB Jml': 'kader_bkb',
+              'Kader BKB': {
+                'Laki-laki': 'kader_bkb_l',
+                'Perempuan': 'kader_bkb_p',
+              },
+              'Kader Koperasi Jml': 'kader_koperasi',
+              'Kader Koperasi': {
+                'Laki-laki': 'kader_koperasi_l',
+                'Perempuan': 'kader_koperasi_p',
+              },
+              'Kader Keterampilan Jml': 'kader_keterampilan',
+              'Kader Keterampilan': {
+                'Laki-laki': 'kader_keterampilan_l',
+                'Perempuan': 'kader_keterampilan_p',
+              },
+              'LP3 PKK Jml': 'lp3_pkk',
+              'LP3 PKK': {
+                'Laki-laki': 'lp3_pkk_l',
+                'Perempuan': 'lp3_pkk_p',
+              },
+              'TP3 PKK Jml': 'tp3_pkk',
+              'TP3 PKK': {
+                'Laki-laki': 'tp3_pkk_l',
+                'Perempuan': 'tp3_pkk_p',
+              },
+              'Damas PKK Jml': 'damas_pkk',
+              'Damas PKK': {
+                'Laki-laki': 'damas_pkk_l',
+                'Perempuan': 'damas_pkk_p',
+              },
             },
           ),
           _PokjaSubItem(
@@ -390,15 +453,30 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
             icon: Icons.storefront_rounded,
             groupFields: {
               'Pemula - Jml KLP': 'up2k_pemula_kelompok',
-              'Pemula - Peserta': 'up2k_pemula_peserta',
+              'Pemula - Peserta': {
+                'Laki-laki': 'up2k_pemula_peserta_l',
+                'Perempuan': 'up2k_pemula_peserta_p',
+              },
               'Madya - Jml KLP': 'up2k_madya_kelompok',
-              'Madya - Peserta': 'up2k_madya_peserta',
+              'Madya - Peserta': {
+                'Laki-laki': 'up2k_madya_peserta_l',
+                'Perempuan': 'up2k_madya_peserta_p',
+              },
               'Utama - Jml KLP': 'up2k_utama_kelompok',
-              'Utama - Peserta': 'up2k_utama_peserta',
+              'Utama - Peserta': {
+                'Laki-laki': 'up2k_utama_peserta_l',
+                'Perempuan': 'up2k_utama_peserta_p',
+              },
               'Mandiri - Jml KLP': 'up2k_mandiri_kelompok',
-              'Mandiri - Peserta': 'up2k_mandiri_peserta',
+              'Mandiri - Peserta': {
+                'Laki-laki': 'up2k_mandiri_peserta_l',
+                'Perempuan': 'up2k_mandiri_peserta_p',
+              },
               'Berbadan Hukum - Jml KLP': 'koperasi_berbadan_hukum',
-              'Berbadan Hukum - Jml Anggota': 'anggota_koperasi',
+              'Berbadan Hukum - Jml Anggota': {
+                'Laki-laki': 'anggota_koperasi_l',
+                'Perempuan': 'anggota_koperasi_p',
+              },
             },
           ),
         ];
@@ -577,11 +655,6 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
               'Kader Dasa Wisma': 'jumlah_kader_dasa_wisma',
               'Posyandu Aktif': 'jumlah_posyandu_aktif',
               'Bidan Desa': 'jumlah_bidan_desa',
-              'Bank Sampah': 'jumlah_bank_sampah',
-              'Posko Bencana': 'jumlah_posko_bencana',
-            },
-          ),
-        ];
               'Bank Sampah': 'jumlah_bank_sampah',
               'Posko Bencana': 'jumlah_posko_bencana',
             },
@@ -1373,7 +1446,14 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
     final pal = _sheetPalette();
 
     for (final entry in sub.groupFields!.entries) {
-      _angkaCtrl.putIfAbsent(entry.value, () => TextEditingController());
+      if (entry.value is String) {
+        _angkaCtrl.putIfAbsent(entry.value as String, () => TextEditingController());
+      } else if (entry.value is Map) {
+        final subMap = entry.value as Map;
+        for (final subEntry in subMap.entries) {
+          _angkaCtrl.putIfAbsent(subEntry.value as String, () => TextEditingController());
+        }
+      }
     }
 
     showModalBottomSheet(
@@ -1426,27 +1506,66 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                     ),
                     const SizedBox(height: 24),
                     ...sub.groupFields!.entries.map((entry) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: Container(
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            color: pal.fill,
-                            borderRadius: BorderRadius.circular(14),
+                      if (entry.value is String) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Container(
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              color: pal.fill,
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: _numRow(
+                              entry.key,
+                              entry.value as String,
+                              c,
+                              pal.fill,
+                              pal.bg,
+                              _isDarkMode ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFE2E8F0),
+                              pal.text,
+                              pal.sub,
+                              setSheet,
+                            ),
                           ),
-                          child: _numRow(
-                            entry.key,
-                            entry.value,
-                            c,
-                            pal.fill,
-                            pal.bg,
-                            _isDarkMode ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFE2E8F0),
-                            pal.text,
-                            pal.sub,
-                            setSheet,
+                        );
+                      } else if (entry.value is Map) {
+                        final subFields = entry.value as Map;
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Container(
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              color: pal.fill,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: pal.handle, width: 1),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(entry.key, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13.5, color: pal.text)),
+                                const SizedBox(height: 12),
+                                ...subFields.entries.map((subEntry) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 10),
+                                    child: _numRow(
+                                      subEntry.key,
+                                      subEntry.value as String,
+                                      c,
+                                      pal.bg,
+                                      pal.fill,
+                                      _isDarkMode ? Colors.white.withValues(alpha: 0.1) : const Color(0xFFCBD5E1),
+                                      pal.text,
+                                      pal.sub,
+                                      setSheet,
+                                    ),
+                                  );
+                                }).toList(),
+                              ],
+                            ),
                           ),
-                        ),
-                      );
+                        );
+                      }
+                      return const SizedBox.shrink();
                     }).toList(),
                     const SizedBox(height: 16),
                     SizedBox(
@@ -3210,7 +3329,7 @@ class _PokjaSubItem {
   final String fieldL;
   final String fieldP;
   final IconData icon;
-  final Map<String, String>? groupFields;
+  final Map<String, dynamic>? groupFields;
 
   const _PokjaSubItem({
     required this.title,
