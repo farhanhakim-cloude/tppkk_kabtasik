@@ -67,8 +67,8 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
   final _tanahService = PemanfaatanTanahService();
   final _industriService = IndustriRumahTanggaService();
 
-  static const Color _primary = Color(0xFF0D9488);
-  static const Color _primaryLight = Color(0xFFF0F9FF);
+  static const Color _primary = Color(0xFF0072BC);
+  static const Color _primaryLight = Color(0xFFE6F1F9);
 
   List<DataKeluargaDasawisma> _kkList = [];
   bool _kkLoading = true;
@@ -347,7 +347,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg,
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+            style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600)),
         backgroundColor: ok ? const Color(0xFF10B981) : Colors.red[700],
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -368,12 +368,12 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text('Input Terpadu Satu Pintu',
-                style: GoogleFonts.poppins(
+                style: GoogleFonts.plusJakartaSans(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
                     color: const Color(0xFF0F172A))),
             Text('KK → Anggota → Kegiatan, kirim sekaligus',
-                style: GoogleFonts.poppins(
+                style: GoogleFonts.plusJakartaSans(
                     fontSize: 11, color: const Color(0xFF64748B))),
           ],
         ),
@@ -393,7 +393,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
             TextButton(
               onPressed: _kirim,
               child: Text('Kirim',
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                       color: _primary)),
@@ -457,7 +457,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
                   : () => setState(() => _anggota.add(_AnggotaDraft())),
               icon: const Icon(Icons.person_add_outlined, color: _primary),
               label: Text('Tambah Anggota Lagi',
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                       fontWeight: FontWeight.w700, color: _primary)),
               style: OutlinedButton.styleFrom(
                 side: const BorderSide(color: _primary),
@@ -575,7 +575,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
                         child: CircularProgressIndicator(
                             strokeWidth: 2.5, color: Colors.white))
                     : Text('Kirim Semua Sekaligus',
-                        style: GoogleFonts.poppins(
+                        style: GoogleFonts.plusJakartaSans(
                             fontSize: 15, fontWeight: FontWeight.w700)),
               ),
             ),
@@ -593,7 +593,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text('Langkah $n',
-            style: GoogleFonts.poppins(
+            style: GoogleFonts.plusJakartaSans(
                 fontSize: 11,
                 fontWeight: FontWeight.w800,
                 color: Colors.white)),
@@ -616,12 +616,12 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(title,
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                       fontSize: 15,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFF0F172A))),
               Text(sub,
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                       fontSize: 11.5, color: const Color(0xFF64748B))),
             ],
           ),
@@ -648,7 +648,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
             const SizedBox(width: 12),
             Text('Memuat daftar KK...',
                 style:
-                    GoogleFonts.poppins(fontSize: 13, color: Colors.grey[500])),
+                    GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[500])),
           ],
         ),
       );
@@ -668,7 +668,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
             const SizedBox(width: 8),
             Expanded(
                 child: Text('Belum ada KK. Input Daftar Warga dulu di menu Data Umum.',
-                    style: GoogleFonts.poppins(
+                    style: GoogleFonts.plusJakartaSans(
                         fontSize: 12.5, color: const Color(0xFF7F1D1D)))),
             TextButton(onPressed: _loadKk, child: const Text('Coba lagi')),
           ],
@@ -692,7 +692,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
           prefixIcon: const Icon(Icons.home_work_outlined,
               size: 18, color: _primary),
           labelStyle:
-              GoogleFonts.poppins(fontSize: 13, color: const Color(0xFF64748B)),
+              GoogleFonts.plusJakartaSans(fontSize: 13, color: const Color(0xFF64748B)),
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
@@ -705,7 +705,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
                     e.namaKepalaRumahTangga.isEmpty
                         ? 'KK #${e.id}'
                         : e.namaKepalaRumahTangga,
-                    style: GoogleFonts.poppins(fontSize: 13.5),
+                    style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
                   ),
                 ))
             .toList(),
@@ -730,7 +730,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
           Row(
             children: <Widget>[
               Text('Anggota ${index + 1}',
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFF0F172A))),
@@ -862,7 +862,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
                 a.tanggalLahir == null
                     ? 'Tgl lahir'
                     : '${a.tanggalLahir!.day}/${a.tanggalLahir!.month}/${a.tanggalLahir!.year}',
-                style: GoogleFonts.poppins(
+                style: GoogleFonts.plusJakartaSans(
                     fontSize: 12.5, color: const Color(0xFF0F172A)),
               ),
             ),
@@ -893,7 +893,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
             activeColor: _primary,
             dense: true,
             title: Text(k.label,
-                style: GoogleFonts.poppins(
+                style: GoogleFonts.plusJakartaSans(
                     fontSize: 13.5, fontWeight: FontWeight.w700)),
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
@@ -910,7 +910,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
                       inputFormatters: <TextInputFormatter>[
                         FilteringTextInputFormatter.digitsOnly,
                       ],
-                      style: GoogleFonts.poppins(fontSize: 13),
+                      style: GoogleFonts.plusJakartaSans(fontSize: 13),
                       validator: (v) {
                         if (!k.ikut) return null;
                         final n = int.tryParse((v ?? '').trim());
@@ -944,7 +944,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
                           k.tanggal == null
                               ? 'Tanggal'
                               : '${k.tanggal!.day}/${k.tanggal!.month}/${k.tanggal!.year}',
-                          style: GoogleFonts.poppins(fontSize: 12.5),
+                          style: GoogleFonts.plusJakartaSans(fontSize: 12.5),
                         ),
                       ),
                     ),
@@ -984,7 +984,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
                 Icon(icon, size: 18, color: _primary),
                 const SizedBox(width: 8),
                 Text(judul,
-                    style: GoogleFonts.poppins(
+                    style: GoogleFonts.plusJakartaSans(
                         fontSize: 13.5, fontWeight: FontWeight.w700)),
               ],
             ),
@@ -1030,7 +1030,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
                     : FilteringTextInputFormatter.digitsOnly,
               ]
             : null,
-        style: GoogleFonts.poppins(fontSize: 13),
+        style: GoogleFonts.plusJakartaSans(fontSize: 13),
         validator: (v) {
           if (wajib && (v == null || v.trim().isEmpty)) return 'Wajib';
           return null;
@@ -1040,9 +1040,9 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
           hintText: hint,
           prefixIcon: Icon(icon, size: 16, color: _primary),
           hintStyle:
-              GoogleFonts.poppins(fontSize: 12, color: Colors.grey[400]),
+              GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.grey[400]),
           labelStyle:
-              GoogleFonts.poppins(fontSize: 12, color: const Color(0xFF64748B)),
+              GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFF64748B)),
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,

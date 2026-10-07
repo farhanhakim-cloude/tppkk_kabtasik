@@ -17,8 +17,8 @@ class _IndustriRumahTanggaFormScreenState
     extends State<IndustriRumahTanggaFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final _service = IndustriRumahTanggaService();
-  static const Color _primary = Color(0xFF0D9488);
-  static const Color _primaryLight = Color(0xFFF0F9FF);
+  static const Color _primary = Color(0xFF0072BC);
+  static const Color _primaryLight = Color(0xFFE6F1F9);
 
   late final TextEditingController _dasaWismaCtrl,
       _rtCtrl,
@@ -105,7 +105,7 @@ class _IndustriRumahTanggaFormScreenState
               _isEdit
                   ? 'Data diperbarui, menunggu persetujuan Admin Desa'
                   : 'Data terkirim, menunggu persetujuan Admin Desa',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600)),
           backgroundColor: const Color(0xFF10B981),
           behavior: SnackBarBehavior.floating,
           shape:
@@ -120,7 +120,7 @@ class _IndustriRumahTanggaFormScreenState
       _formKey.currentState!.validate();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(e.message,
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600)),
           backgroundColor: Colors.orange[800],
           behavior: SnackBarBehavior.floating,
           shape:
@@ -130,7 +130,7 @@ class _IndustriRumahTanggaFormScreenState
       setState(() => _saving = false);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(e.toString().replaceFirst('Exception: ', ''),
-              style: GoogleFonts.poppins()),
+              style: GoogleFonts.plusJakartaSans()),
           backgroundColor: Colors.red[700],
           behavior: SnackBarBehavior.floating,
           shape:
@@ -154,12 +154,12 @@ class _IndustriRumahTanggaFormScreenState
                     _isEdit
                         ? 'Edit Industri Rumah Tangga'
                         : 'Tambah Industri Rumah Tangga',
-                    style: GoogleFonts.poppins(
+                    style: GoogleFonts.plusJakartaSans(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFF0F172A))),
                 Text('Desa & kecamatan otomatis dari akun login',
-                    style: GoogleFonts.poppins(
+                    style: GoogleFonts.plusJakartaSans(
                         fontSize: 11, color: const Color(0xFF64748B)))
               ]),
           actions: [
@@ -175,7 +175,7 @@ class _IndustriRumahTanggaFormScreenState
               TextButton(
                   onPressed: _save,
                   child: Text('Simpan',
-                      style: GoogleFonts.poppins(
+                      style: GoogleFonts.plusJakartaSans(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                           color: _primary)))
@@ -291,13 +291,13 @@ class _IndustriRumahTanggaFormScreenState
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('Alasan penolakan Admin Desa:',
-                                style: GoogleFonts.poppins(
+                                style: GoogleFonts.plusJakartaSans(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w700,
                                     color: const Color(0xFFB91C1C))),
                             const SizedBox(height: 4),
                             Text(widget.data!.rejectedReason!,
-                                style: GoogleFonts.poppins(
+                                style: GoogleFonts.plusJakartaSans(
                                     fontSize: 13,
                                     color: const Color(0xFF7F1D1D))),
                           ])),
@@ -321,7 +321,7 @@ class _IndustriRumahTanggaFormScreenState
                                 child: CircularProgressIndicator(
                                     strokeWidth: 2.5, color: Colors.white))
                             : Text(_isEdit ? 'Perbarui' : 'Simpan',
-                                style: GoogleFonts.poppins(
+                                style: GoogleFonts.plusJakartaSans(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w700))))
               ])),
@@ -337,12 +337,12 @@ class _IndustriRumahTanggaFormScreenState
         const SizedBox(width: 12),
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(title,
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                   fontSize: 15,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFF0F172A))),
           Text(sub,
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                   fontSize: 11.5, color: const Color(0xFF64748B)))
         ])
       ]);
@@ -371,7 +371,7 @@ class _IndustriRumahTanggaFormScreenState
               controller: ctrl,
               keyboardType: keyboard,
               inputFormatters: inputFormatters,
-              style: GoogleFonts.poppins(fontSize: 14),
+              style: GoogleFonts.plusJakartaSans(fontSize: 14),
               validator: (v) {
                 if (serverErr != null) return serverErr;
                 if (validator != null) return validator(v);
@@ -387,9 +387,9 @@ class _IndustriRumahTanggaFormScreenState
                   labelText: label,
                   hintText: hint,
                   prefixIcon: Icon(icon, size: 18, color: _primary),
-                  hintStyle: GoogleFonts.poppins(
+                  hintStyle: GoogleFonts.plusJakartaSans(
                       fontSize: 13, color: Colors.grey[400]),
-                  labelStyle: GoogleFonts.poppins(
+                  labelStyle: GoogleFonts.plusJakartaSans(
                       fontSize: 13, color: const Color(0xFF64748B)),
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,

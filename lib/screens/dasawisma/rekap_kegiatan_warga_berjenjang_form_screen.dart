@@ -30,7 +30,7 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
   final _formKey = GlobalKey<FormState>();
   final _service = RekapKegiatanWargaBerjenjangService();
 
-  static const Color _primary = Color(0xFF0D9488);
+  static const Color _primary = Color(0xFF0072BC);
   static const Color _darkText = Color(0xFF0F172A);
 
   // Header controllers
@@ -370,7 +370,7 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
               token.isNotEmpty
                   ? 'Data rekap berhasil disimpan ke server!'
                   : 'Data disimpan lokal (belum login)',
-              style: GoogleFonts.poppins(),
+              style: GoogleFonts.plusJakartaSans(),
             ),
             backgroundColor: const Color(0xFF10B981),
           ),
@@ -384,7 +384,7 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
           SnackBar(
             content: Text(
               'Gagal menyimpan: $e',
-              style: GoogleFonts.poppins(),
+              style: GoogleFonts.plusJakartaSans(),
             ),
             backgroundColor: Colors.red,
           ),
@@ -424,7 +424,7 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
               widget.item == null
                   ? 'Isi Form Rekap Kegiatan'
                   : 'Edit Form Rekap Kegiatan',
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
                 color: _darkText,
@@ -432,7 +432,7 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
             ),
             Text(
               _getLevelTitle(),
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 11,
                 color: const Color(0xFF64748B),
               ),
@@ -449,7 +449,7 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
             _buildSectionCard(
               title: 'Informasi Wilayah',
               icon: Icons.location_city_rounded,
-              color: const Color(0xFF0D9488),
+              color: const Color(0xFF0072BC),
               children: [
                 Row(
                   children: [
@@ -1077,7 +1077,7 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
                       ),
                 label: Text(
                   _saving ? 'Menyimpan Data...' : 'Simpan Data Rekapitulasi',
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
                     color: Colors.white,
@@ -1128,7 +1128,7 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
               Expanded(
                 child: Text(
                   title,
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
                     color: _darkText,
@@ -1155,12 +1155,12 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
     return TextFormField(
       controller: controller,
       maxLines: maxLines,
-      style: GoogleFonts.poppins(fontSize: 13, color: _darkText),
+      style: GoogleFonts.plusJakartaSans(fontSize: 13, color: _darkText),
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
         prefixIcon: Icon(icon, size: 18, color: const Color(0xFF64748B)),
-        labelStyle: GoogleFonts.poppins(
+        labelStyle: GoogleFonts.plusJakartaSans(
           fontSize: 12,
           color: const Color(0xFF64748B),
         ),
@@ -1197,7 +1197,7 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
     return TextFormField(
       controller: controller,
       keyboardType: TextInputType.number,
-      style: GoogleFonts.poppins(
+      style: GoogleFonts.plusJakartaSans(
         fontSize: 13,
         fontWeight: FontWeight.w700,
         color: _darkText,
@@ -1205,7 +1205,7 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, size: 18, color: const Color(0xFF64748B)),
-        labelStyle: GoogleFonts.poppins(
+        labelStyle: GoogleFonts.plusJakartaSans(
           fontSize: 11.5,
           color: const Color(0xFF64748B),
         ),

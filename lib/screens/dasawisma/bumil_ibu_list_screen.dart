@@ -23,8 +23,8 @@ class _BumilIbuListScreenState extends State<BumilIbuListScreen>
   String _query = '';
   int _bulan = DateTime.now().month;
   int _tahun = DateTime.now().year;
-  static const Color _primary = Color(0xFF0D9488);
-  static const Color _primaryLight = Color(0xFFF0F9FF);
+  static const Color _primary = Color(0xFF0072BC);
+  static const Color _primaryLight = Color(0xFFE6F1F9);
   late AnimationController _animController;
 
   @override
@@ -81,15 +81,15 @@ class _BumilIbuListScreenState extends State<BumilIbuListScreen>
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
               title: Text('Hapus Data?',
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.w800)),
+                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800)),
               content: Text(
                   'Data "${d.nama}" (${d.bulanLabel}) akan dihapus.',
-                  style: GoogleFonts.poppins(fontSize: 13.5)),
+                  style: GoogleFonts.plusJakartaSans(fontSize: 13.5)),
               actions: [
                 TextButton(
                     onPressed: () => Navigator.pop(ctx, false),
                     child: Text('Batal',
-                        style: GoogleFonts.poppins(color: Colors.grey[600]))),
+                        style: GoogleFonts.plusJakartaSans(color: Colors.grey[600]))),
                 ElevatedButton(
                     onPressed: () => Navigator.pop(ctx, true),
                     style: ElevatedButton.styleFrom(
@@ -98,7 +98,7 @@ class _BumilIbuListScreenState extends State<BumilIbuListScreen>
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10))),
                     child: Text('Hapus',
-                        style: GoogleFonts.poppins(fontWeight: FontWeight.w700)))
+                        style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)))
               ],
             ));
     if (confirm == true) {
@@ -128,7 +128,7 @@ class _BumilIbuListScreenState extends State<BumilIbuListScreen>
   void _snack(String msg, {bool error = false}) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content:
-          Text(msg, style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+          Text(msg, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600)),
       backgroundColor: error ? Colors.red[700] : const Color(0xFF10B981),
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -159,7 +159,7 @@ class _BumilIbuListScreenState extends State<BumilIbuListScreen>
         Icon(icon, size: 13, color: fg),
         const SizedBox(width: 4),
         Text(d.statusLabel,
-            style: GoogleFonts.poppins(
+            style: GoogleFonts.plusJakartaSans(
                 fontSize: 11, fontWeight: FontWeight.w700, color: fg)),
       ]),
     );
@@ -178,7 +178,7 @@ class _BumilIbuListScreenState extends State<BumilIbuListScreen>
       decoration: BoxDecoration(
           color: c[0] as Color, borderRadius: BorderRadius.circular(20)),
       child: Text(c[2] as String,
-          style: GoogleFonts.poppins(
+          style: GoogleFonts.plusJakartaSans(
               fontSize: 11,
               fontWeight: FontWeight.w700,
               color: c[1] as Color)),
@@ -202,7 +202,7 @@ class _BumilIbuListScreenState extends State<BumilIbuListScreen>
                 children: [
                   Text(
                     'Bumil per Ibu',
-                    style: GoogleFonts.poppins(
+                    style: GoogleFonts.plusJakartaSans(
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
                       color: const Color(0xFF0F172A),
@@ -210,7 +210,7 @@ class _BumilIbuListScreenState extends State<BumilIbuListScreen>
                   ),
                   Text(
                     'Hamil, melahirkan, nifas per bulan',
-                    style: GoogleFonts.poppins(
+                    style: GoogleFonts.plusJakartaSans(
                       fontSize: 11,
                       color: const Color(0xFF64748B),
                     ),
@@ -229,7 +229,7 @@ class _BumilIbuListScreenState extends State<BumilIbuListScreen>
           elevation: 3,
           icon: const Icon(Icons.add_rounded),
           label: Text('Tambah Data',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w700))),
+              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700))),
       body: Column(children: [
         _buildSummary(),
         _buildFilter(),
@@ -242,45 +242,48 @@ class _BumilIbuListScreenState extends State<BumilIbuListScreen>
     Widget item(String label, int v, Color c) => Expanded(
             child: Column(children: [
           Text('$v',
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                   fontSize: 18, fontWeight: FontWeight.w900, color: c)),
           Text(label,
-              style: GoogleFonts.poppins(fontSize: 10, color: Colors.white70)),
+              style: GoogleFonts.plusJakartaSans(
+                  fontSize: 10, color: const Color(0xFF64748B))),
         ]));
     return Container(
         margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-            color: const Color(0xFF0D9488),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFFE2E8F0)),
             boxShadow: [
               BoxShadow(
-                  color: const Color(0xFF0D9488).withValues(alpha: 0.25),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4))
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2))
             ]),
         child: Column(children: [
           Row(children: [
             Expanded(
                 child: Text('${BumilIbu.namaBulan[_bulan]} $_tahun',
-                    style: GoogleFonts.poppins(
+                    style: GoogleFonts.plusJakartaSans(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
-                        color: Colors.white))),
+                        color: const Color(0xFF0F172A)))),
           ]),
           const SizedBox(height: 10),
           Row(children: [
-            item('Hamil', _summary.hamil, Colors.white),
-            item('Lahir', _summary.melahirkan, Colors.white),
-            item('Nifas', _summary.nifas, Colors.white),
-            item('Bayi Lhr', _summary.bayiLahir, Colors.white),
+            item('Hamil', _summary.hamil, const Color(0xFF0F172A)),
+            item('Lahir', _summary.melahirkan, const Color(0xFF0F172A)),
+            item('Nifas', _summary.nifas, const Color(0xFF0F172A)),
+            item('Bayi Lhr', _summary.bayiLahir, const Color(0xFF0F172A)),
           ]),
           const SizedBox(height: 8),
           Row(children: [
-            item('Ibu Mgl', _summary.meninggal, Colors.white70),
-            item('Bayi Mgl', _summary.bayiMeninggal, Colors.white70),
-            item('Balita Mgl', _summary.balitaMeninggal, Colors.white70),
-            item('Total', _data.length, Colors.white70),
+            item('Ibu Mgl', _summary.meninggal, const Color(0xFF64748B)),
+            item('Bayi Mgl', _summary.bayiMeninggal, const Color(0xFF64748B)),
+            item(
+                'Balita Mgl', _summary.balitaMeninggal, const Color(0xFF64748B)),
+            item('Total', _data.length, const Color(0xFF64748B)),
           ]),
         ]));
   }
@@ -308,7 +311,7 @@ class _BumilIbuListScreenState extends State<BumilIbuListScreen>
                       .map((e) => DropdownMenuItem(
                           value: e.key,
                           child: Text(e.value,
-                              style: GoogleFonts.poppins(fontSize: 13))))
+                              style: GoogleFonts.plusJakartaSans(fontSize: 13))))
                       .toList(),
                   onChanged: (v) {
                     if (v == null) return;
@@ -337,7 +340,7 @@ class _BumilIbuListScreenState extends State<BumilIbuListScreen>
                       .map((y) => DropdownMenuItem(
                           value: y,
                           child: Text('$y',
-                              style: GoogleFonts.poppins(fontSize: 13))))
+                              style: GoogleFonts.plusJakartaSans(fontSize: 13))))
                       .toList(),
                   onChanged: (v) {
                     if (v == null) return;
@@ -366,10 +369,10 @@ class _BumilIbuListScreenState extends State<BumilIbuListScreen>
                     _query = v;
                     _loadData();
                   },
-                  style: GoogleFonts.poppins(fontSize: 14),
+                  style: GoogleFonts.plusJakartaSans(fontSize: 14),
                   decoration: InputDecoration(
                       hintText: 'Cari nama ibu / bayi...',
-                      hintStyle: GoogleFonts.poppins(
+                      hintStyle: GoogleFonts.plusJakartaSans(
                           fontSize: 13, color: Colors.grey[400]),
                       prefixIcon: const Icon(Icons.search_rounded,
                           color: Color(0xFF64748B), size: 20),
@@ -410,14 +413,14 @@ class _BumilIbuListScreenState extends State<BumilIbuListScreen>
                             size: 44, color: Color(0xFFB91C1C))),
                     const SizedBox(height: 16),
                     Text('Gagal memuat data',
-                        style: GoogleFonts.poppins(
+                        style: GoogleFonts.plusJakartaSans(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
                             color: const Color(0xFF475569))),
                     const SizedBox(height: 8),
                     Text(_error!,
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
+                        style: GoogleFonts.plusJakartaSans(
                             fontSize: 13, color: const Color(0xFF94A3B8))),
                     const SizedBox(height: 16),
                     ElevatedButton.icon(
@@ -425,7 +428,7 @@ class _BumilIbuListScreenState extends State<BumilIbuListScreen>
                         icon: const Icon(Icons.refresh_rounded),
                         label: Text('Coba Lagi',
                             style:
-                                GoogleFonts.poppins(fontWeight: FontWeight.w700)),
+                                GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
                         style: ElevatedButton.styleFrom(
                             backgroundColor: _primary,
                             foregroundColor: Colors.white,
@@ -448,7 +451,7 @@ class _BumilIbuListScreenState extends State<BumilIbuListScreen>
             _query.isNotEmpty
                 ? 'Tidak ditemukan'
                 : 'Belum ada data bulan ini',
-            style: GoogleFonts.poppins(
+            style: GoogleFonts.plusJakartaSans(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
                 color: const Color(0xFF475569))),
@@ -458,7 +461,7 @@ class _BumilIbuListScreenState extends State<BumilIbuListScreen>
                 ? 'Coba kata kunci berbeda'
                 : 'Tekan "Tambah Data" untuk mencatat\nibu bulan ini',
             textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
+            style: GoogleFonts.plusJakartaSans(
                 fontSize: 13, color: const Color(0xFF94A3B8)))
       ]));
     }
@@ -524,13 +527,13 @@ class _BumilIbuListScreenState extends State<BumilIbuListScreen>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                           Text(d.nama,
-                              style: GoogleFonts.poppins(
+                              style: GoogleFonts.plusJakartaSans(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w800,
                                   color: const Color(0xFF0F172A))),
                           Text(
                               '${d.bulanLabel} ${d.tahun}${d.desa.isNotEmpty ? ' · ${d.desa}' : ''}',
-                              style: GoogleFonts.poppins(
+                              style: GoogleFonts.plusJakartaSans(
                                   fontSize: 11.5,
                                   color: const Color(0xFF64748B))),
                         ])),
@@ -554,18 +557,18 @@ class _BumilIbuListScreenState extends State<BumilIbuListScreen>
                                         size: 16, color: Color(0xFF64748B)),
                                     const SizedBox(width: 8),
                                     Text('Lihat Detail',
-                                        style: GoogleFonts.poppins())
+                                        style: GoogleFonts.plusJakartaSans())
                                   ])),
                               if (!d.isApproved)
                                 PopupMenuItem(
                                     value: 'edit',
                                     child: Row(children: [
                                       const Icon(Icons.edit_outlined,
-                                          size: 16, color: Color(0xFF0D9488)),
+                                          size: 16, color: Color(0xFF0072BC)),
                                       const SizedBox(width: 8),
                                       Text('Edit',
-                                          style: GoogleFonts.poppins(
-                                              color: Color(0xFF0D9488)))
+                                          style: GoogleFonts.plusJakartaSans(
+                                              color: Color(0xFF0072BC)))
                                     ])),
                               if (!d.isApproved)
                                 PopupMenuItem(
@@ -575,7 +578,7 @@ class _BumilIbuListScreenState extends State<BumilIbuListScreen>
                                           size: 16, color: Colors.red[600]),
                                       const SizedBox(width: 8),
                                       Text('Hapus',
-                                          style: GoogleFonts.poppins(
+                                          style: GoogleFonts.plusJakartaSans(
                                               color: Colors.red[600]))
                                     ])),
                             ]),
@@ -593,7 +596,7 @@ class _BumilIbuListScreenState extends State<BumilIbuListScreen>
                             Expanded(
                                 child: Text(
                                     'Bayi: ${d.bayiNama}${d.bayiJenisKelamin.isNotEmpty ? ' (${d.bayiJenisKelamin})' : ''}${d.bayiAkta == true ? ' · Akta ada' : ''}',
-                                    style: GoogleFonts.poppins(
+                                    style: GoogleFonts.plusJakartaSans(
                                         fontSize: 12.5,
                                         color: const Color(0xFF475569)),
                                     overflow: TextOverflow.ellipsis)),
@@ -603,7 +606,7 @@ class _BumilIbuListScreenState extends State<BumilIbuListScreen>
                           const SizedBox(height: 6),
                           Text(
                               'Meninggal (${d.kematianKategori}): ${d.kematianNama}',
-                              style: GoogleFonts.poppins(
+                              style: GoogleFonts.plusJakartaSans(
                                   fontSize: 12.5,
                                   color: const Color(0xFFB91C1C))),
                         ],
@@ -620,7 +623,7 @@ class _BumilIbuListScreenState extends State<BumilIbuListScreen>
                                       color: const Color(0xFFFECACA))),
                               child: Text(
                                   'Perlu diperbaiki: ${d.rejectedReason!}',
-                                  style: GoogleFonts.poppins(
+                                  style: GoogleFonts.plusJakartaSans(
                                       fontSize: 12,
                                       color: const Color(0xFF7F1D1D)))),
                         ],
@@ -649,11 +652,11 @@ class _DetailSheet extends StatelessWidget {
           SizedBox(
               width: 130,
               child: Text(label,
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                       fontSize: 12.5, color: const Color(0xFF64748B)))),
           Expanded(
               child: Text(value.isEmpty ? '-' : value,
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: const Color(0xFF0F172A)))),
@@ -683,13 +686,13 @@ class _DetailSheet extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                           Text(data.nama,
-                              style: GoogleFonts.poppins(
+                              style: GoogleFonts.plusJakartaSans(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w800,
                                   color: const Color(0xFF0F172A))),
                           Text(
                               '${data.statusIbuLabel} · ${data.bulanLabel} ${data.tahun}',
-                              style: GoogleFonts.poppins(
+                              style: GoogleFonts.plusJakartaSans(
                                   fontSize: 12,
                                   color: const Color(0xFF64748B))),
                         ])),
@@ -697,13 +700,13 @@ class _DetailSheet extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                            color: const Color(0xFFF0F9FF),
+                            color: const Color(0xFFE6F1F9),
                             borderRadius: BorderRadius.circular(20)),
                         child: Text(data.statusLabel,
-                            style: GoogleFonts.poppins(
+                            style: GoogleFonts.plusJakartaSans(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
-                                color: const Color(0xFF0D9488)))),
+                                color: const Color(0xFF0072BC)))),
                   ])),
               const Divider(height: 1),
               Expanded(

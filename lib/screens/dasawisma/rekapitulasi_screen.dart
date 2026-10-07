@@ -49,7 +49,7 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
 
   @override
   Widget build(BuildContext context) {
-    const primary = Color(0xFF0D9488);
+    const primary = Color(0xFF0072BC);
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
       appBar: AppBar(
@@ -62,11 +62,11 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
           children: [
             Text(
               'Rekapitulasi Berjenjang Dasawisma',
-              style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w800, color: const Color(0xFF0F172A)),
+              style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w800, color: const Color(0xFF0F172A)),
             ),
             Text(
               'Otomatis Roll-up RT • RW • Dusun • Desa • Kec • Kab',
-              style: GoogleFonts.poppins(fontSize: 11, color: const Color(0xFF64748B)),
+              style: GoogleFonts.plusJakartaSans(fontSize: 11, color: const Color(0xFF64748B)),
             ),
           ],
         ),
@@ -84,9 +84,9 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
         ],
         bottom: TabBar(
           controller: _tabController,
-          labelStyle: GoogleFonts.poppins(fontWeight: FontWeight.w800, fontSize: 13),
-          unselectedLabelStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 13),
-          labelColor: const Color(0xFF0F766E),
+          labelStyle: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 13),
+          unselectedLabelStyle: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600, fontSize: 13),
+          labelColor: const Color(0xFF0072BC),
           unselectedLabelColor: const Color(0xFF64748B),
           indicatorColor: primary,
           tabs: const [
@@ -117,7 +117,7 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Expanded(flex: 3, child: KecamatanDropdownField(controller: _kecCtrl, allowEmpty: true, isCompact: true, prefixIcon: const Icon(Icons.map_outlined, size: 16, color: Color(0xFF0D9488)))),
+                    Expanded(flex: 3, child: KecamatanDropdownField(controller: _kecCtrl, allowEmpty: true, isCompact: true, prefixIcon: const Icon(Icons.map_outlined, size: 16, color: Color(0xFF0072BC)))),
                     const SizedBox(width: 6),
                     Expanded(
                       flex: 2,
@@ -132,11 +132,11 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
                           child: DropdownButton<String>(
                             value: _tahun,
                             isExpanded: true,
-                            hint: Text('Tahun', style: GoogleFonts.poppins(fontSize: 12)),
+                            hint: Text('Tahun', style: GoogleFonts.plusJakartaSans(fontSize: 12)),
                             items: _tahunList
                                 .map((e) => DropdownMenuItem(
                                       value: e,
-                                      child: Text(e.isEmpty ? 'Semua Thn' : e, style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600)),
+                                      child: Text(e.isEmpty ? 'Semua Thn' : e, style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w600)),
                                     ))
                                 .toList(),
                             onChanged: (v) => setState(() => _tahun = v ?? ''),
@@ -148,7 +148,7 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
                     ElevatedButton.icon(
                       onPressed: () => setState(() {}),
                       icon: const Icon(Icons.filter_alt_rounded, size: 16),
-                      label: Text('Filter', style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w700)),
+                      label: Text('Filter', style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w700)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primary,
                         foregroundColor: Colors.white,
@@ -187,11 +187,11 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
         ),
         child: TextField(
           controller: ctrl,
-          style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600),
+          style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w600),
           decoration: InputDecoration(
             labelText: label,
-            labelStyle: GoogleFonts.poppins(fontSize: 10, color: const Color(0xFF64748B)),
-            prefixIcon: Icon(icon, size: 14, color: const Color(0xFF0D9488)),
+            labelStyle: GoogleFonts.plusJakartaSans(fontSize: 10, color: const Color(0xFF64748B)),
+            prefixIcon: Icon(icon, size: 14, color: const Color(0xFF0072BC)),
             border: InputBorder.none,
             contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
             isDense: true,
@@ -211,7 +211,7 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
         tahun: _tahun,
       ),
       builder: (context, totalSnap) {
-        if (!totalSnap.hasData) return const Center(child: CircularProgressIndicator(color: Color(0xFF0D9488)));
+        if (!totalSnap.hasData) return const Center(child: CircularProgressIndicator(color: Color(0xFF0072BC)));
         final total = totalSnap.data!;
 
         return FutureBuilder<List<RekapRow>>(
@@ -232,7 +232,7 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
 
             return RefreshIndicator(
               onRefresh: () async => setState(() {}),
-              color: const Color(0xFF0D9488),
+              color: const Color(0xFF0072BC),
               child: ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
@@ -251,7 +251,7 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
                         Expanded(
                           child: Text(
                             'Rekapitulasi otomatis dari ${rows.length} Kepala Rumah Tangga',
-                            style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFF047857)),
+                            style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w700, color: const Color(0xFF047857)),
                           ),
                         ),
                       ],
@@ -271,11 +271,11 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
                       _StatItem('Balita', '${total.balitaL + total.balitaP}', Icons.child_care_rounded, const Color(0xFFF59E0B)),
                       _StatItem('Pasangan PUS', '${total.pus}', Icons.favorite_rounded, const Color(0xFFE11D48)),
                       _StatItem('Wanita WUS', '${total.wus}', Icons.woman_rounded, const Color(0xFF8B5CF6)),
-                      _StatItem('Ibu Hamil', '${total.ibuHamil}', Icons.pregnant_woman_rounded, const Color(0xFF0D9488)),
+                      _StatItem('Ibu Hamil', '${total.ibuHamil}', Icons.pregnant_woman_rounded, const Color(0xFF0072BC)),
                       _StatItem('Ibu Menyusui', '${total.ibuMenyusui}', Icons.child_friendly_rounded, const Color(0xFF06B6D4)),
                       _StatItem('Lansia', '${total.lansia}', Icons.elderly_rounded, const Color(0xFF64748B)),
                       _StatItem('3 Buta', '${total.tigaButaL + total.tigaButaP}', Icons.visibility_off_rounded, const Color(0xFFD97706)),
-                      _StatItem('Berkebutuhan Khusus', '${total.berkebutuhanKhusus}', Icons.accessible_rounded, const Color(0xFF0D9488)),
+                      _StatItem('Berkebutuhan Khusus', '${total.berkebutuhanKhusus}', Icons.accessible_rounded, const Color(0xFF0072BC)),
                     ],
                   ),
                   const SizedBox(height: 14),
@@ -291,7 +291,7 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
                       _StatItem('Tempat Sampah', '${total.punyaTempatSampah}', Icons.delete_outline_rounded, const Color(0xFF10B981)),
                       _StatItem('Saluran SPAL', '${total.punyaSpal}', Icons.water_rounded, const Color(0xFF0284C7)),
                       _StatItem('Air PDAM', '${total.sumberAirPdam}', Icons.water_drop_rounded, const Color(0xFF2563EB)),
-                      _StatItem('Air Sumur', '${total.sumberAirSumur}', Icons.waves_rounded, const Color(0xFF0D9488)),
+                      _StatItem('Air Sumur', '${total.sumberAirSumur}', Icons.waves_rounded, const Color(0xFF0072BC)),
                       _StatItem('Air Lainnya', '${total.sumberAirLainnya}', Icons.opacity_rounded, const Color(0xFF64748B)),
                     ],
                   ),
@@ -301,14 +301,14 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
                   _buildSectionCard(
                     title: 'Pangan, Ekonomi & Kegiatan Lingkungan',
                     icon: Icons.storefront_rounded,
-                    color: const Color(0xFF0D9488),
+                    color: const Color(0xFF0072BC),
                     stats: [
                       _StatItem('Makanan Beras', '${total.makananBeras}', Icons.rice_bowl_rounded, const Color(0xFFD97706)),
                       _StatItem('Makanan Non-Beras', '${total.makananNonBeras}', Icons.restaurant_rounded, const Color(0xFF059669)),
                       _StatItem('Aktif UP2K', '${total.up2k}', Icons.store_rounded, const Color(0xFFDB2777)),
                       _StatItem('Tanah Pekarangan', '${total.tanahPekarangan}', Icons.grass_rounded, const Color(0xFF16A34A)),
-                      _StatItem('Industri Rumah Tangga', '${total.industriRumah}', Icons.precision_manufacturing_rounded, const Color(0xFF0D9488)),
-                      _StatItem('Kesehatan Lingkungan', '${total.kesehatanLingkungan}', Icons.eco_rounded, const Color(0xFF0D9488)),
+                      _StatItem('Industri Rumah Tangga', '${total.industriRumah}', Icons.precision_manufacturing_rounded, const Color(0xFF0072BC)),
+                      _StatItem('Kesehatan Lingkungan', '${total.kesehatanLingkungan}', Icons.eco_rounded, const Color(0xFF0072BC)),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -332,12 +332,12 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
         tahun: _tahun,
       ),
       builder: (context, snap) {
-        if (!snap.hasData) return const Center(child: CircularProgressIndicator(color: Color(0xFF0D9488)));
+        if (!snap.hasData) return const Center(child: CircularProgressIndicator(color: Color(0xFF0072BC)));
         final r = snap.data!;
 
         return RefreshIndicator(
           onRefresh: () async => setState(() {}),
-          color: const Color(0xFF0D9488),
+          color: const Color(0xFF0072BC),
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
@@ -382,7 +382,7 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
                     Expanded(
                       child: Text(
                         'Data statistik di atas otomatis terkalkulasi dari form Rekap Ibu & Anak Dasawisma.',
-                        style: GoogleFonts.poppins(fontSize: 11.5, color: const Color(0xFF92400E), fontWeight: FontWeight.w600),
+                        style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: const Color(0xFF92400E), fontWeight: FontWeight.w600),
                       ),
                     ),
                   ],
@@ -431,7 +431,7 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
               Expanded(
                 child: Text(
                   title,
-                  style: GoogleFonts.poppins(fontSize: 14.5, fontWeight: FontWeight.w800, color: const Color(0xFF0F172A)),
+                  style: GoogleFonts.plusJakartaSans(fontSize: 14.5, fontWeight: FontWeight.w800, color: const Color(0xFF0F172A)),
                 ),
               ),
             ],
@@ -462,7 +462,7 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
           const SizedBox(height: 6),
           Text(
             item.value,
-            style: GoogleFonts.poppins(fontSize: 17, fontWeight: FontWeight.w900, color: item.color),
+            style: GoogleFonts.plusJakartaSans(fontSize: 17, fontWeight: FontWeight.w900, color: item.color),
           ),
           const SizedBox(height: 2),
           Text(
@@ -470,7 +470,7 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.poppins(fontSize: 10, fontWeight: FontWeight.w600, color: const Color(0xFF64748B)),
+            style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.w600, color: const Color(0xFF64748B)),
           ),
         ],
       ),
@@ -480,16 +480,16 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
   Widget _buildSheet7Table(List<RekapRow> rows, RekapTotal? total) {
     if (rows.isEmpty) {
       return Center(
-        child: Text('Belum ada data Dasawisma', style: GoogleFonts.poppins(color: const Color(0xFF64748B))),
+        child: Text('Belum ada data Dasawisma', style: GoogleFonts.plusJakartaSans(color: const Color(0xFF64748B))),
       );
     }
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: SingleChildScrollView(
         child: DataTable(
-          headingRowColor: WidgetStateProperty.all(const Color(0xFF0F766E)),
-          headingTextStyle: GoogleFonts.poppins(fontSize: 10, color: Colors.white, fontWeight: FontWeight.w700),
-          dataTextStyle: GoogleFonts.poppins(fontSize: 11, color: const Color(0xFF0F172A)),
+          headingRowColor: WidgetStateProperty.all(const Color(0xFF0072BC)),
+          headingTextStyle: GoogleFonts.plusJakartaSans(fontSize: 10, color: Colors.white, fontWeight: FontWeight.w700),
+          dataTextStyle: GoogleFonts.plusJakartaSans(fontSize: 11, color: const Color(0xFF0F172A)),
           columnSpacing: 12,
           horizontalMargin: 12,
           columns: const [
@@ -563,34 +563,34 @@ class _RekapitulasiScreenState extends State<RekapitulasiScreen> with SingleTick
                 color: WidgetStateProperty.all(const Color(0xFFECFDF5)),
                 cells: [
                   const DataCell(Text('')),
-                  DataCell(Text('JUMLAH', style: GoogleFonts.poppins(fontWeight: FontWeight.w800))),
+                  DataCell(Text('JUMLAH', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800))),
                   const DataCell(Text('')),
                   const DataCell(Text('')),
                   const DataCell(Text('')),
-                  DataCell(Text('${total.jumlahKk}', style: GoogleFonts.poppins(fontWeight: FontWeight.w800))),
-                  DataCell(Text('${total.l}', style: GoogleFonts.poppins(fontWeight: FontWeight.w800))),
-                  DataCell(Text('${total.p}', style: GoogleFonts.poppins(fontWeight: FontWeight.w800))),
-                  DataCell(Text('${total.balitaL + total.balitaP}', style: GoogleFonts.poppins(fontWeight: FontWeight.w800))),
-                  DataCell(Text('${total.pus}', style: GoogleFonts.poppins(fontWeight: FontWeight.w800))),
-                  DataCell(Text('${total.wus}', style: GoogleFonts.poppins(fontWeight: FontWeight.w800))),
-                  DataCell(Text('${total.ibuHamil}', style: GoogleFonts.poppins(fontWeight: FontWeight.w800))),
-                  DataCell(Text('${total.ibuMenyusui}', style: GoogleFonts.poppins(fontWeight: FontWeight.w800))),
-                  DataCell(Text('${total.lansia}', style: GoogleFonts.poppins(fontWeight: FontWeight.w800))),
-                  DataCell(Text('${total.tigaButaL + total.tigaButaP}', style: GoogleFonts.poppins(fontWeight: FontWeight.w800))),
-                  DataCell(Text('${total.berkebutuhanKhusus}', style: GoogleFonts.poppins(fontWeight: FontWeight.w800))),
-                  DataCell(Text('${total.kriteriaTidakLayak}', style: GoogleFonts.poppins(fontWeight: FontWeight.w800))),
-                  DataCell(Text('${total.punyaJamban}', style: GoogleFonts.poppins(fontWeight: FontWeight.w800))),
-                  DataCell(Text('${total.punyaTempatSampah}', style: GoogleFonts.poppins(fontWeight: FontWeight.w800))),
-                  DataCell(Text('${total.punyaSpal}', style: GoogleFonts.poppins(fontWeight: FontWeight.w800))),
-                  DataCell(Text('${total.sumberAirPdam}', style: GoogleFonts.poppins(fontWeight: FontWeight.w800))),
-                  DataCell(Text('${total.sumberAirSumur}', style: GoogleFonts.poppins(fontWeight: FontWeight.w800))),
-                  DataCell(Text('${total.sumberAirLainnya}', style: GoogleFonts.poppins(fontWeight: FontWeight.w800))),
-                  DataCell(Text('${total.makananBeras}', style: GoogleFonts.poppins(fontWeight: FontWeight.w800))),
-                  DataCell(Text('${total.makananNonBeras}', style: GoogleFonts.poppins(fontWeight: FontWeight.w800))),
-                  DataCell(Text('${total.up2k}', style: GoogleFonts.poppins(fontWeight: FontWeight.w800))),
-                  DataCell(Text('${total.tanahPekarangan}', style: GoogleFonts.poppins(fontWeight: FontWeight.w800))),
-                  DataCell(Text('${total.industriRumah}', style: GoogleFonts.poppins(fontWeight: FontWeight.w800))),
-                  DataCell(Text('${total.kesehatanLingkungan}', style: GoogleFonts.poppins(fontWeight: FontWeight.w800))),
+                  DataCell(Text('${total.jumlahKk}', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800))),
+                  DataCell(Text('${total.l}', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800))),
+                  DataCell(Text('${total.p}', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800))),
+                  DataCell(Text('${total.balitaL + total.balitaP}', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800))),
+                  DataCell(Text('${total.pus}', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800))),
+                  DataCell(Text('${total.wus}', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800))),
+                  DataCell(Text('${total.ibuHamil}', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800))),
+                  DataCell(Text('${total.ibuMenyusui}', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800))),
+                  DataCell(Text('${total.lansia}', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800))),
+                  DataCell(Text('${total.tigaButaL + total.tigaButaP}', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800))),
+                  DataCell(Text('${total.berkebutuhanKhusus}', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800))),
+                  DataCell(Text('${total.kriteriaTidakLayak}', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800))),
+                  DataCell(Text('${total.punyaJamban}', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800))),
+                  DataCell(Text('${total.punyaTempatSampah}', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800))),
+                  DataCell(Text('${total.punyaSpal}', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800))),
+                  DataCell(Text('${total.sumberAirPdam}', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800))),
+                  DataCell(Text('${total.sumberAirSumur}', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800))),
+                  DataCell(Text('${total.sumberAirLainnya}', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800))),
+                  DataCell(Text('${total.makananBeras}', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800))),
+                  DataCell(Text('${total.makananNonBeras}', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800))),
+                  DataCell(Text('${total.up2k}', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800))),
+                  DataCell(Text('${total.tanahPekarangan}', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800))),
+                  DataCell(Text('${total.industriRumah}', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800))),
+                  DataCell(Text('${total.kesehatanLingkungan}', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800))),
                 ],
               ),
           ],

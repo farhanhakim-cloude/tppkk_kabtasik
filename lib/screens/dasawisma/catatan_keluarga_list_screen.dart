@@ -22,8 +22,8 @@ class _CatatanKeluargaListScreenState extends State<CatatanKeluargaListScreen>
   bool _loading = true;
   String? _error;
   String _query = '';
-  static const Color _primary = Color(0xFF0D9488);
-  static const Color _primaryLight = Color(0xFFF0F9FF);
+  static const Color _primary = Color(0xFF0072BC);
+  static const Color _primaryLight = Color(0xFFE6F1F9);
   late AnimationController _animController;
 
   @override
@@ -80,15 +80,15 @@ class _CatatanKeluargaListScreenState extends State<CatatanKeluargaListScreen>
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
               title: Text('Hapus Data?',
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.w800)),
+                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800)),
               content: Text(
                   'Anggota "${d.namaAnggota}" akan dihapus.',
-                  style: GoogleFonts.poppins(fontSize: 13.5)),
+                  style: GoogleFonts.plusJakartaSans(fontSize: 13.5)),
               actions: [
                 TextButton(
                     onPressed: () => Navigator.pop(ctx, false),
                     child: Text('Batal',
-                        style: GoogleFonts.poppins(color: Colors.grey[600]))),
+                        style: GoogleFonts.plusJakartaSans(color: Colors.grey[600]))),
                 ElevatedButton(
                     onPressed: () => Navigator.pop(ctx, true),
                     style: ElevatedButton.styleFrom(
@@ -97,7 +97,7 @@ class _CatatanKeluargaListScreenState extends State<CatatanKeluargaListScreen>
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10))),
                     child: Text('Hapus',
-                        style: GoogleFonts.poppins(fontWeight: FontWeight.w700)))
+                        style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)))
               ],
             ));
     if (confirm == true) {
@@ -127,7 +127,7 @@ class _CatatanKeluargaListScreenState extends State<CatatanKeluargaListScreen>
   void _snack(String msg, {bool error = false}) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content:
-          Text(msg, style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+          Text(msg, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600)),
       backgroundColor: error ? Colors.red[700] : const Color(0xFF10B981),
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -158,7 +158,7 @@ class _CatatanKeluargaListScreenState extends State<CatatanKeluargaListScreen>
         Icon(icon, size: 13, color: fg),
         const SizedBox(width: 4),
         Text(d.statusLabel,
-            style: GoogleFonts.poppins(
+            style: GoogleFonts.plusJakartaSans(
                 fontSize: 11, fontWeight: FontWeight.w700, color: fg)),
       ]),
     );
@@ -179,12 +179,12 @@ class _CatatanKeluargaListScreenState extends State<CatatanKeluargaListScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Catatan Keluarga',
-                        style: GoogleFonts.poppins(
+                        style: GoogleFonts.plusJakartaSans(
                             fontSize: 16,
                             fontWeight: FontWeight.w800,
                             color: const Color(0xFF0F172A))),
                     Text('Anggota keluarga per KK',
-                        style: GoogleFonts.poppins(
+                        style: GoogleFonts.plusJakartaSans(
                             fontSize: 11, color: const Color(0xFF64748B)))
                   ])),
       floatingActionButton: FloatingActionButton.extended(
@@ -198,7 +198,7 @@ class _CatatanKeluargaListScreenState extends State<CatatanKeluargaListScreen>
           elevation: 3,
           icon: const Icon(Icons.add_rounded),
           label: Text('Tambah Data',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w700))),
+              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700))),
       body: Column(children: [
         _buildStats(),
         Padding(
@@ -220,10 +220,10 @@ class _CatatanKeluargaListScreenState extends State<CatatanKeluargaListScreen>
                       _query = v;
                       _loadData();
                     },
-                    style: GoogleFonts.poppins(fontSize: 14),
+                    style: GoogleFonts.plusJakartaSans(fontSize: 14),
                     decoration: InputDecoration(
                         hintText: 'Cari nama, NIK, pendidikan, pekerjaan...',
-                        hintStyle: GoogleFonts.poppins(
+                        hintStyle: GoogleFonts.plusJakartaSans(
                             fontSize: 13, color: Colors.grey[400]),
                         prefixIcon: const Icon(Icons.search_rounded,
                             color: Color(0xFF64748B), size: 20),
@@ -255,47 +255,48 @@ class _CatatanKeluargaListScreenState extends State<CatatanKeluargaListScreen>
         margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-            color: const Color(0xFF0D9488),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFFE2E8F0)),
             boxShadow: [
               BoxShadow(
-                  color: const Color(0xFF0D9488).withValues(alpha: 0.25),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4))
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2))
             ]),
         child: Row(children: [
           Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.18),
+                  color: const Color(0xFF0072BC).withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(12)),
               child: const Icon(Icons.assignment_ind_rounded,
-                  color: Colors.white, size: 24)),
+                  color: Color(0xFF0072BC), size: 24)),
           const SizedBox(width: 14),
           Expanded(
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                 Text('Total Anggota',
-                    style: GoogleFonts.poppins(
-                        fontSize: 12, color: Colors.white70)),
+                    style: GoogleFonts.plusJakartaSans(
+                        fontSize: 12, color: const Color(0xFF64748B))),
                 Text('$total Anggota',
-                    style: GoogleFonts.poppins(
+                    style: GoogleFonts.plusJakartaSans(
                         fontSize: 22,
                         fontWeight: FontWeight.w900,
-                        color: Colors.white))
+                        color: const Color(0xFF0F172A)))
               ])),
           Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
             Text('$laki L',
-                style: GoogleFonts.poppins(
+                style: GoogleFonts.plusJakartaSans(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: Colors.white)),
+                    color: const Color(0xFF0F172A))),
             Text('$per P',
-                style: GoogleFonts.poppins(
+                style: GoogleFonts.plusJakartaSans(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: Colors.white70))
+                    color: const Color(0xFF64748B)))
           ])
         ]));
   }
@@ -319,14 +320,14 @@ class _CatatanKeluargaListScreenState extends State<CatatanKeluargaListScreen>
                             size: 44, color: Color(0xFFB91C1C))),
                     const SizedBox(height: 16),
                     Text('Gagal memuat data',
-                        style: GoogleFonts.poppins(
+                        style: GoogleFonts.plusJakartaSans(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
                             color: const Color(0xFF475569))),
                     const SizedBox(height: 8),
                     Text(_error!,
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.poppins(
+                        style: GoogleFonts.plusJakartaSans(
                             fontSize: 13, color: const Color(0xFF94A3B8))),
                     const SizedBox(height: 16),
                     ElevatedButton.icon(
@@ -334,7 +335,7 @@ class _CatatanKeluargaListScreenState extends State<CatatanKeluargaListScreen>
                         icon: const Icon(Icons.refresh_rounded),
                         label: Text('Coba Lagi',
                             style:
-                                GoogleFonts.poppins(fontWeight: FontWeight.w700)),
+                                GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
                         style: ElevatedButton.styleFrom(
                             backgroundColor: _primary,
                             foregroundColor: Colors.white,
@@ -354,7 +355,7 @@ class _CatatanKeluargaListScreenState extends State<CatatanKeluargaListScreen>
                 size: 48, color: _primary)),
         const SizedBox(height: 16),
         Text(_query.isNotEmpty ? 'Tidak ditemukan' : 'Belum ada anggota keluarga',
-            style: GoogleFonts.poppins(
+            style: GoogleFonts.plusJakartaSans(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
                 color: const Color(0xFF475569))),
@@ -364,7 +365,7 @@ class _CatatanKeluargaListScreenState extends State<CatatanKeluargaListScreen>
                 ? 'Coba kata kunci berbeda'
                 : 'Tekan "Tambah Data" untuk mencatat\nanggota keluarga pertama',
             textAlign: TextAlign.center,
-            style: GoogleFonts.poppins(
+            style: GoogleFonts.plusJakartaSans(
                 fontSize: 13, color: const Color(0xFF94A3B8)))
       ]));
     }
@@ -438,7 +439,7 @@ class _CatatanKeluargaListScreenState extends State<CatatanKeluargaListScreen>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                           Text(d.namaAnggota,
-                              style: GoogleFonts.poppins(
+                              style: GoogleFonts.plusJakartaSans(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w800,
                                   color: const Color(0xFF0F172A))),
@@ -446,7 +447,7 @@ class _CatatanKeluargaListScreenState extends State<CatatanKeluargaListScreen>
                               subtitle.isEmpty
                                   ? d.hubunganLabel
                                   : '$subtitle · ${d.hubunganLabel}',
-                              style: GoogleFonts.poppins(
+                              style: GoogleFonts.plusJakartaSans(
                                   fontSize: 11.5,
                                   color: const Color(0xFF64748B))),
                         ])),
@@ -470,18 +471,18 @@ class _CatatanKeluargaListScreenState extends State<CatatanKeluargaListScreen>
                                         size: 16, color: Color(0xFF64748B)),
                                     const SizedBox(width: 8),
                                     Text('Lihat Detail',
-                                        style: GoogleFonts.poppins())
+                                        style: GoogleFonts.plusJakartaSans())
                                   ])),
                               if (!d.isApproved)
                                 PopupMenuItem(
                                     value: 'edit',
                                     child: Row(children: [
                                       const Icon(Icons.edit_outlined,
-                                          size: 16, color: Color(0xFF0D9488)),
+                                          size: 16, color: Color(0xFF0072BC)),
                                       const SizedBox(width: 8),
                                       Text('Edit',
-                                          style: GoogleFonts.poppins(
-                                              color: Color(0xFF0D9488)))
+                                          style: GoogleFonts.plusJakartaSans(
+                                              color: Color(0xFF0072BC)))
                                     ])),
                               if (!d.isApproved)
                                 PopupMenuItem(
@@ -491,7 +492,7 @@ class _CatatanKeluargaListScreenState extends State<CatatanKeluargaListScreen>
                                           size: 16, color: Colors.red[600]),
                                       const SizedBox(width: 8),
                                       Text('Hapus',
-                                          style: GoogleFonts.poppins(
+                                          style: GoogleFonts.plusJakartaSans(
                                               color: Colors.red[600]))
                                     ])),
                             ]),
@@ -530,13 +531,13 @@ class _CatatanKeluargaListScreenState extends State<CatatanKeluargaListScreen>
                                                 CrossAxisAlignment.start,
                                             children: [
                                           Text('Perlu diperbaiki:',
-                                              style: GoogleFonts.poppins(
+                                              style: GoogleFonts.plusJakartaSans(
                                                   fontSize: 11.5,
                                                   fontWeight: FontWeight.w700,
                                                   color:
                                                       const Color(0xFFB91C1C))),
                                           Text(d.rejectedReason!,
-                                              style: GoogleFonts.poppins(
+                                              style: GoogleFonts.plusJakartaSans(
                                                   fontSize: 12,
                                                   color:
                                                       const Color(0xFF7F1D1D))),
@@ -554,7 +555,7 @@ class _CatatanKeluargaListScreenState extends State<CatatanKeluargaListScreen>
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: const Color(0xFFE2E8F0))),
       child: Text(text,
-          style: GoogleFonts.poppins(
+          style: GoogleFonts.plusJakartaSans(
               fontSize: 11,
               fontWeight: FontWeight.w600,
               color: const Color(0xFF475569))));
@@ -580,11 +581,11 @@ class _DetailSheet extends StatelessWidget {
           SizedBox(
               width: 130,
               child: Text(label,
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                       fontSize: 12.5, color: const Color(0xFF64748B)))),
           Expanded(
               child: Text(value.isEmpty ? '-' : value,
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                       color: const Color(0xFF0F172A)))),
@@ -614,12 +615,12 @@ class _DetailSheet extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                           Text(data.namaAnggota,
-                              style: GoogleFonts.poppins(
+                              style: GoogleFonts.plusJakartaSans(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w800,
                                   color: const Color(0xFF0F172A))),
                           Text(data.hubunganLabel,
-                              style: GoogleFonts.poppins(
+                              style: GoogleFonts.plusJakartaSans(
                                   fontSize: 12,
                                   color: const Color(0xFF64748B))),
                         ])),
@@ -627,13 +628,13 @@ class _DetailSheet extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                            color: const Color(0xFFF0F9FF),
+                            color: const Color(0xFFE6F1F9),
                             borderRadius: BorderRadius.circular(20)),
                         child: Text(data.statusLabel,
-                            style: GoogleFonts.poppins(
+                            style: GoogleFonts.plusJakartaSans(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
-                                color: const Color(0xFF0D9488)))),
+                                color: const Color(0xFF0072BC)))),
                   ])),
               const Divider(height: 1),
               Expanded(

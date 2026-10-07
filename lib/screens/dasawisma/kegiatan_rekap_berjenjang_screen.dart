@@ -97,7 +97,7 @@ class KegiatanRekapBerjenjangScreen extends StatefulWidget {
 
 class _KegiatanRekapBerjenjangScreenState
     extends State<KegiatanRekapBerjenjangScreen> {
-  static const Color _primary = Color(0xFF0D9488);
+  static const Color _primary = Color(0xFF0072BC);
 
   static const List<String> _kolom = [
     'Jml RW',
@@ -329,12 +329,12 @@ class _KegiatanRekapBerjenjangScreenState
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Rekap Berjenjang',
-                      style: GoogleFonts.poppins(
+                      style: GoogleFonts.plusJakartaSans(
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
                           color: const Color(0xFF0F172A))),
                   Text('Otomatis per dusun, kolom ikut Lampiran',
-                      style: GoogleFonts.poppins(
+                      style: GoogleFonts.plusJakartaSans(
                           fontSize: 11, color: const Color(0xFF64748B))),
                 ],
               ),
@@ -357,7 +357,7 @@ class _KegiatanRekapBerjenjangScreenState
                 },
                 icon: const Icon(Icons.bolt_rounded),
                 label: Text('Input Terpadu Satu Pintu',
-                    style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
+                    style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _primary,
                   foregroundColor: Colors.white,
@@ -382,13 +382,14 @@ class _KegiatanRekapBerjenjangScreenState
       margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _primary,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: [
           BoxShadow(
-            color: _primary.withValues(alpha: 0.25),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -399,20 +400,20 @@ class _KegiatanRekapBerjenjangScreenState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('$totalKk KK · $totalJiwa Jiwa',
-                    style: GoogleFonts.poppins(
+                    style: GoogleFonts.plusJakartaSans(
                         fontSize: 18,
                         fontWeight: FontWeight.w900,
-                        color: Colors.white)),
+                        color: const Color(0xFF0F172A))),
                 const SizedBox(height: 2),
                 Text('${_rows.length} dusun · kegiatan = data Disetujui',
-                    style: GoogleFonts.poppins(
-                        fontSize: 11, color: Colors.white70)),
+                    style: GoogleFonts.plusJakartaSans(
+                        fontSize: 11, color: const Color(0xFF64748B))),
                 if (_kkMenunggu > 0)
                   Text('$_kkMenunggu KK menunggu persetujuan',
-                      style: GoogleFonts.poppins(
+                      style: GoogleFonts.plusJakartaSans(
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
-                          color: Colors.white)),
+                          color: const Color(0xFF0F172A))),
               ],
             ),
           ),
@@ -420,13 +421,13 @@ class _KegiatanRekapBerjenjangScreenState
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text('$_approved Disetujui',
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: Colors.white)),
+                      color: const Color(0xFF0F172A))),
               Text('$_pending Menunggu',
-                  style: GoogleFonts.poppins(
-                      fontSize: 11, color: Colors.white70)),
+                  style: GoogleFonts.plusJakartaSans(
+                      fontSize: 11, color: const Color(0xFF64748B))),
             ],
           ),
         ],
@@ -448,7 +449,7 @@ class _KegiatanRekapBerjenjangScreenState
               Text(
                 _error ?? 'Belum ada data.',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
+                style: GoogleFonts.plusJakartaSans(
                     fontSize: 13, color: const Color(0xFF64748B)),
               ),
               const SizedBox(height: 16),
@@ -456,7 +457,7 @@ class _KegiatanRekapBerjenjangScreenState
                 onPressed: _loadData,
                 icon: const Icon(Icons.refresh_rounded),
                 label: Text('Muat Ulang',
-                    style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
+                    style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _primary,
                   foregroundColor: Colors.white,
@@ -485,7 +486,7 @@ class _KegiatanRekapBerjenjangScreenState
           alignment: Alignment.center,
           child: Text(
             '$v',
-            style: GoogleFonts.poppins(
+            style: GoogleFonts.plusJakartaSans(
               fontSize: 12,
               fontWeight: bold ? FontWeight.w800 : FontWeight.w500,
               color: const Color(0xFF0F172A),
@@ -507,7 +508,7 @@ class _KegiatanRekapBerjenjangScreenState
             child: Text(
               'Sebagian gagal dimuat: $_error',
               style:
-                  GoogleFonts.poppins(fontSize: 11.5, color: const Color(0xFF7F1D1D)),
+                  GoogleFonts.plusJakartaSans(fontSize: 11.5, color: const Color(0xFF7F1D1D)),
             ),
           ),
         Expanded(
@@ -521,7 +522,7 @@ class _KegiatanRekapBerjenjangScreenState
                 scrollDirection: Axis.horizontal,
                 child: DataTable(
                   headingRowColor:
-                      WidgetStateProperty.all(const Color(0xFFF0F9FF)),
+                      WidgetStateProperty.all(const Color(0xFFE6F1F9)),
                   dataRowMinHeight: 40,
                   dataRowMaxHeight: 44,
                   headingRowHeight: 56,
@@ -550,7 +551,7 @@ class _KegiatanRekapBerjenjangScreenState
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 10),
                           child: Text(_rows[i].dusun,
-                              style: GoogleFonts.poppins(
+                              style: GoogleFonts.plusJakartaSans(
                                   fontSize: 12, fontWeight: FontWeight.w600)),
                         )),
                         for (final v in _rows[i].angka)
@@ -566,7 +567,7 @@ class _KegiatanRekapBerjenjangScreenState
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 10),
                           child: Text('JUMLAH',
-                              style: GoogleFonts.poppins(
+                              style: GoogleFonts.plusJakartaSans(
                                   fontSize: 12, fontWeight: FontWeight.w800)),
                         )),
                         for (final v in jumlah)

@@ -159,7 +159,7 @@ class _KriteriaRumahFormScreenState extends State<KriteriaRumahFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final primary = const Color(0xFF0D9488);
+    final primary = const Color(0xFF0072BC);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -172,7 +172,7 @@ class _KriteriaRumahFormScreenState extends State<KriteriaRumahFormScreen> {
         ),
         title: Text(
           widget.existing == null ? 'Penilaian Kriteria Rumah' : 'Edit Penilaian Rumah',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 17),
+          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 17),
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
@@ -189,7 +189,7 @@ class _KriteriaRumahFormScreenState extends State<KriteriaRumahFormScreen> {
               padding: const EdgeInsets.all(14),
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
-                color: const Color(0xFF0D9488),
+                color: const Color(0xFF0072BC),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
@@ -209,7 +209,7 @@ class _KriteriaRumahFormScreenState extends State<KriteriaRumahFormScreen> {
                       children: [
                         Text(
                           'Formulir Penilaian Rumah',
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.plusJakartaSans(
                             color: Colors.white,
                             fontWeight: FontWeight.w700,
                             fontSize: 15,
@@ -217,7 +217,7 @@ class _KriteriaRumahFormScreenState extends State<KriteriaRumahFormScreen> {
                         ),
                         Text(
                           'Kriteria layak huni & tidak layak huni\n(Kementerian PUPR / Kemensos RI)',
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.plusJakartaSans(
                             color: Colors.white.withValues(alpha: 0.85),
                             fontSize: 11.5,
                           ),
@@ -420,10 +420,10 @@ class _KriteriaRumahFormScreenState extends State<KriteriaRumahFormScreen> {
             TextFormField(
               controller: _catatanCtrl,
               maxLines: 3,
-              style: GoogleFonts.poppins(fontSize: 14),
+              style: GoogleFonts.plusJakartaSans(fontSize: 14),
               decoration: InputDecoration(
                 hintText: 'Catatan kondisi rumah, rekomendasi, atau keterangan lain...',
-                hintStyle: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[400]),
+                hintStyle: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[400]),
                 filled: true,
                 fillColor: Colors.white,
                 border: OutlineInputBorder(
@@ -454,7 +454,7 @@ class _KriteriaRumahFormScreenState extends State<KriteriaRumahFormScreen> {
                 : const Icon(Icons.save_rounded, color: Colors.white),
             label: Text(
               _isSaving ? 'Menyimpan...' : 'Simpan Penilaian',
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                 fontWeight: FontWeight.w700,
                 fontSize: 15,
                 color: Colors.white,
@@ -481,13 +481,13 @@ class _KriteriaRumahFormScreenState extends State<KriteriaRumahFormScreen> {
       padding: const EdgeInsets.only(bottom: 10),
       child: TextFormField(
         controller: ctrl,
-        style: GoogleFonts.poppins(fontSize: 14),
+        style: GoogleFonts.plusJakartaSans(fontSize: 14),
         validator: required
             ? (v) => (v == null || v.trim().isEmpty) ? 'Wajib diisi' : null
             : null,
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[600]),
+          labelStyle: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[600]),
           prefixIcon: Icon(icon, size: 19, color: Colors.grey[500]),
           filled: true,
           fillColor: Colors.white,
@@ -497,7 +497,7 @@ class _KriteriaRumahFormScreenState extends State<KriteriaRumahFormScreen> {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFF0D9488), width: 1.5),
+            borderSide: const BorderSide(color: Color(0xFF0072BC), width: 1.5),
           ),
           contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         ),
@@ -543,7 +543,7 @@ class _SectionHeader extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 13.5,
                     fontWeight: FontWeight.w700,
                     color: color,
@@ -553,7 +553,7 @@ class _SectionHeader extends StatelessWidget {
                   const SizedBox(height: 3),
                   Text(
                     subtitle!,
-                    style: GoogleFonts.poppins(
+                    style: GoogleFonts.plusJakartaSans(
                       fontSize: 11.5,
                       color: color.withValues(alpha: 0.75),
                     ),
@@ -579,7 +579,7 @@ class _SubSectionLabel extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(2, 10, 0, 4),
       child: Text(
         label,
-        style: GoogleFonts.poppins(
+        style: GoogleFonts.plusJakartaSans(
           fontSize: 12.5,
           fontWeight: FontWeight.w700,
           color: color,
@@ -625,7 +625,7 @@ class _CheckTile extends StatelessWidget {
         contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
         title: Text(
           label,
-          style: GoogleFonts.poppins(
+          style: GoogleFonts.plusJakartaSans(
             fontSize: 13,
             fontWeight: value ? FontWeight.w600 : FontWeight.w500,
             color: value

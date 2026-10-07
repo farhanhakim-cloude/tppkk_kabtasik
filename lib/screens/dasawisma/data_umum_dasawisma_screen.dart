@@ -25,7 +25,7 @@ class _DataUmumDasawismaScreenState extends State<DataUmumDasawismaScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  static const Color _primaryAccent = Color(0xFF0D9488);
+  static const Color _primaryAccent = Color(0xFF0072BC);
   static const Color _darkText = Color(0xFF0F172A);
 
   @override
@@ -69,7 +69,7 @@ class _DataUmumDasawismaScreenState extends State<DataUmumDasawismaScreen>
           children: [
             Text(
               'Data Umum',
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 17,
                 fontWeight: FontWeight.w800,
                 color: _darkText,
@@ -77,7 +77,7 @@ class _DataUmumDasawismaScreenState extends State<DataUmumDasawismaScreen>
             ),
             Text(
               'Keluarga Binaan, KK Warga & Data Umum Desa/Kec.',
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 11,
                 fontWeight: FontWeight.w500,
                 color: const Color(0xFF64748B),
@@ -100,11 +100,11 @@ class _DataUmumDasawismaScreenState extends State<DataUmumDasawismaScreen>
               indicatorWeight: 3,
               labelColor: _primaryAccent,
               unselectedLabelColor: const Color(0xFF64748B),
-              labelStyle: GoogleFonts.poppins(
+              labelStyle: GoogleFonts.plusJakartaSans(
                 fontWeight: FontWeight.w800,
                 fontSize: 12,
               ),
-              unselectedLabelStyle: GoogleFonts.poppins(
+              unselectedLabelStyle: GoogleFonts.plusJakartaSans(
                 fontWeight: FontWeight.w600,
                 fontSize: 12,
               ),

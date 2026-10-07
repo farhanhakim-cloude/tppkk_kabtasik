@@ -19,8 +19,8 @@ class _CatatanKeluargaFormScreenState extends State<CatatanKeluargaFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final _service = DasawismaCatatanKeluargaService();
   final _kkService = DaftarWargaService();
-  static const Color _primary = Color(0xFF0D9488);
-  static const Color _primaryLight = Color(0xFFF0F9FF);
+  static const Color _primary = Color(0xFF0072BC);
+  static const Color _primaryLight = Color(0xFFE6F1F9);
 
   late final TextEditingController _namaCtrl,
       _nikCtrl,
@@ -148,7 +148,7 @@ class _CatatanKeluargaFormScreenState extends State<CatatanKeluargaFormScreen> {
       });
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Pilih kepala keluarga dulu.',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600)),
           backgroundColor: Colors.orange[800],
           behavior: SnackBarBehavior.floating,
           shape:
@@ -185,7 +185,7 @@ class _CatatanKeluargaFormScreenState extends State<CatatanKeluargaFormScreen> {
               _isEdit
                   ? 'Data diperbarui, menunggu persetujuan Admin Desa'
                   : 'Data terkirim, menunggu persetujuan Admin Desa',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600)),
           backgroundColor: const Color(0xFF10B981),
           behavior: SnackBarBehavior.floating,
           shape:
@@ -200,7 +200,7 @@ class _CatatanKeluargaFormScreenState extends State<CatatanKeluargaFormScreen> {
       _formKey.currentState!.validate();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(e.message,
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600)),
           backgroundColor: Colors.orange[800],
           behavior: SnackBarBehavior.floating,
           shape:
@@ -210,7 +210,7 @@ class _CatatanKeluargaFormScreenState extends State<CatatanKeluargaFormScreen> {
       setState(() => _saving = false);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(e.toString().replaceFirst('Exception: ', ''),
-              style: GoogleFonts.poppins()),
+              style: GoogleFonts.plusJakartaSans()),
           backgroundColor: Colors.red[700],
           behavior: SnackBarBehavior.floating,
           shape:
@@ -234,12 +234,12 @@ class _CatatanKeluargaFormScreenState extends State<CatatanKeluargaFormScreen> {
                     _isEdit
                         ? 'Edit Anggota Keluarga'
                         : 'Tambah Anggota Keluarga',
-                    style: GoogleFonts.poppins(
+                    style: GoogleFonts.plusJakartaSans(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
                         color: const Color(0xFF0F172A))),
                 Text('Terhubung ke data KK',
-                    style: GoogleFonts.poppins(
+                    style: GoogleFonts.plusJakartaSans(
                         fontSize: 11, color: const Color(0xFF64748B)))
               ]),
           actions: [
@@ -255,7 +255,7 @@ class _CatatanKeluargaFormScreenState extends State<CatatanKeluargaFormScreen> {
               TextButton(
                   onPressed: _save,
                   child: Text('Simpan',
-                      style: GoogleFonts.poppins(
+                      style: GoogleFonts.plusJakartaSans(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                           color: _primary)))
@@ -273,7 +273,7 @@ class _CatatanKeluargaFormScreenState extends State<CatatanKeluargaFormScreen> {
                   Padding(
                       padding: const EdgeInsets.only(top: 6, left: 4),
                       child: Text(_serverError('daftar_warga_id')!,
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.plusJakartaSans(
                               fontSize: 12, color: Colors.red[700]))),
                 const SizedBox(height: 28),
                 _section(Icons.person_rounded, 'Data Anggota',
@@ -360,13 +360,13 @@ class _CatatanKeluargaFormScreenState extends State<CatatanKeluargaFormScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('Alasan penolakan Admin Desa:',
-                                style: GoogleFonts.poppins(
+                                style: GoogleFonts.plusJakartaSans(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w700,
                                     color: const Color(0xFFB91C1C))),
                             const SizedBox(height: 4),
                             Text(widget.data!.rejectedReason!,
-                                style: GoogleFonts.poppins(
+                                style: GoogleFonts.plusJakartaSans(
                                     fontSize: 13,
                                     color: const Color(0xFF7F1D1D))),
                           ])),
@@ -390,7 +390,7 @@ class _CatatanKeluargaFormScreenState extends State<CatatanKeluargaFormScreen> {
                                 child: CircularProgressIndicator(
                                     strokeWidth: 2.5, color: Colors.white))
                             : Text(_isEdit ? 'Perbarui' : 'Simpan',
-                                style: GoogleFonts.poppins(
+                                style: GoogleFonts.plusJakartaSans(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w700))))
               ])),
@@ -413,7 +413,7 @@ class _CatatanKeluargaFormScreenState extends State<CatatanKeluargaFormScreen> {
             const SizedBox(width: 12),
             Text('Memuat daftar KK...',
                 style:
-                    GoogleFonts.poppins(fontSize: 13, color: Colors.grey[500])),
+                    GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[500])),
           ]));
     }
     if (_kkError != null) {
@@ -429,7 +429,7 @@ class _CatatanKeluargaFormScreenState extends State<CatatanKeluargaFormScreen> {
             const SizedBox(width: 8),
             Expanded(
                 child: Text(_kkError!,
-                    style: GoogleFonts.poppins(
+                    style: GoogleFonts.plusJakartaSans(
                         fontSize: 12.5, color: const Color(0xFF7F1D1D)))),
             TextButton(onPressed: _loadKk, child: const Text('Muat ulang')),
           ]));
@@ -442,7 +442,7 @@ class _CatatanKeluargaFormScreenState extends State<CatatanKeluargaFormScreen> {
       items.add(DropdownMenuItem(
           value: _daftarWargaId,
           child: Text(widget.data?.kepalaKeluarga ?? 'KK terpilih',
-              style: GoogleFonts.poppins(fontSize: 13.5))));
+              style: GoogleFonts.plusJakartaSans(fontSize: 13.5))));
     }
     items.addAll(_kkList.map((e) => DropdownMenuItem(
         value: e.id,
@@ -450,7 +450,7 @@ class _CatatanKeluargaFormScreenState extends State<CatatanKeluargaFormScreen> {
             e.namaKepalaRumahTangga.isEmpty
                 ? 'KK #${e.id}'
                 : e.namaKepalaRumahTangga,
-            style: GoogleFonts.poppins(fontSize: 13.5)))));
+            style: GoogleFonts.plusJakartaSans(fontSize: 13.5)))));
 
     return Container(
         decoration: BoxDecoration(
@@ -467,7 +467,7 @@ class _CatatanKeluargaFormScreenState extends State<CatatanKeluargaFormScreen> {
                 labelText: 'Kepala Keluarga',
                 prefixIcon: const Icon(Icons.home_work_outlined,
                     size: 18, color: _primary),
-                labelStyle: GoogleFonts.poppins(
+                labelStyle: GoogleFonts.plusJakartaSans(
                     fontSize: 13, color: const Color(0xFF64748B)),
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
@@ -495,7 +495,7 @@ class _CatatanKeluargaFormScreenState extends State<CatatanKeluargaFormScreen> {
           decoration: InputDecoration(
               labelText: 'L/P',
               prefixIcon: const Icon(Icons.wc_rounded, size: 18, color: _primary),
-              labelStyle: GoogleFonts.poppins(
+              labelStyle: GoogleFonts.plusJakartaSans(
                   fontSize: 13, color: const Color(0xFF64748B)),
               border: InputBorder.none,
               enabledBorder: InputBorder.none,
@@ -528,7 +528,7 @@ class _CatatanKeluargaFormScreenState extends State<CatatanKeluargaFormScreen> {
               labelText: 'Hubungan',
               prefixIcon: const Icon(Icons.group_outlined,
                   size: 18, color: _primary),
-              labelStyle: GoogleFonts.poppins(
+              labelStyle: GoogleFonts.plusJakartaSans(
                   fontSize: 13, color: const Color(0xFF64748B)),
               border: InputBorder.none,
               enabledBorder: InputBorder.none,
@@ -538,7 +538,7 @@ class _CatatanKeluargaFormScreenState extends State<CatatanKeluargaFormScreen> {
               .map((e) => DropdownMenuItem(
                   value: e.key,
                   child: Text(e.value,
-                      style: GoogleFonts.poppins(fontSize: 13.5))))
+                      style: GoogleFonts.plusJakartaSans(fontSize: 13.5))))
               .toList(),
           onChanged: (v) {
             if (v == null) return;
@@ -576,10 +576,10 @@ class _CatatanKeluargaFormScreenState extends State<CatatanKeluargaFormScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                       Text('Tgl Lahir',
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.plusJakartaSans(
                               fontSize: 11, color: const Color(0xFF64748B))),
                       Text(text,
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.plusJakartaSans(
                               fontSize: 14, color: const Color(0xFF0F172A))),
                     ])),
               ]))),
@@ -587,7 +587,7 @@ class _CatatanKeluargaFormScreenState extends State<CatatanKeluargaFormScreen> {
         Padding(
             padding: const EdgeInsets.only(top: 6, left: 4),
             child: Text(err,
-                style: GoogleFonts.poppins(
+                style: GoogleFonts.plusJakartaSans(
                     fontSize: 12, color: Colors.red[700]))),
     ]);
   }
@@ -601,12 +601,12 @@ class _CatatanKeluargaFormScreenState extends State<CatatanKeluargaFormScreen> {
         const SizedBox(width: 12),
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(title,
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                   fontSize: 15,
                   fontWeight: FontWeight.w800,
                   color: const Color(0xFF0F172A))),
           Text(sub,
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                   fontSize: 11.5, color: const Color(0xFF64748B)))
         ])
       ]);
@@ -635,7 +635,7 @@ class _CatatanKeluargaFormScreenState extends State<CatatanKeluargaFormScreen> {
               controller: ctrl,
               keyboardType: keyboard,
               inputFormatters: inputFormatters,
-              style: GoogleFonts.poppins(fontSize: 14),
+              style: GoogleFonts.plusJakartaSans(fontSize: 14),
               validator: (v) {
                 if (serverErr != null) return serverErr;
                 if (validator != null) return validator(v);
@@ -651,9 +651,9 @@ class _CatatanKeluargaFormScreenState extends State<CatatanKeluargaFormScreen> {
                   labelText: label,
                   hintText: hint,
                   prefixIcon: Icon(icon, size: 18, color: _primary),
-                  hintStyle: GoogleFonts.poppins(
+                  hintStyle: GoogleFonts.plusJakartaSans(
                       fontSize: 13, color: Colors.grey[400]),
-                  labelStyle: GoogleFonts.poppins(
+                  labelStyle: GoogleFonts.plusJakartaSans(
                       fontSize: 13, color: const Color(0xFF64748B)),
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,

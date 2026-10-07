@@ -18,7 +18,7 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final _service = KesehatanService();
 
-  static const Color _primaryBlue = Color(0xFF0D9488);
+  static const Color _primaryBlue = Color(0xFF0072BC);
 
   late KategoriKesehatan _kategori;
   late final TextEditingController _namaIbuController;
@@ -86,7 +86,7 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
         SnackBar(
           content: Text(
             _isEdit ? 'Data KIA berhasil diperbarui' : 'Data KIA berhasil ditambahkan',
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
           ),
           backgroundColor: const Color(0xFF10B981),
           behavior: SnackBarBehavior.floating,
@@ -101,7 +101,7 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
         SnackBar(
           content: Text(
             'Gagal menyimpan data: $e',
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
           ),
           backgroundColor: const Color(0xFFEF4444),
           behavior: SnackBarBehavior.floating,
@@ -118,13 +118,13 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text('Hapus data?',
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w800, fontSize: 17)),
+            style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 17)),
         content: Text('Data kesehatan ini akan dihapus permanen dari daftar.',
-            style: GoogleFonts.poppins(fontSize: 13.5, color: Colors.grey[600])),
+            style: GoogleFonts.plusJakartaSans(fontSize: 13.5, color: Colors.grey[600])),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text('Batal', style: GoogleFonts.poppins(color: Colors.grey[600])),
+            child: Text('Batal', style: GoogleFonts.plusJakartaSans(color: Colors.grey[600])),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
@@ -133,7 +133,7 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
               foregroundColor: Colors.white,
               elevation: 0,
             ),
-            child: Text('Hapus', style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
+            child: Text('Hapus', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
           ),
         ],
       ),
@@ -172,7 +172,7 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
         ),
         title: Text(
           _isEdit ? 'Edit Data Kesehatan' : 'Tambah Data Kesehatan',
-          style: GoogleFonts.poppins(
+          style: GoogleFonts.plusJakartaSans(
             fontWeight: FontWeight.w800,
             fontSize: 17,
             color: const Color(0xFF0F172A),
@@ -193,7 +193,7 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
           children: [
             // ── KATEGORI SELECTOR ──
             Text('Kategori Sasaran',
-                style: GoogleFonts.poppins(
+                style: GoogleFonts.plusJakartaSans(
                     fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFF0F172A))),
             const SizedBox(height: 8),
             Wrap(
@@ -206,7 +206,7 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
                   selected: isSelected,
                   selectedColor: _primaryBlue,
                   backgroundColor: Colors.white,
-                  labelStyle: GoogleFonts.poppins(
+                  labelStyle: GoogleFonts.plusJakartaSans(
                     fontSize: 12.5,
                     fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
                     color: isSelected ? Colors.white : const Color(0xFF475569),
@@ -227,15 +227,15 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
 
             // ── NAMA IBU ──
             Text('Nama Lengkap Ibu',
-                style: GoogleFonts.poppins(
+                style: GoogleFonts.plusJakartaSans(
                     fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFF0F172A))),
             const SizedBox(height: 8),
             TextFormField(
               controller: _namaIbuController,
-              style: GoogleFonts.poppins(fontSize: 14),
+              style: GoogleFonts.plusJakartaSans(fontSize: 14),
               decoration: InputDecoration(
                 hintText: 'Contoh: Siti Aminah',
-                hintStyle: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[400]),
+                hintStyle: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[400]),
                 prefixIcon: const Icon(Icons.person_outline_rounded, size: 20, color: _primaryBlue),
                 filled: true,
                 fillColor: Colors.white,
@@ -254,15 +254,15 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
             // ── NAMA ANAK (JIKA BALITA / ANAK) ──
             if (isChild) ...[
               Text('Nama Anak',
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                       fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFF0F172A))),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _namaAnakController,
-                style: GoogleFonts.poppins(fontSize: 14),
+                style: GoogleFonts.plusJakartaSans(fontSize: 14),
                 decoration: InputDecoration(
                   hintText: 'Contoh: Muhammad Raka',
-                  hintStyle: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[400]),
+                  hintStyle: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[400]),
                   prefixIcon: const Icon(Icons.child_care_rounded, size: 20, color: _primaryBlue),
                   filled: true,
                   fillColor: Colors.white,
@@ -286,16 +286,16 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
                   : _kategori == KategoriKesehatan.ibuHamil
                       ? 'Usia Kehamilan (Minggu)'
                       : 'Usia Bayi Menyusui (Bulan)',
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                   fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFF0F172A)),
             ),
             const SizedBox(height: 8),
             TextFormField(
               controller: _usiaController,
-              style: GoogleFonts.poppins(fontSize: 14),
+              style: GoogleFonts.plusJakartaSans(fontSize: 14),
               decoration: InputDecoration(
                 hintText: isChild ? 'Contoh: 18 bulan' : 'Contoh: 28 minggu',
-                hintStyle: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[400]),
+                hintStyle: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[400]),
                 prefixIcon: const Icon(Icons.calendar_today_outlined, size: 20, color: _primaryBlue),
                 filled: true,
                 fillColor: Colors.white,
@@ -314,7 +314,7 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
             // ── STATUS GIZI (JIKA BALITA / ANAK) ──
             if (isChild) ...[
               Text('Status Gizi',
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                       fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFF0F172A))),
               const SizedBox(height: 8),
               Row(
@@ -343,7 +343,7 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
                           child: Center(
                             child: Text(
                               st,
-                              style: GoogleFonts.poppins(
+                              style: GoogleFonts.plusJakartaSans(
                                 fontSize: 13,
                                 fontWeight: isSel ? FontWeight.w800 : FontWeight.w600,
                                 color: isSel ? _primaryBlue : const Color(0xFF475569),
@@ -361,7 +361,7 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
 
             // ── WILAYAH RT / RW ──
             Text('Wilayah RT & RW',
-                style: GoogleFonts.poppins(
+                style: GoogleFonts.plusJakartaSans(
                     fontSize: 14, fontWeight: FontWeight.w800, color: const Color(0xFF0F172A))),
             const SizedBox(height: 8),
             Row(
@@ -370,7 +370,7 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
                   child: TextFormField(
                     controller: _rtController,
                     keyboardType: TextInputType.number,
-                    style: GoogleFonts.poppins(fontSize: 14),
+                    style: GoogleFonts.plusJakartaSans(fontSize: 14),
                     decoration: InputDecoration(
                       labelText: 'RT',
                       hintText: 'Contoh: 02',
@@ -392,7 +392,7 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
                   child: TextFormField(
                     controller: _rwController,
                     keyboardType: TextInputType.number,
-                    style: GoogleFonts.poppins(fontSize: 14),
+                    style: GoogleFonts.plusJakartaSans(fontSize: 14),
                     decoration: InputDecoration(
                       labelText: 'RW',
                       hintText: 'Contoh: 05',
@@ -429,7 +429,7 @@ class _KesehatanFormScreenState extends State<KesehatanFormScreen> {
                       )
                     : Text(
                         _isEdit ? 'Simpan Perubahan' : 'Simpan Data KIA',
-                        style: GoogleFonts.poppins(
+                        style: GoogleFonts.plusJakartaSans(
                             fontWeight: FontWeight.w800, fontSize: 15),
                       ),
                 style: ElevatedButton.styleFrom(

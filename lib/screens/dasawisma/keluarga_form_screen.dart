@@ -179,12 +179,12 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.camera_alt_outlined),
-              title: Text('Ambil dari Kamera', style: GoogleFonts.poppins()),
+              title: Text('Ambil dari Kamera', style: GoogleFonts.plusJakartaSans()),
               onTap: () => Navigator.pop(context, ImageSource.camera),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library_outlined),
-              title: Text('Pilih dari Galeri', style: GoogleFonts.poppins()),
+              title: Text('Pilih dari Galeri', style: GoogleFonts.plusJakartaSans()),
               onTap: () => Navigator.pop(context, ImageSource.gallery),
             ),
           ],
@@ -259,14 +259,14 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Hapus data?', style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
+        title: Text('Hapus data?', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700)),
         content: Text(
           'Data warga "${widget.keluarga!.namaKepalaKeluarga}" akan dihapus permanen.',
-          style: GoogleFonts.poppins(),
+          style: GoogleFonts.plusJakartaSans(),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Batal', style: GoogleFonts.poppins())),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: Text('Hapus', style: GoogleFonts.poppins(color: Colors.red))),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Batal', style: GoogleFonts.plusJakartaSans())),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: Text('Hapus', style: GoogleFonts.plusJakartaSans(color: Colors.red))),
         ],
       ),
     );
@@ -287,7 +287,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
           const SizedBox(width: 8),
           Text(
             title,
-            style: GoogleFonts.poppins(
+            style: GoogleFonts.plusJakartaSans(
               fontSize: 15,
               fontWeight: FontWeight.w700,
               color: const Color(0xFF0F172A),
@@ -307,7 +307,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
       appBar: AppBar(
         title: Text(
           _isEdit ? 'Edit Data Warga TP PKK' : 'Daftar Warga TP PKK',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 17),
+          style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 17),
         ),
         actions: [
           if (_isEdit) IconButton(onPressed: _delete, icon: const Icon(Icons.delete_outline)),
@@ -333,7 +333,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                   children: [
                     Text(
                       'DAFTAR WARGA TP PKK',
-                      style: GoogleFonts.poppins(
+                      style: GoogleFonts.plusJakartaSans(
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
                         color: Colors.white,
@@ -343,7 +343,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                     const SizedBox(height: 4),
                     Text(
                       'Formulir pendataan warga kelompok Dasa Wisma TP PKK',
-                      style: GoogleFonts.poppins(
+                      style: GoogleFonts.plusJakartaSans(
                         fontSize: 12.5,
                         color: Colors.white.withValues(alpha: 0.9),
                       ),
@@ -419,7 +419,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('5. Jenis Kelamin:', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 13)),
+                      Text('5. Jenis Kelamin:', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13)),
                       const SizedBox(height: 6),
                       Row(
                         children: [
@@ -457,7 +457,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                         ],
                       ),
                       const SizedBox(height: 14),
-                      Text('8. Status Perkawinan:', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 13)),
+                      Text('8. Status Perkawinan:', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13)),
                       const SizedBox(height: 6),
                       Wrap(
                         spacing: 8,
@@ -467,7 +467,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                             label: Text(st),
                             selected: isSel,
                             selectedColor: primary.withValues(alpha: 0.15),
-                            labelStyle: GoogleFonts.poppins(
+                            labelStyle: GoogleFonts.plusJakartaSans(
                               color: isSel ? primary : Colors.grey[700],
                               fontWeight: isSel ? FontWeight.w700 : FontWeight.w500,
                             ),
@@ -491,7 +491,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('9. Status Dalam Keluarga:', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 13)),
+                      Text('9. Status Dalam Keluarga:', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13)),
                       const SizedBox(height: 6),
                       Wrap(
                         spacing: 8,
@@ -501,7 +501,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                             label: Text(st),
                             selected: isSel,
                             selectedColor: primary.withValues(alpha: 0.15),
-                            labelStyle: GoogleFonts.poppins(
+                            labelStyle: GoogleFonts.plusJakartaSans(
                               color: isSel ? primary : Colors.grey[700],
                               fontWeight: isSel ? FontWeight.w700 : FontWeight.w500,
                             ),
@@ -519,7 +519,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                         ),
                       ],
                       const SizedBox(height: 16),
-                      Text('10. Agama:', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 13)),
+                      Text('10. Agama:', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13)),
                       const SizedBox(height: 6),
                       Wrap(
                         spacing: 8,
@@ -529,7 +529,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                             label: Text(ag),
                             selected: isSel,
                             selectedColor: primary.withValues(alpha: 0.15),
-                            labelStyle: GoogleFonts.poppins(
+                            labelStyle: GoogleFonts.plusJakartaSans(
                               color: isSel ? primary : Colors.grey[700],
                               fontWeight: isSel ? FontWeight.w700 : FontWeight.w500,
                             ),
@@ -618,7 +618,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('12. Pendidikan:', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 13)),
+                      Text('12. Pendidikan:', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13)),
                       const SizedBox(height: 6),
                       Wrap(
                         spacing: 8,
@@ -637,7 +637,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                             label: Text(p),
                             selected: isSel,
                             selectedColor: primary.withValues(alpha: 0.15),
-                            labelStyle: GoogleFonts.poppins(
+                            labelStyle: GoogleFonts.plusJakartaSans(
                               color: isSel ? primary : Colors.grey[700],
                               fontWeight: isSel ? FontWeight.w700 : FontWeight.w500,
                             ),
@@ -648,7 +648,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                         }).toList(),
                       ),
                       const SizedBox(height: 16),
-                      Text('13. Pekerjaan:', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 13)),
+                      Text('13. Pekerjaan:', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13)),
                       const SizedBox(height: 6),
                       Wrap(
                         spacing: 8,
@@ -658,7 +658,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                             label: Text(pk),
                             selected: isSel,
                             selectedColor: primary.withValues(alpha: 0.15),
-                            labelStyle: GoogleFonts.poppins(
+                            labelStyle: GoogleFonts.plusJakartaSans(
                               color: isSel ? primary : Colors.grey[700],
                               fontWeight: isSel ? FontWeight.w700 : FontWeight.w500,
                             ),
@@ -697,7 +697,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                       // 14. Akseptor KB
                       SwitchListTile(
                         contentPadding: EdgeInsets.zero,
-                        title: Text('14. Akseptor KB?', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 13.5)),
+                        title: Text('14. Akseptor KB?', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13.5)),
                         value: _akseptorKb,
                         onChanged: (v) => setState(() => _akseptorKb = v),
                       ),
@@ -711,7 +711,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                       // 15. Posyandu
                       SwitchListTile(
                         contentPadding: EdgeInsets.zero,
-                        title: Text('15. Aktif dalam Kegiatan Posyandu?', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 13.5)),
+                        title: Text('15. Aktif dalam Kegiatan Posyandu?', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13.5)),
                         value: _aktifPosyandu,
                         onChanged: (v) => setState(() => _aktifPosyandu = v),
                       ),
@@ -725,7 +725,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                       // 16. BKB
                       SwitchListTile(
                         contentPadding: EdgeInsets.zero,
-                        title: Text('16. Mengikuti Program Bina Keluarga Balita (BKB)?', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 13.5)),
+                        title: Text('16. Mengikuti Program Bina Keluarga Balita (BKB)?', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13.5)),
                         value: _mengikutiBkb,
                         onChanged: (v) => setState(() => _mengikutiBkb = v),
                       ),
@@ -734,7 +734,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                       // 17. Tabungan
                       SwitchListTile(
                         contentPadding: EdgeInsets.zero,
-                        title: Text('17. Memiliki Tabungan?', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 13.5)),
+                        title: Text('17. Memiliki Tabungan?', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13.5)),
                         value: _memilikiTabungan,
                         onChanged: (v) => setState(() => _memilikiTabungan = v),
                       ),
@@ -743,7 +743,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                       // 18. Kelompok Belajar
                       SwitchListTile(
                         contentPadding: EdgeInsets.zero,
-                        title: Text('18. Mengikuti Kelompok Belajar?', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 13.5)),
+                        title: Text('18. Mengikuti Kelompok Belajar?', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13.5)),
                         value: _mengikutiPokjar,
                         onChanged: (v) => setState(() => _mengikutiPokjar = v),
                       ),
@@ -757,7 +757,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                               label: Text(p),
                               selected: isSel,
                               selectedColor: primary.withValues(alpha: 0.15),
-                              labelStyle: GoogleFonts.poppins(
+                              labelStyle: GoogleFonts.plusJakartaSans(
                                 color: isSel ? primary : Colors.grey[700],
                                 fontWeight: isSel ? FontWeight.w700 : FontWeight.w500,
                               ),
@@ -773,7 +773,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                       // 19. PAUD
                       SwitchListTile(
                         contentPadding: EdgeInsets.zero,
-                        title: Text('19. Mengikuti PAUD / sejenis?', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 13.5)),
+                        title: Text('19. Mengikuti PAUD / sejenis?', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13.5)),
                         value: _mengikutiPaud,
                         onChanged: (v) => setState(() => _mengikutiPaud = v),
                       ),
@@ -782,7 +782,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                       // 20. Koperasi
                       SwitchListTile(
                         contentPadding: EdgeInsets.zero,
-                        title: Text('20. Ikut dalam Kegiatan Koperasi?', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 13.5)),
+                        title: Text('20. Ikut dalam Kegiatan Koperasi?', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13.5)),
                         value: _mengikutiKoperasi,
                         onChanged: (v) => setState(() => _mengikutiKoperasi = v),
                       ),
@@ -805,7 +805,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Foto Rumah Warga', style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700)),
+                      Text('Foto Rumah Warga', style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w700)),
                       const SizedBox(height: 8),
                       GestureDetector(
                         onTap: _pilihFoto,
@@ -846,14 +846,14 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                                     const SizedBox(height: 8),
                                     Text(
                                       'Ketuk untuk ambil foto rumah',
-                                      style: GoogleFonts.poppins(color: Colors.grey[500], fontSize: 13),
+                                      style: GoogleFonts.plusJakartaSans(color: Colors.grey[500], fontSize: 13),
                                     ),
                                   ],
                                 ),
                         ),
                       ),
                       const SizedBox(height: 16),
-                      Text('Peta Lokasi Rumah GPS', style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700)),
+                      Text('Peta Lokasi Rumah GPS', style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w700)),
                       const SizedBox(height: 8),
                       Row(
                         children: [
@@ -872,13 +872,13 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                               children: [
                                 Text(
                                   _latitude != null && _longitude != null ? 'Lokasi Terpilih' : 'Lokasi belum diatur',
-                                  style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 13.5),
+                                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 13.5),
                                 ),
                                 Text(
                                   _latitude != null && _longitude != null
                                       ? 'Lat: ${_latitude!.toStringAsFixed(5)}, Lng: ${_longitude!.toStringAsFixed(5)}'
                                       : 'Ketuk tombol untuk atur lokasi di peta',
-                                  style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey[500]),
+                                  style: GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.grey[500]),
                                 ),
                               ],
                             ),
@@ -910,7 +910,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                           icon: const Icon(Icons.pin_drop_rounded, size: 16),
                           label: Text(
                             _latitude != null && _longitude != null ? 'Ubah Titik Peta' : 'Pilih Titik Lokasi Peta',
-                            style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700),
+                            style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w700),
                           ),
                         ),
                       ),
@@ -934,7 +934,7 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                       ? const CircularProgressIndicator(color: Colors.white)
                       : Text(
                           _isEdit ? 'Simpan Perubahan Warga' : 'Simpan Data Warga TP PKK',
-                          style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
+                          style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
                         ),
                 ),
               ),

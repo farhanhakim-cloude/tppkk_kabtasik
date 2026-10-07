@@ -28,7 +28,7 @@ class InputKeluargaDasawismaScreen extends StatefulWidget {
 
 class _InputKeluargaDasawismaScreenState
     extends State<InputKeluargaDasawismaScreen> {
-  static const Color _primary = Color(0xFF0D9488);
+  static const Color _primary = Color(0xFF0072BC);
   static const Color _darkText = Color(0xFF0F172A);
   static const Color _bg = Color(0xFFF8FAFC);
   static const Color _border = Color(0xFFE2E8F0);
@@ -186,7 +186,7 @@ class _InputKeluargaDasawismaScreenState
     HapticFeedback.mediumImpact();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(msg, style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+        content: Text(msg, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600)),
         backgroundColor: const Color(0xFFDC2626),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -283,7 +283,7 @@ class _InputKeluargaDasawismaScreenState
         SnackBar(
           content: Text(
             '✅ Data KK terkirim ke Admin Desa — menunggu persetujuan.',
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
           ),
           backgroundColor: const Color(0xFF10B981),
           behavior: SnackBarBehavior.floating,
@@ -315,7 +315,7 @@ class _InputKeluargaDasawismaScreenState
         ),
         title: Text(
           widget.data == null ? 'Input Data Keluarga' : 'Edit Data Keluarga',
-          style: GoogleFonts.poppins(
+          style: GoogleFonts.plusJakartaSans(
             fontSize: 16,
             fontWeight: FontWeight.w800,
             color: _darkText,
@@ -371,7 +371,7 @@ class _InputKeluargaDasawismaScreenState
                   const SizedBox(height: 6),
                   Text(
                     titles[i],
-                    style: GoogleFonts.poppins(
+                    style: GoogleFonts.plusJakartaSans(
                       fontSize: 10,
                       fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
                       color: isActive ? _primary : const Color(0xFF94A3B8),
@@ -502,7 +502,7 @@ class _InputKeluargaDasawismaScreenState
               Expanded(
                 child: Text(
                   'Setelah dikirim, data akan ditinjau Admin Desa. Kalau disetujui, akan masuk ke rekap Data Umum PKK.',
-                  style: GoogleFonts.poppins(fontSize: 11.5, color: const Color(0xFF9A3412), height: 1.4),
+                  style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: const Color(0xFF9A3412), height: 1.4),
                 ),
               ),
             ],
@@ -534,7 +534,7 @@ class _InputKeluargaDasawismaScreenState
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                   side: const BorderSide(color: _border),
                 ),
-                child: Text('Kembali', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, color: _darkText)),
+                child: Text('Kembali', style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, color: _darkText)),
               ),
             ),
           if (_currentStep > 0) const SizedBox(width: 10),
@@ -552,7 +552,7 @@ class _InputKeluargaDasawismaScreenState
                   ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                   : Text(
                       isLast ? '🚀 Kirim ke Desa' : 'Lanjut',
-                      style: GoogleFonts.poppins(fontWeight: FontWeight.w800, fontSize: 14, color: Colors.white),
+                      style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 14, color: Colors.white),
                     ),
             ),
           ),
@@ -577,7 +577,7 @@ class _InputKeluargaDasawismaScreenState
             width: 42, height: 42,
             decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(12)),
             child: Center(
-              child: Text(num, style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white)),
+              child: Text(num, style: GoogleFonts.plusJakartaSans(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white)),
             ),
           ),
           const SizedBox(width: 12),
@@ -585,8 +585,8 @@ class _InputKeluargaDasawismaScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white)),
-                Text(subtitle, style: GoogleFonts.poppins(fontSize: 12, color: Colors.white.withValues(alpha: 0.85))),
+                Text(title, style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white)),
+                Text(subtitle, style: GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.white.withValues(alpha: 0.85))),
               ],
             ),
           ),
@@ -598,7 +598,7 @@ class _InputKeluargaDasawismaScreenState
 
   Widget _sectionLabel(String label) => Padding(
     padding: const EdgeInsets.only(bottom: 8),
-    child: Text(label, style: GoogleFonts.poppins(fontSize: 12.5, fontWeight: FontWeight.w700, color: const Color(0xFF334155))),
+    child: Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 12.5, fontWeight: FontWeight.w700, color: const Color(0xFF334155))),
   );
 
   Widget _field(TextEditingController ctrl, String label, String hint, IconData icon, {bool isNumber = false}) {
@@ -607,13 +607,13 @@ class _InputKeluargaDasawismaScreenState
       child: TextFormField(
         controller: ctrl,
         keyboardType: isNumber ? TextInputType.number : TextInputType.text,
-        style: GoogleFonts.poppins(fontSize: 14),
+        style: GoogleFonts.plusJakartaSans(fontSize: 14),
         decoration: InputDecoration(
           labelText: label,
           hintText: hint,
           prefixIcon: Icon(icon, size: 18, color: _primary),
-          hintStyle: GoogleFonts.poppins(fontSize: 12.5, color: const Color(0xFF94A3B8)),
-          labelStyle: GoogleFonts.poppins(fontSize: 13, color: const Color(0xFF64748B)),
+          hintStyle: GoogleFonts.plusJakartaSans(fontSize: 12.5, color: const Color(0xFF94A3B8)),
+          labelStyle: GoogleFonts.plusJakartaSans(fontSize: 13, color: const Color(0xFF64748B)),
           filled: true,
           fillColor: Colors.white,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: _border)),
@@ -670,7 +670,7 @@ class _InputKeluargaDasawismaScreenState
               borderRadius: BorderRadius.circular(20),
               border: Border.all(color: sel ? _primary : _border),
             ),
-            child: Text(o, style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700, color: sel ? Colors.white : const Color(0xFF475569))),
+            child: Text(o, style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w700, color: sel ? Colors.white : const Color(0xFF475569))),
           ),
         );
       }).toList(),
@@ -688,7 +688,7 @@ class _InputKeluargaDasawismaScreenState
       ),
       child: Row(
         children: [
-          Expanded(child: Text(title, style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600, color: _darkText))),
+          Expanded(child: Text(title, style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w600, color: _darkText))),
           Switch(
             value: value,
             onChanged: (v) { HapticFeedback.selectionClick(); onChanged(v); },

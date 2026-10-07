@@ -22,7 +22,7 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final _service = DataUmumPkkService();
 
-  static const Color _primary = Color(0xFF0D9488);
+  static const Color _primary = Color(0xFF0072BC);
   static const Color _darkText = Color(0xFF0F172A);
 
   // Controllers Header
@@ -271,7 +271,7 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
           children: [
             Text(
               title,
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 16.5,
                 fontWeight: FontWeight.w800,
                 color: _darkText,
@@ -281,7 +281,7 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
               isDesa
                   ? 'DATA UMUM PKK • TP PKK DESA (20 Kolom)'
                   : 'DATA UMUM PKK • KECAMATAN (21 Kolom)',
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
                 color: _primary,
@@ -323,7 +323,7 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                 )
               : Text(
                   widget.item == null ? 'Simpan Data' : 'Simpan Perubahan',
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                     fontWeight: FontWeight.w800,
                     fontSize: 14,
                     color: Colors.white,
@@ -345,7 +345,7 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                 if (isDesa)
                   TextFormField(
                     controller: _desaCtrl,
-                    style: GoogleFonts.poppins(
+                    style: GoogleFonts.plusJakartaSans(
                       fontSize: 13.5,
                       fontWeight: FontWeight.w600,
                     ),
@@ -371,7 +371,7 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                     Expanded(
                       child: TextFormField(
                         controller: _kabCtrl,
-                        style: GoogleFonts.poppins(fontSize: 13.5),
+                        style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
                         decoration: _inputDecoration(
                           'Kabupaten',
                           'TASIKMALAYA',
@@ -383,7 +383,7 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                       child: TextFormField(
                         controller: _tahunCtrl,
                         keyboardType: TextInputType.number,
-                        style: GoogleFonts.poppins(fontSize: 13.5),
+                        style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
                         decoration: _inputDecoration('Tahun', '2026'),
                       ),
                     ),
@@ -404,7 +404,7 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                 if (isDesa)
                   TextFormField(
                     controller: _namaDusunCtrl,
-                    style: GoogleFonts.poppins(
+                    style: GoogleFonts.plusJakartaSans(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                     ),
@@ -418,7 +418,7 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                 else
                   TextFormField(
                     controller: _namaDesaCtrl,
-                    style: GoogleFonts.poppins(
+                    style: GoogleFonts.plusJakartaSans(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
                     ),
@@ -713,7 +713,7 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
                 TextFormField(
                   controller: _keteranganCtrl,
                   maxLines: 3,
-                  style: GoogleFonts.poppins(fontSize: 13.5),
+                  style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
                   decoration: _inputDecoration(
                     'Catatan / Keterangan',
                     'Tambahkan informasi tambahan bila ada...',
@@ -763,7 +763,7 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
               Expanded(
                 child: Text(
                   title,
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                     fontWeight: FontWeight.w800,
                     fontSize: 13.5,
                     color: _darkText,
@@ -784,7 +784,7 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
       padding: const EdgeInsets.only(bottom: 6),
       child: Text(
         label,
-        style: GoogleFonts.poppins(
+        style: GoogleFonts.plusJakartaSans(
           fontSize: 12,
           fontWeight: FontWeight.w700,
           color: const Color(0xFF475569),
@@ -796,12 +796,12 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
   InputDecoration _inputDecoration(String label, String hint) {
     return InputDecoration(
       labelText: label,
-      labelStyle: GoogleFonts.poppins(
+      labelStyle: GoogleFonts.plusJakartaSans(
         fontSize: 13,
         color: const Color(0xFF64748B),
       ),
       hintText: hint,
-      hintStyle: GoogleFonts.poppins(
+      hintStyle: GoogleFonts.plusJakartaSans(
         fontSize: 12.5,
         color: const Color(0xFF94A3B8),
       ),

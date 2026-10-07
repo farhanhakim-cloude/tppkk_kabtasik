@@ -56,7 +56,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
         ),
         title: Text(
           'Pilih Lokasi Rumah',
-          style: GoogleFonts.poppins(
+          style: GoogleFonts.plusJakartaSans(
             fontWeight: FontWeight.w700,
             fontSize: 17,
             color: const Color(0xFF0F172A),
@@ -154,14 +154,14 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                       enabled: false,
                       decoration: InputDecoration(
                         hintText: 'Pencarian segera hadir',
-                        hintStyle: GoogleFonts.poppins(
+                        hintStyle: GoogleFonts.plusJakartaSans(
                           fontSize: 13,
                           color: const Color(0xFF94A3B8),
                         ),
                         border: InputBorder.none,
                         isDense: true,
                       ),
-                      style: GoogleFonts.poppins(fontSize: 13.5),
+                      style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
                     ),
                   ),
                 ],
@@ -239,7 +239,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                           children: [
                             Text(
                               'Koordinat Terpilih',
-                              style: GoogleFonts.poppins(
+                              style: GoogleFonts.plusJakartaSans(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 14,
                               ),
@@ -247,7 +247,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                             const SizedBox(height: 2),
                             Text(
                               'Peta ilustrasi — pastikan pin di rumah yang benar',
-                              style: GoogleFonts.poppins(
+                              style: GoogleFonts.plusJakartaSans(
                                 fontSize: 12,
                                 color: const Color(0xFF64748B),
                               ),
@@ -269,7 +269,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                       children: [
                         Text(
                           'Lat: ${_lat.toStringAsFixed(5)}',
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.plusJakartaSans(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                             color: const Color(0xFF334155),
@@ -277,7 +277,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                         ),
                         Text(
                           'Lng: ${_lng.toStringAsFixed(5)}',
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.plusJakartaSans(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
                             color: const Color(0xFF334155),
@@ -303,7 +303,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                       ),
                       child: Text(
                         'Gunakan Lokasi Ini',
-                        style: GoogleFonts.poppins(
+                        style: GoogleFonts.plusJakartaSans(
                           fontWeight: FontWeight.w700,
                           fontSize: 14,
                         ),

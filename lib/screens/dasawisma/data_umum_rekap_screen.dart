@@ -16,7 +16,7 @@ class DataUmumRekapScreen extends StatefulWidget {
 }
 
 class _DataUmumRekapScreenState extends State<DataUmumRekapScreen> {
-  static const Color _primary = Color(0xFF0D9488);
+  static const Color _primary = Color(0xFF0072BC);
   static const Color _darkText = Color(0xFF0F172A);
 
   bool _loading = true;
@@ -123,7 +123,7 @@ class _DataUmumRekapScreenState extends State<DataUmumRekapScreen> {
           children: [
             Text(
               'Rekap Data Umum',
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
                 color: _darkText,
@@ -131,7 +131,7 @@ class _DataUmumRekapScreenState extends State<DataUmumRekapScreen> {
             ),
             Text(
               'Ringkasan data KK & warga',
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 11,
                 fontWeight: FontWeight.w500,
                 color: const Color(0xFF64748B),
@@ -164,7 +164,7 @@ class _DataUmumRekapScreenState extends State<DataUmumRekapScreen> {
                     crossAxisSpacing: 10,
                     childAspectRatio: 1.6,
                     children: [
-                      _statCard('Total KK', '$_totalKk', Icons.home_rounded, const Color(0xFF0D9488)),
+                      _statCard('Total KK', '$_totalKk', Icons.home_rounded, const Color(0xFF0072BC)),
                       _statCard('Total Jiwa', '$_totalJiwa', Icons.people_rounded, const Color(0xFF3B82F6)),
                       _statCard('Laki-laki', '$_totalL', Icons.male_rounded, const Color(0xFF2563EB)),
                       _statCard('Perempuan', '$_totalP', Icons.female_rounded, const Color(0xFFEC4899)),
@@ -250,7 +250,7 @@ class _DataUmumRekapScreenState extends State<DataUmumRekapScreen> {
                                 children: [
                                   Text(
                                     dusun,
-                                    style: GoogleFonts.poppins(
+                                    style: GoogleFonts.plusJakartaSans(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w800,
                                       color: _darkText,
@@ -259,7 +259,7 @@ class _DataUmumRekapScreenState extends State<DataUmumRekapScreen> {
                                   const SizedBox(height: 2),
                                   Text(
                                     '${data['kk']} KK • ${data['jiwa']} Jiwa • ${data['balita']} Balita',
-                                    style: GoogleFonts.poppins(
+                                    style: GoogleFonts.plusJakartaSans(
                                       fontSize: 12,
                                       color: const Color(0xFF64748B),
                                     ),
@@ -269,7 +269,7 @@ class _DataUmumRekapScreenState extends State<DataUmumRekapScreen> {
                             ),
                             Text(
                               '${data['kk']}',
-                              style: GoogleFonts.poppins(
+                              style: GoogleFonts.plusJakartaSans(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w800,
                                 color: _primary,
@@ -296,7 +296,7 @@ class _DataUmumRekapScreenState extends State<DataUmumRekapScreen> {
                         Expanded(
                           child: Text(
                             'Data ini otomatis terisi dari input kader. Setelah disetujui Admin Desa, akan masuk ke rekap kabupaten.',
-                            style: GoogleFonts.poppins(fontSize: 11.5, color: const Color(0xFF9A3412), height: 1.4),
+                            style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: const Color(0xFF9A3412), height: 1.4),
                           ),
                         ),
                       ],
@@ -311,7 +311,7 @@ class _DataUmumRekapScreenState extends State<DataUmumRekapScreen> {
   Widget _sectionTitle(String title) {
     return Text(
       title,
-      style: GoogleFonts.poppins(
+      style: GoogleFonts.plusJakartaSans(
         fontSize: 14,
         fontWeight: FontWeight.w800,
         color: _darkText,
@@ -345,9 +345,9 @@ class _DataUmumRekapScreenState extends State<DataUmumRekapScreen> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(value, style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w800, color: _darkText, height: 1)),
+              Text(value, style: GoogleFonts.plusJakartaSans(fontSize: 20, fontWeight: FontWeight.w800, color: _darkText, height: 1)),
               const SizedBox(height: 2),
-              Text(label, style: GoogleFonts.poppins(fontSize: 10.5, fontWeight: FontWeight.w600, color: const Color(0xFF64748B))),
+              Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 10.5, fontWeight: FontWeight.w600, color: const Color(0xFF64748B))),
             ],
           ),
         ],
@@ -366,9 +366,9 @@ class _DataUmumRekapScreenState extends State<DataUmumRekapScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(value, style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w800, color: color, height: 1)),
+          Text(value, style: GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.w800, color: color, height: 1)),
           const SizedBox(height: 4),
-          Text(label, style: GoogleFonts.poppins(fontSize: 10, fontWeight: FontWeight.w600, color: const Color(0xFF64748B))),
+          Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.w600, color: const Color(0xFF64748B))),
         ],
       ),
     );
@@ -397,9 +397,9 @@ class _DataUmumRekapScreenState extends State<DataUmumRekapScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(value, style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w800, color: _darkText, height: 1)),
+                Text(value, style: GoogleFonts.plusJakartaSans(fontSize: 20, fontWeight: FontWeight.w800, color: _darkText, height: 1)),
                 const SizedBox(height: 2),
-                Text(label, style: GoogleFonts.poppins(fontSize: 10.5, fontWeight: FontWeight.w600, color: const Color(0xFF64748B))),
+                Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 10.5, fontWeight: FontWeight.w600, color: const Color(0xFF64748B))),
               ],
             ),
           ),
@@ -420,7 +420,7 @@ class _DataUmumRekapScreenState extends State<DataUmumRekapScreen> {
         children: [
           Icon(Icons.inbox_rounded, size: 48, color: const Color(0xFF94A3B8).withValues(alpha: 0.5)),
           const SizedBox(height: 10),
-          Text(msg, style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600, color: const Color(0xFF64748B))),
+          Text(msg, style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w600, color: const Color(0xFF64748B))),
         ],
       ),
     );

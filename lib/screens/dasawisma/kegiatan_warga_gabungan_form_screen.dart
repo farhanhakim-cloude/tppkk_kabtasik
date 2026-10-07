@@ -39,8 +39,8 @@ class _KegiatanWargaGabunganFormScreenState
   final _formKey = GlobalKey<FormState>();
   final _service = KegiatanWargaService();
 
-  static const Color _primary = Color(0xFF0D9488);
-  static const Color _primaryLight = Color(0xFFF0F9FF);
+  static const Color _primary = Color(0xFF0072BC);
+  static const Color _primaryLight = Color(0xFFE6F1F9);
 
   late final TextEditingController _dasaWismaCtrl;
   late final TextEditingController _rtCtrl;
@@ -165,7 +165,7 @@ class _KegiatanWargaGabunganFormScreenState
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg,
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+            style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600)),
         backgroundColor: ok ? const Color(0xFF10B981) : Colors.red[700],
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -187,7 +187,7 @@ class _KegiatanWargaGabunganFormScreenState
           children: <Widget>[
             Text(
               'Tambah Kegiatan Warga',
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
                 color: const Color(0xFF0F172A),
@@ -195,7 +195,7 @@ class _KegiatanWargaGabunganFormScreenState
             ),
             Text(
               'Centang yang diikuti, kirim sekaligus',
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 11,
                 color: const Color(0xFF64748B),
               ),
@@ -219,7 +219,7 @@ class _KegiatanWargaGabunganFormScreenState
               onPressed: _save,
               child: Text(
                 'Kirim',
-                style: GoogleFonts.poppins(
+                style: GoogleFonts.plusJakartaSans(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                   color: _primary,
@@ -282,7 +282,7 @@ class _KegiatanWargaGabunganFormScreenState
               const SizedBox(height: 8),
               Text(
                 _formError!,
-                style: GoogleFonts.poppins(
+                style: GoogleFonts.plusJakartaSans(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w600,
                   color: Colors.red[700],
@@ -316,7 +316,7 @@ class _KegiatanWargaGabunganFormScreenState
                       )
                     : Text(
                         'Kirim Semua',
-                        style: GoogleFonts.poppins(
+                        style: GoogleFonts.plusJakartaSans(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                         ),
@@ -361,7 +361,7 @@ class _KegiatanWargaGabunganFormScreenState
                 const SizedBox(width: 8),
                 Text(
                   row.label,
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFF0F172A),
@@ -401,7 +401,7 @@ class _KegiatanWargaGabunganFormScreenState
       inputFormatters: <TextInputFormatter>[
         FilteringTextInputFormatter.digitsOnly,
       ],
-      style: GoogleFonts.poppins(fontSize: 14),
+      style: GoogleFonts.plusJakartaSans(fontSize: 14),
       validator: (v) {
         if (!row.ikut) return null;
         final n = int.tryParse((v ?? '').trim());
@@ -413,7 +413,7 @@ class _KegiatanWargaGabunganFormScreenState
         prefixIcon:
             const Icon(Icons.groups_outlined, size: 18, color: _primary),
         labelStyle:
-            GoogleFonts.poppins(fontSize: 13, color: const Color(0xFF64748B)),
+            GoogleFonts.plusJakartaSans(fontSize: 13, color: const Color(0xFF64748B)),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
@@ -444,7 +444,7 @@ class _KegiatanWargaGabunganFormScreenState
                 row.tanggal == null
                     ? 'Tanggal'
                     : _fmtTanggal(row.tanggal!),
-                style: GoogleFonts.poppins(
+                style: GoogleFonts.plusJakartaSans(
                   fontSize: 13,
                   color: const Color(0xFF0F172A),
                 ),
@@ -459,12 +459,12 @@ class _KegiatanWargaGabunganFormScreenState
   Widget _keteranganField(_KegiatanRow row) {
     return TextFormField(
       controller: row.keteranganCtrl,
-      style: GoogleFonts.poppins(fontSize: 13.5),
+      style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
       maxLines: 2,
       decoration: InputDecoration(
         hintText: 'Keterangan',
         hintStyle:
-            GoogleFonts.poppins(fontSize: 12.5, color: Colors.grey[400]),
+            GoogleFonts.plusJakartaSans(fontSize: 12.5, color: Colors.grey[400]),
         prefixIcon:
             const Icon(Icons.edit_note_rounded, size: 18, color: _primary),
         border: OutlineInputBorder(
@@ -494,7 +494,7 @@ class _KegiatanWargaGabunganFormScreenState
           children: <Widget>[
             Text(
               title,
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 15,
                 fontWeight: FontWeight.w800,
                 color: const Color(0xFF0F172A),
@@ -502,7 +502,7 @@ class _KegiatanWargaGabunganFormScreenState
             ),
             Text(
               sub,
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 11.5,
                 color: const Color(0xFF64748B),
               ),
@@ -527,15 +527,15 @@ class _KegiatanWargaGabunganFormScreenState
       ),
       child: TextFormField(
         controller: ctrl,
-        style: GoogleFonts.poppins(fontSize: 14),
+        style: GoogleFonts.plusJakartaSans(fontSize: 14),
         decoration: InputDecoration(
           labelText: label,
           hintText: hint,
           prefixIcon: Icon(icon, size: 18, color: _primary),
           hintStyle:
-              GoogleFonts.poppins(fontSize: 13, color: Colors.grey[400]),
+              GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[400]),
           labelStyle:
-              GoogleFonts.poppins(fontSize: 13, color: const Color(0xFF64748B)),
+              GoogleFonts.plusJakartaSans(fontSize: 13, color: const Color(0xFF64748B)),
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,

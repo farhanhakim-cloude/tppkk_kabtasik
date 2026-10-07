@@ -71,7 +71,7 @@ class _KriteriaRumahListScreenState extends State<KriteriaRumahListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final primary = const Color(0xFF0D9488);
+    final primary = const Color(0xFF0072BC);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
@@ -80,7 +80,7 @@ class _KriteriaRumahListScreenState extends State<KriteriaRumahListScreen> {
           : AppBar(
               title: Text(
                 'Kriteria Rumah',
-                style: GoogleFonts.poppins(fontWeight: FontWeight.w700),
+                style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700),
               ),
             ),
       floatingActionButton: widget.embedded
@@ -92,7 +92,7 @@ class _KriteriaRumahListScreenState extends State<KriteriaRumahListScreen> {
               icon: const Icon(Icons.add, color: Colors.white),
               label: Text(
                 'Nilai Rumah',
-                style: GoogleFonts.poppins(
+                style: GoogleFonts.plusJakartaSans(
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
                 ),
@@ -105,11 +105,11 @@ class _KriteriaRumahListScreenState extends State<KriteriaRumahListScreen> {
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
             child: TextField(
               controller: _searchCtrl,
-              style: GoogleFonts.poppins(fontSize: 14),
+              style: GoogleFonts.plusJakartaSans(fontSize: 14),
               onChanged: (_) => _reload(),
               decoration: InputDecoration(
                 hintText: 'Cari nama KK / dasa wisma / desa...',
-                hintStyle: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[400]),
+                hintStyle: GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[400]),
                 prefixIcon: const Icon(Icons.search, size: 20),
                 suffixIcon: _searchCtrl.text.isNotEmpty
                     ? IconButton(
@@ -143,7 +143,7 @@ class _KriteriaRumahListScreenState extends State<KriteriaRumahListScreen> {
                   return Center(
                     child: Text(
                       'Gagal memuat data: ${snapshot.error}',
-                      style: GoogleFonts.poppins(),
+                      style: GoogleFonts.plusJakartaSans(),
                     ),
                   );
                 }
@@ -166,7 +166,7 @@ class _KriteriaRumahListScreenState extends State<KriteriaRumahListScreen> {
                         const SizedBox(height: 16),
                         Text(
                           'Belum ada data penilaian rumah',
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.plusJakartaSans(
                             fontWeight: FontWeight.w600,
                             color: Colors.grey[600],
                           ),
@@ -174,7 +174,7 @@ class _KriteriaRumahListScreenState extends State<KriteriaRumahListScreen> {
                         const SizedBox(height: 6),
                         Text(
                           'Tap tombol + untuk mulai menilai',
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.plusJakartaSans(
                             fontSize: 12,
                             color: Colors.grey[400],
                           ),
@@ -186,7 +186,7 @@ class _KriteriaRumahListScreenState extends State<KriteriaRumahListScreen> {
                             icon: const Icon(Icons.add, color: Colors.white),
                             label: Text(
                               'Nilai Rumah Baru',
-                              style: GoogleFonts.poppins(
+                              style: GoogleFonts.plusJakartaSans(
                                 fontWeight: FontWeight.w700,
                                 color: Colors.white,
                               ),
@@ -251,7 +251,7 @@ class _KriteriaRumahListScreenState extends State<KriteriaRumahListScreen> {
                                       children: [
                                         Text(
                                           item.namaKepalaKeluarga,
-                                          style: GoogleFonts.poppins(
+                                          style: GoogleFonts.plusJakartaSans(
                                             fontWeight: FontWeight.w700,
                                             fontSize: 15,
                                           ),
@@ -259,7 +259,7 @@ class _KriteriaRumahListScreenState extends State<KriteriaRumahListScreen> {
                                         const SizedBox(height: 2),
                                         Text(
                                           'RT ${item.rt}/RW ${item.rw} • ${item.desa}',
-                                          style: GoogleFonts.poppins(
+                                          style: GoogleFonts.plusJakartaSans(
                                             fontSize: 12,
                                             color: Colors.grey[600],
                                           ),
@@ -282,7 +282,7 @@ class _KriteriaRumahListScreenState extends State<KriteriaRumahListScreen> {
                                         const SizedBox(width: 4),
                                         Text(
                                           item.statusRumah,
-                                          style: GoogleFonts.poppins(
+                                          style: GoogleFonts.plusJakartaSans(
                                             fontSize: 11,
                                             fontWeight: FontWeight.w700,
                                             color: statusColor,
@@ -325,7 +325,7 @@ class _KriteriaRumahListScreenState extends State<KriteriaRumahListScreen> {
                                     const SizedBox(width: 4),
                                     Text(
                                       'Dasa Wisma: ${item.dasaWisma}',
-                                      style: GoogleFonts.poppins(
+                                      style: GoogleFonts.plusJakartaSans(
                                         fontSize: 11.5,
                                         color: Colors.grey[500],
                                       ),
@@ -333,7 +333,7 @@ class _KriteriaRumahListScreenState extends State<KriteriaRumahListScreen> {
                                     const Spacer(),
                                     Text(
                                       item.tanggalPenilaian,
-                                      style: GoogleFonts.poppins(
+                                      style: GoogleFonts.plusJakartaSans(
                                         fontSize: 11,
                                         color: Colors.grey[400],
                                       ),
@@ -386,7 +386,7 @@ class _ScoreBar extends StatelessWidget {
           children: [
             Text(
               label,
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 10.5,
                 color: Colors.grey[600],
                 fontWeight: FontWeight.w500,
@@ -394,7 +394,7 @@ class _ScoreBar extends StatelessWidget {
             ),
             Text(
               '$score/$max',
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 10.5,
                 color: color,
                 fontWeight: FontWeight.w700,

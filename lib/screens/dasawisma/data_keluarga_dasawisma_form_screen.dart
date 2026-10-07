@@ -236,12 +236,12 @@ class _DataKeluargaDasawismaFormScreenState
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0D9488).withValues(alpha: 0.12),
+                        color: const Color(0xFF0072BC).withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
                         Icons.person_add_rounded,
-                        color: Color(0xFF0D9488),
+                        color: Color(0xFF0072BC),
                         size: 20,
                       ),
                     ),
@@ -254,7 +254,7 @@ class _DataKeluargaDasawismaFormScreenState
                             editIndex == null
                                 ? 'Tambah Anggota'
                                 : 'Edit Anggota',
-                            style: GoogleFonts.poppins(
+                            style: GoogleFonts.plusJakartaSans(
                               fontWeight: FontWeight.w800,
                               fontSize: 16,
                               color: const Color(0xFF0F172A),
@@ -262,7 +262,7 @@ class _DataKeluargaDasawismaFormScreenState
                           ),
                           Text(
                             'Lengkapi data anggota keluarga',
-                            style: GoogleFonts.poppins(
+                            style: GoogleFonts.plusJakartaSans(
                               fontSize: 12,
                               color: const Color(0xFF64748B),
                             ),
@@ -276,7 +276,7 @@ class _DataKeluargaDasawismaFormScreenState
                 TextField(
                   controller: noRegCtrl,
                   decoration: _inputDeco('No. REG', 'Contoh: 001'),
-                  style: GoogleFonts.poppins(fontSize: 13.5),
+                  style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
                 ),
                 const SizedBox(height: 12),
                 TextField(
@@ -285,7 +285,7 @@ class _DataKeluargaDasawismaFormScreenState
                     'Nama Lengkap *',
                     'Nama anggota keluarga',
                   ),
-                  style: GoogleFonts.poppins(fontSize: 13.5),
+                  style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
                 ),
                 const SizedBox(height: 12),
                 _sheetDropdown('Status dalam Keluarga', statusDalamKeluarga, [
@@ -304,7 +304,7 @@ class _DataKeluargaDasawismaFormScreenState
                 const SizedBox(height: 12),
                 Text(
                   'Jenis Kelamin',
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFF334155),
@@ -334,7 +334,7 @@ class _DataKeluargaDasawismaFormScreenState
                     'Tanggal Lahir / Umur',
                     'DD/MM/YYYY atau umur',
                   ),
-                  style: GoogleFonts.poppins(fontSize: 13.5),
+                  style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
                 ),
                 const SizedBox(height: 12),
                 _sheetDropdown('Pendidikan', pendidikan, [
@@ -351,7 +351,7 @@ class _DataKeluargaDasawismaFormScreenState
                 TextField(
                   controller: pekerjaanCtrl,
                   decoration: _inputDeco('Pekerjaan', 'Swasta / PNS / ...'),
-                  style: GoogleFonts.poppins(fontSize: 13.5),
+                  style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
                 ),
                 const SizedBox(height: 18),
                 Row(
@@ -367,7 +367,7 @@ class _DataKeluargaDasawismaFormScreenState
                         ),
                         child: Text(
                           'Batal',
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.plusJakartaSans(
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -398,14 +398,14 @@ class _DataKeluargaDasawismaFormScreenState
                           Navigator.pop(context);
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF0D9488),
+                          backgroundColor: const Color(0xFF0072BC),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                         child: Text(
                           editIndex == null ? 'Tambah' : 'Simpan',
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.plusJakartaSans(
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
                           ),
@@ -428,15 +428,15 @@ class _DataKeluargaDasawismaFormScreenState
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
-            color: sel ? const Color(0xFF0D9488) : Colors.white,
+            color: sel ? const Color(0xFF0072BC) : Colors.white,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: sel ? const Color(0xFF0D9488) : const Color(0xFFE2E8F0),
+              color: sel ? const Color(0xFF0072BC) : const Color(0xFFE2E8F0),
             ),
           ),
           child: Text(
             label,
-            style: GoogleFonts.poppins(
+            style: GoogleFonts.plusJakartaSans(
               fontSize: 12.5,
               fontWeight: FontWeight.w700,
               color: sel ? Colors.white : const Color(0xFF475569),
@@ -448,7 +448,7 @@ class _DataKeluargaDasawismaFormScreenState
   InputDecoration _inputDeco(String label, String hint) => InputDecoration(
     labelText: label,
     hintText: hint,
-    hintStyle: GoogleFonts.poppins(
+    hintStyle: GoogleFonts.plusJakartaSans(
       fontSize: 12.5,
       color: const Color(0xFF94A3B8),
     ),
@@ -465,7 +465,7 @@ class _DataKeluargaDasawismaFormScreenState
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: const BorderSide(color: Color(0xFF0D9488), width: 1.2),
+      borderSide: const BorderSide(color: Color(0xFF0072BC), width: 1.2),
     ),
   );
 
@@ -481,7 +481,7 @@ class _DataKeluargaDasawismaFormScreenState
         .map(
           (s) => DropdownMenuItem(
             value: s,
-            child: Text(s, style: GoogleFonts.poppins(fontSize: 13)),
+            child: Text(s, style: GoogleFonts.plusJakartaSans(fontSize: 13)),
           ),
         )
         .toList(),
@@ -547,7 +547,7 @@ class _DataKeluargaDasawismaFormScreenState
         SnackBar(
           content: Text(
             'Data KK terkirim ke Admin Desa dan menunggu persetujuan.',
-            style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
           ),
           backgroundColor: const Color(0xFF10B981),
           behavior: SnackBarBehavior.floating,
@@ -575,7 +575,7 @@ class _DataKeluargaDasawismaFormScreenState
 
   @override
   Widget build(BuildContext context) {
-    const primary = Color(0xFF0D9488);
+    const primary = Color(0xFF0072BC);
     const bg = Color(0xFFF8FAFC);
     final inputFill = const Color(0xFFF8FAFC);
 
@@ -603,7 +603,7 @@ class _DataKeluargaDasawismaFormScreenState
         ),
         title: Text(
           widget.data == null ? 'Input Dasawisma' : 'Edit Dasawisma',
-          style: GoogleFonts.poppins(
+          style: GoogleFonts.plusJakartaSans(
             fontWeight: FontWeight.w800,
             fontSize: 16,
             color: const Color(0xFF0F172A),
@@ -627,7 +627,7 @@ class _DataKeluargaDasawismaFormScreenState
                 const SizedBox(width: 5),
                 Text(
                   '${_anggotaList.length} Anggota',
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
                     color: primary,
@@ -653,7 +653,7 @@ class _DataKeluargaDasawismaFormScreenState
               child: Text(
                 'Identitas KK, jumlah KK, dan anggota dikirim ke Daftar Warga. Setelah Admin Desa menyetujui, '
                 'KRT, KK, dan jumlah jiwa masuk ke Data Umum PKK. Rekap anggota lainnya dan kondisi rumah belum disinkronkan.',
-                style: GoogleFonts.poppins(
+                style: GoogleFonts.plusJakartaSans(
                   fontSize: 11.5,
                   height: 1.4,
                   color: const Color(0xFF9A3412),
@@ -691,7 +691,7 @@ class _DataKeluargaDasawismaFormScreenState
                       children: [
                         Text(
                           'Data Keluarga Dasawisma',
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.plusJakartaSans(
                             fontWeight: FontWeight.w800,
                             fontSize: 15,
                             color: const Color(0xFF0F172A),
@@ -700,7 +700,7 @@ class _DataKeluargaDasawismaFormScreenState
                         const SizedBox(height: 2),
                         Text(
                           'Rekap per Dasa Wisma, anggota & kriteria rumah',
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.plusJakartaSans(
                             fontSize: 12,
                             color: const Color(0xFF64748B),
                             height: 1.3,
@@ -722,7 +722,7 @@ class _DataKeluargaDasawismaFormScreenState
               [
                 TextFormField(
                   controller: _dasaWismaCtrl,
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 13.5,
                     fontWeight: FontWeight.w600,
                   ),
@@ -735,7 +735,7 @@ class _DataKeluargaDasawismaFormScreenState
                     Expanded(
                       child: TextFormField(
                         controller: _rtCtrl,
-                        style: GoogleFonts.poppins(fontSize: 13.5),
+                        style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
                         decoration: _inputDeco('RT', '01'),
                       ),
                     ),
@@ -743,7 +743,7 @@ class _DataKeluargaDasawismaFormScreenState
                     Expanded(
                       child: TextFormField(
                         controller: _rwCtrl,
-                        style: GoogleFonts.poppins(fontSize: 13.5),
+                        style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
                         decoration: _inputDeco('RW', '05'),
                       ),
                     ),
@@ -752,7 +752,7 @@ class _DataKeluargaDasawismaFormScreenState
                 const SizedBox(height: 10),
                 TextFormField(
                   controller: _dusunCtrl,
-                  style: GoogleFonts.poppins(fontSize: 13.5),
+                  style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
                   decoration: _inputDeco('Dusun', 'Nama dusun'),
                 ),
                 const SizedBox(height: 10),
@@ -761,7 +761,7 @@ class _DataKeluargaDasawismaFormScreenState
                     Expanded(
                       child: TextFormField(
                         controller: _desaCtrl,
-                        style: GoogleFonts.poppins(fontSize: 13.5),
+                        style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
                         decoration: _inputDeco('Desa', 'Singaparna'),
                       ),
                     ),
@@ -774,7 +774,7 @@ class _DataKeluargaDasawismaFormScreenState
                 const SizedBox(height: 10),
                 TextFormField(
                   controller: _namaKepalaRtCtrl,
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 13.5,
                     fontWeight: FontWeight.w600,
                   ),
@@ -788,20 +788,20 @@ class _DataKeluargaDasawismaFormScreenState
                 TextFormField(
                   controller: _nomorKkCtrl,
                   keyboardType: TextInputType.number,
-                  style: GoogleFonts.poppins(fontSize: 13.5),
+                  style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
                   decoration: _inputDeco('Nomor KK', 'Nomor Kartu Keluarga'),
                 ),
                 const SizedBox(height: 10),
                 TextFormField(
                   controller: _nikKepalaCtrl,
                   keyboardType: TextInputType.number,
-                  style: GoogleFonts.poppins(fontSize: 13.5),
+                  style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
                   decoration: _inputDeco('NIK Kepala Keluarga', 'NIK'),
                 ),
                 const SizedBox(height: 10),
                 TextFormField(
                   controller: _alamatCtrl,
-                  style: GoogleFonts.poppins(fontSize: 13.5),
+                  style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
                   decoration: _inputDeco('Alamat', 'Alamat lengkap'),
                 ),
                 const SizedBox(height: 10),
@@ -811,7 +811,7 @@ class _DataKeluargaDasawismaFormScreenState
                       child: TextFormField(
                         controller: _jmlLakiCtrl,
                         keyboardType: TextInputType.number,
-                        style: GoogleFonts.poppins(fontSize: 13.5),
+                        style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
                         decoration: _inputDeco('Laki-laki', '0'),
                       ),
                     ),
@@ -820,7 +820,7 @@ class _DataKeluargaDasawismaFormScreenState
                       child: TextFormField(
                         controller: _jmlPerempuanCtrl,
                         keyboardType: TextInputType.number,
-                        style: GoogleFonts.poppins(fontSize: 13.5),
+                        style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
                         decoration: _inputDeco('Perempuan', '0'),
                       ),
                     ),
@@ -838,13 +838,13 @@ class _DataKeluargaDasawismaFormScreenState
                 TextFormField(
                   controller: _jmlKkCtrl,
                   keyboardType: TextInputType.number,
-                  style: GoogleFonts.poppins(fontSize: 13.5),
+                  style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
                   decoration: _inputDeco('Jumlah KK', '1'),
                 ),
                 const SizedBox(height: 12),
                 Text(
                   'Kategori Anggota',
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFF334155),
@@ -896,7 +896,7 @@ class _DataKeluargaDasawismaFormScreenState
                   children: [
                     Text(
                       '${_anggotaList.length} anggota terdata',
-                      style: GoogleFonts.poppins(
+                      style: GoogleFonts.plusJakartaSans(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
                         color: _anggotaList.isEmpty
@@ -926,7 +926,7 @@ class _DataKeluargaDasawismaFormScreenState
                             const SizedBox(width: 4),
                             Text(
                               'Tambah',
-                              style: GoogleFonts.poppins(
+                              style: GoogleFonts.plusJakartaSans(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700,
                                 color: Colors.white,
@@ -961,7 +961,7 @@ class _DataKeluargaDasawismaFormScreenState
                         const SizedBox(height: 8),
                         Text(
                           'Belum ada rincian anggota (Opsional)',
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.plusJakartaSans(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
                             color: const Color(0xFF475569),
@@ -969,7 +969,7 @@ class _DataKeluargaDasawismaFormScreenState
                         ),
                         Text(
                           'Jika tidak ada anak/anggota lain, bagian ini dapat dilewati',
-                          style: GoogleFonts.poppins(
+                          style: GoogleFonts.plusJakartaSans(
                             fontSize: 11.5,
                             color: const Color(0xFF94A3B8),
                           ),
@@ -1004,7 +1004,7 @@ class _DataKeluargaDasawismaFormScreenState
                             child: Center(
                               child: Text(
                                 '${idx + 1}',
-                                style: GoogleFonts.poppins(
+                                style: GoogleFonts.plusJakartaSans(
                                   fontWeight: FontWeight.w800,
                                   fontSize: 12,
                                   color: primary,
@@ -1019,7 +1019,7 @@ class _DataKeluargaDasawismaFormScreenState
                               children: [
                                 Text(
                                   m.nama,
-                                  style: GoogleFonts.poppins(
+                                  style: GoogleFonts.plusJakartaSans(
                                     fontWeight: FontWeight.w700,
                                     fontSize: 13.5,
                                     color: const Color(0xFF0F172A),
@@ -1027,7 +1027,7 @@ class _DataKeluargaDasawismaFormScreenState
                                 ),
                                 Text(
                                   '${m.statusDalamKeluarga} • ${m.jenisKelamin} • ${m.pendidikan}',
-                                  style: GoogleFonts.poppins(
+                                  style: GoogleFonts.plusJakartaSans(
                                     fontSize: 11,
                                     color: const Color(0xFF64748B),
                                   ),
@@ -1068,7 +1068,7 @@ class _DataKeluargaDasawismaFormScreenState
               [
                 Text(
                   'Makanan Pokok',
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFF334155),
@@ -1102,14 +1102,14 @@ class _DataKeluargaDasawismaFormScreenState
                     child: TextFormField(
                       controller: _jmlMckCtrl,
                       keyboardType: TextInputType.number,
-                      style: GoogleFonts.poppins(fontSize: 13.5),
+                      style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
                       decoration: _inputDeco('Jumlah Septic Tank', '1'),
                     ),
                   ),
                 const Divider(height: 20, color: Color(0xFFF1F5F9)),
                 Text(
                   'Sumber Air',
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFF334155),
@@ -1149,7 +1149,7 @@ class _DataKeluargaDasawismaFormScreenState
                 const Divider(height: 20, color: Color(0xFFF1F5F9)),
                 Text(
                   'Kriteria Rumah',
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFF334155),
@@ -1182,7 +1182,7 @@ class _DataKeluargaDasawismaFormScreenState
                     padding: const EdgeInsets.only(top: 8),
                     child: TextFormField(
                       controller: _jenisUsahaUp2kCtrl,
-                      style: GoogleFonts.poppins(fontSize: 13.5),
+                      style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
                       decoration: _inputDeco(
                         'Jenis Usaha UP2K',
                         'Kerajinan / kuliner',
@@ -1233,7 +1233,7 @@ class _DataKeluargaDasawismaFormScreenState
                         widget.data == null
                             ? 'Simpan Dasawisma'
                             : 'Simpan Perubahan',
-                        style: GoogleFonts.poppins(
+                        style: GoogleFonts.plusJakartaSans(
                           fontWeight: FontWeight.w800,
                           fontSize: 15,
                           color: Colors.white,
@@ -1277,7 +1277,7 @@ class _DataKeluargaDasawismaFormScreenState
             const SizedBox(width: 8),
             Text(
               title,
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                 fontWeight: FontWeight.w800,
                 fontSize: 13.5,
                 color: const Color(0xFF0F172A),
@@ -1292,7 +1292,7 @@ class _DataKeluargaDasawismaFormScreenState
               ),
               child: Text(
                 num,
-                style: GoogleFonts.poppins(
+                style: GoogleFonts.plusJakartaSans(
                   fontSize: 11,
                   fontWeight: FontWeight.w800,
                   color: primary,
@@ -1318,7 +1318,7 @@ class _DataKeluargaDasawismaFormScreenState
         child: TextFormField(
           controller: a,
           keyboardType: TextInputType.number,
-          style: GoogleFonts.poppins(fontSize: 13.5),
+          style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
           decoration: _inputDeco(la, '0'),
         ),
       ),
@@ -1327,7 +1327,7 @@ class _DataKeluargaDasawismaFormScreenState
         child: TextFormField(
           controller: b,
           keyboardType: TextInputType.number,
-          style: GoogleFonts.poppins(fontSize: 13.5),
+          style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
           decoration: _inputDeco(lb, '0'),
         ),
       ),
@@ -1346,7 +1346,7 @@ class _DataKeluargaDasawismaFormScreenState
           ),
           child: Text(
             label,
-            style: GoogleFonts.poppins(
+            style: GoogleFonts.plusJakartaSans(
               fontSize: 12.5,
               fontWeight: FontWeight.w700,
               color: sel ? Colors.white : const Color(0xFF475569),
@@ -1364,7 +1364,7 @@ class _DataKeluargaDasawismaFormScreenState
             Expanded(
               child: Text(
                 title,
-                style: GoogleFonts.poppins(
+                style: GoogleFonts.plusJakartaSans(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: const Color(0xFF1E293B),
@@ -1374,7 +1374,7 @@ class _DataKeluargaDasawismaFormScreenState
             Switch(
               value: value,
               onChanged: onChanged,
-              activeThumbColor: const Color(0xFF0D9488),
+              activeThumbColor: const Color(0xFF0072BC),
             ),
           ],
         ),

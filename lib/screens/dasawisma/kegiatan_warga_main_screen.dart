@@ -41,7 +41,7 @@ class KegiatanWargaMainScreen extends StatelessWidget {
           children: [
             Text(
               'Kegiatan Warga',
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                 fontWeight: FontWeight.w800,
                 fontSize: 16.5,
                 color: _darkText,
@@ -49,7 +49,7 @@ class KegiatanWargaMainScreen extends StatelessWidget {
             ),
             Text(
               'Rekap otomatis + Input Terpadu',
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 11,
                 color: const Color(0xFF64748B),
                 fontWeight: FontWeight.w500,

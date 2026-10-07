@@ -29,7 +29,7 @@ class _RekapBumilBerjenjangFormScreenState
   final _formKey = GlobalKey<FormState>();
   final _service = RekapBumilBerjenjangService();
 
-  static const Color _primary = Color(0xFF0D9488);
+  static const Color _primary = Color(0xFF0072BC);
   static const Color _darkText = Color(0xFF0F172A);
 
   // Header controllers
@@ -258,7 +258,7 @@ class _RekapBumilBerjenjangFormScreenState
               token.isNotEmpty
                   ? 'Data bumil berhasil disimpan ke server!'
                   : 'Data disimpan lokal (belum login)',
-              style: GoogleFonts.poppins(),
+              style: GoogleFonts.plusJakartaSans(),
             ),
             backgroundColor: const Color(0xFF10B981),
           ),
@@ -272,7 +272,7 @@ class _RekapBumilBerjenjangFormScreenState
           SnackBar(
             content: Text(
               'Gagal menyimpan: $e',
-              style: GoogleFonts.poppins(),
+              style: GoogleFonts.plusJakartaSans(),
             ),
             backgroundColor: Colors.red,
           ),
@@ -310,7 +310,7 @@ class _RekapBumilBerjenjangFormScreenState
           children: [
             Text(
               widget.item == null ? 'Isi Form Rekap' : 'Edit Data Form',
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 16,
                 fontWeight: FontWeight.w800,
                 color: _darkText,
@@ -318,7 +318,7 @@ class _RekapBumilBerjenjangFormScreenState
             ),
             Text(
               _getLevelTitle(),
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.plusJakartaSans(
                 fontSize: 11,
                 color: const Color(0xFF64748B),
               ),
@@ -571,7 +571,7 @@ class _RekapBumilBerjenjangFormScreenState
               children: [
                 Text(
                   'Kelahiran Bayi (L / P)',
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFF334155),
@@ -600,7 +600,7 @@ class _RekapBumilBerjenjangFormScreenState
                 const SizedBox(height: 12),
                 Text(
                   'Akte Kelahiran (Ada / Tidak Ada)',
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFF334155),
@@ -625,7 +625,7 @@ class _RekapBumilBerjenjangFormScreenState
                 const SizedBox(height: 12),
                 Text(
                   'Kematian Bayi (L / P)',
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                     color: const Color(0xFF334155),
@@ -693,7 +693,7 @@ class _RekapBumilBerjenjangFormScreenState
                 TextFormField(
                   controller: _keteranganCtrl,
                   maxLines: 2,
-                  style: GoogleFonts.poppins(fontSize: 13),
+                  style: GoogleFonts.plusJakartaSans(fontSize: 13),
                   decoration: _inputDeco(
                     'Keterangan Tambahan',
                     'Catatan khusus di lapangan...',
@@ -717,7 +717,7 @@ class _RekapBumilBerjenjangFormScreenState
                   widget.item == null
                       ? 'Simpan Baris Form'
                       : 'Simpan Perubahan',
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                     fontWeight: FontWeight.w800,
                     fontSize: 15,
                     color: Colors.white,
@@ -776,7 +776,7 @@ class _RekapBumilBerjenjangFormScreenState
               Expanded(
                 child: Text(
                   title,
-                  style: GoogleFonts.poppins(
+                  style: GoogleFonts.plusJakartaSans(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
                     color: _darkText,
@@ -795,7 +795,7 @@ class _RekapBumilBerjenjangFormScreenState
   Widget _textInput(TextEditingController ctrl, String label, String hint) {
     return TextFormField(
       controller: ctrl,
-      style: GoogleFonts.poppins(fontSize: 13),
+      style: GoogleFonts.plusJakartaSans(fontSize: 13),
       decoration: _inputDeco(label, hint),
       validator: (v) => v == null || v.trim().isEmpty ? 'Wajib' : null,
     );
@@ -805,7 +805,7 @@ class _RekapBumilBerjenjangFormScreenState
     return TextFormField(
       controller: ctrl,
       keyboardType: TextInputType.number,
-      style: GoogleFonts.poppins(
+      style: GoogleFonts.plusJakartaSans(
         fontSize: 13,
         fontWeight: FontWeight.w700,
       ),
@@ -815,12 +815,12 @@ class _RekapBumilBerjenjangFormScreenState
 
   InputDecoration _inputDeco(String label, String hint) => InputDecoration(
     labelText: label,
-    labelStyle: GoogleFonts.poppins(
+    labelStyle: GoogleFonts.plusJakartaSans(
       fontSize: 12,
       color: const Color(0xFF64748B),
     ),
     hintText: hint,
-    hintStyle: GoogleFonts.poppins(
+    hintStyle: GoogleFonts.plusJakartaSans(
       fontSize: 12,
       color: const Color(0xFF94A3B8),
     ),
