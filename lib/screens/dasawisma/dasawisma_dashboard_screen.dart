@@ -9,6 +9,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import '../../main.dart';
+<<<<<<< HEAD
+import '../../services/data_keluarga_dasawisma_service.dart';
+import '../../services/kegiatan_warga_service.dart';
+import '../../services/rekap_ibu_anak_service.dart';
+import 'data_umum_dasawisma_screen.dart';
+import 'rekap_ibu_anak_list_screen.dart';
+=======
 import '../../models/data_keluarga_dasawisma.dart';
 // ✅ GANTI: dari lokal ke API
 import '../../services/daftar_warga_service.dart';
@@ -19,6 +26,7 @@ import '../../services/bumil_service.dart';
 import 'input_keluarga_dasawisma_screen.dart';
 // ✅ Halaman rekap
 import 'data_umum_rekap_screen.dart';
+>>>>>>> 95a9b9dad2c03998c4d068696e424208dafff536
 import 'kegiatan_warga_main_screen.dart';
 import 'bumil_ibu_list_screen.dart';
 import '../profile_screen.dart';
@@ -84,6 +92,12 @@ class _DasawismaDashboardScreenState extends State<DasawismaDashboardScreen>
     } catch (_) {}
   }
 
+<<<<<<< HEAD
+  Future<void> _onRefresh() async {
+    setState(() => _weatherVersion++);
+    await Future.delayed(const Duration(milliseconds: 400));
+    if (mounted) setState(() {});
+=======
   Future<void> _loadData() async {
     setState(() => _loading = true);
     try {
@@ -150,23 +164,61 @@ class _DasawismaDashboardScreenState extends State<DasawismaDashboardScreen>
       MaterialPageRoute(builder: (_) => const InputKeluargaDasawismaScreen()),
     );
     if (result == true) _loadData();
+>>>>>>> 95a9b9dad2c03998c4d068696e424208dafff536
   }
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
+    final bgColor = _isDarkMode ? const Color(0xFF10141D) : const Color(0xFFF1F4F9);
+    const brandBlue = Color(0xFF0072BC);
+    
+    final pages = [
+      _buildBeranda(bgColor, brandBlue),
+      const DataUmumDasawismaScreen(initialIndex: 0),
+=======
     final bg = _isDarkMode ? const Color(0xFF14181F) : const Color(0xFFF8F9FB);
     const primaryDark = Color(0xFF0F766E);
 
     final pages = [
       _buildBeranda(primaryDark),
       const DataUmumRekapScreen(),
+>>>>>>> 95a9b9dad2c03998c4d068696e424208dafff536
       const KegiatanWargaMainScreen(),
       const ProfileScreen(embedded: true),
     ];
 
     return Scaffold(
-      backgroundColor: bg,
+      backgroundColor: bgColor,
       body: IndexedStack(index: _navIndex, children: pages),
+<<<<<<< HEAD
+      floatingActionButton: SizedBox(
+        width: 60,
+        height: 60,
+        child: FloatingActionButton(
+          heroTag: 'fab-dasawisma-dashboard',
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const KegiatanWargaMainScreen()));
+          },
+          backgroundColor: Colors.white,
+          shape: const CircleBorder(),
+          elevation: 4,
+          child: const Icon(Icons.add_rounded, size: 28, color: brandBlue),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: Container(
+        margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+        decoration: BoxDecoration(
+          color: brandBlue,
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color: brandBlue.withValues(alpha: 0.35),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+=======
       bottomNavigationBar: BottomAppBar(
         color: _isDarkMode ? const Color(0xFF1E242D) : Colors.white,
         shape: const CircularNotchedRectangle(),
@@ -181,7 +233,39 @@ class _DasawismaDashboardScreenState extends State<DasawismaDashboardScreen>
             const SizedBox(width: 40),
             _navItem(2, Icons.event_note_rounded, 'Kegiatan'),
             _navItem(3, Icons.person_outline_rounded, 'Profil'),
+>>>>>>> 95a9b9dad2c03998c4d068696e424208dafff536
           ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(30),
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _navItem(0, Icons.home_rounded, 'Beranda'),
+                      const SizedBox(width: 4),
+                      _navItem(1, Icons.groups_rounded, 'Binaan'),
+                    ],
+                  ),
+                  const SizedBox(width: 60),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _navItem(2, Icons.event_note_rounded, 'Kegiatan'),
+                      const SizedBox(width: 4),
+                      _navItem(3, Icons.person_outline_rounded, 'Profil'),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -198,41 +282,211 @@ class _DasawismaDashboardScreenState extends State<DasawismaDashboardScreen>
   }
 
   Widget _navItem(int idx, IconData icon, String label) {
-    final sel = _navIndex == idx;
-    final color = sel ? const Color(0xFF0F326D) : const Color(0xFF94A3B8);
+    final isSelected = _navIndex == idx;
     return InkWell(
       onTap: () { HapticFeedback.selectionClick(); setState(() => _navIndex = idx); },
       borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+<<<<<<< HEAD
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: isSelected ? Colors.white : Colors.transparent,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(
+                icon,
+                size: 22,
+                color: isSelected ? const Color(0xFF0072BC) : Colors.white.withValues(alpha: 0.7),
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 10.5,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.75),
+              ),
+            ),
+=======
             Icon(icon, size: 24, color: color),
             const SizedBox(height: 4),
             Text(label, style: GoogleFonts.poppins(fontSize: 10, fontWeight: sel ? FontWeight.w800 : FontWeight.w600, color: color)),
+>>>>>>> 95a9b9dad2c03998c4d068696e424208dafff536
           ],
         ),
       ),
     );
   }
 
+<<<<<<< HEAD
+  Widget _buildBeranda(Color bgColor, Color brandBlue) {
+    final cardBg = _isDarkMode ? const Color(0xFF1E242F) : Colors.white;
+    final textCol = _isDarkMode ? Colors.white : const Color(0xFF0F172A);
+    final sub = _isDarkMode ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
+    final border = _isDarkMode ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFE2E8F0);
+=======
   Widget _buildBeranda(Color primaryDark) {
     final cardBg = _isDarkMode ? const Color(0xFF1E242D) : Colors.white;
     final text = _isDarkMode ? Colors.white : const Color(0xFF0F172A);
     final sub = _isDarkMode ? const Color(0xFF8E9BAE) : const Color(0xFF64748B);
     final border = _isDarkMode ? Colors.white.withValues(alpha: 0.06) : const Color(0xFFE2E8F0);
+>>>>>>> 95a9b9dad2c03998c4d068696e424208dafff536
 
     return SafeArea(
+      bottom: false,
       child: RefreshIndicator(
+<<<<<<< HEAD
+        onRefresh: _onRefresh,
+        color: brandBlue,
+=======
         onRefresh: _loadData,
         color: primaryDark,
+>>>>>>> 95a9b9dad2c03998c4d068696e424208dafff536
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 110),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+<<<<<<< HEAD
+              // 1. KOP PROFIL DINAS
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: cardBg,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: border),
+                ),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 22,
+                      backgroundColor: brandBlue,
+                      child: const Icon(Icons.person_rounded, color: Colors.white, size: 24),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _userName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              color: textCol,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Dasawisma • $_desaKecamatan',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 12,
+                              color: sub,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.notifications_none_rounded, color: sub, size: 22),
+                      onPressed: () {},
+                      tooltip: 'Pemberitahuan',
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 14),
+
+              // 2. RINGKASAN DATA (Cards Grid)
+              FutureBuilder(
+                future: Future.wait([
+                  DataKeluargaDasawismaService().getAll(),
+                  KegiatanWargaService().getAll(),
+                  RekapIbuAnakService().getAll(),
+                ]),
+                builder: (c, snap) {
+                  final das = (snap.data?[0] as List?)?.length ?? 0;
+                  final keg = (snap.data?[1] as List?)?.length ?? 0;
+                  final ibu = (snap.data?[2] as List?)?.length ?? 0;
+
+                  return Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildSimpleCard(
+                              title: 'Data Binaan',
+                              count: das,
+                              icon: Icons.groups_outlined,
+                              brandBlue: brandBlue,
+                              cardBg: cardBg,
+                              textCol: textCol,
+                              sub: sub,
+                              border: border,
+                              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DataUmumDasawismaScreen(initialIndex: 0))),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: _buildSimpleCard(
+                              title: 'Kegiatan Warga',
+                              count: keg,
+                              icon: Icons.event_note_outlined,
+                              brandBlue: brandBlue,
+                              cardBg: cardBg,
+                              textCol: textCol,
+                              sub: sub,
+                              border: border,
+                              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const KegiatanWargaMainScreen())),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildSimpleCard(
+                              title: 'Rekap Ibu & Anak',
+                              count: ibu,
+                              icon: Icons.child_care_outlined,
+                              brandBlue: brandBlue,
+                              cardBg: cardBg,
+                              textCol: textCol,
+                              sub: sub,
+                              border: border,
+                              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RekapIbuAnakListScreen())),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: _buildSimpleWeatherCard(
+                              brandBlue: brandBlue,
+                              cardBg: cardBg,
+                              textCol: textCol,
+                              sub: sub,
+                              border: border,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                },
+              ),
+=======
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -363,6 +617,7 @@ class _DasawismaDashboardScreenState extends State<DasawismaDashboardScreen>
                 ),
               ),
               const SizedBox(height: 16),
+>>>>>>> 95a9b9dad2c03998c4d068696e424208dafff536
             ],
           ),
         ),
@@ -370,6 +625,55 @@ class _DasawismaDashboardScreenState extends State<DasawismaDashboardScreen>
     );
   }
 
+<<<<<<< HEAD
+  Widget _buildSimpleCard({
+    required String title,
+    required int count,
+    required IconData icon,
+    required Color brandBlue,
+    required Color cardBg,
+    required Color textCol,
+    required Color sub,
+    required Color border,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        decoration: BoxDecoration(
+          color: cardBg,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: border),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    title,
+                    style: GoogleFonts.plusJakartaSans(fontSize: 12, color: sub, fontWeight: FontWeight.w500),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Icon(icon, color: brandBlue, size: 18),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '$count',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                color: textCol,
+              ),
+            ),
+=======
   Widget _statCard(String label, String value, IconData icon, Color color, Color cardBg, Color text, Color sub) {
     return Container(
       padding: const EdgeInsets.all(14),
@@ -465,11 +769,61 @@ class _DasawismaDashboardScreenState extends State<DasawismaDashboardScreen>
               icon: const Icon(Icons.arrow_forward_rounded, size: 16),
               label: Text('Buka Halaman Kegiatan', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 12)),
             ),
+>>>>>>> 95a9b9dad2c03998c4d068696e424208dafff536
           ],
         ),
       ),
     );
   }
+<<<<<<< HEAD
+  
+  Widget _buildSimpleWeatherCard({
+    required Color brandBlue,
+    required Color cardBg,
+    required Color textCol,
+    required Color sub,
+    required Color border,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      decoration: BoxDecoration(
+        color: cardBg,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  'Cuaca',
+                  style: GoogleFonts.plusJakartaSans(fontSize: 12, color: sub, fontWeight: FontWeight.w500),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Icon(Icons.cloud_outlined, color: brandBlue, size: 18),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Cerah',
+            style: GoogleFonts.plusJakartaSans(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: textCol,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+=======
 
   Widget _tabBumil(Color text, Color sub, Color primary) {
     return Center(
@@ -517,3 +871,4 @@ class _DasawismaDashboardScreenState extends State<DasawismaDashboardScreen>
     );
   }
 }
+>>>>>>> 95a9b9dad2c03998c4d068696e424208dafff536
