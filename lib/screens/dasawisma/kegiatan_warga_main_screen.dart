@@ -1,50 +1,19 @@
 // lib/screens/dasawisma/kegiatan_warga_main_screen.dart
-// Halaman Utama Kegiatan Warga Dasawisma
-// Berisi 5 Tab Sesuai Pengelompokan Kegiatan Warga:
-// 1. Kegiatan Warga (7 Kegiatan: Pancasila, Gotong Royong, dll)
-// 2. Kriteria Rumah (Sehat / Tidak Sehat)
-// 3. Catatan Keluarga (19 Kolom + Kegiatan PKK)
-// 4. Pemanfaatan Tanah Pekarangan (AKU HATINYA PKK)
-// 5. Industri Rumah Tangga (Pangan, Sandang, Jasa)
+// Halaman Kegiatan Warga Dasawisma — SATU layar Rekap Berjenjang.
+// Tab satuan (Kegiatan, Kriteria Rumah, Catatan, Pekarangan, Industri RT)
+// sudah dihapus dari navigasi: input lewat "Input Terpadu Satu Pintu",
+// angka rekap otomatis. File-file list/form satuan tetap ada di codebase
+// dan bisa dipasang lagi bila needed (mis. untuk edit per item).
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'kegiatan_warga_list_screen.dart';
-import 'kriteria_rumah_list_screen.dart';
-import 'catatan_keluarga_list_screen.dart';
-import 'pemanfaatan_tanah_list_screen.dart';
-import 'industri_rumah_tangga_list_screen.dart';
+import 'kegiatan_rekap_berjenjang_screen.dart';
 
-class KegiatanWargaMainScreen extends StatefulWidget {
+class KegiatanWargaMainScreen extends StatelessWidget {
   final int initialIndex;
   const KegiatanWargaMainScreen({super.key, this.initialIndex = 0});
 
-  @override
-  State<KegiatanWargaMainScreen> createState() => _KegiatanWargaMainScreenState();
-}
-
-class _KegiatanWargaMainScreenState extends State<KegiatanWargaMainScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  static const Color _primaryAccent = Color(0xFF0D9488);
   static const Color _darkText = Color(0xFF0F172A);
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(
-      length: 5,
-      vsync: this,
-      initialIndex: widget.initialIndex,
-    );
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +32,8 @@ class _KegiatanWargaMainScreenState extends State<KegiatanWargaMainScreen>
               shape: BoxShape.circle,
               border: Border.all(color: const Color(0xFFE2E8F0)),
             ),
-            child: const Icon(Icons.arrow_back_rounded, size: 20, color: _darkText),
+            child: const Icon(Icons.arrow_back_rounded,
+                size: 20, color: _darkText),
           ),
         ),
         title: Column(
@@ -78,7 +48,7 @@ class _KegiatanWargaMainScreenState extends State<KegiatanWargaMainScreen>
               ),
             ),
             Text(
-              'Kegiatan, Rumah, Catatan, Pekarangan & Industri RT',
+              'Rekap otomatis + Input Terpadu',
               style: GoogleFonts.poppins(
                 fontSize: 11,
                 color: const Color(0xFF64748B),
@@ -87,70 +57,8 @@ class _KegiatanWargaMainScreenState extends State<KegiatanWargaMainScreen>
             ),
           ],
         ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(48),
-          child: Container(
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              border: Border(bottom: BorderSide(color: Color(0xFFE2E8F0), width: 1)),
-            ),
-            child: TabBar(
-              controller: _tabController,
-              isScrollable: true,
-              tabAlignment: TabAlignment.start,
-              indicatorColor: _primaryAccent,
-              indicatorWeight: 3,
-              labelColor: _primaryAccent,
-              unselectedLabelColor: const Color(0xFF64748B),
-              labelStyle: GoogleFonts.poppins(
-                fontSize: 12.5,
-                fontWeight: FontWeight.w700,
-              ),
-              unselectedLabelStyle: GoogleFonts.poppins(
-                fontSize: 12.5,
-                fontWeight: FontWeight.w600,
-              ),
-              tabs: const [
-                Tab(
-                  iconMargin: EdgeInsets.only(bottom: 2),
-                  icon: Icon(Icons.diversity_3_rounded, size: 17),
-                  text: 'Kegiatan Warga',
-                ),
-                Tab(
-                  iconMargin: EdgeInsets.only(bottom: 2),
-                  icon: Icon(Icons.home_rounded, size: 17),
-                  text: 'Kriteria Rumah',
-                ),
-                Tab(
-                  iconMargin: EdgeInsets.only(bottom: 2),
-                  icon: Icon(Icons.assignment_ind_rounded, size: 17),
-                  text: 'Catatan Keluarga',
-                ),
-                Tab(
-                  iconMargin: EdgeInsets.only(bottom: 2),
-                  icon: Icon(Icons.grass_rounded, size: 17),
-                  text: 'Pemanfaatan Tanah',
-                ),
-                Tab(
-                  iconMargin: EdgeInsets.only(bottom: 2),
-                  icon: Icon(Icons.storefront_rounded, size: 17),
-                  text: 'Industri RT',
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [
-          KegiatanWargaListScreen(embedded: true),
-          KriteriaRumahListScreen(embedded: true),
-          CatatanKeluargaListScreen(embedded: true),
-          PemanfaatanTanahListScreen(embedded: true),
-          IndustriRumahTanggaListScreen(embedded: true),
-        ],
-      ),
+      body: const KegiatanRekapBerjenjangScreen(embedded: true),
     );
   }
 }

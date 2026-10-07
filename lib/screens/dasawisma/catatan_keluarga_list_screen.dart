@@ -9,76 +9,659 @@ class CatatanKeluargaListScreen extends StatefulWidget {
   final bool embedded;
   const CatatanKeluargaListScreen({super.key, this.embedded = false});
   @override
-  State<CatatanKeluargaListScreen> createState() => _CatatanKeluargaListScreenState();
+  State<CatatanKeluargaListScreen> createState() =>
+      _CatatanKeluargaListScreenState();
 }
 
-class _CatatanKeluargaListScreenState extends State<CatatanKeluargaListScreen> with SingleTickerProviderStateMixin {
+class _CatatanKeluargaListScreenState extends State<CatatanKeluargaListScreen>
+    with SingleTickerProviderStateMixin {
   final _service = DasawismaCatatanKeluargaService();
   final _searchController = TextEditingController();
   List<DasawismaCatatanKeluarga> _data = [];
+  Map<String, int> _stats = {'total': 0, 'totalLaki': 0, 'totalPerempuan': 0};
   bool _loading = true;
+  String? _error;
   String _query = '';
   static const Color _primary = Color(0xFF0D9488);
-  static const Color _primaryLight = Color(0xFFF0FDFA);
+  static const Color _primaryLight = Color(0xFFF0F9FF);
   late AnimationController _animController;
 
   @override
-  void initState(){ super.initState(); _animController=AnimationController(vsync:this,duration: const Duration(milliseconds:400)); _loadData(); }
+  void initState() {
+    super.initState();
+    _animController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 400));
+    _loadData();
+  }
+
   @override
-  void dispose(){ _searchController.dispose(); _animController.dispose(); super.dispose(); }
+  void dispose() {
+    _searchController.dispose();
+    _animController.dispose();
+    super.dispose();
+  }
 
   Future<void> _loadData() async {
-    setState(()=>_loading=true);
-    final result = await _service.getAll(query:_query);
-    if(mounted){ setState((){_data=result; _loading=false;}); _animController..reset()..forward(); }
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final results = await Future.wait([
+        _service.getAll(query: _query),
+        _service.getStatistik(),
+      ]);
+      if (!mounted) return;
+      setState(() {
+        _data = results[0] as List<DasawismaCatatanKeluarga>;
+        _stats = results[1] as Map<String, int>;
+        _loading = false;
+      });
+      _animController
+        ..reset()
+        ..forward();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+        _error = e.toString().replaceFirst('Exception: ', '');
+      });
+    }
   }
+
   Future<void> _delete(DasawismaCatatanKeluarga d) async {
-    final confirm = await showDialog<bool>(context:context, builder:(ctx)=> AlertDialog(shape:RoundedRectangleBorder(borderRadius:BorderRadius.circular(16)), title: Text('Hapus Data?', style:GoogleFonts.poppins(fontWeight:FontWeight.w800)), content: Text('Catatan keluarga ${d.dasaWisma} tahun ${d.tahun} akan dihapus.', style:GoogleFonts.poppins(fontSize:13.5)), actions:[TextButton(onPressed:()=>Navigator.pop(ctx,false), child: Text('Batal', style:GoogleFonts.poppins(color:Colors.grey[600]))), ElevatedButton(onPressed:()=>Navigator.pop(ctx,true), style:ElevatedButton.styleFrom(backgroundColor:Colors.red[600],foregroundColor:Colors.white, shape:RoundedRectangleBorder(borderRadius:BorderRadius.circular(10))), child: Text('Hapus', style:GoogleFonts.poppins(fontWeight:FontWeight.w700))) ]));
-    if(confirm==true){ await _service.delete(d.id); _loadData(); }
+    if (d.isApproved) {
+      _snack('Data yang sudah disetujui tidak dapat dihapus.', error: true);
+      return;
+    }
+    final confirm = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
+              title: Text('Hapus Data?',
+                  style: GoogleFonts.poppins(fontWeight: FontWeight.w800)),
+              content: Text(
+                  'Anggota "${d.namaAnggota}" akan dihapus.',
+                  style: GoogleFonts.poppins(fontSize: 13.5)),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(ctx, false),
+                    child: Text('Batal',
+                        style: GoogleFonts.poppins(color: Colors.grey[600]))),
+                ElevatedButton(
+                    onPressed: () => Navigator.pop(ctx, true),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red[600],
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10))),
+                    child: Text('Hapus',
+                        style: GoogleFonts.poppins(fontWeight: FontWeight.w700)))
+              ],
+            ));
+    if (confirm == true) {
+      try {
+        await _service.delete(d.id);
+        if (!mounted) return;
+        _snack('Data berhasil dihapus.');
+        _loadData();
+      } catch (e) {
+        if (!mounted) return;
+        _snack(e.toString().replaceFirst('Exception: ', ''), error: true);
+      }
+    }
+  }
+
+  Future<void> _openForm({DasawismaCatatanKeluarga? data}) async {
+    if (data != null && data.isApproved) {
+      _snack('Data yang sudah disetujui tidak dapat diubah.', error: true);
+      return;
+    }
+    final r = await Navigator.push<bool>(
+        context,
+        MaterialPageRoute(builder: (_) => CatatanKeluargaFormScreen(data: data)));
+    if (r == true) _loadData();
+  }
+
+  void _snack(String msg, {bool error = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content:
+          Text(msg, style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+      backgroundColor: error ? Colors.red[700] : const Color(0xFF10B981),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+    ));
+  }
+
+  Widget _statusBadge(DasawismaCatatanKeluarga d) {
+    late Color bg, fg;
+    late IconData icon;
+    if (d.isApproved) {
+      bg = const Color(0xFFDCFCE7);
+      fg = const Color(0xFF15803D);
+      icon = Icons.check_circle_rounded;
+    } else if (d.isRejected) {
+      bg = const Color(0xFFFEE2E2);
+      fg = const Color(0xFFB91C1C);
+      icon = Icons.error_outline_rounded;
+    } else {
+      bg = const Color(0xFFFEF3C7);
+      fg = const Color(0xFFB45309);
+      icon = Icons.hourglass_top_rounded;
+    }
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration:
+          BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [
+        Icon(icon, size: 13, color: fg),
+        const SizedBox(width: 4),
+        Text(d.statusLabel,
+            style: GoogleFonts.poppins(
+                fontSize: 11, fontWeight: FontWeight.w700, color: fg)),
+      ]),
+    );
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      appBar: widget.embedded ? null : AppBar(backgroundColor:Colors.white,elevation:0,scrolledUnderElevation:0,iconTheme: const IconThemeData(color:Color(0xFF0F172A)), title: Column(crossAxisAlignment:CrossAxisAlignment.start, children:[Text('Catatan Keluarga', style:GoogleFonts.poppins(fontSize:16,fontWeight:FontWeight.w800,color:const Color(0xFF0F172A))), Text('19 kolom + kegiatan PKK', style:GoogleFonts.poppins(fontSize:11,color:const Color(0xFF64748B))) ])),
-      floatingActionButton: FloatingActionButton.extended(heroTag: 'fab-catatan-keluarga-list', onPressed:() async { HapticFeedback.mediumImpact(); final r= await Navigator.push<bool>(context, MaterialPageRoute(builder:(_)=> const CatatanKeluargaFormScreen())); if(r==true) _loadData(); }, backgroundColor:_primary,foregroundColor:Colors.white,elevation:3, icon: const Icon(Icons.add_rounded), label: Text('Tambah Data', style:GoogleFonts.poppins(fontWeight:FontWeight.w700))),
-      body: Column(children:[
-        FutureBuilder<Map<String,int>>(future:_service.getStatistik(), builder:(ctx,snap){ final total=snap.data?['total']??0; final anggota=snap.data?['totalAnggota']??0; return Container(margin: const EdgeInsets.fromLTRB(16,12,16,0), padding: const EdgeInsets.all(16), decoration:BoxDecoration(color: const Color(0xFF0D9488), borderRadius:BorderRadius.circular(16), boxShadow:[BoxShadow(color:const Color(0xFF0D9488).withValues(alpha:0.25),blurRadius:12,offset:const Offset(0,4))]), child: Row(children:[Container(padding: const EdgeInsets.all(10), decoration:BoxDecoration(color:Colors.white.withValues(alpha:0.18),borderRadius:BorderRadius.circular(12)), child: const Icon(Icons.family_restroom_rounded,color:Colors.white,size:24)), const SizedBox(width:14), Expanded(child: Column(crossAxisAlignment:CrossAxisAlignment.start, children:[Text('Total Dokumen', style:GoogleFonts.poppins(fontSize:12,color:Colors.white70)), Text('$total Dokumen', style:GoogleFonts.poppins(fontSize:22,fontWeight:FontWeight.w900,color:Colors.white))])), Column(crossAxisAlignment:CrossAxisAlignment.end, children:[Text('$anggota', style:GoogleFonts.poppins(fontSize:20,fontWeight:FontWeight.w900,color:Colors.white)), Text('Anggota', style:GoogleFonts.poppins(fontSize:11,color:Colors.white70))])])); }),
-        Padding(padding: const EdgeInsets.fromLTRB(16,14,16,0), child: Container(decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(14),border:Border.all(color:const Color(0xFFE2E8F0)),boxShadow:[BoxShadow(color:Colors.black.withValues(alpha:0.04),blurRadius:6,offset:const Offset(0,2))]), child: TextField(controller:_searchController,onChanged:(v){_query=v; _loadData();}, style:GoogleFonts.poppins(fontSize:14), decoration: InputDecoration(hintText:'Cari dasa wisma, desa, nama anggota...', hintStyle:GoogleFonts.poppins(fontSize:13,color:Colors.grey[400]), prefixIcon: const Icon(Icons.search_rounded,color:Color(0xFF64748B),size:20), suffixIcon: _query.isNotEmpty ? IconButton(icon: const Icon(Icons.close_rounded,size:18,color:Color(0xFF64748B)), onPressed:(){_searchController.clear(); _query=''; _loadData();}):null, border:InputBorder.none,enabledBorder:InputBorder.none,focusedBorder:InputBorder.none, contentPadding: const EdgeInsets.symmetric(horizontal:16,vertical:14))))),
-        const SizedBox(height:10),
-        Expanded(child: _loading ? const Center(child:CircularProgressIndicator(color:_primary)) : _data.isEmpty ? _buildEmpty() : RefreshIndicator(color:_primary,onRefresh:_loadData, child: ListView.builder(padding: const EdgeInsets.fromLTRB(16,4,16,100), itemCount:_data.length, itemBuilder:(ctx,i)=> _buildCard(_data[i],i)))),
+      appBar: widget.embedded
+          ? null
+          : AppBar(
+              backgroundColor: Colors.white,
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              iconTheme: const IconThemeData(color: Color(0xFF0F172A)),
+              title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Catatan Keluarga',
+                        style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFF0F172A))),
+                    Text('Anggota keluarga per KK',
+                        style: GoogleFonts.poppins(
+                            fontSize: 11, color: const Color(0xFF64748B)))
+                  ])),
+      floatingActionButton: FloatingActionButton.extended(
+          heroTag: 'fab-catatan-keluarga-list',
+          onPressed: () async {
+            HapticFeedback.mediumImpact();
+            _openForm();
+          },
+          backgroundColor: _primary,
+          foregroundColor: Colors.white,
+          elevation: 3,
+          icon: const Icon(Icons.add_rounded),
+          label: Text('Tambah Data',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w700))),
+      body: Column(children: [
+        _buildStats(),
+        Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+            child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.04),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2))
+                    ]),
+                child: TextField(
+                    controller: _searchController,
+                    onChanged: (v) {
+                      _query = v;
+                      _loadData();
+                    },
+                    style: GoogleFonts.poppins(fontSize: 14),
+                    decoration: InputDecoration(
+                        hintText: 'Cari nama, NIK, pendidikan, pekerjaan...',
+                        hintStyle: GoogleFonts.poppins(
+                            fontSize: 13, color: Colors.grey[400]),
+                        prefixIcon: const Icon(Icons.search_rounded,
+                            color: Color(0xFF64748B), size: 20),
+                        suffixIcon: _query.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.close_rounded,
+                                    size: 18, color: Color(0xFF64748B)),
+                                onPressed: () {
+                                  _searchController.clear();
+                                  _query = '';
+                                  _loadData();
+                                })
+                            : null,
+                        border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 14))))),
+        const SizedBox(height: 10),
+        Expanded(child: _buildBody()),
       ]));
   }
 
-  Widget _buildCard(DasawismaCatatanKeluarga d, int index){
-    return AnimatedBuilder(animation:_animController, builder:(ctx,child){ final delay=(index*0.08).clamp(0.0,0.6); final anim=CurvedAnimation(parent:_animController,curve:Interval(delay,(delay+0.4).clamp(0.0,1.0),curve:Curves.easeOutCubic)); return FadeTransition(opacity:anim, child: SlideTransition(position:Tween<Offset>(begin:const Offset(0,0.2),end:Offset.zero).animate(anim), child: child)); }, child: Container(margin: const EdgeInsets.only(bottom:12), decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(16),border:Border.all(color:const Color(0xFFE2E8F0)),boxShadow:[BoxShadow(color:Colors.black.withValues(alpha:0.04),blurRadius:8,offset:const Offset(0,2))]), child: Column(children:[
-      Container(padding: const EdgeInsets.fromLTRB(14,12,14,10), decoration:BoxDecoration(color:_primaryLight,borderRadius: const BorderRadius.vertical(top:Radius.circular(16))), child: Row(children:[Container(padding: const EdgeInsets.all(8), decoration:BoxDecoration(color:_primary.withValues(alpha:0.15),shape:BoxShape.circle), child: const Icon(Icons.family_restroom_rounded,size:18,color:_primary)), const SizedBox(width:10), Expanded(child: Column(crossAxisAlignment:CrossAxisAlignment.start, children:[Text(d.dasaWisma.isEmpty?'Dasa Wisma':d.dasaWisma, style:GoogleFonts.poppins(fontSize:14,fontWeight:FontWeight.w800,color:const Color(0xFF0F172A))), Text('RT ${d.rt}/RW ${d.rw} · ${d.desa} · ${d.tahun}', style:GoogleFonts.poppins(fontSize:11.5,color:const Color(0xFF64748B)))])), Container(padding: const EdgeInsets.symmetric(horizontal:8,vertical:4), decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(20),border:Border.all(color:const Color(0xFFE2E8F0))), child: Text('${d.totalAnggota} org', style:GoogleFonts.poppins(fontSize:11,fontWeight:FontWeight.w700,color:_primary))), const SizedBox(width:8), PopupMenuButton<String>(onSelected:(v) async { if(v=='edit'){ final r= await Navigator.push<bool>(context, MaterialPageRoute(builder:(_)=> CatatanKeluargaFormScreen(data:d))); if(r==true) _loadData(); } else if(v=='delete'){_delete(d);} else if(v=='detail'){_showDetail(d);} }, itemBuilder:(_)=>[PopupMenuItem(value:'detail', child: Row(children:[const Icon(Icons.visibility_outlined,size:16,color:Color(0xFF64748B)), const SizedBox(width:8), Text('Lihat Detail', style:GoogleFonts.poppins())])), PopupMenuItem(value:'edit', child: Row(children:[const Icon(Icons.edit_outlined,size:16,color:Color(0xFFDC2626)), const SizedBox(width:8), Text('Edit', style:GoogleFonts.poppins(color:Color(0xFFDC2626)))])), PopupMenuItem(value:'delete', child: Row(children:[Icon(Icons.delete_outline,size:16,color:Colors.red[600]), const SizedBox(width:8), Text('Hapus', style:GoogleFonts.poppins(color:Colors.red[600]))]))], shape:RoundedRectangleBorder(borderRadius:BorderRadius.circular(12)), child: const Icon(Icons.more_vert_rounded,size:20,color:Color(0xFF94A3B8)))])),
-      Padding(padding: const EdgeInsets.fromLTRB(12,10,12,12), child: Column(children:[
-        Container(decoration:BoxDecoration(color:_primary,borderRadius:BorderRadius.circular(8)), padding: const EdgeInsets.symmetric(vertical:6,horizontal:10), child: Row(children:[SizedBox(width:24, child: Text('No', style:GoogleFonts.poppins(fontSize:10,fontWeight:FontWeight.w700,color:Colors.white))), Expanded(flex:3, child: Text('Nama Anggota', style:GoogleFonts.poppins(fontSize:10,fontWeight:FontWeight.w700,color:Colors.white))), SizedBox(width:28, child: Text('L/P', textAlign:TextAlign.center, style:GoogleFonts.poppins(fontSize:10,fontWeight:FontWeight.w700,color:Colors.white))), Expanded(flex:2, child: Text('Kegiatan', textAlign:TextAlign.center, style:GoogleFonts.poppins(fontSize:10,fontWeight:FontWeight.w700,color:Colors.white))) ])),
-        const SizedBox(height:4),
-        ...List.generate(d.items.take(3).length, (i){ final it=d.items[i]; return Container(margin: const EdgeInsets.only(bottom:4), padding: const EdgeInsets.symmetric(vertical:7,horizontal:10), decoration:BoxDecoration(color:i%2==0?const Color(0xFFF8FAFC):Colors.white, borderRadius:BorderRadius.circular(6), border:Border.all(color:const Color(0xFFE2E8F0))), child: Row(children:[SizedBox(width:24, child: Text('${i+1}', style:GoogleFonts.poppins(fontSize:11,fontWeight:FontWeight.w600,color:_primary))), Expanded(flex:3, child: Column(crossAxisAlignment:CrossAxisAlignment.start, children:[Text(it.namaAnggota, style:GoogleFonts.poppins(fontSize:11.5,fontWeight:FontWeight.w600,color:const Color(0xFF0F172A)), overflow:TextOverflow.ellipsis), Text('${it.pendidikan} • ${it.pekerjaan}', style:GoogleFonts.poppins(fontSize:10,color:const Color(0xFF64748B)), overflow:TextOverflow.ellipsis)])), SizedBox(width:28, child: Container(padding: const EdgeInsets.symmetric(vertical:2), decoration:BoxDecoration(color: it.jenisKelamin=='L'? const Color(0xFFDBEAFE):const Color(0xFFFCE7F3), borderRadius:BorderRadius.circular(6)), child: Text(it.jenisKelamin, textAlign:TextAlign.center, style:GoogleFonts.poppins(fontSize:11,fontWeight:FontWeight.w700,color:it.jenisKelamin=='L'?const Color(0xFF1D4ED8):const Color(0xFFBE185D))))), Expanded(flex:2, child: Text('${it.jumlahKegiatanDiikuti}/8', textAlign:TextAlign.center, style:GoogleFonts.poppins(fontSize:11,fontWeight:FontWeight.w700,color: it.jumlahKegiatanDiikuti>0? const Color(0xFF15803D):const Color(0xFF94A3B8)))) ])); }),
-        if(d.items.length>3) ...[const SizedBox(height:4), GestureDetector(onTap:()=>_showDetail(d), child: Container(width:double.infinity, padding: const EdgeInsets.symmetric(vertical:6), decoration:BoxDecoration(color:_primaryLight,borderRadius:BorderRadius.circular(8)), child: Text('+ ${d.items.length-3} anggota lainnya • Lihat Semua', textAlign:TextAlign.center, style:GoogleFonts.poppins(fontSize:11.5,fontWeight:FontWeight.w700,color:_primary))))],
-        const SizedBox(height:8), Row(children:[_miniStat(Icons.home_outlined, d.kriteriaRumah), const SizedBox(width:8), _miniStat(Icons.water_drop_outlined, d.sumberAir), const SizedBox(width:8), _miniStat(Icons.delete_outline_rounded, d.tempatSampah)]),
-      ])),
-    ])));
+  Widget _buildStats() {
+    final total = _stats['total'] ?? 0;
+    final laki = _stats['totalLaki'] ?? 0;
+    final per = _stats['totalPerempuan'] ?? 0;
+    return Container(
+        margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+            color: const Color(0xFF0D9488),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                  color: const Color(0xFF0D9488).withValues(alpha: 0.25),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4))
+            ]),
+        child: Row(children: [
+          Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.18),
+                  borderRadius: BorderRadius.circular(12)),
+              child: const Icon(Icons.assignment_ind_rounded,
+                  color: Colors.white, size: 24)),
+          const SizedBox(width: 14),
+          Expanded(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                Text('Total Anggota',
+                    style: GoogleFonts.poppins(
+                        fontSize: 12, color: Colors.white70)),
+                Text('$total Anggota',
+                    style: GoogleFonts.poppins(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white))
+              ])),
+          Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+            Text('$laki L',
+                style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white)),
+            Text('$per P',
+                style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white70))
+          ])
+        ]));
   }
 
-  Widget _miniStat(IconData icon, String text)=> Expanded(child: Container(padding: const EdgeInsets.symmetric(vertical:6), decoration:BoxDecoration(color:const Color(0xFFF8FAFC),borderRadius:BorderRadius.circular(8),border:Border.all(color:const Color(0xFFE2E8F0))), child: Row(mainAxisAlignment:MainAxisAlignment.center, children:[Icon(icon,size:12,color:const Color(0xFF64748B)), const SizedBox(width:4), Flexible(child: Text(text, style:GoogleFonts.poppins(fontSize:10.5,color:const Color(0xFF475569)), overflow:TextOverflow.ellipsis))])));
+  Widget _buildBody() {
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator(color: _primary));
+    }
+    if (_error != null) {
+      return Center(
+          child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: const BoxDecoration(
+                            color: Color(0xFFFEE2E2), shape: BoxShape.circle),
+                        child: const Icon(Icons.cloud_off_outlined,
+                            size: 44, color: Color(0xFFB91C1C))),
+                    const SizedBox(height: 16),
+                    Text('Gagal memuat data',
+                        style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF475569))),
+                    const SizedBox(height: 8),
+                    Text(_error!,
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.poppins(
+                            fontSize: 13, color: const Color(0xFF94A3B8))),
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                        onPressed: _loadData,
+                        icon: const Icon(Icons.refresh_rounded),
+                        label: Text('Coba Lagi',
+                            style:
+                                GoogleFonts.poppins(fontWeight: FontWeight.w700)),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: _primary,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)))),
+                  ])));
+    }
+    if (_data.isEmpty) {
+      return Center(
+          child:
+              Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Container(
+            padding: const EdgeInsets.all(24),
+            decoration: const BoxDecoration(
+                color: _primaryLight, shape: BoxShape.circle),
+            child: const Icon(Icons.assignment_ind_outlined,
+                size: 48, color: _primary)),
+        const SizedBox(height: 16),
+        Text(_query.isNotEmpty ? 'Tidak ditemukan' : 'Belum ada anggota keluarga',
+            style: GoogleFonts.poppins(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF475569))),
+        const SizedBox(height: 8),
+        Text(
+            _query.isNotEmpty
+                ? 'Coba kata kunci berbeda'
+                : 'Tekan "Tambah Data" untuk mencatat\nanggota keluarga pertama',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.poppins(
+                fontSize: 13, color: const Color(0xFF94A3B8)))
+      ]));
+    }
+    return RefreshIndicator(
+        color: _primary,
+        onRefresh: _loadData,
+        child: ListView.builder(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 100),
+            itemCount: _data.length,
+            itemBuilder: (ctx, i) => _buildCard(_data[i], i)));
+  }
 
-  void _showDetail(DasawismaCatatanKeluarga d){ showModalBottomSheet(context:context,isScrollControlled:true,backgroundColor:Colors.transparent, builder:(ctx)=> _DetailSheet(data:d)); }
-  Widget _buildEmpty()=> Center(child: Column(mainAxisAlignment:MainAxisAlignment.center, children:[Container(padding: const EdgeInsets.all(24), decoration:BoxDecoration(color:_primaryLight,shape:BoxShape.circle), child: const Icon(Icons.family_restroom_outlined,size:48,color:_primary)), const SizedBox(height:16), Text(_query.isNotEmpty?'Tidak ditemukan':'Belum ada catatan keluarga', style:GoogleFonts.poppins(fontSize:16,fontWeight:FontWeight.w700,color:const Color(0xFF475569))), const SizedBox(height:8), Text(_query.isNotEmpty?'Coba kata kunci berbeda':'Tekan "Tambah Data" untuk mencatat\nanggota keluarga + kegiatan PKK', textAlign:TextAlign.center, style:GoogleFonts.poppins(fontSize:13,color:const Color(0xFF94A3B8)))]));
+  Widget _buildCard(DasawismaCatatanKeluarga d, int index) {
+    final subtitle = [
+      if (d.kepalaKeluarga.isNotEmpty) 'KK: ${d.kepalaKeluarga}',
+      if (d.desa.isNotEmpty) d.desa,
+    ].join(' · ');
+    return AnimatedBuilder(
+        animation: _animController,
+        builder: (ctx, child) {
+          final delay = (index * 0.08).clamp(0.0, 0.6);
+          final anim = CurvedAnimation(
+              parent: _animController,
+              curve: Interval(delay, (delay + 0.4).clamp(0.0, 1.0),
+                  curve: Curves.easeOutCubic));
+          return FadeTransition(
+              opacity: anim,
+              child: SlideTransition(
+                  position: Tween<Offset>(
+                          begin: const Offset(0, 0.2), end: Offset.zero)
+                      .animate(anim),
+                  child: child));
+        },
+        child: Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                    color: d.isRejected
+                        ? const Color(0xFFFECACA)
+                        : const Color(0xFFE2E8F0)),
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.04),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2))
+                ]),
+            child: Column(children: [
+              Container(
+                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 10),
+                  decoration: const BoxDecoration(
+                      color: _primaryLight,
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(16))),
+                  child: Row(children: [
+                    Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                            color: _primary.withValues(alpha: 0.15),
+                            shape: BoxShape.circle),
+                        child: Icon(
+                            d.jenisKelamin == 'L'
+                                ? Icons.male_rounded
+                                : Icons.female_rounded,
+                            size: 18,
+                            color: _primary)),
+                    const SizedBox(width: 10),
+                    Expanded(
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                          Text(d.namaAnggota,
+                              style: GoogleFonts.poppins(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w800,
+                                  color: const Color(0xFF0F172A))),
+                          Text(
+                              subtitle.isEmpty
+                                  ? d.hubunganLabel
+                                  : '$subtitle · ${d.hubunganLabel}',
+                              style: GoogleFonts.poppins(
+                                  fontSize: 11.5,
+                                  color: const Color(0xFF64748B))),
+                        ])),
+                    _statusBadge(d),
+                    const SizedBox(width: 4),
+                    PopupMenuButton<String>(
+                        onSelected: (v) {
+                          if (v == 'edit') {
+                            _openForm(data: d);
+                          } else if (v == 'delete') {
+                            _delete(d);
+                          } else if (v == 'detail') {
+                            _showDetail(d);
+                          }
+                        },
+                        itemBuilder: (_) => [
+                              PopupMenuItem(
+                                  value: 'detail',
+                                  child: Row(children: [
+                                    const Icon(Icons.visibility_outlined,
+                                        size: 16, color: Color(0xFF64748B)),
+                                    const SizedBox(width: 8),
+                                    Text('Lihat Detail',
+                                        style: GoogleFonts.poppins())
+                                  ])),
+                              if (!d.isApproved)
+                                PopupMenuItem(
+                                    value: 'edit',
+                                    child: Row(children: [
+                                      const Icon(Icons.edit_outlined,
+                                          size: 16, color: Color(0xFF0D9488)),
+                                      const SizedBox(width: 8),
+                                      Text('Edit',
+                                          style: GoogleFonts.poppins(
+                                              color: Color(0xFF0D9488)))
+                                    ])),
+                              if (!d.isApproved)
+                                PopupMenuItem(
+                                    value: 'delete',
+                                    child: Row(children: [
+                                      Icon(Icons.delete_outline,
+                                          size: 16, color: Colors.red[600]),
+                                      const SizedBox(width: 8),
+                                      Text('Hapus',
+                                          style: GoogleFonts.poppins(
+                                              color: Colors.red[600]))
+                                    ])),
+                            ]),
+                  ])),
+              Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Wrap(spacing: 8, runSpacing: 8, children: [
+                          _chip('${d.jenisKelamin == 'L' ? 'Laki-laki' : 'Perempuan'}${d.umur > 0 ? ' · ${d.umur} th' : ''}'),
+                          if (d.pendidikan.isNotEmpty)
+                            _chip(d.pendidikan),
+                          if (d.pekerjaan.isNotEmpty) _chip(d.pekerjaan),
+                        ]),
+                        if (d.isRejected &&
+                            (d.rejectedReason ?? '').isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                  color: const Color(0xFFFEF2F2),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                      color: const Color(0xFFFECACA))),
+                              child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Icon(Icons.info_outline_rounded,
+                                        size: 16, color: Color(0xFFB91C1C)),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                        child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                          Text('Perlu diperbaiki:',
+                                              style: GoogleFonts.poppins(
+                                                  fontSize: 11.5,
+                                                  fontWeight: FontWeight.w700,
+                                                  color:
+                                                      const Color(0xFFB91C1C))),
+                                          Text(d.rejectedReason!,
+                                              style: GoogleFonts.poppins(
+                                                  fontSize: 12,
+                                                  color:
+                                                      const Color(0xFF7F1D1D))),
+                                        ])),
+                                  ])),
+                        ],
+                      ])),
+            ])));
+  }
+
+  Widget _chip(String text) => Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+          color: const Color(0xFFF8FAFC),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: const Color(0xFFE2E8F0))),
+      child: Text(text,
+          style: GoogleFonts.poppins(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: const Color(0xFF475569))));
+
+  void _showDetail(DasawismaCatatanKeluarga d) {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (ctx) => _DetailSheet(data: d));
+  }
 }
 
 class _DetailSheet extends StatelessWidget {
-  final DasawismaCatatanKeluarga data; const _DetailSheet({required this.data}); static const Color _primary = Color(0xFF0D9488);
+  final DasawismaCatatanKeluarga data;
+  const _DetailSheet({required this.data});
+
   @override
-  Widget build(BuildContext context){ return DraggableScrollableSheet(initialChildSize:0.75,minChildSize:0.4,maxChildSize:0.95, builder:(ctx,sc)=> Container(decoration: const BoxDecoration(color:Colors.white,borderRadius:BorderRadius.vertical(top:Radius.circular(24))), child: Column(children:[Container(margin: const EdgeInsets.only(top:12),width:40,height:4,decoration:BoxDecoration(color:Colors.grey[300],borderRadius:BorderRadius.circular(2))), Padding(padding: const EdgeInsets.fromLTRB(20,16,20,8), child: Row(children:[Expanded(child: Column(crossAxisAlignment:CrossAxisAlignment.start, children:[Text(data.dasaWisma, style:GoogleFonts.poppins(fontSize:16,fontWeight:FontWeight.w800,color:const Color(0xFF0F172A))), Text('RT ${data.rt}/RW ${data.rw} · ${data.desa} · ${data.tahun}', style:GoogleFonts.poppins(fontSize:12,color:const Color(0xFF64748B)))])), Container(padding: const EdgeInsets.symmetric(horizontal:12,vertical:6), decoration:BoxDecoration(color:const Color(0xFFFEF2F2),borderRadius:BorderRadius.circular(20)), child: Text('${data.totalAnggota} Anggota (${data.totalLaki}L/${data.totalPerempuan}P)', style:GoogleFonts.poppins(fontSize:12,fontWeight:FontWeight.w700,color:_primary)))])),
-          const Divider(height:1),
-          Expanded(child: ListView(controller:sc, padding: const EdgeInsets.all(16), children:[
-            SingleChildScrollView(scrollDirection: Axis.horizontal, child: DataTable(headingRowColor:WidgetStateProperty.all(_primary), headingTextStyle:GoogleFonts.poppins(fontSize:10,color:Colors.white,fontWeight:FontWeight.w700), dataTextStyle:GoogleFonts.poppins(fontSize:11,color:const Color(0xFF0F172A)), columnSpacing:12, columns: const [DataColumn(label: Text('No')), DataColumn(label: Text('Nama')), DataColumn(label: Text('L/P')), DataColumn(label: Text('TTl/Umur')), DataColumn(label: Text('Agama')), DataColumn(label: Text('Pendidikan')), DataColumn(label: Text('Pekerjaan')), DataColumn(label: Text('Khusus')), DataColumn(label: Text('Pancasila')), DataColumn(label: Text('Gotong')), DataColumn(label: Text('Didik')), DataColumn(label: Text('Koperasi')), DataColumn(label: Text('Pangan')), DataColumn(label: Text('Sandang')), DataColumn(label: Text('Kesehatan')), DataColumn(label: Text('Perenc.')), DataColumn(label: Text('Ket'))],
-              rows: List.generate(data.items.length, (i){ final it=data.items[i]; return DataRow(cells: [DataCell(Text('${i+1}')), DataCell(Text(it.namaAnggota)), DataCell(Container(padding: const EdgeInsets.symmetric(horizontal:6,vertical:2), decoration:BoxDecoration(color: it.jenisKelamin=='L'? const Color(0xFFDBEAFE):const Color(0xFFFCE7F3), borderRadius:BorderRadius.circular(6)), child: Text(it.jenisKelamin, style:GoogleFonts.poppins(fontWeight:FontWeight.w700)))), DataCell(Text('${it.tempatLahir}\n${it.tanggalLahirUmur}', style:GoogleFonts.poppins(fontSize:10))), DataCell(Text(it.agama)), DataCell(Text(it.pendidikan)), DataCell(Text(it.pekerjaan)), DataCell(Text(it.berkebutuhanKhusus)), DataCell(Icon(it.penghayatanPancasila?Icons.check_circle:Icons.cancel, size:16, color:it.penghayatanPancasila?Colors.green:Colors.grey)), DataCell(Icon(it.gotongRoyong?Icons.check_circle:Icons.cancel, size:16, color:it.gotongRoyong?Colors.green:Colors.grey)), DataCell(Icon(it.pendidikanKeterampilan?Icons.check_circle:Icons.cancel, size:16, color:it.pendidikanKeterampilan?Colors.green:Colors.grey)), DataCell(Icon(it.pengembanganKoperasi?Icons.check_circle:Icons.cancel, size:16, color:it.pengembanganKoperasi?Colors.green:Colors.grey)), DataCell(Icon(it.pangan?Icons.check_circle:Icons.cancel, size:16, color:it.pangan?Colors.green:Colors.grey)), DataCell(Icon(it.sandang?Icons.check_circle:Icons.cancel, size:16, color:it.sandang?Colors.green:Colors.grey)), DataCell(Icon(it.kesehatan?Icons.check_circle:Icons.cancel, size:16, color:it.kesehatan?Colors.green:Colors.grey)), DataCell(Icon(it.perencanaanSehat?Icons.check_circle:Icons.cancel, size:16, color:it.perencanaanSehat?Colors.green:Colors.grey)), DataCell(Text(it.keterangan))]); }))),
-            if(data.keteranganUmum.isNotEmpty)...[const SizedBox(height:12), Container(padding: const EdgeInsets.all(12), decoration:BoxDecoration(color:const Color(0xFFFEF2F2),borderRadius:BorderRadius.circular(10),border:Border.all(color:const Color(0xFFFECACA))), child: Row(crossAxisAlignment:CrossAxisAlignment.start, children:[const Icon(Icons.notes_rounded,size:16,color:_primary), const SizedBox(width:8), Expanded(child: Text(data.keteranganUmum, style:GoogleFonts.poppins(fontSize:12.5,color:const Color(0xFF475569))))]))]
-          ]))
-        ]))); }
+  Widget build(BuildContext context) {
+    Widget row(String label, String value) => Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          SizedBox(
+              width: 130,
+              child: Text(label,
+                  style: GoogleFonts.poppins(
+                      fontSize: 12.5, color: const Color(0xFF64748B)))),
+          Expanded(
+              child: Text(value.isEmpty ? '-' : value,
+                  style: GoogleFonts.poppins(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF0F172A)))),
+        ]));
+
+    return DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.4,
+        maxChildSize: 0.95,
+        builder: (ctx, sc) => Container(
+            decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+            child: Column(children: [
+              Container(
+                  margin: const EdgeInsets.only(top: 12),
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(2))),
+              Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                  child: Row(children: [
+                    Expanded(
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                          Text(data.namaAnggota,
+                              style: GoogleFonts.poppins(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w800,
+                                  color: const Color(0xFF0F172A))),
+                          Text(data.hubunganLabel,
+                              style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  color: const Color(0xFF64748B))),
+                        ])),
+                    Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                            color: const Color(0xFFF0F9FF),
+                            borderRadius: BorderRadius.circular(20)),
+                        child: Text(data.statusLabel,
+                            style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF0D9488)))),
+                  ])),
+              const Divider(height: 1),
+              Expanded(
+                  child: ListView(
+                      controller: sc,
+                      padding: const EdgeInsets.all(20),
+                      children: [
+                    row('Kepala Keluarga', data.kepalaKeluarga),
+                    row('NIK', data.nik),
+                    row('Jenis Kelamin',
+                        data.jenisKelamin == 'L' ? 'Laki-laki' : 'Perempuan'),
+                    row('Tanggal Lahir',
+                        data.tanggalLahir == null
+                            ? '-'
+                            : '${data.tanggalLahir!.day}/${data.tanggalLahir!.month}/${data.tanggalLahir!.year}'),
+                    row('Umur',
+                        data.umur > 0 ? '${data.umur} tahun' : '-'),
+                    row('Hubungan', data.hubunganLabel),
+                    row('Pendidikan', data.pendidikan),
+                    row('Pekerjaan', data.pekerjaan),
+                    row('Status Perkawinan', data.statusPerkawinan),
+                    row('RT / RW', '${data.rt} / ${data.rw}'),
+                    row('Dusun', data.dusun),
+                    row('Desa', data.desa),
+                    row('Status', data.statusLabel),
+                    if ((data.rejectedReason ?? '').isNotEmpty)
+                      row('Alasan Penolakan', data.rejectedReason!),
+                  ]))
+            ])));
+  }
 }

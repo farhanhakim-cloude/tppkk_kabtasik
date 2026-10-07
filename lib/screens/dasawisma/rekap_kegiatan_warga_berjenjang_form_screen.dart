@@ -77,6 +77,7 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
   late TextEditingController _rumahTidakSehatCtrl;
   late TextEditingController _tempatSampahCtrl;
   late TextEditingController _spalCtrl;
+  late TextEditingController _stikerP4kCtrl;
   late TextEditingController _jambanMckCtrl;
 
   // Sumber Air
@@ -161,6 +162,9 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
       text: (it?.tempatSampah ?? 0).toString(),
     );
     _spalCtrl = TextEditingController(text: (it?.spal ?? 0).toString());
+    _stikerP4kCtrl = TextEditingController(
+      text: (it?.memilikiStikerP4k ?? 0).toString(),
+    );
     _jambanMckCtrl = TextEditingController(
       text: (it?.jambanMck ?? 0).toString(),
     );
@@ -236,6 +240,7 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
     _rumahTidakSehatCtrl.dispose();
     _tempatSampahCtrl.dispose();
     _spalCtrl.dispose();
+    _stikerP4kCtrl.dispose();
     _jambanMckCtrl.dispose();
 
     _airPdamCtrl.dispose();
@@ -276,6 +281,21 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
     if (!_formKey.currentState!.validate()) return;
     setState(() => _saving = true);
 
+    int num(TextEditingController c) => int.tryParse(c.text.trim()) ?? 0;
+
+    // Nilai legacy dicerminkan ke field API (nama kolom tabel server) agar
+    // tabel kabupaten (SUM kolom server) terisi. toJson() hanya mengirim
+    // nama kolom server.
+    final rumahTidakSehat = num(_rumahTidakSehatCtrl);
+    final tempatSampah = num(_tempatSampahCtrl);
+    final spal = num(_spalCtrl);
+    final jamban = num(_jambanMckCtrl);
+    final beras = num(_makananBerasCtrl);
+    final nonBeras = num(_makananNonBerasCtrl);
+    final pekarangan = num(_kegiatanPekaranganCtrl);
+    final industri = num(_kegiatanIndustriRtCtrl);
+    final kesling = num(_kegiatanKeslingCtrl);
+
     final item = RekapKegiatanWargaBerjenjangItem(
       id: widget.item?.id ?? 0,
       level: widget.level,
@@ -310,20 +330,30 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
       butaP: int.tryParse(_butaPCtrl.text) ?? 0,
       berkebutuhanKhusus: int.tryParse(_berkebutuhanKhususCtrl.text) ?? 0,
       rumahSehat: int.tryParse(_rumahSehatCtrl.text) ?? 0,
-      rumahTidakSehat: int.tryParse(_rumahTidakSehatCtrl.text) ?? 0,
-      tempatSampah: int.tryParse(_tempatSampahCtrl.text) ?? 0,
-      spal: int.tryParse(_spalCtrl.text) ?? 0,
-      jambanMck: int.tryParse(_jambanMckCtrl.text) ?? 0,
+      rumahTidakSehat: rumahTidakSehat,
+      rumahKurangSehat: rumahTidakSehat,
+      tempatSampah: tempatSampah,
+      memilikiTempatSampah: tempatSampah,
+      spal: spal,
+      memilikiSpal: spal,
+      memilikiStikerP4k: int.tryParse(_stikerP4kCtrl.text) ?? 0,
+      jambanMck: jamban,
+      jumlahJambanKeluarga: jamban,
       airPdam: int.tryParse(_airPdamCtrl.text) ?? 0,
       airSumur: int.tryParse(_airSumurCtrl.text) ?? 0,
       airSungai: int.tryParse(_airSungaiCtrl.text) ?? 0,
       airDll: int.tryParse(_airDllCtrl.text) ?? 0,
-      makananBeras: int.tryParse(_makananBerasCtrl.text) ?? 0,
-      makananNonBeras: int.tryParse(_makananNonBerasCtrl.text) ?? 0,
+      makananBeras: beras,
+      makananPokokBeras: beras,
+      makananNonBeras: nonBeras,
+      makananPokokNonBeras: nonBeras,
       kegiatanUp2k: int.tryParse(_kegiatanUp2kCtrl.text) ?? 0,
-      kegiatanPekarangan: int.tryParse(_kegiatanPekaranganCtrl.text) ?? 0,
-      kegiatanIndustriRt: int.tryParse(_kegiatanIndustriRtCtrl.text) ?? 0,
-      kegiatanKesling: int.tryParse(_kegiatanKeslingCtrl.text) ?? 0,
+      kegiatanPekarangan: pekarangan,
+      kegiatanTanahPekarangan: pekarangan,
+      kegiatanIndustriRt: industri,
+      kegiatanIndustriRumahTangga: industri,
+      kegiatanKesling: kesling,
+      kegiatanKesehatanLingkungan: kesling,
       keterangan: _keteranganCtrl.text.trim(),
     );
 
@@ -818,7 +848,7 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
                     Expanded(
                       child: _numberField(
                         controller: _rumahSehatCtrl,
-                        label: 'Sehat / Layak Huni',
+                        label: 'Sehat',
                         icon: Icons.check_circle_outline_rounded,
                       ),
                     ),
@@ -826,7 +856,7 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
                     Expanded(
                       child: _numberField(
                         controller: _rumahTidakSehatCtrl,
-                        label: 'Tdk Sehat / Layak',
+                        label: 'Kurang Sehat',
                         icon: Icons.cancel_outlined,
                       ),
                     ),
@@ -838,7 +868,7 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
                     Expanded(
                       child: _numberField(
                         controller: _tempatSampahCtrl,
-                        label: 'Tempat Sampah',
+                        label: 'Sampah',
                         icon: Icons.delete_outline_rounded,
                       ),
                     ),
@@ -846,17 +876,31 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
                     Expanded(
                       child: _numberField(
                         controller: _spalCtrl,
-                        label: 'SPAL / Penyerapan',
+                        label: 'SPAL',
                         icon: Icons.waves_rounded,
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 12),
-                _numberField(
-                  controller: _jambanMckCtrl,
-                  label: 'Sarana MCK & Septic Tank',
-                  icon: Icons.sanitizer_rounded,
+                Row(
+                  children: [
+                    Expanded(
+                      child: _numberField(
+                        controller: _stikerP4kCtrl,
+                        label: 'Stiker P4K',
+                        icon: Icons.sticky_note_2_outlined,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _numberField(
+                        controller: _jambanMckCtrl,
+                        label: 'Jamban Keluarga',
+                        icon: Icons.sanitizer_rounded,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

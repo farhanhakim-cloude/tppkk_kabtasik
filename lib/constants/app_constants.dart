@@ -56,6 +56,15 @@ class AppConstants {
   static const String rekapKegiatanWargaRekap = "rekap-kegiatan-warga/rekap";
   static const String rekapBumilRekap = "rekap-bumil/rekap";
 
+  // ✅ TAMBAH — Dasawisma detail (butuh auth, pola sama dengan daftar-warga)
+  static const String dasawismaKegiatanWarga = "dasawisma/kegiatan-warga";
+  static const String dasawismaBumil = "dasawisma/bumil";
+  static const String dasawismaCatatanKeluarga = "dasawisma/catatan-keluarga";
+  static const String dasawismaPemanfaatanPekarangan =
+      "dasawisma/pemanfaatan-pekarangan";
+  static const String dasawismaIndustriRumahTangga =
+      "dasawisma/industri-rumah-tangga";
+
   // Konten
   static const String berita = "berita";
   static const String beritaLatest = "berita/latest";

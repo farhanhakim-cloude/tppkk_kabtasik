@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../models/industri_rumah_tangga.dart';
-import '../../services/industri_rumah_tangga_service.dart';
-import 'industri_rumah_tangga_form_screen.dart';
+import '../../models/bumil_ibu.dart';
+import '../../services/bumil_service.dart';
+import 'bumil_ibu_form_screen.dart';
 
-class IndustriRumahTanggaListScreen extends StatefulWidget {
+class BumilIbuListScreen extends StatefulWidget {
   final bool embedded;
-  const IndustriRumahTanggaListScreen({super.key, this.embedded = false});
+  const BumilIbuListScreen({super.key, this.embedded = false});
   @override
-  State<IndustriRumahTanggaListScreen> createState() =>
-      _IndustriRumahTanggaListScreenState();
+  State<BumilIbuListScreen> createState() => _BumilIbuListScreenState();
 }
 
-class _IndustriRumahTanggaListScreenState
-    extends State<IndustriRumahTanggaListScreen>
+class _BumilIbuListScreenState extends State<BumilIbuListScreen>
     with SingleTickerProviderStateMixin {
-  final _service = IndustriRumahTanggaService();
+  final _service = BumilService();
   final _searchController = TextEditingController();
-  List<IndustriRumahTangga> _data = [];
-  Map<String, int> _stats = {'total': 0, 'totalTenagaKerja': 0};
+  List<BumilIbu> _data = [];
+  BumilSummary _summary = BumilSummary();
   bool _loading = true;
   String? _error;
   String _query = '';
+  int _bulan = DateTime.now().month;
+  int _tahun = DateTime.now().year;
   static const Color _primary = Color(0xFF0D9488);
   static const Color _primaryLight = Color(0xFFF0F9FF);
   late AnimationController _animController;
@@ -49,13 +49,13 @@ class _IndustriRumahTanggaListScreenState
     });
     try {
       final results = await Future.wait([
-        _service.getAll(query: _query),
-        _service.getStatistik(),
+        _service.getAll(query: _query, tahun: _tahun, bulan: _bulan),
+        _service.getSummary(tahun: _tahun, bulan: _bulan),
       ]);
       if (!mounted) return;
       setState(() {
-        _data = results[0] as List<IndustriRumahTangga>;
-        _stats = results[1] as Map<String, int>;
+        _data = results[0] as List<BumilIbu>;
+        _summary = results[1] as BumilSummary;
         _loading = false;
       });
       _animController
@@ -70,7 +70,7 @@ class _IndustriRumahTanggaListScreenState
     }
   }
 
-  Future<void> _delete(IndustriRumahTangga d) async {
+  Future<void> _delete(BumilIbu d) async {
     if (d.isApproved) {
       _snack('Data yang sudah disetujui tidak dapat dihapus.', error: true);
       return;
@@ -83,7 +83,7 @@ class _IndustriRumahTanggaListScreenState
               title: Text('Hapus Data?',
                   style: GoogleFonts.poppins(fontWeight: FontWeight.w800)),
               content: Text(
-                  'Usaha "${d.jenisIndustri}" (${d.pemilik}) akan dihapus.',
+                  'Data "${d.nama}" (${d.bulanLabel}) akan dihapus.',
                   style: GoogleFonts.poppins(fontSize: 13.5)),
               actions: [
                 TextButton(
@@ -114,15 +114,14 @@ class _IndustriRumahTanggaListScreenState
     }
   }
 
-  Future<void> _openForm({IndustriRumahTangga? data}) async {
+  Future<void> _openForm({BumilIbu? data}) async {
     if (data != null && data.isApproved) {
       _snack('Data yang sudah disetujui tidak dapat diubah.', error: true);
       return;
     }
     final r = await Navigator.push<bool>(
         context,
-        MaterialPageRoute(
-            builder: (_) => IndustriRumahTanggaFormScreen(data: data)));
+        MaterialPageRoute(builder: (_) => BumilIbuFormScreen(data: data)));
     if (r == true) _loadData();
   }
 
@@ -136,7 +135,7 @@ class _IndustriRumahTanggaListScreenState
     ));
   }
 
-  Widget _statusBadge(IndustriRumahTangga d) {
+  Widget _statusBadge(BumilIbu d) {
     late Color bg, fg;
     late IconData icon;
     if (d.isApproved) {
@@ -166,16 +165,24 @@ class _IndustriRumahTanggaListScreenState
     );
   }
 
-  String _rp(double v) {
-    final s = v.toStringAsFixed(0);
-    final buf = StringBuffer();
-    var c = 0;
-    for (var i = s.length - 1; i >= 0; i--) {
-      buf.write(s[i]);
-      c++;
-      if (c % 3 == 0 && i != 0) buf.write('.');
-    }
-    return 'Rp ${buf.toString().split('').reversed.join()}';
+  Widget _statusIbuChip(BumilIbu d) {
+    const map = {
+      'hamil': [Color(0xFFFCE7F3), Color(0xFFBE185D), 'Hamil'],
+      'melahirkan': [Color(0xFFDBEAFE), Color(0xFF1D4ED8), 'Melahirkan'],
+      'nifas': [Color(0xFFE0E7FF), Color(0xFF4338CA), 'Nifas'],
+      'meninggal': [Color(0xFFF3F4F6), Color(0xFF4B5563), 'Meninggal'],
+    };
+    final c = map[d.statusIbu] ?? map['hamil']!;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+          color: c[0] as Color, borderRadius: BorderRadius.circular(20)),
+      child: Text(c[2] as String,
+          style: GoogleFonts.poppins(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: c[1] as Color)),
+    );
   }
 
   @override
@@ -188,21 +195,31 @@ class _IndustriRumahTanggaListScreenState
               backgroundColor: Colors.white,
               elevation: 0,
               scrolledUnderElevation: 0,
-              iconTheme: const IconThemeData(color: Color(0xFF0F172A)),
+              iconTheme:
+                  const IconThemeData(color: Color(0xFF0F172A)),
               title: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Industri Rumah Tangga',
-                        style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                            color: const Color(0xFF0F172A))),
-                    Text('Usaha & tenaga kerja RT',
-                        style: GoogleFonts.poppins(
-                            fontSize: 11, color: const Color(0xFF64748B)))
-                  ])),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Bumil per Ibu',
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: const Color(0xFF0F172A),
+                    ),
+                  ),
+                  Text(
+                    'Hamil, melahirkan, nifas per bulan',
+                    style: GoogleFonts.poppins(
+                      fontSize: 11,
+                      color: const Color(0xFF64748B),
+                    ),
+                  ),
+                ],
+              ),
+            ),
       floatingActionButton: FloatingActionButton.extended(
-          heroTag: 'fab-industri-rt-list',
+          heroTag: 'fab-bumil-ibu-list',
           onPressed: () async {
             HapticFeedback.mediumImpact();
             _openForm();
@@ -214,59 +231,25 @@ class _IndustriRumahTanggaListScreenState
           label: Text('Tambah Data',
               style: GoogleFonts.poppins(fontWeight: FontWeight.w700))),
       body: Column(children: [
-        _buildStats(),
-        Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
-            child: Container(
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.04),
-                          blurRadius: 6,
-                          offset: const Offset(0, 2))
-                    ]),
-                child: TextField(
-                    controller: _searchController,
-                    onChanged: (v) {
-                      _query = v;
-                      _loadData();
-                    },
-                    style: GoogleFonts.poppins(fontSize: 14),
-                    decoration: InputDecoration(
-                        hintText: 'Cari jenis usaha, pemilik, dusun...',
-                        hintStyle: GoogleFonts.poppins(
-                            fontSize: 13, color: Colors.grey[400]),
-                        prefixIcon: const Icon(Icons.search_rounded,
-                            color: Color(0xFF64748B), size: 20),
-                        suffixIcon: _query.isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(Icons.close_rounded,
-                                    size: 18, color: Color(0xFF64748B)),
-                                onPressed: () {
-                                  _searchController.clear();
-                                  _query = '';
-                                  _loadData();
-                                })
-                            : null,
-                        border: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 14))))),
+        _buildSummary(),
+        _buildFilter(),
         const SizedBox(height: 10),
         Expanded(child: _buildBody()),
       ]));
   }
 
-  Widget _buildStats() {
-    final total = _stats['total'] ?? 0;
-    final tk = _stats['totalTenagaKerja'] ?? 0;
+  Widget _buildSummary() {
+    Widget item(String label, int v, Color c) => Expanded(
+            child: Column(children: [
+          Text('$v',
+              style: GoogleFonts.poppins(
+                  fontSize: 18, fontWeight: FontWeight.w900, color: c)),
+          Text(label,
+              style: GoogleFonts.poppins(fontSize: 10, color: Colors.white70)),
+        ]));
     return Container(
         margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
             color: const Color(0xFF0D9488),
             borderRadius: BorderRadius.circular(16),
@@ -276,37 +259,135 @@ class _IndustriRumahTanggaListScreenState
                   blurRadius: 12,
                   offset: const Offset(0, 4))
             ]),
-        child: Row(children: [
+        child: Column(children: [
+          Row(children: [
+            Expanded(
+                child: Text('${BumilIbu.namaBulan[_bulan]} $_tahun',
+                    style: GoogleFonts.poppins(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white))),
+          ]),
+          const SizedBox(height: 10),
+          Row(children: [
+            item('Hamil', _summary.hamil, Colors.white),
+            item('Lahir', _summary.melahirkan, Colors.white),
+            item('Nifas', _summary.nifas, Colors.white),
+            item('Bayi Lhr', _summary.bayiLahir, Colors.white),
+          ]),
+          const SizedBox(height: 8),
+          Row(children: [
+            item('Ibu Mgl', _summary.meninggal, Colors.white70),
+            item('Bayi Mgl', _summary.bayiMeninggal, Colors.white70),
+            item('Balita Mgl', _summary.balitaMeninggal, Colors.white70),
+            item('Total', _data.length, Colors.white70),
+          ]),
+        ]));
+  }
+
+  Widget _buildFilter() {
+    return Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+        child: Column(children: [
+          Row(children: [
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFE2E8F0))),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                child: DropdownButtonFormField<int>(
+                  initialValue: _bulan,
+                  decoration: const InputDecoration(
+                      labelText: 'Bulan',
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.zero),
+                  items: BumilIbu.namaBulan.entries
+                      .map((e) => DropdownMenuItem(
+                          value: e.key,
+                          child: Text(e.value,
+                              style: GoogleFonts.poppins(fontSize: 13))))
+                      .toList(),
+                  onChanged: (v) {
+                    if (v == null) return;
+                    setState(() => _bulan = v);
+                    _loadData();
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFE2E8F0))),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                child: DropdownButtonFormField<int>(
+                  initialValue: _tahun,
+                  decoration: const InputDecoration(
+                      labelText: 'Tahun',
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.zero),
+                  items: [2024, 2025, 2026, 2027]
+                      .map((y) => DropdownMenuItem(
+                          value: y,
+                          child: Text('$y',
+                              style: GoogleFonts.poppins(fontSize: 13))))
+                      .toList(),
+                  onChanged: (v) {
+                    if (v == null) return;
+                    setState(() => _tahun = v);
+                    _loadData();
+                  },
+                ),
+              ),
+            ),
+          ]),
+          const SizedBox(height: 10),
           Container(
-              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.18),
-                  borderRadius: BorderRadius.circular(12)),
-              child: const Icon(Icons.storefront_rounded,
-                  color: Colors.white, size: 24)),
-          const SizedBox(width: 14),
-          Expanded(
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                Text('Total Usaha',
-                    style: GoogleFonts.poppins(
-                        fontSize: 12, color: Colors.white70)),
-                Text('$total Usaha',
-                    style: GoogleFonts.poppins(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white))
-              ])),
-          Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-            Text('$tk',
-                style: GoogleFonts.poppins(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white)),
-            Text('Tenaga Kerja',
-                style: GoogleFonts.poppins(fontSize: 11, color: Colors.white70))
-          ])
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.04),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2))
+                  ]),
+              child: TextField(
+                  controller: _searchController,
+                  onChanged: (v) {
+                    _query = v;
+                    _loadData();
+                  },
+                  style: GoogleFonts.poppins(fontSize: 14),
+                  decoration: InputDecoration(
+                      hintText: 'Cari nama ibu / bayi...',
+                      hintStyle: GoogleFonts.poppins(
+                          fontSize: 13, color: Colors.grey[400]),
+                      prefixIcon: const Icon(Icons.search_rounded,
+                          color: Color(0xFF64748B), size: 20),
+                      suffixIcon: _query.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.close_rounded,
+                                  size: 18, color: Color(0xFF64748B)),
+                              onPressed: () {
+                                _searchController.clear();
+                                _query = '';
+                                _loadData();
+                              })
+                          : null,
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 14)))),
         ]));
   }
 
@@ -360,10 +441,13 @@ class _IndustriRumahTanggaListScreenState
             padding: const EdgeInsets.all(24),
             decoration: const BoxDecoration(
                 color: _primaryLight, shape: BoxShape.circle),
-            child: const Icon(Icons.storefront_outlined,
+            child: const Icon(Icons.pregnant_woman_rounded,
                 size: 48, color: _primary)),
         const SizedBox(height: 16),
-        Text(_query.isNotEmpty ? 'Tidak ditemukan' : 'Belum ada data usaha',
+        Text(
+            _query.isNotEmpty
+                ? 'Tidak ditemukan'
+                : 'Belum ada data bulan ini',
             style: GoogleFonts.poppins(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
@@ -372,7 +456,7 @@ class _IndustriRumahTanggaListScreenState
         Text(
             _query.isNotEmpty
                 ? 'Coba kata kunci berbeda'
-                : 'Tekan "Tambah Data" untuk mencatat\nusaha rumah tangga pertama',
+                : 'Tekan "Tambah Data" untuk mencatat\nibu bulan ini',
             textAlign: TextAlign.center,
             style: GoogleFonts.poppins(
                 fontSize: 13, color: const Color(0xFF94A3B8)))
@@ -387,11 +471,7 @@ class _IndustriRumahTanggaListScreenState
             itemBuilder: (ctx, i) => _buildCard(_data[i], i)));
   }
 
-  Widget _buildCard(IndustriRumahTangga d, int index) {
-    final subtitle = [
-      if (d.pemilik.isNotEmpty) d.pemilik,
-      if (d.desa.isNotEmpty) d.desa,
-    ].join(' · ');
+  Widget _buildCard(BumilIbu d, int index) {
     return AnimatedBuilder(
         animation: _animController,
         builder: (ctx, child) {
@@ -436,19 +516,20 @@ class _IndustriRumahTanggaListScreenState
                         decoration: BoxDecoration(
                             color: _primary.withValues(alpha: 0.15),
                             shape: BoxShape.circle),
-                        child: const Icon(Icons.storefront_rounded,
+                        child: const Icon(Icons.pregnant_woman_rounded,
                             size: 18, color: _primary)),
                     const SizedBox(width: 10),
                     Expanded(
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                          Text(d.jenisIndustri,
+                          Text(d.nama,
                               style: GoogleFonts.poppins(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w800,
                                   color: const Color(0xFF0F172A))),
-                          Text(subtitle,
+                          Text(
+                              '${d.bulanLabel} ${d.tahun}${d.desa.isNotEmpty ? ' · ${d.desa}' : ''}',
                               style: GoogleFonts.poppins(
                                   fontSize: 11.5,
                                   color: const Color(0xFF64748B))),
@@ -505,14 +586,27 @@ class _IndustriRumahTanggaListScreenState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(children: [
-                          Expanded(
-                              child: Text(
-                                  '${d.jumlahTenagaKerja} Tenaga Kerja · ${_rp(d.omzet)}',
-                                  style: GoogleFonts.poppins(
-                                      fontSize: 12.5,
-                                      fontWeight: FontWeight.w600,
-                                      color: const Color(0xFF0F172A)))),
+                          _statusIbuChip(d),
+                          if (d.statusIbu == 'melahirkan' &&
+                              d.bayiNama.isNotEmpty) ...[
+                            const SizedBox(width: 8),
+                            Expanded(
+                                child: Text(
+                                    'Bayi: ${d.bayiNama}${d.bayiJenisKelamin.isNotEmpty ? ' (${d.bayiJenisKelamin})' : ''}${d.bayiAkta == true ? ' · Akta ada' : ''}',
+                                    style: GoogleFonts.poppins(
+                                        fontSize: 12.5,
+                                        color: const Color(0xFF475569)),
+                                    overflow: TextOverflow.ellipsis)),
+                          ],
                         ]),
+                        if (d.kematianKategori.isNotEmpty) ...[
+                          const SizedBox(height: 6),
+                          Text(
+                              'Meninggal (${d.kematianKategori}): ${d.kematianNama}',
+                              style: GoogleFonts.poppins(
+                                  fontSize: 12.5,
+                                  color: const Color(0xFFB91C1C))),
+                        ],
                         if (d.isRejected &&
                             (d.rejectedReason ?? '').isNotEmpty) ...[
                           const SizedBox(height: 8),
@@ -524,36 +618,17 @@ class _IndustriRumahTanggaListScreenState
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
                                       color: const Color(0xFFFECACA))),
-                              child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Icon(Icons.info_outline_rounded,
-                                        size: 16, color: Color(0xFFB91C1C)),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                        child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                          Text('Perlu diperbaiki:',
-                                              style: GoogleFonts.poppins(
-                                                  fontSize: 11.5,
-                                                  fontWeight: FontWeight.w700,
-                                                  color:
-                                                      const Color(0xFFB91C1C))),
-                                          Text(d.rejectedReason!,
-                                              style: GoogleFonts.poppins(
-                                                  fontSize: 12,
-                                                  color:
-                                                      const Color(0xFF7F1D1D))),
-                                        ])),
-                                  ])),
+                              child: Text(
+                                  'Perlu diperbaiki: ${d.rejectedReason!}',
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 12,
+                                      color: const Color(0xFF7F1D1D)))),
                         ],
                       ])),
             ])));
   }
 
-  void _showDetail(IndustriRumahTangga d) {
+  void _showDetail(BumilIbu d) {
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -563,7 +638,7 @@ class _IndustriRumahTanggaListScreenState
 }
 
 class _DetailSheet extends StatelessWidget {
-  final IndustriRumahTangga data;
+  final BumilIbu data;
   const _DetailSheet({required this.data});
 
   @override
@@ -583,18 +658,6 @@ class _DetailSheet extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                       color: const Color(0xFF0F172A)))),
         ]));
-
-    String rp(double v) {
-      final s = v.toStringAsFixed(0);
-      final buf = StringBuffer();
-      var c = 0;
-      for (var i = s.length - 1; i >= 0; i--) {
-        buf.write(s[i]);
-        c++;
-        if (c % 3 == 0 && i != 0) buf.write('.');
-      }
-      return 'Rp ${buf.toString().split('').reversed.join()}';
-    }
 
     return DraggableScrollableSheet(
         initialChildSize: 0.7,
@@ -619,12 +682,13 @@ class _DetailSheet extends StatelessWidget {
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                          Text(data.jenisIndustri,
+                          Text(data.nama,
                               style: GoogleFonts.poppins(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w800,
                                   color: const Color(0xFF0F172A))),
-                          Text(data.pemilik,
+                          Text(
+                              '${data.statusIbuLabel} · ${data.bulanLabel} ${data.tahun}',
                               style: GoogleFonts.poppins(
                                   fontSize: 12,
                                   color: const Color(0xFF64748B))),
@@ -647,16 +711,27 @@ class _DetailSheet extends StatelessWidget {
                       controller: sc,
                       padding: const EdgeInsets.all(20),
                       children: [
-                    row('Jenis Industri', data.jenisIndustri),
-                    row('Pemilik', data.pemilik),
-                    row('Tenaga Kerja', '${data.jumlahTenagaKerja}'),
-                    row('Omzet', rp(data.omzet)),
+                    row('Nama Ibu', data.nama),
+                    row('Nama Suami', data.suamiNama),
+                    row('Umur', data.umur > 0 ? '${data.umur} th' : '-'),
+                    row('Status', data.statusIbuLabel),
+                    row('Bulan', '${data.bulanLabel} ${data.tahun}'),
+                    if (data.bayiNama.isNotEmpty)
+                      row('Bayi',
+                          '${data.bayiNama} (${data.bayiJenisKelamin})'),
+                    if (data.bayiTanggalLahir != null)
+                      row('Tgl Lahir Bayi',
+                          '${data.bayiTanggalLahir!.day}/${data.bayiTanggalLahir!.month}/${data.bayiTanggalLahir!.year}'),
+                    if (data.bayiAkta != null)
+                      row('Akta', data.bayiAkta! ? 'Ada' : 'Tidak ada'),
+                    if (data.kematianKategori.isNotEmpty)
+                      row('Meninggal',
+                          '${data.kematianKategori}: ${data.kematianNama}'),
                     row('Dasa Wisma', data.dasaWisma),
                     row('RT / RW', '${data.rt} / ${data.rw}'),
                     row('Dusun', data.dusun),
                     row('Desa', data.desa),
-                    row('Kecamatan', data.kecamatan),
-                    row('Status', data.statusLabel),
+                    row('Approval', data.statusLabel),
                     if ((data.rejectedReason ?? '').isNotEmpty)
                       row('Alasan Penolakan', data.rejectedReason!),
                   ]))

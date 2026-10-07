@@ -1,5 +1,6 @@
-// lib/services/pemanfaatan_tanah_service.dart
-// HTTP client ke API Laravel: {baseUrl}dasawisma/pemanfaatan-pekarangan (auth sanctum).
+// lib/services/bumil_service.dart
+// HTTP client ke API Laravel: {baseUrl}dasawisma/bumil (auth sanctum).
+// 1 baris = 1 ibu + 1 status per bulan.
 
 import 'dart:async';
 import 'dart:convert';
@@ -9,14 +10,33 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants/app_constants.dart';
-import '../models/pemanfaatan_tanah.dart';
+import '../models/bumil_ibu.dart';
 import 'api_exception.dart';
 
-class PemanfaatanTanahService {
-  static final PemanfaatanTanahService _instance =
-      PemanfaatanTanahService._internal();
-  factory PemanfaatanTanahService() => _instance;
-  PemanfaatanTanahService._internal();
+class BumilSummary {
+  final int hamil;
+  final int melahirkan;
+  final int nifas;
+  final int meninggal;
+  final int bayiLahir;
+  final int bayiMeninggal;
+  final int balitaMeninggal;
+
+  BumilSummary({
+    this.hamil = 0,
+    this.melahirkan = 0,
+    this.nifas = 0,
+    this.meninggal = 0,
+    this.bayiLahir = 0,
+    this.bayiMeninggal = 0,
+    this.balitaMeninggal = 0,
+  });
+}
+
+class BumilService {
+  static final BumilService _instance = BumilService._internal();
+  factory BumilService() => _instance;
+  BumilService._internal();
 
   final http.Client _client = http.Client();
 
@@ -24,7 +44,7 @@ class PemanfaatanTanahService {
   static const Duration _writeTimeout = Duration(seconds: 15);
 
   String get _endpoint =>
-      '${AppConstants.baseUrl}${AppConstants.dasawismaPemanfaatanPekarangan}';
+      '${AppConstants.baseUrl}${AppConstants.dasawismaBumil}';
 
   Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -62,6 +82,11 @@ class PemanfaatanTanahService {
             : 'Tidak memiliki akses. Data yang sudah disetujui tidak dapat diubah.');
       case 404:
         throw ApiException('Data tidak ditemukan di server.');
+      case 409:
+        final msg = serverMessage();
+        throw ApiException(msg.isNotEmpty
+            ? msg
+            : 'Data sudah ada (duplikat).');
       case 422:
         throw _validationException(body);
       default:
@@ -176,11 +201,13 @@ class PemanfaatanTanahService {
     return false;
   }
 
-  Future<List<PemanfaatanTanah>> getAll({
+  Future<List<BumilIbu>> getAll({
     String query = '',
-    String? desa,
+    int? tahun,
+    int? bulan,
+    String? statusIbu,
   }) async {
-    final items = <PemanfaatanTanah>[];
+    final items = <BumilIbu>[];
     var page = 1;
 
     while (page <= 20) {
@@ -189,14 +216,18 @@ class PemanfaatanTanahService {
         'page': '$page',
       };
       if (query.trim().isNotEmpty) params['search'] = query.trim();
-      if (desa != null && desa.isNotEmpty) params['desa'] = desa;
+      if (tahun != null) params['tahun'] = '$tahun';
+      if (bulan != null) params['bulan'] = '$bulan';
+      if (statusIbu != null && statusIbu.isNotEmpty) {
+        params['status_ibu'] = statusIbu;
+      }
 
       final uri = Uri.parse(_endpoint).replace(queryParameters: params);
       final res = await _get(uri);
 
       if (res.statusCode != 200) {
         _throwForStatus(res.statusCode, res.body,
-            fallback: 'Gagal memuat pemanfaatan pekarangan.');
+            fallback: 'Gagal memuat data bumil.');
       }
 
       dynamic decoded;
@@ -209,7 +240,7 @@ class PemanfaatanTanahService {
       for (final e in _extractList(decoded)) {
         if (e is Map<String, dynamic>) {
           try {
-            items.add(PemanfaatanTanah.fromJson(e));
+            items.add(BumilIbu.fromJson(e));
           } catch (_) {}
         }
       }
@@ -221,7 +252,7 @@ class PemanfaatanTanahService {
     return items;
   }
 
-  Future<PemanfaatanTanah?> getById(String id) async {
+  Future<BumilIbu?> getById(String id) async {
     final res = await _get(Uri.parse('$_endpoint/$id'));
     if (res.statusCode == 200) {
       try {
@@ -230,7 +261,7 @@ class PemanfaatanTanahService {
             ? (decoded['data'] ?? decoded)
             : decoded;
         if (data is Map<String, dynamic>) {
-          return PemanfaatanTanah.fromJson(data);
+          return BumilIbu.fromJson(data);
         }
         throw ApiException('Respons server tidak valid.');
       } catch (e) {
@@ -240,25 +271,40 @@ class PemanfaatanTanahService {
     }
     if (res.statusCode == 404) return null;
     _throwForStatus(res.statusCode, res.body,
-        fallback: 'Gagal memuat detail pekarangan.');
+        fallback: 'Gagal memuat detail ibu.');
   }
 
-  Future<void> save(PemanfaatanTanah data) async {
+  /// Simpan — mengembalikan daftar peringatan non-blokir dari server
+  /// (mis. aturan nifas). Kosong bila tidak ada.
+  Future<List<String>> save(BumilIbu data) async {
     final isCreate = data.id.isEmpty || data.id == '0';
     final uri =
         isCreate ? Uri.parse(_endpoint) : Uri.parse('$_endpoint/${data.id}');
     final res =
         await _send(isCreate ? 'POST' : 'PUT', uri, body: data.toJson());
 
-    if (res.statusCode == 200 || res.statusCode == 201) return;
+    if (res.statusCode == 200 || res.statusCode == 201) {
+      return _warningsOf(res.body);
+    }
     _throwForStatus(res.statusCode, res.body,
         fallback: isCreate
-            ? 'Gagal menyimpan pemanfaatan pekarangan.'
-            : 'Gagal memperbarui pemanfaatan pekarangan.');
+            ? 'Gagal menyimpan data ibu.'
+            : 'Gagal memperbarui data ibu.');
   }
 
-  Future<void> add(PemanfaatanTanah data) => save(data);
-  Future<void> update(PemanfaatanTanah data) => save(data);
+  List<String> _warningsOf(String body) {
+    try {
+      final decoded = jsonDecode(body);
+      if (decoded is Map<String, dynamic>) {
+        final w = decoded['warnings'];
+        if (w is List) return w.map((e) => e.toString()).toList();
+      }
+    } catch (_) {}
+    return [];
+  }
+
+  Future<List<String>> add(BumilIbu data) => save(data);
+  Future<List<String>> update(BumilIbu data) => save(data);
 
   Future<void> delete(String id) async {
     final res = await _send('DELETE', Uri.parse('$_endpoint/$id'));
@@ -267,52 +313,49 @@ class PemanfaatanTanahService {
       throw ApiException('Data tidak ditemukan di server.');
     }
     _throwForStatus(res.statusCode, res.body,
-        fallback: 'Gagal menghapus pemanfaatan pekarangan.');
+        fallback: 'Gagal menghapus data ibu.');
   }
 
-  Future<List<PemanfaatanTanah>> getByWilayah({
-    String? rt,
-    String? rw,
-    String? dusun,
-    String? desa,
-    String? kecamatan,
-  }) async {
-    final all = await getAll();
-    return all.where((e) {
-      if (rt != null && rt.isNotEmpty && e.rt != rt) return false;
-      if (rw != null && rw.isNotEmpty && e.rw != rw) return false;
-      if (dusun != null &&
-          dusun.isNotEmpty &&
-          e.dusun.toLowerCase() != dusun.toLowerCase()) {
-        return false;
+  /// 7 penghitung rekap bulan berjalan (client-side, dari data sendiri).
+  /// Ibu dihitung unik per status; kematian ibu dari kolom kematian.
+  Future<BumilSummary> getSummary({int? tahun, int? bulan}) async {
+    final now = DateTime.now();
+    final list =
+        await getAll(tahun: tahun ?? now.year, bulan: bulan ?? now.month);
+    var hamil = 0,
+        melahirkan = 0,
+        nifas = 0,
+        meninggal = 0,
+        bayiLahir = 0,
+        bayiMeninggal = 0,
+        balitaMeninggal = 0;
+    for (final b in list) {
+      switch (b.statusIbu) {
+        case 'hamil':
+          hamil++;
+          break;
+        case 'melahirkan':
+          melahirkan++;
+          if (b.bayiJenisKelamin == 'L' || b.bayiJenisKelamin == 'P') {
+            bayiLahir++;
+          }
+          break;
+        case 'nifas':
+          nifas++;
+          break;
       }
-      if (desa != null &&
-          desa.isNotEmpty &&
-          e.desa.toLowerCase() != desa.toLowerCase()) {
-        return false;
-      }
-      if (kecamatan != null &&
-          kecamatan.isNotEmpty &&
-          e.kecamatan.toLowerCase() != kecamatan.toLowerCase()) {
-        return false;
-      }
-      return true;
-    }).toList();
-  }
-
-  Future<Map<String, int>> getStatistik() async {
-    final all = await getAll();
-    final map = <String, int>{
-      'total': all.length,
-      'pending': 0,
-      'approved': 0,
-      'rejected': 0,
-      'totalKk': 0,
-    };
-    for (final d in all) {
-      map[d.status] = (map[d.status] ?? 0) + 1;
-      map['totalKk'] = (map['totalKk'] ?? 0) + d.jumlahKk;
+      if (b.kematianKategori == 'ibu') meninggal++;
+      if (b.kematianKategori == 'bayi') bayiMeninggal++;
+      if (b.kematianKategori == 'balita') balitaMeninggal++;
     }
-    return map;
+    return BumilSummary(
+      hamil: hamil,
+      melahirkan: melahirkan,
+      nifas: nifas,
+      meninggal: meninggal,
+      bayiLahir: bayiLahir,
+      bayiMeninggal: bayiMeninggal,
+      balitaMeninggal: balitaMeninggal,
+    );
   }
 }

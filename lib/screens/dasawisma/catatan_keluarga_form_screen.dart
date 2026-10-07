@@ -1,139 +1,667 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../models/data_keluarga_dasawisma.dart';
 import '../../models/dasawisma_catatan_keluarga.dart';
+import '../../services/daftar_warga_service.dart';
 import '../../services/dasawisma_catatan_keluarga_service.dart';
-import '../../widgets/kecamatan_dropdown_field.dart';
+import '../../services/api_exception.dart';
 
 class CatatanKeluargaFormScreen extends StatefulWidget {
   final DasawismaCatatanKeluarga? data;
   const CatatanKeluargaFormScreen({super.key, this.data});
   @override
-  State<CatatanKeluargaFormScreen> createState() => _CatatanKeluargaFormScreenState();
+  State<CatatanKeluargaFormScreen> createState() =>
+      _CatatanKeluargaFormScreenState();
 }
 
 class _CatatanKeluargaFormScreenState extends State<CatatanKeluargaFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final _service = DasawismaCatatanKeluargaService();
+  final _kkService = DaftarWargaService();
   static const Color _primary = Color(0xFF0D9488);
-  static const Color _primaryLight = Color(0xFFF0FDFA);
+  static const Color _primaryLight = Color(0xFFF0F9FF);
 
-  late final TextEditingController _dasaWismaCtrl, _rtCtrl, _rwCtrl, _dusunCtrl, _desaCtrl, _kecCtrl, _catatanDariCtrl, _ketUmumCtrl;
-  String _tahun='2026', _kriteria='Sehat', _sumberAir='Sumur', _tempatSampah='Ada';
-  final _tahunList=['2024','2025','2026','2027'];
-  final List<_AnggotaState> _anggota=[];
-  bool _saving=false;
-  bool get _isEdit => widget.data!=null;
+  late final TextEditingController _namaCtrl,
+      _nikCtrl,
+      _umurCtrl,
+      _pendidikanCtrl,
+      _pekerjaanCtrl,
+      _statusKawinCtrl;
+  String _jenisKelamin = 'P';
+  String _hubungan = 'anak';
+  DateTime? _tanggalLahir;
+  int? _daftarWargaId;
+  List<DataKeluargaDasawisma> _kkList = [];
+  bool _kkLoading = true;
+  String? _kkError;
+  bool _saving = false;
+  Map<String, List<String>> _fieldErrors = {};
+
+  bool get _isEdit => widget.data != null;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
-    final d=widget.data;
-    _dasaWismaCtrl=TextEditingController(text:d?.dasaWisma??'');
-    _rtCtrl=TextEditingController(text:d?.rt??'');
-    _rwCtrl=TextEditingController(text:d?.rw??'');
-    _dusunCtrl=TextEditingController(text:d?.dusun??'');
-    _desaCtrl=TextEditingController(text:d?.desa??'');
-    _kecCtrl=TextEditingController(text:d?.kecamatan??'');
-    _catatanDariCtrl=TextEditingController(text:d?.catatanDari??'');
-    _ketUmumCtrl=TextEditingController(text:d?.keteranganUmum??'');
-    _tahun=d?.tahun??'2026';
-    _kriteria=d?.kriteriaRumah??'Sehat';
-    _sumberAir=d?.sumberAir??'Sumur';
-    _tempatSampah=d?.tempatSampah??'Ada';
-    if(d!=null && d.items.isNotEmpty){ for(final it in d.items){ _anggota.add(_AnggotaState.fromModel(it)); } } else { _anggota.add(_AnggotaState()); }
+    final d = widget.data;
+    _namaCtrl = TextEditingController(text: d?.namaAnggota ?? '');
+    _nikCtrl = TextEditingController(text: d?.nik ?? '');
+    _umurCtrl =
+        TextEditingController(text: d == null || d.umur == 0 ? '' : '${d.umur}');
+    _pendidikanCtrl = TextEditingController(text: d?.pendidikan ?? '');
+    _pekerjaanCtrl = TextEditingController(text: d?.pekerjaan ?? '');
+    _statusKawinCtrl = TextEditingController(text: d?.statusPerkawinan ?? '');
+    if (d != null) {
+      if (d.jenisKelamin == 'L' || d.jenisKelamin == 'P') {
+        _jenisKelamin = d.jenisKelamin;
+      }
+      if (DasawismaCatatanKeluarga.hubunganLabels
+          .containsKey(d.hubunganKeluarga)) {
+        _hubungan = d.hubunganKeluarga;
+      }
+      if (d.daftarWargaId > 0) _daftarWargaId = d.daftarWargaId;
+    }
+    _tanggalLahir = d?.tanggalLahir;
+    _loadKk();
   }
-  @override
-  void dispose(){ _dasaWismaCtrl.dispose(); _rtCtrl.dispose(); _rwCtrl.dispose(); _dusunCtrl.dispose(); _desaCtrl.dispose(); _kecCtrl.dispose(); _catatanDariCtrl.dispose(); _ketUmumCtrl.dispose(); for(final a in _anggota) {
-    a.dispose();
-  } super.dispose(); }
 
-  void _tambah(){ HapticFeedback.selectionClick(); setState(()=>_anggota.add(_AnggotaState())); }
-  void _hapus(int i){ if(_anggota.length<=1) return; HapticFeedback.selectionClick(); setState((){_anggota[i].dispose(); _anggota.removeAt(i);}); }
+  @override
+  void dispose() {
+    _namaCtrl.dispose();
+    _nikCtrl.dispose();
+    _umurCtrl.dispose();
+    _pendidikanCtrl.dispose();
+    _pekerjaanCtrl.dispose();
+    _statusKawinCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadKk() async {
+    setState(() {
+      _kkLoading = true;
+      _kkError = null;
+    });
+    try {
+      final list = await _kkService.getAll();
+      if (!mounted) return;
+      setState(() {
+        _kkList = list;
+        _kkLoading = false;
+        // Pertahankan pilihan saat edit bila KK masih ada di daftar.
+        if (_daftarWargaId != null &&
+            !_kkList.any((e) => e.id == _daftarWargaId)) {
+          _daftarWargaId = null;
+        }
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _kkLoading = false;
+        _kkError =
+            'Gagal memuat daftar KK. Pastikan sudah input Daftar Warga dulu.';
+      });
+    }
+  }
+
+  String? _serverError(String field) {
+    final list = _fieldErrors[field];
+    if (list == null || list.isEmpty) return null;
+    return list.first;
+  }
+
+  int _hitungUmur(DateTime lahir) {
+    final now = DateTime.now();
+    var umur = now.year - lahir.year;
+    if (now.month < lahir.month ||
+        (now.month == lahir.month && now.day < lahir.day)) {
+      umur--;
+    }
+    return umur < 0 ? 0 : umur;
+  }
+
+  Future<void> _pickTanggalLahir() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _tanggalLahir ??
+          DateTime.now().subtract(const Duration(days: 365 * 20)),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null) {
+      setState(() {
+        _tanggalLahir = picked;
+        _umurCtrl.text = '${_hitungUmur(picked)}';
+        _fieldErrors.remove('tanggal_lahir');
+        _fieldErrors.remove('umur');
+      });
+    }
+  }
 
   Future<void> _save() async {
-    if(!_formKey.currentState!.validate()) return;
-    final valid=_anggota.where((a)=> a.namaCtrl.text.trim().isNotEmpty).toList();
-    if(valid.isEmpty){ ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Isi minimal 1 anggota keluarga', style:GoogleFonts.poppins()), backgroundColor:Colors.orange[700], behavior:SnackBarBehavior.floating)); return; }
-    setState(()=>_saving=true);
-    try{
-      final items=valid.map((a)=> DasawismaCatatanKeluargaItem(
-        namaAnggota: a.namaCtrl.text.trim(),
-        statusPerkawinan: a.statusKawin,
-        jenisKelamin: a.jk,
-        tempatLahir: a.tempatCtrl.text.trim(),
-        tanggalLahirUmur: a.ttlCtrl.text.trim(),
-        agama: a.agama,
-        pendidikan: a.pendidikan,
-        pekerjaan: a.pekerjaanCtrl.text.trim(),
-        berkebutuhanKhusus: a.khususCtrl.text.trim().isEmpty? 'Tidak': a.khususCtrl.text.trim(),
-        penghayatanPancasila: a.pancasila, gotongRoyong: a.gotong, pendidikanKeterampilan: a.didik, pengembanganKoperasi: a.koperasi, pangan: a.pangan, sandang: a.sandang, kesehatan: a.kesehatan, perencanaanSehat: a.perencanaan, keterangan: a.ketCtrl.text.trim(),
-      )).toList();
-      final payload=DasawismaCatatanKeluarga(id: widget.data?.id ?? '0', tahun:_tahun, dasaWisma:_dasaWismaCtrl.text.trim(), rt:_rtCtrl.text.trim(), rw:_rwCtrl.text.trim(), dusun:_dusunCtrl.text.trim(), desa:_desaCtrl.text.trim(), kecamatan:_kecCtrl.text.trim(), catatanDari:_catatanDariCtrl.text.trim(), kriteriaRumah:_kriteria, sumberAir:_sumberAir, tempatSampah:_tempatSampah, items:items, keteranganUmum:_ketUmumCtrl.text.trim());
-      if(_isEdit) {
+    if (_saving) return;
+    if (!_formKey.currentState!.validate()) return;
+    if (_daftarWargaId == null) {
+      setState(() {
+        _fieldErrors = {
+          'daftar_warga_id': ['Pilih kepala keluarga dulu']
+        };
+      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Pilih kepala keluarga dulu.',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+          backgroundColor: Colors.orange[800],
+          behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))));
+      return;
+    }
+    setState(() {
+      _saving = true;
+      _fieldErrors = {};
+    });
+    try {
+      final payload = DasawismaCatatanKeluarga(
+        id: widget.data?.id ?? '0',
+        daftarWargaId: _daftarWargaId!,
+        namaAnggota: _namaCtrl.text.trim(),
+        nik: _nikCtrl.text.trim(),
+        jenisKelamin: _jenisKelamin,
+        tanggalLahir: _tanggalLahir,
+        umur: int.tryParse(_umurCtrl.text.trim()) ?? 0,
+        hubunganKeluarga: _hubungan,
+        pendidikan: _pendidikanCtrl.text.trim(),
+        pekerjaan: _pekerjaanCtrl.text.trim(),
+        statusPerkawinan: _statusKawinCtrl.text.trim(),
+      );
+      if (_isEdit) {
         await _service.update(payload);
       } else {
         await _service.add(payload);
       }
-      if(!mounted) return; setState(()=>_saving=false); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(_isEdit?'Data diperbarui':'Data disimpan', style:GoogleFonts.poppins(fontWeight:FontWeight.w600)), backgroundColor:const Color(0xFF10B981), behavior:SnackBarBehavior.floating)); Navigator.pop(context,true);
-    }catch(e){ if(!mounted) return; setState(()=>_saving=false); ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Gagal: $e'), backgroundColor:Colors.red[700])); }
+      if (!mounted) return;
+      setState(() => _saving = false);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+              _isEdit
+                  ? 'Data diperbarui, menunggu persetujuan Admin Desa'
+                  : 'Data terkirim, menunggu persetujuan Admin Desa',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+          backgroundColor: const Color(0xFF10B981),
+          behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))));
+      Navigator.pop(context, true);
+    } on ApiValidationException catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _saving = false;
+        _fieldErrors = e.errors;
+      });
+      _formKey.currentState!.validate();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(e.message,
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+          backgroundColor: Colors.orange[800],
+          behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))));
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _saving = false);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(e.toString().replaceFirst('Exception: ', ''),
+              style: GoogleFonts.poppins()),
+          backgroundColor: Colors.red[700],
+          behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))));
+    }
   }
 
   @override
-  Widget build(BuildContext context){
-    return Scaffold(backgroundColor: const Color(0xFFF8FAFC), appBar: AppBar(backgroundColor:Colors.white,elevation:0,scrolledUnderElevation:0,iconTheme: const IconThemeData(color:Color(0xFF0F172A)), title: Column(crossAxisAlignment:CrossAxisAlignment.start, children:[Text(_isEdit?'Edit Catatan Keluarga':'Tambah Catatan Keluarga', style:GoogleFonts.poppins(fontSize:16,fontWeight:FontWeight.w800,color:const Color(0xFF0F172A))), Text('19 kolom + 8 kegiatan PKK', style:GoogleFonts.poppins(fontSize:11,color:const Color(0xFF64748B)))]), actions:[if(_saving) const Padding(padding:EdgeInsets.only(right:16), child: Center(child: SizedBox(width:20,height:20, child:CircularProgressIndicator(strokeWidth:2.5)))) else TextButton(onPressed:_save, child: Text('Simpan', style:GoogleFonts.poppins(fontSize:14,fontWeight:FontWeight.w700,color:_primary)))]),
-      body: Form(key:_formKey, child: ListView(padding: const EdgeInsets.fromLTRB(16,16,16,120), children:[
-        _section(Icons.location_on_rounded,'Identitas Wilayah','Header catatan keluarga'), const SizedBox(height:14),
-        _field(ctrl:_catatanDariCtrl,label:'Catatan Keluarga Dari',hint:'Contoh: RT 01 - keluarga Bpk. Ahmad',icon:Icons.badge_outlined),
-        const SizedBox(height:10), _field(ctrl:_dasaWismaCtrl,label:'Anggota Kelompok Dasa Wisma',hint:'Mawar 01',icon:Icons.holiday_village_outlined, validator:(v)=> v==null||v.trim().isEmpty?'Wajib':null),
-        const SizedBox(height:10), Row(children:[Expanded(child:_field(ctrl:_rtCtrl,label:'RT',hint:'01',icon:Icons.location_on_outlined)), const SizedBox(width:12), Expanded(child:_field(ctrl:_rwCtrl,label:'RW',hint:'05',icon:Icons.location_on_outlined)), const SizedBox(width:12), Expanded(child:_dropdown(label:'Tahun',value:_tahun,items:_tahunList,onChanged:(v)=>setState(()=>_tahun=v!),icon:Icons.calendar_today_outlined))]),
-        const SizedBox(height:10), Row(children:[Expanded(child:_field(ctrl:_dusunCtrl,label:'Dusun',hint:'Cikunir',icon:Icons.landscape_outlined)), const SizedBox(width:12), Expanded(child:_field(ctrl:_desaCtrl,label:'Desa',hint:'Singaparna',icon:Icons.home_work_outlined, validator:(v)=> v==null||v.trim().isEmpty?'Wajib':null))]),
-        const SizedBox(height:10), Row(children:[Expanded(child:KecamatanDropdownField(controller: _kecCtrl)), const SizedBox(width:12), Expanded(child:_dropdown(label:'Kriteria Rumah',value:_kriteria,items:['Sehat','Tidak Sehat'],onChanged:(v)=>setState(()=>_kriteria=v!),icon:Icons.home_outlined)),]),
-        const SizedBox(height:10), Row(children:[Expanded(child:_dropdown(label:'Sumber Air',value:_sumberAir,items:['PDAM','Sumur','Sungai','DLL'],onChanged:(v)=>setState(()=>_sumberAir=v!),icon:Icons.water_drop_outlined)), const SizedBox(width:12), Expanded(child:_dropdown(label:'Tempat Sampah',value:_tempatSampah,items:['Ada','Tidak Ada'],onChanged:(v)=>setState(()=>_tempatSampah=v!),icon:Icons.delete_outline_rounded))]),
-        const SizedBox(height:28), _section(Icons.family_restroom_rounded,'Daftar Anggota Keluarga','Isi 19 kolom per anggota'), const SizedBox(height:14),
-        ...List.generate(_anggota.length, (i)=> _buildAnggota(i)),
-        const SizedBox(height:10), OutlinedButton.icon(onPressed:_tambah, icon: const Icon(Icons.add_circle_outline_rounded,size:18), label: Text('Tambah Anggota', style:GoogleFonts.poppins(fontWeight:FontWeight.w700,fontSize:13.5)), style: OutlinedButton.styleFrom(foregroundColor:_primary, side: BorderSide(color:_primary.withValues(alpha:0.4),width:1.5), padding: const EdgeInsets.symmetric(vertical:14), shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)))),
-        const SizedBox(height:24), _field(ctrl:_ketUmumCtrl,label:'Keterangan Umum (Opsional)',hint:'Catatan tambahan...',icon:Icons.notes_rounded, maxLines:3),
-        const SizedBox(height:32), SizedBox(width:double.infinity, child: ElevatedButton(onPressed:_saving?null:_save, style: ElevatedButton.styleFrom(backgroundColor:_primary,foregroundColor:Colors.white, padding: const EdgeInsets.symmetric(vertical:16), shape:RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)), elevation:2), child: _saving? const SizedBox(height:20,width:20, child:CircularProgressIndicator(strokeWidth:2.5,color:Colors.white)): Text(_isEdit?'Perbarui':'Simpan Catatan Keluarga', style:GoogleFonts.poppins(fontSize:15,fontWeight:FontWeight.w700))))
-      ])),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8FAFC),
+      appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          iconTheme: const IconThemeData(color: Color(0xFF0F172A)),
+          title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                    _isEdit
+                        ? 'Edit Anggota Keluarga'
+                        : 'Tambah Anggota Keluarga',
+                    style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        color: const Color(0xFF0F172A))),
+                Text('Terhubung ke data KK',
+                    style: GoogleFonts.poppins(
+                        fontSize: 11, color: const Color(0xFF64748B)))
+              ]),
+          actions: [
+            if (_saving)
+              const Padding(
+                  padding: EdgeInsets.only(right: 16),
+                  child: Center(
+                      child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2.5))))
+            else
+              TextButton(
+                  onPressed: _save,
+                  child: Text('Simpan',
+                      style: GoogleFonts.poppins(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: _primary)))
+          ]),
+      body: Form(
+          key: _formKey,
+          child: ListView(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
+              children: [
+                _section(Icons.family_restroom_rounded, 'Kepala Keluarga',
+                    'Pilih KK dari Daftar Warga'),
+                const SizedBox(height: 14),
+                _kkDropdown(),
+                if (_serverError('daftar_warga_id') != null)
+                  Padding(
+                      padding: const EdgeInsets.only(top: 6, left: 4),
+                      child: Text(_serverError('daftar_warga_id')!,
+                          style: GoogleFonts.poppins(
+                              fontSize: 12, color: Colors.red[700]))),
+                const SizedBox(height: 28),
+                _section(Icons.person_rounded, 'Data Anggota',
+                    'Identitas anggota keluarga'),
+                const SizedBox(height: 14),
+                _field(
+                    ctrl: _namaCtrl,
+                    label: 'Nama Anggota',
+                    hint: 'Nama lengkap',
+                    icon: Icons.person_outline_rounded,
+                    serverField: 'nama_anggota',
+                    validator: (v) => v == null || v.trim().isEmpty
+                        ? 'Nama wajib diisi'
+                        : null),
+                const SizedBox(height: 10),
+                _field(
+                    ctrl: _nikCtrl,
+                    label: 'NIK',
+                    hint: '16 digit',
+                    icon: Icons.badge_outlined,
+                    keyboard: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    serverField: 'nik'),
+                const SizedBox(height: 10),
+                Row(children: [
+                  Expanded(child: _jenisDropdown()),
+                  const SizedBox(width: 12),
+                  Expanded(child: _hubunganDropdown()),
+                ]),
+                const SizedBox(height: 10),
+                Row(children: [
+                  Expanded(child: _tanggalField()),
+                  const SizedBox(width: 12),
+                  Expanded(
+                      child: _field(
+                          ctrl: _umurCtrl,
+                          label: 'Umur',
+                          hint: '0',
+                          icon: Icons.cake_outlined,
+                          keyboard: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
+                          serverField: 'umur')),
+                ]),
+                const SizedBox(height: 10),
+                Row(children: [
+                  Expanded(
+                      child: _field(
+                          ctrl: _pendidikanCtrl,
+                          label: 'Pendidikan',
+                          hint: 'SMA',
+                          icon: Icons.school_outlined,
+                          serverField: 'pendidikan')),
+                  const SizedBox(width: 12),
+                  Expanded(
+                      child: _field(
+                          ctrl: _pekerjaanCtrl,
+                          label: 'Pekerjaan',
+                          hint: 'Petani',
+                          icon: Icons.work_outline_rounded,
+                          serverField: 'pekerjaan')),
+                ]),
+                const SizedBox(height: 10),
+                _field(
+                    ctrl: _statusKawinCtrl,
+                    label: 'Status Perkawinan',
+                    hint: 'Kawin / Belum Kawin',
+                    icon: Icons.favorite_outline_rounded,
+                    serverField: 'status_perkawinan'),
+                if (_isEdit &&
+                    (widget.data?.isRejected ?? false) &&
+                    (widget.data?.rejectedReason ?? '').isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                          color: const Color(0xFFFEF2F2),
+                          borderRadius: BorderRadius.circular(12),
+                          border:
+                              Border.all(color: const Color(0xFFFECACA))),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Alasan penolakan Admin Desa:',
+                                style: GoogleFonts.poppins(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                    color: const Color(0xFFB91C1C))),
+                            const SizedBox(height: 4),
+                            Text(widget.data!.rejectedReason!,
+                                style: GoogleFonts.poppins(
+                                    fontSize: 13,
+                                    color: const Color(0xFF7F1D1D))),
+                          ])),
+                ],
+                const SizedBox(height: 32),
+                SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                        onPressed: _saving ? null : _save,
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: _primary,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14)),
+                            elevation: 2),
+                        child: _saving
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                    strokeWidth: 2.5, color: Colors.white))
+                            : Text(_isEdit ? 'Perbarui' : 'Simpan',
+                                style: GoogleFonts.poppins(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w700))))
+              ])),
     );
   }
 
-  Widget _buildAnggota(int index){
-    final a=_anggota[index];
-    return Container(margin: const EdgeInsets.only(bottom:12), decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(16),border:Border.all(color:a.namaCtrl.text.isNotEmpty? const Color(0xFFFECACA):const Color(0xFFE2E8F0)),boxShadow:[BoxShadow(color:Colors.black.withValues(alpha:0.04),blurRadius:6,offset:const Offset(0,2))]), child: Theme(data: ThemeData(dividerColor:Colors.transparent), child: ExpansionTile(
-      initiallyExpanded: index==0,
-      tilePadding: const EdgeInsets.symmetric(horizontal:14,vertical:4),
-      childrenPadding: const EdgeInsets.fromLTRB(14,0,14,16),
-      leading: Container(width:32,height:32, decoration:BoxDecoration(color: a.namaCtrl.text.isNotEmpty? _primary:const Color(0xFFF1F5F9), shape:BoxShape.circle), child: Center(child: Text('${index+1}', style:GoogleFonts.poppins(fontWeight:FontWeight.w800,color:a.namaCtrl.text.isNotEmpty?Colors.white:const Color(0xFF64748B))))),
-      title: Text(a.namaCtrl.text.isEmpty? 'Anggota ${index+1}':a.namaCtrl.text, style:GoogleFonts.poppins(fontWeight:FontWeight.w700,fontSize:14,color:const Color(0xFF0F172A))),
-      subtitle: Text('${a.jk} • ${a.statusKawin} • ${a.pendidikan}', style:GoogleFonts.poppins(fontSize:11,color:const Color(0xFF64748B))),
-      trailing: Row(mainAxisSize:MainAxisSize.min, children:[if(_anggota.length>1) GestureDetector(onTap:()=>_hapus(index), child: Container(padding: const EdgeInsets.all(4), decoration:BoxDecoration(color:Colors.red.withValues(alpha:0.08),shape:BoxShape.circle), child: Icon(Icons.close_rounded,size:14,color:Colors.red[400]))), const SizedBox(width:8), const Icon(Icons.expand_more_rounded)]),
-      children:[
-        _field(ctrl:a.namaCtrl,label:'Nama Anggota',hint:'Nama lengkap',icon:Icons.person_outline_rounded, validator:(v)=> v==null||v.trim().isEmpty?'Wajib':null),
-        const SizedBox(height:10), Row(children:[Expanded(child:_dropdownSimple(label:'L/P',value:a.jk,items:['L','P'],onChanged:(v)=>setState(()=>a.jk=v!))), const SizedBox(width:8), Expanded(child:_dropdownSimple(label:'Status Kawin',value:a.statusKawin,items:['Kawin','Belum Kawin','Janda','Duda'],onChanged:(v)=>setState(()=>a.statusKawin=v!))), const SizedBox(width:8), Expanded(child:_dropdownSimple(label:'Agama',value:a.agama,items:['Islam','Kristen','Katolik','Hindu','Budha','Konghucu','Kepercayaan','Lain-lain'],onChanged:(v)=>setState(()=>a.agama=v!)))]),
-        const SizedBox(height:10), Row(children:[Expanded(child:_field(ctrl:a.tempatCtrl,label:'Tempat Lahir',hint:'Tasikmalaya',icon:Icons.place_outlined)), const SizedBox(width:8), Expanded(child:_field(ctrl:a.ttlCtrl,label:'Tgl/Bln/Th Lahir/Umur',hint:'12-05-1990 / 35 th',icon:Icons.cake_outlined))]),
-        const SizedBox(height:10), Row(children:[Expanded(child:_dropdownSimple(label:'Pendidikan',value:a.pendidikan,items:['Tidak Tamat SD','SD/MI','SMP/Sederajat','SMA/SMK/Sederajat','Diploma','S1','S2','S3'],onChanged:(v)=>setState(()=>a.pendidikan=v!))), const SizedBox(width:8), Expanded(child:_field(ctrl:a.pekerjaanCtrl,label:'Pekerjaan',hint:'Wiraswasta',icon:Icons.work_outline_rounded))]),
-        const SizedBox(height:10), _field(ctrl:a.khususCtrl,label:'Berkebutuhan Khusus',hint:'Tidak / Ya - keterangan',icon:Icons.accessibility_rounded),
-        const SizedBox(height:12), Container(padding: const EdgeInsets.all(12), decoration:BoxDecoration(color:const Color(0xFFF8FAFC),borderRadius:BorderRadius.circular(12),border:Border.all(color:const Color(0xFFE2E8F0))), child: Column(crossAxisAlignment:CrossAxisAlignment.start, children:[Text('Kegiatan PKK yang Diikuti (8 kolom)', style:GoogleFonts.poppins(fontSize:12,fontWeight:FontWeight.w800,color:const Color(0xFF0F172A))), const SizedBox(height:8), Wrap(spacing:8,runSpacing:8, children:[_checkChip('Pancasila',a.pancasila,(v)=>setState(()=>a.pancasila=v)),_checkChip('Gotong Royong',a.gotong,(v)=>setState(()=>a.gotong=v)),_checkChip('Pendidikan',a.didik,(v)=>setState(()=>a.didik=v)),_checkChip('Koperasi',a.koperasi,(v)=>setState(()=>a.koperasi=v)),_checkChip('Pangan',a.pangan,(v)=>setState(()=>a.pangan=v)),_checkChip('Sandang',a.sandang,(v)=>setState(()=>a.sandang=v)),_checkChip('Kesehatan',a.kesehatan,(v)=>setState(()=>a.kesehatan=v)),_checkChip('Perencanaan',a.perencanaan,(v)=>setState(()=>a.perencanaan=v))])])),
-        const SizedBox(height:10), _field(ctrl:a.ketCtrl,label:'Keterangan',hint:'Opsional',icon:Icons.notes_rounded, maxLines:2),
-      ],
-    )));
+  Widget _kkDropdown() {
+    if (_kkLoading) {
+      return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFE2E8F0))),
+          child: Row(children: [
+            const SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(strokeWidth: 2)),
+            const SizedBox(width: 12),
+            Text('Memuat daftar KK...',
+                style:
+                    GoogleFonts.poppins(fontSize: 13, color: Colors.grey[500])),
+          ]));
+    }
+    if (_kkError != null) {
+      return Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+              color: const Color(0xFFFEF2F2),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFFECACA))),
+          child: Row(children: [
+            const Icon(Icons.error_outline_rounded,
+                size: 18, color: Color(0xFFB91C1C)),
+            const SizedBox(width: 8),
+            Expanded(
+                child: Text(_kkError!,
+                    style: GoogleFonts.poppins(
+                        fontSize: 12.5, color: const Color(0xFF7F1D1D)))),
+            TextButton(onPressed: _loadKk, child: const Text('Muat ulang')),
+          ]));
+    }
+    // Saat edit, pastikan KK terpilih tetap tampil walau beda halaman.
+    final items = <DropdownMenuItem<int>>[];
+    if (_isEdit &&
+        _daftarWargaId != null &&
+        !_kkList.any((e) => e.id == _daftarWargaId)) {
+      items.add(DropdownMenuItem(
+          value: _daftarWargaId,
+          child: Text(widget.data?.kepalaKeluarga ?? 'KK terpilih',
+              style: GoogleFonts.poppins(fontSize: 13.5))));
+    }
+    items.addAll(_kkList.map((e) => DropdownMenuItem(
+        value: e.id,
+        child: Text(
+            e.namaKepalaRumahTangga.isEmpty
+                ? 'KK #${e.id}'
+                : e.namaKepalaRumahTangga,
+            style: GoogleFonts.poppins(fontSize: 13.5)))));
+
+    return Container(
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFFE2E8F0))),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+        child: DropdownButtonFormField<int>(
+            initialValue: _daftarWargaId,
+            isExpanded: true,
+            icon: const Icon(Icons.keyboard_arrow_down_rounded,
+                color: Color(0xFF64748B)),
+            decoration: InputDecoration(
+                labelText: 'Kepala Keluarga',
+                prefixIcon: const Icon(Icons.home_work_outlined,
+                    size: 18, color: _primary),
+                labelStyle: GoogleFonts.poppins(
+                    fontSize: 13, color: const Color(0xFF64748B)),
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                contentPadding: EdgeInsets.zero),
+            items: items,
+            validator: (v) => v == null ? 'Pilih kepala keluarga' : null,
+            onChanged: (v) => setState(() {
+                  _daftarWargaId = v;
+                  _fieldErrors.remove('daftar_warga_id');
+                })));
   }
 
-  Widget _checkChip(String label, bool val, ValueChanged<bool> onChanged)=> GestureDetector(onTap:(){ HapticFeedback.selectionClick(); onChanged(!val); }, child: AnimatedContainer(duration: const Duration(milliseconds:180), padding: const EdgeInsets.symmetric(horizontal:10,vertical:6), decoration:BoxDecoration(color:val? const Color(0xFFDC2626):Colors.white, borderRadius:BorderRadius.circular(20), border:Border.all(color:val? const Color(0xFFDC2626):const Color(0xFFE2E8F0))), child: Row(mainAxisSize:MainAxisSize.min, children:[if(val) const Padding(padding:EdgeInsets.only(right:4), child: Icon(Icons.check_circle_rounded,size:12,color:Colors.white)), Text(label, style:GoogleFonts.poppins(fontSize:11.5,fontWeight: val?FontWeight.w700:FontWeight.w500, color: val?Colors.white:const Color(0xFF475569)))])));
+  Widget _jenisDropdown() => Container(
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFE2E8F0))),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+      child: DropdownButtonFormField<String>(
+          initialValue: _jenisKelamin,
+          isExpanded: true,
+          icon: const Icon(Icons.keyboard_arrow_down_rounded,
+              color: Color(0xFF64748B)),
+          decoration: InputDecoration(
+              labelText: 'L/P',
+              prefixIcon: const Icon(Icons.wc_rounded, size: 18, color: _primary),
+              labelStyle: GoogleFonts.poppins(
+                  fontSize: 13, color: const Color(0xFF64748B)),
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              contentPadding: EdgeInsets.zero),
+          items: const [
+            DropdownMenuItem(value: 'L', child: Text('Laki-laki')),
+            DropdownMenuItem(value: 'P', child: Text('Perempuan')),
+          ],
+          onChanged: (v) {
+            if (v == null) return;
+            setState(() {
+              _jenisKelamin = v;
+              _fieldErrors.remove('jenis_kelamin');
+            });
+          }));
 
-  Widget _section(IconData icon,String title,String sub){ return Row(children:[Container(padding: const EdgeInsets.all(9), decoration:BoxDecoration(color:_primaryLight,borderRadius:BorderRadius.circular(12)), child: Icon(icon,size:18,color:_primary)), const SizedBox(width:12), Column(crossAxisAlignment:CrossAxisAlignment.start, children:[Text(title, style:GoogleFonts.poppins(fontSize:15,fontWeight:FontWeight.w800,color:const Color(0xFF0F172A))), Text(sub, style:GoogleFonts.poppins(fontSize:11.5,color:const Color(0xFF64748B)))])]); }
-  Widget _field({required TextEditingController ctrl,required String label,required String hint,required IconData icon, String? Function(String?)? validator, int maxLines=1})=> Container(decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(12),border:Border.all(color:const Color(0xFFE2E8F0))), child: TextFormField(controller:ctrl,validator:validator,maxLines:maxLines, style:GoogleFonts.poppins(fontSize:14), decoration:InputDecoration(labelText:label,hintText:hint,prefixIcon:Icon(icon,size:18,color:_primary), hintStyle:GoogleFonts.poppins(fontSize:13,color:Colors.grey[400]), labelStyle:GoogleFonts.poppins(fontSize:13,color:const Color(0xFF64748B)), border:InputBorder.none,enabledBorder:InputBorder.none,focusedBorder:InputBorder.none, contentPadding: const EdgeInsets.symmetric(horizontal:14,vertical:14))));
-  Widget _dropdown({required String label,required String value,required List<String> items,required ValueChanged<String?> onChanged,required IconData icon})=> Container(decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(12),border:Border.all(color:const Color(0xFFE2E8F0))), padding: const EdgeInsets.symmetric(horizontal:14,vertical:2), child: DropdownButtonFormField<String>(initialValue:value,isExpanded:true,icon:const Icon(Icons.keyboard_arrow_down_rounded,color:Color(0xFF64748B)), decoration:InputDecoration(labelText:label,prefixIcon:Icon(icon,size:18,color:_primary), labelStyle:GoogleFonts.poppins(fontSize:13,color:const Color(0xFF64748B)), border:InputBorder.none,enabledBorder:InputBorder.none,focusedBorder:InputBorder.none, contentPadding:EdgeInsets.zero), items:items.map((i)=>DropdownMenuItem(value:i, child: Text(i, style:GoogleFonts.poppins(fontSize:13.5)))).toList(), onChanged:onChanged));
-  Widget _dropdownSimple({required String label,required String value,required List<String> items,required ValueChanged<String?> onChanged})=> Container(decoration:BoxDecoration(color:Colors.white,borderRadius:BorderRadius.circular(12),border:Border.all(color:const Color(0xFFE2E8F0))), padding: const EdgeInsets.symmetric(horizontal:10,vertical:2), child: DropdownButtonFormField<String>(initialValue:value,isExpanded:true, decoration:InputDecoration(labelText:label, labelStyle:GoogleFonts.poppins(fontSize:11,color:const Color(0xFF64748B)), border:InputBorder.none,enabledBorder:InputBorder.none,focusedBorder:InputBorder.none, contentPadding:EdgeInsets.zero), items:items.map((i)=>DropdownMenuItem(value:i, child: Text(i, style:GoogleFonts.poppins(fontSize:12)))).toList(), onChanged:onChanged));
-}
+  Widget _hubunganDropdown() => Container(
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFE2E8F0))),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+      child: DropdownButtonFormField<String>(
+          initialValue: _hubungan,
+          isExpanded: true,
+          icon: const Icon(Icons.keyboard_arrow_down_rounded,
+              color: Color(0xFF64748B)),
+          decoration: InputDecoration(
+              labelText: 'Hubungan',
+              prefixIcon: const Icon(Icons.group_outlined,
+                  size: 18, color: _primary),
+              labelStyle: GoogleFonts.poppins(
+                  fontSize: 13, color: const Color(0xFF64748B)),
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              contentPadding: EdgeInsets.zero),
+          items: DasawismaCatatanKeluarga.hubunganLabels.entries
+              .map((e) => DropdownMenuItem(
+                  value: e.key,
+                  child: Text(e.value,
+                      style: GoogleFonts.poppins(fontSize: 13.5))))
+              .toList(),
+          onChanged: (v) {
+            if (v == null) return;
+            setState(() {
+              _hubungan = v;
+              _fieldErrors.remove('hubungan_keluarga');
+            });
+          }));
 
-class _AnggotaState{
-  final TextEditingController namaCtrl, tempatCtrl, ttlCtrl, pekerjaanCtrl, khususCtrl, ketCtrl;
-  String statusKawin='Kawin', jk='P', agama='Islam', pendidikan='SMA/SMK/Sederajat';
-  bool pancasila=false, gotong=false, didik=false, koperasi=false, pangan=false, sandang=false, kesehatan=false, perencanaan=false;
-  _AnggotaState(): namaCtrl=TextEditingController(), tempatCtrl=TextEditingController(), ttlCtrl=TextEditingController(), pekerjaanCtrl=TextEditingController(), khususCtrl=TextEditingController(), ketCtrl=TextEditingController();
-  _AnggotaState.fromModel(DasawismaCatatanKeluargaItem m): namaCtrl=TextEditingController(text:m.namaAnggota), tempatCtrl=TextEditingController(text:m.tempatLahir), ttlCtrl=TextEditingController(text:m.tanggalLahirUmur), pekerjaanCtrl=TextEditingController(text:m.pekerjaan), khususCtrl=TextEditingController(text:m.berkebutuhanKhusus), ketCtrl=TextEditingController(text:m.keterangan) { statusKawin=m.statusPerkawinan; jk=m.jenisKelamin; agama=m.agama; pendidikan=m.pendidikan; pancasila=m.penghayatanPancasila; gotong=m.gotongRoyong; didik=m.pendidikanKeterampilan; koperasi=m.pengembanganKoperasi; pangan=m.pangan; sandang=m.sandang; kesehatan=m.kesehatan; perencanaan=m.perencanaanSehat; }
-  void dispose(){ namaCtrl.dispose(); tempatCtrl.dispose(); ttlCtrl.dispose(); pekerjaanCtrl.dispose(); khususCtrl.dispose(); ketCtrl.dispose(); }
+  Widget _tanggalField() {
+    final text = _tanggalLahir == null
+        ? 'Pilih tanggal'
+        : '${_tanggalLahir!.day}/${_tanggalLahir!.month}/${_tanggalLahir!.year}';
+    final err = _serverError('tanggal_lahir');
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      InkWell(
+          onTap: _pickTanggalLahir,
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                      color: err != null
+                          ? Colors.red[400]!
+                          : const Color(0xFFE2E8F0))),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+              child: Row(children: [
+                const Icon(Icons.calendar_today_outlined,
+                    size: 18, color: _primary),
+                const SizedBox(width: 10),
+                Expanded(
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                      Text('Tgl Lahir',
+                          style: GoogleFonts.poppins(
+                              fontSize: 11, color: const Color(0xFF64748B))),
+                      Text(text,
+                          style: GoogleFonts.poppins(
+                              fontSize: 14, color: const Color(0xFF0F172A))),
+                    ])),
+              ]))),
+      if (err != null)
+        Padding(
+            padding: const EdgeInsets.only(top: 6, left: 4),
+            child: Text(err,
+                style: GoogleFonts.poppins(
+                    fontSize: 12, color: Colors.red[700]))),
+    ]);
+  }
+
+  Widget _section(IconData icon, String title, String sub) => Row(children: [
+        Container(
+            padding: const EdgeInsets.all(9),
+            decoration: BoxDecoration(
+                color: _primaryLight, borderRadius: BorderRadius.circular(12)),
+            child: Icon(icon, size: 18, color: _primary)),
+        const SizedBox(width: 12),
+        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(title,
+              style: GoogleFonts.poppins(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  color: const Color(0xFF0F172A))),
+          Text(sub,
+              style: GoogleFonts.poppins(
+                  fontSize: 11.5, color: const Color(0xFF64748B)))
+        ])
+      ]);
+
+  Widget _field({
+    required TextEditingController ctrl,
+    required String label,
+    required String hint,
+    required IconData icon,
+    String? serverField,
+    String? Function(String?)? validator,
+    TextInputType? keyboard,
+    List<TextInputFormatter>? inputFormatters,
+  }) {
+    final serverErr = serverField == null ? null : _serverError(serverField);
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Container(
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                  color: serverErr != null
+                      ? Colors.red[400]!
+                      : const Color(0xFFE2E8F0))),
+          child: TextFormField(
+              controller: ctrl,
+              keyboardType: keyboard,
+              inputFormatters: inputFormatters,
+              style: GoogleFonts.poppins(fontSize: 14),
+              validator: (v) {
+                if (serverErr != null) return serverErr;
+                if (validator != null) return validator(v);
+                return null;
+              },
+              onChanged: (_) {
+                if (serverField != null &&
+                    _fieldErrors.containsKey(serverField)) {
+                  setState(() => _fieldErrors.remove(serverField));
+                }
+              },
+              decoration: InputDecoration(
+                  labelText: label,
+                  hintText: hint,
+                  prefixIcon: Icon(icon, size: 18, color: _primary),
+                  hintStyle: GoogleFonts.poppins(
+                      fontSize: 13, color: Colors.grey[400]),
+                  labelStyle: GoogleFonts.poppins(
+                      fontSize: 13, color: const Color(0xFF64748B)),
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
+                  focusedErrorBorder: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 14, vertical: 14)))),
+    ]);
+  }
 }

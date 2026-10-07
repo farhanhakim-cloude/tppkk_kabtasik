@@ -167,7 +167,7 @@ class RekapitulasiService {
       if (tahun != null && tahun.isNotEmpty) {
         // DataKeluargaDasawisma tidak punya tahun field, skip filter tahun untuk sheet7 utama
       }
-      final bkCount = catatanAll.where((c) => c.rt == d.rt && c.rw == d.rw && c.desa == d.desa).fold(0, (sum, c) => sum + c.items.where((it) => it.berkebutuhanKhusus.toLowerCase() != 'tidak' && it.berkebutuhanKhusus.isNotEmpty).length);
+      final bkCount = catatanAll.where((c) => c.rt == d.rt && c.rw == d.rw && c.desa == d.desa).where((c) => c.berkebutuhanKhusus.toLowerCase() != 'tidak' && c.berkebutuhanKhusus.isNotEmpty).length;
 
       final sAir = d.sumberAir.toLowerCase();
       rows.add(RekapRow(

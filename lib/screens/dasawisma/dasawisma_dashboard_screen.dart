@@ -13,14 +13,14 @@ import '../../models/data_keluarga_dasawisma.dart';
 // ✅ GANTI: dari lokal ke API
 import '../../services/daftar_warga_service.dart';
 import '../../services/kegiatan_warga_service.dart';
-import '../../services/rekap_ibu_anak_service.dart';
+import '../../services/bumil_service.dart';
 
 // ✅ Form input
 import 'input_keluarga_dasawisma_screen.dart';
 // ✅ Halaman rekap
 import 'data_umum_rekap_screen.dart';
 import 'kegiatan_warga_main_screen.dart';
-import 'rekap_ibu_anak_list_screen.dart';
+import 'bumil_ibu_list_screen.dart';
 import '../profile_screen.dart';
 
 class DasawismaDashboardScreen extends StatefulWidget {
@@ -87,16 +87,29 @@ class _DasawismaDashboardScreenState extends State<DasawismaDashboardScreen>
   Future<void> _loadData() async {
     setState(() => _loading = true);
     try {
-      // ✅ PAKAI API — dari backend
-      final results = await Future.wait([
-        DaftarWargaService().getAll(),      // ← API /api/daftar-warga
-        KegiatanWargaService().getAll(),
-        RekapIbuAnakService().getAll(),      // ← API /api/rekap-bumil
-      ]);
-
-      final listKk = (results[0] as List).cast<DataKeluargaDasawisma>();
-      final listKeg = results[1] as List;
-      final listBumil = results[2] as List;
+      // ✅ PAKAI API — dari backend, masing-masing ditangani sendiri agar
+      // satu endpoint gagal (mis. 404 saat backend belum siap) tidak
+      // mengosongkan seluruh dashboard.
+      List<DataKeluargaDasawisma> listKk = [];
+      var listKeg = <dynamic>[];
+      var listBumil = <dynamic>[];
+      try {
+        listKk = await DaftarWargaService()
+            .getAll(); // ← API /api/daftar-warga
+      } catch (e) {
+        print('⚠️ dasbor: daftar-warga gagal: $e');
+      }
+      try {
+        listKeg = await KegiatanWargaService().getAll();
+      } catch (e) {
+        print('⚠️ dasbor: kegiatan-warga gagal: $e');
+      }
+      try {
+        listBumil = await BumilService()
+            .getAll(); // ← API /api/dasawisma/bumil (per ibu)
+      } catch (e) {
+        print('⚠️ dasbor: bumil gagal: $e');
+      }
 
       int totalJiwa = 0;
       int totalBalita = 0;
@@ -472,9 +485,9 @@ class _DasawismaDashboardScreenState extends State<DasawismaDashboardScreen>
             Text('Lihat detail rekap bumil', style: GoogleFonts.poppins(fontSize: 12, color: sub)),
             const SizedBox(height: 16),
             TextButton.icon(
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const RekapIbuAnakListScreen())),
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BumilIbuListScreen())),
               icon: const Icon(Icons.arrow_forward_rounded, size: 16),
-              label: Text('Buka Rekap Bumil', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 12)),
+              label: Text('Buka Data Bumil', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 12)),
             ),
           ],
         ),
