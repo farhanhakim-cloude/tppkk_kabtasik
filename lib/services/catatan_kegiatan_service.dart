@@ -252,6 +252,18 @@ class CatatanKegiatanService {
     request.fields['kategori_pokja'] = catatan.kategori.kategoriPokja;
     request.fields['kecamatan'] = catatan.kecamatan;
     request.fields['desa_kelurahan'] = desaFinal;
+    // ✅ Kop Laporan Data Dukung (nullable — kirim kosong bila null)
+    request.fields['provinsi'] = catatan.provinsi ?? '';
+    request.fields['kabupaten_kota'] = catatan.kabupatenKota ?? '';
+    request.fields['program'] = catatan.program ?? '';
+    request.fields['pj_desa'] = catatan.pjDesa ?? '';
+    request.fields['pj_desa_hp'] = catatan.pjDesaHp ?? '';
+    request.fields['pj_kecamatan'] = catatan.pjKecamatan ?? '';
+    request.fields['pj_kecamatan_hp'] = catatan.pjKecamatanHp ?? '';
+    request.fields['pj_kabupaten'] = catatan.pjKabupaten ?? '';
+    request.fields['pj_kabupaten_hp'] = catatan.pjKabupatenHp ?? '';
+    request.fields['pj_provinsi'] = catatan.pjProvinsi ?? '';
+    request.fields['pj_provinsi_hp'] = catatan.pjProvinsiHp ?? '';
 
     print('📤 SEND DATA:');
     print('  - Judul: ${catatan.judul}');

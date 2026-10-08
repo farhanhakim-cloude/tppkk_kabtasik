@@ -32,6 +32,18 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
   final _judulController = TextEditingController();
   final _deskripsiController = TextEditingController();
   final _desaController = TextEditingController();
+  // ✅ Kop Laporan Data Dukung (khusus pokja4DataDukung) — semua opsional
+  final _provinsiController = TextEditingController();
+  final _kabupatenController = TextEditingController();
+  final _programController = TextEditingController();
+  final _pjDesaController = TextEditingController();
+  final _pjDesaHpController = TextEditingController();
+  final _pjKecamatanController = TextEditingController();
+  final _pjKecamatanHpController = TextEditingController();
+  final _pjKabupatenController = TextEditingController();
+  final _pjKabupatenHpController = TextEditingController();
+  final _pjProvinsiController = TextEditingController();
+  final _pjProvinsiHpController = TextEditingController();
   final Map<String, TextEditingController> _angkaCtrl = {};
 
   bool _pokjaDipilih = false;
@@ -84,6 +96,17 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
       _judulController.text = c.judul;
       _deskripsiController.text = c.deskripsiSingkat;
       _desaController.text = c.desa ?? '';
+      _provinsiController.text = c.provinsi ?? '';
+      _kabupatenController.text = c.kabupatenKota ?? '';
+      _programController.text = c.program ?? '';
+      _pjDesaController.text = c.pjDesa ?? '';
+      _pjDesaHpController.text = c.pjDesaHp ?? '';
+      _pjKecamatanController.text = c.pjKecamatan ?? '';
+      _pjKecamatanHpController.text = c.pjKecamatanHp ?? '';
+      _pjKabupatenController.text = c.pjKabupaten ?? '';
+      _pjKabupatenHpController.text = c.pjKabupatenHp ?? '';
+      _pjProvinsiController.text = c.pjProvinsi ?? '';
+      _pjProvinsiHpController.text = c.pjProvinsiHp ?? '';
       _selectedKecamatan = c.kecamatan;
       _tanggal = c.tanggal;
       if (c.fotoPath != null && c.fotoPath!.isNotEmpty) {
@@ -140,14 +163,10 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
   }
 
   List<PokjaKategori> _availablePokjas() {
-    if (_restrictedPokja == null) return PokjaKategori.values;
+    // ✅ 1 FORM GABUNGAN: Data Program (Lama) tidak tampil di picker mana pun.
+    if (_restrictedPokja == null) return PokjaKategoriLabel.inputValues;
     if (_restrictedPokja == PokjaKategori.pokja4) {
-      return const [
-        PokjaKategori.pokja4,
-        PokjaKategori.pokja4Pyd,
-        PokjaKategori.pokja4Posyandu,
-        PokjaKategori.pokja4Rekap,
-      ];
+      return PokjaKategoriLabel.inputPokja4;
     }
     return [_restrictedPokja!];
   }
@@ -158,6 +177,17 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
     _judulController.dispose();
     _deskripsiController.dispose();
     _desaController.dispose();
+    _provinsiController.dispose();
+    _kabupatenController.dispose();
+    _programController.dispose();
+    _pjDesaController.dispose();
+    _pjDesaHpController.dispose();
+    _pjKecamatanController.dispose();
+    _pjKecamatanHpController.dispose();
+    _pjKabupatenController.dispose();
+    _pjKabupatenHpController.dispose();
+    _pjProvinsiController.dispose();
+    _pjProvinsiHpController.dispose();
     for (final c in _angkaCtrl.values) {
       c.dispose();
     }
@@ -276,9 +306,9 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
       case PokjaKategori.pokja4Rekap:
         return 'Rekap Ibu Hamil, Melahirkan & Nifas';
       case PokjaKategori.pokja4DataDukung:
-        return 'Data Umum & Laporan Pelaksanaan';
+        return '1 Form • A. Data Dukung (26) + B. Program (9)';
       case PokjaKategori.pokja4DataProgram:
-        return 'Data Program Gerakan Keluarga Sehat';
+        return 'Data Program Gerakan Keluarga Sehat (Lama)';
     }
   }
 
@@ -299,9 +329,9 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
       case PokjaKategori.pokja4Rekap:
         return 'Mis. Rekap Ibu Hamil 2025';
       case PokjaKategori.pokja4DataDukung:
-        return 'Mis. Data Dukung Desa 2025';
+        return 'Mis. Laporan Data Dukung Desa 2025';
       case PokjaKategori.pokja4DataProgram:
-        return 'Mis. Data Program Stunting 2025';
+        return 'Mis. Data Program Stunting 2025 (Lama)';
     }
   }
 
@@ -672,168 +702,409 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
         ];
 
       case PokjaKategori.pokja4DataDukung:
+        // ✅ 1 FORM: A. Data Dukung (1 kartu, 26 field) + B. Data Program (9 kartu I-IX)
         return const [
+          // ===== A. DATA DUKUNG (tabel A no. 1-26) =====
           _PokjaSubItem(
-            title: 'Data Umum Yang Dimonitor',
-            deskripsi: 'Kependudukan, Keluarga, Balita, Lansia, Kader, Institusi',
-            icon: Icons.people_rounded,
+            title: 'A. Data Dukung',
+            deskripsi: 'Data Umum • 26 field • Penduduk s/d Posko Bencana',
+            icon: Icons.folder_shared_rounded,
             groupFields: {
-              'Jml. Penduduk': 'jumlah_penduduk',
-              'Jml. KK': 'jumlah_kk',
-              'Jml. Rumah': 'jumlah_rumah',
-              'Jml. Laki-Laki': 'jumlah_laki',
-              'Jml. Perempuan': 'jumlah_perempuan',
-              'Jml. Usia Produktif': 'jumlah_usia_produktif',
-              'Jml. PUS': 'jumlah_pus',
-              'Jml. Ibu Hamil': 'jumlah_ibu_hamil',
-              'Jml. Bayi (0-2 Thn)': 'jumlah_bayi_0_2',
-              'Jml. Bayi ASI Ekslusif': 'jumlah_bayi_asi',
-              'Jml. Balita (>2-5 Thn)': 'jumlah_balita',
-              'Jml. Anak (6-14 Thn)': 'jumlah_anak',
-              'Jml. Lansia (≥65 Thn)': 'jumlah_lansia',
-              'Jml. KB Aktif': 'jumlah_kb_aktif',
-              'Jml. Ibu Menyusui': 'jumlah_ibu_menyusui',
-              'Jml. Klg. Sejahtera': 'jumlah_keluarga_sejahtera',
-              'Jml. Klg. Pra Sejahtera': 'jumlah_keluarga_pra_sejahtera',
-              'Jml. MBR': 'jumlah_mbr',
-              'Kader PKK RT/RW': 'jumlah_kader_pkk_rt_rw',
-              'Kader Bid. Kesehatan': 'jumlah_kader_pkk_kesehatan',
-              'Klp. Dasa Wisma': 'jumlah_dasa_wisma',
-              'Kader Dasa Wisma': 'jumlah_kader_dasa_wisma',
-              'Posyandu Aktif': 'jumlah_posyandu_aktif',
-              'Bidan Desa': 'jumlah_bidan_desa',
-              'Bank Sampah': 'jumlah_bank_sampah',
-              'Posko Bencana': 'jumlah_posko_bencana',
+              'Jumlah Penduduk': 'jumlah_penduduk',
+              'Jumlah Kepala Keluarga': 'jumlah_kk',
+              'Jumlah Rumah': 'jumlah_rumah',
+              'Jumlah Laki-Laki': 'jumlah_laki',
+              'Jumlah Perempuan': 'jumlah_perempuan',
+              'Jumlah Usia Produktif (15-64 Tahun)': 'jumlah_usia_produktif',
+              'Jumlah Pasangan Usia Subur': 'jumlah_pus',
+              'Jumlah Ibu Hamil': 'jumlah_ibu_hamil',
+              'Jumlah Bayi (0-2 Tahun)': 'jumlah_bayi_0_2',
+              'Jumlah Bayi yang mendapatkan ASI Eksklusif (0-6 Bulan)':
+                  'jumlah_bayi_asi',
+              'Jumlah Balita (>2-5 Tahun)': 'jumlah_balita',
+              'Jumlah Anak (6-14 Tahun)': 'jumlah_anak',
+              'Jumlah Lansia (≥65 Tahun)': 'jumlah_lansia',
+              'Jumlah Peserta KB Aktif': 'jumlah_kb_aktif',
+              'Jumlah Ibu Menyusui': 'jumlah_ibu_menyusui',
+              'Jumlah Keluarga Sejahtera': 'jumlah_keluarga_sejahtera',
+              'Jumlah Keluarga Pra Sejahtera':
+                  'jumlah_keluarga_pra_sejahtera',
+              'Jumlah Masyarakat Berpenghasilan Rendah (MBR)': 'jumlah_mbr',
+              'Jumlah Kader PKK RT/RW': 'jumlah_kader_pkk_rt_rw',
+              'Jumlah Kader PKK Bidang Kesehatan':
+                  'jumlah_kader_pkk_kesehatan',
+              'Jumlah Kelompok Dasa Wisma': 'jumlah_dasa_wisma',
+              'Jumlah Kader Dasa Wisma': 'jumlah_kader_dasa_wisma',
+              'Jumlah Posyandu Aktif': 'jumlah_posyandu_aktif',
+              'Jumlah Bidan Desa': 'jumlah_bidan_desa',
+              'Jumlah Bank Sampah': 'jumlah_bank_sampah',
+              'Jumlah Posko Bencana': 'jumlah_posko_bencana',
             },
+          ),
+          // ===== B. DATA PROGRAM (I-IX @ 7 field) =====
+          _PokjaSubItem(
+            title:
+                'I. Program Gerakan Keluarga Sehat Tanggap dan Tangguh Bencana Peduli Stunting',
+            deskripsi: '7 field • Prematur, BBLR, Gizi, Stunting',
+            icon: Icons.monitor_heart_rounded,
+            groupFields: {
+              'Jumlah Bayi Lahir Prematur': 'bayi_prematur',
+              'Jumlah Bayi Lahir Berat Badan Bayi Lahir Rendah (BBLR)':
+                  'bayi_bblr',
+              'Jumlah Balita Kurang Gizi': 'balita_kurang_gizi',
+              'Jumlah Balita Stunting': 'balita_stunting',
+              'Jumlah bayi dan balita yang rutin dilakukan pemeriksaan tumbuh kembang setiap bulan':
+                  'bayi_balita_periksa',
+              'Jumlah Ibu Yang Melahirkan dengan Jarak Terlalu Dekat':
+                  'ibu_lahir_jarak_dekat',
+              'Jumlah Kehamilan Yang Tidak Direncanakan / Tidak Diinginkan':
+                  'hamil_tidak_direncanakan',
+            },
+          ),
+          _PokjaSubItem(
+            title:
+                'II. Program Gerakan Keluarga Sehat Tanggap dan Tangguh Bencana Menuju Perilaku Hidup Bersih Dan Sehat (PHBS)',
+            deskripsi: '7 field • TBC, Jamban, Diare, Gizi, BABS',
+            icon: Icons.clean_hands_rounded,
+            groupFields: {
+              'Jumlah penduduk penderita Tuberkulosis (TBC)': 'penduduk_tbc',
+              'Jumlah rumah yang memiliki jamban sehat': 'rumah_jamban_sehat',
+              'Jumlah rumah yang memiliki fasilitas instalasi atau bak penampung air bersih':
+                  'rumah_bak_air',
+              'Jumlah kasus penyakit Diare': 'kasus_diare',
+              'Jumlah keluarga yang sadar gizi': 'keluarga_sadar_gizi',
+              'Jumlah rumah tanpa asap rokok': 'rumah_tanpa_asap_rokok',
+              'Jumlah penduduk yang masih Buang Air Besar Sembarangan (BABS)':
+                  'penduduk_babs',
+            },
+          ),
+          _PokjaSubItem(
+            title:
+                'III. Program Gerakan Keluarga Sehat Tanggap dan Tangguh Bencana Peduli Kesehatan Keluarga (Ayah, Ibu dan Anak)',
+            deskripsi: '7 field • Hamil, Merokok, Kanker, Imunisasi',
+            icon: Icons.health_and_safety_rounded,
+            groupFields: {
+              'Jumlah ibu hamil yang rutin memeriksakan kehamilannya pada tenaga kesehatan secara periodik':
+                  'ibu_hamil_periksa',
+              'Jumlah Ayah yang merokok': 'ayah_merokok',
+              'Jumlah kasus Kematian Ibu nifas': 'kematian_ibu_nifas',
+              'Jumlah kasus Kanker Serviks pada Perempuan': 'kanker_serviks',
+              'Jumlah bayi dan balita yang mendapat imunisasi dasar lengkap':
+                  'bayi_balita_imunisasi',
+              'Jumlah bayi dan balita sakit yang terdata pada fasilitas kesehatan':
+                  'bayi_balita_sakit',
+              'Jumlah kasus Kematian Bayi dan Balita': 'kematian_bayi_balita',
+            },
+          ),
+          _PokjaSubItem(
+            title:
+                'IV. Program Gerakan Keluarga Sehat Tanggap dan Tangguh Bencana Siaga Kebakaran Lingkungan',
+            deskripsi: '7 field • Kebakaran, Listrik, APAR, P3K',
+            icon: Icons.local_fire_department_rounded,
+            groupFields: {
+              'Jumlah kasus Kebakaran Rumah Tangga':
+                  'kebakaran_rumah_tangga',
+              'Jumlah Rumah Tangga Yang Memiliki Instalasi Listrik Yang Sesuai Standar':
+                  'rumah_listrik_standar',
+              'Jumlah Rumah Tangga Yang Memiliki Alat Pemadam Kebakaran':
+                  'rumah_alat_pemadam',
+              'Jumlah Rumah Semi Permanen dan rumah kayu':
+                  'rumah_semi_permanen',
+              'Jumlah Rumah Tangga yang memiliki Kotak P3K':
+                  'rumah_kotak_p3k',
+              'Jumlah Rumah Tangga Yang Telah Mendapatkan Informasi, Penyuluhan, Atau Sosialisasi Tentang Mitigasi Dan Penanggulangan Kebakaran':
+                  'rumah_info_mitigasi_kebakaran',
+              'Jumlah Kader PKK Yang Telah Mendapatkan Edukasi Terkait Mitigasi Bencana Kebakaran':
+                  'kader_edukasi_kebakaran',
+            },
+          ),
+          _PokjaSubItem(
+            title:
+                'V. Program Gerakan Keluarga Sehat Tanggap dan Tangguh Bencana Mitigasi Bencana Alam',
+            deskripsi: '7 field • Relawan, Posko, Tas Siaga',
+            icon: Icons.flood_rounded,
+            groupFields: {
+              'Jumlah Relawan Bencana Alam': 'relawan_bencana_alam',
+              'Jumlah Rumah Tangga Yang Telah Mendapatkan Informasi, Penyuluhan, Atau Sosialisasi Tentang Mitigasi Dan Penanggulangan Bencana Alam':
+                  'rumah_info_mitigasi_alam',
+              'Jumlah Kader PKK Yang Telah Mendapatkan Edukasi Terkait Mitigasi Bencana Alam':
+                  'kader_edukasi_alam',
+              'Jumlah Fasilitas/Bangunan Yang Ditetapkan Sebagai Alternatif Posko Bila Terjadi Bencana Alam':
+                  'fasilitas_posko_bencana',
+              'Jumlah Relawan Bencana Alam (2)': 'relawan_bencana_alam_2',
+              'Jumlah Rumah Tangga Yang Memiliki Tas Siaga Bencana':
+                  'rumah_tas_siaga',
+              'Jumlah Kerusakan Fasilitas Umum Yang Diakibatkan Oleh Bencana Alam':
+                  'kerusakan_fasilitas_umum',
+            },
+          ),
+          _PokjaSubItem(
+            title:
+                'VI. Program Gerakan Keluarga Sehat Tanggap dan Tangguh Bencana Peduli Lingkungan',
+            deskripsi: '7 field • Sampah, SPAL, Banjir, KLB',
+            icon: Icons.recycling_rounded,
+            groupFields: {
+              'Jumlah Keluarga yang memiliki bak sampah':
+                  'keluarga_bak_sampah',
+              'Jumlah Keluarga sebagai anggota Bank Sampah':
+                  'keluarga_anggota_bank_sampah',
+              'Jumlah keluarga yang menggunakan Sistem Pembuangan Air Limbah (SPAL)':
+                  'keluarga_spal',
+              'Jumlah kasus banjir': 'kasus_banjir',
+              'Jumlah bak sampah milik desa/kelurahan': 'bak_sampah_desa',
+              'Jumlah Rumah sehat': 'rumah_sehat',
+              'Jumlah kasus Kejadian Luar Biasa (KLB)': 'kasus_klb',
+            },
+          ),
+          _PokjaSubItem(
+            title:
+                'VII. Program Gerakan Keluarga Sehat Tanggap dan Tangguh Bencana Menuju Keluarga Sehat Berkualitas',
+            deskripsi: '7 field • 2 Anak, Berobat, Bayi Sehat',
+            icon: Icons.favorite_rounded,
+            groupFields: {
+              'Jumlah Keluarga dengan 2 anak': 'keluarga_2_anak',
+              'Jumlah Penduduk yang berobat ke fasilitas kesehatan berdasarkan data di fasilitas kesehatan':
+                  'penduduk_berobat',
+              'Jumlah kasus penyakit menular': 'penyakit_menular',
+              'Jumlah kasus penyakit tidak menular': 'penyakit_tidak_menular',
+              'Jumlah Bayi Lahir Sehat': 'bayi_lahir_sehat',
+              'Jumlah Bayi Lahir Cukup Bulan': 'bayi_cukup_bulan',
+              'Jumlah keluarga yang memiliki anggota dengan kriteria penyakit gangguan jiwa':
+                  'keluarga_gangguan_jiwa',
+            },
+          ),
+          _PokjaSubItem(
+            title:
+                'VIII. Program Gerakan Keluarga Sehat Tanggap dan Tangguh Bencana Menuju Keuangan Sehat',
+            deskripsi: '7 field • Asuransi, Tabungan, Aset',
+            icon: Icons.savings_rounded,
+            groupFields: {
+              'Jumlah Keluarga yang memiliki Asuransi Kesehatan':
+                  'keluarga_asuransi',
+              'Jumlah kepala keluarga yang tidak memiliki pekerjaan / Pengangguran':
+                  'kk_pengangguran',
+              'Jumlah kepala keluarga yang tidak memiliki pekerjaan tetap':
+                  'kk_tidak_tetap',
+              'Jumlah Kepala Keluarga yang memiliki penghasilan tetap':
+                  'kk_penghasilan_tetap',
+              'Jumlah Ibu hamil yang mempunyai tabungan bersalin (TABULIN)':
+                  'ibu_hamil_tabulin',
+              'Jumlah keluarga yang memiliki tabungan': 'keluarga_tabungan',
+              'Jumlah keluarga yang mempunyai aset untuk investasi':
+                  'keluarga_aset_investasi',
+            },
+          ),
+          _PokjaSubItem(
+            title:
+                'IX. Program Gerakan Keluarga Sehat Tanggap dan Tangguh Bencana Mewujudkan Keluarga Sehat Pasangan Usia Subur (PUS)',
+            deskripsi: '7 field • KB, Reproduksi, Nikah Dini',
+            icon: Icons.pregnant_woman_rounded,
+            groupFields: {
+              'Jumlah Ibu melahirkan Bayi sehat':
+                  'ibu_melahirkan_bayi_sehat',
+              'Jumlah wanita sebagai peserta KB': 'wanita_peserta_kb',
+              'Jumlah pria peserta KB': 'pria_peserta_kb',
+              'Jumlah Pasangan Usia Subur (PUS) yang memiliki masalah kesehatan reproduksi':
+                  'pus_masalah_reproduksi',
+              'Jumlah Pasangan Usia Subur (PUS) yang menikah dengan istri usia dibawah usia 19 Tahun':
+                  'pus_nikah_di_bawah_19',
+              'Jumlah Wanita Usia Subur dengan kehamilan beresiko':
+                  'wus_hamil_beresiko',
+              'Jumlah penderita penyakit infeksi menular seksual pada Pasangan Usia Subur (PUS)':
+                  'pus_penyakit_seksual',
+            },
+          ),
+          // ===== EVALUASI & KETERANGAN (kolom tabel) =====
+          _PokjaSubItem(
+            title: 'Evaluasi',
+            deskripsi: 'Catatan evaluasi pelaksanaan kegiatan',
+            icon: Icons.rate_review_rounded,
+            fieldL: 'evaluasi',
+            isText: true,
+          ),
+          _PokjaSubItem(
+            title: 'Keterangan',
+            deskripsi: 'Keterangan tambahan laporan',
+            icon: Icons.sticky_note_2_rounded,
+            fieldL: 'keterangan',
+            isText: true,
           ),
         ];
 
       case PokjaKategori.pokja4DataProgram:
+        // ⛔ Lama — disembunyikan dari picker, dipertahankan untuk riwayat.
+        // Isi disamakan persis dengan 9 kartu B di form gabungan.
         return const [
           _PokjaSubItem(
-            title: 'I. Peduli Stunting',
-            deskripsi: 'Prematur, BBLR, Kurang Gizi, Stunting, Periksa, Jarak Lahir, dll',
-            icon: Icons.child_care_rounded,
+            title:
+                'I. Program Gerakan Keluarga Sehat Tanggap dan Tangguh Bencana Peduli Stunting',
+            deskripsi: '7 field • Prematur, BBLR, Gizi, Stunting',
+            icon: Icons.monitor_heart_rounded,
             groupFields: {
-              'Bayi Prematur': 'bayi_prematur',
-              'Bayi BBLR': 'bayi_bblr',
-              'Balita Kurang Gizi': 'balita_kurang_gizi',
-              'Balita Stunting': 'balita_stunting',
-              'Bayi/Balita Diperiksa': 'bayi_balita_periksa',
-              'Jarak Lahir Dekat': 'ibu_lahir_jarak_dekat',
-              'Hamil Tak Direncanakan': 'hamil_tidak_direncanakan',
+              'Jumlah Bayi Lahir Prematur': 'bayi_prematur',
+              'Jumlah Bayi Lahir Berat Badan Bayi Lahir Rendah (BBLR)':
+                  'bayi_bblr',
+              'Jumlah Balita Kurang Gizi': 'balita_kurang_gizi',
+              'Jumlah Balita Stunting': 'balita_stunting',
+              'Jumlah bayi dan balita yang rutin dilakukan pemeriksaan tumbuh kembang setiap bulan':
+                  'bayi_balita_periksa',
+              'Jumlah Ibu Yang Melahirkan dengan Jarak Terlalu Dekat':
+                  'ibu_lahir_jarak_dekat',
+              'Jumlah Kehamilan Yang Tidak Direncanakan / Tidak Diinginkan':
+                  'hamil_tidak_direncanakan',
             },
           ),
           _PokjaSubItem(
-            title: 'II. Menuju PHBS',
-            deskripsi: 'TBC, Jamban, Bak Air, Diare, Gizi, Asap, BABS',
+            title:
+                'II. Program Gerakan Keluarga Sehat Tanggap dan Tangguh Bencana Menuju Perilaku Hidup Bersih Dan Sehat (PHBS)',
+            deskripsi: '7 field • TBC, Jamban, Diare, Gizi, BABS',
             icon: Icons.clean_hands_rounded,
             groupFields: {
-              'Penderita TBC': 'penduduk_tbc',
-              'Jamban Sehat': 'rumah_jamban_sehat',
-              'Bak Penampung Air': 'rumah_bak_air',
-              'Penyakit Diare': 'kasus_diare',
-              'Keluarga Sadar Gizi': 'keluarga_sadar_gizi',
-              'Rumah Tanpa Asap': 'rumah_tanpa_asap_rokok',
-              'Penduduk BABS': 'penduduk_babs',
+              'Jumlah penduduk penderita Tuberkulosis (TBC)': 'penduduk_tbc',
+              'Jumlah rumah yang memiliki jamban sehat': 'rumah_jamban_sehat',
+              'Jumlah rumah yang memiliki fasilitas instalasi atau bak penampung air bersih':
+                  'rumah_bak_air',
+              'Jumlah kasus penyakit Diare': 'kasus_diare',
+              'Jumlah keluarga yang sadar gizi': 'keluarga_sadar_gizi',
+              'Jumlah rumah tanpa asap rokok': 'rumah_tanpa_asap_rokok',
+              'Jumlah penduduk yang masih Buang Air Besar Sembarangan (BABS)':
+                  'penduduk_babs',
             },
           ),
           _PokjaSubItem(
-            title: 'III. Kesehatan Keluarga',
-            deskripsi: 'Ibu Hamil, Ayah Merokok, Kematian, Kanker, dll',
-            icon: Icons.family_restroom_rounded,
-            groupFields: {
-              'Ibu Hamil Periksa': 'ibu_hamil_periksa',
-              'Ayah Merokok': 'ayah_merokok',
-              'Kematian Ibu Nifas': 'kematian_ibu_nifas',
-              'Kanker Serviks': 'kanker_serviks',
-              'Bayi/Balita Imunisasi': 'bayi_balita_imunisasi',
-              'Bayi/Balita Sakit': 'bayi_balita_sakit',
-              'Kematian Bayi/Balita': 'kematian_bayi_balita',
-            },
-          ),
-          _PokjaSubItem(
-            title: 'IV. Siaga Kebakaran',
-            deskripsi: 'Kasus, Listrik, Alat Pemadam, Semi Permanen, P3K, dll',
-            icon: Icons.local_fire_department_rounded,
-            groupFields: {
-              'Kasus Kebakaran': 'kebakaran_rumah_tangga',
-              'Listrik Standar': 'rumah_listrik_standar',
-              'Alat Pemadam': 'rumah_alat_pemadam',
-              'Rumah Semi Permanen': 'rumah_semi_permanen',
-              'Kotak P3K': 'rumah_kotak_p3k',
-              'Info Mitigasi (Rumah)': 'rumah_info_mitigasi_kebakaran',
-              'Edukasi Mitigasi (Kader)': 'kader_edukasi_kebakaran',
-            },
-          ),
-          _PokjaSubItem(
-            title: 'V. Mitigasi Bencana Alam',
-            deskripsi: 'Relawan, Info Mitigasi, Edukasi, Posko, Tas Siaga, Kerusakan',
-            icon: Icons.flood_rounded,
-            groupFields: {
-              'Relawan (1)': 'relawan_bencana_alam',
-              'Info Mitigasi (Rumah)': 'rumah_info_mitigasi_alam',
-              'Edukasi (Kader)': 'kader_edukasi_alam',
-              'Posko Bencana': 'fasilitas_posko_bencana',
-              'Relawan (2)': 'relawan_bencana_alam_2',
-              'Tas Siaga Bencana': 'rumah_tas_siaga',
-              'Kerusakan Fasum': 'kerusakan_fasilitas_umum',
-            },
-          ),
-          _PokjaSubItem(
-            title: 'VI. Peduli Lingkungan',
-            deskripsi: 'Bak Sampah, Bank Sampah, SPAL, Banjir, Rumah Sehat, KLB',
-            icon: Icons.eco_rounded,
-            groupFields: {
-              'Keluarga Punya Bak Sampah': 'keluarga_bak_sampah',
-              'Anggota Bank Sampah': 'keluarga_anggota_bank_sampah',
-              'Pengguna SPAL': 'keluarga_spal',
-              'Kasus Banjir': 'kasus_banjir',
-              'Bak Sampah Desa': 'bak_sampah_desa',
-              'Rumah Sehat': 'rumah_sehat',
-              'Kejadian Luar Biasa': 'kasus_klb',
-            },
-          ),
-          _PokjaSubItem(
-            title: 'VII. Keluarga Sehat Berkualitas',
-            deskripsi: '2 Anak, Berobat, Penyakit Menular, Bayi Sehat, dll',
+            title:
+                'III. Program Gerakan Keluarga Sehat Tanggap dan Tangguh Bencana Peduli Kesehatan Keluarga (Ayah, Ibu dan Anak)',
+            deskripsi: '7 field • Hamil, Merokok, Kanker, Imunisasi',
             icon: Icons.health_and_safety_rounded,
             groupFields: {
-              'Keluarga 2 Anak': 'keluarga_2_anak',
-              'Berobat ke Faskes': 'penduduk_berobat',
-              'Penyakit Menular': 'penyakit_menular',
-              'Penyakit Tidak Menular': 'penyakit_tidak_menular',
-              'Bayi Lahir Sehat': 'bayi_lahir_sehat',
-              'Bayi Cukup Bulan': 'bayi_cukup_bulan',
-              'Keluarga Gg. Jiwa': 'keluarga_gangguan_jiwa',
+              'Jumlah ibu hamil yang rutin memeriksakan kehamilannya pada tenaga kesehatan secara periodik':
+                  'ibu_hamil_periksa',
+              'Jumlah Ayah yang merokok': 'ayah_merokok',
+              'Jumlah kasus Kematian Ibu nifas': 'kematian_ibu_nifas',
+              'Jumlah kasus Kanker Serviks pada Perempuan': 'kanker_serviks',
+              'Jumlah bayi dan balita yang mendapat imunisasi dasar lengkap':
+                  'bayi_balita_imunisasi',
+              'Jumlah bayi dan balita sakit yang terdata pada fasilitas kesehatan':
+                  'bayi_balita_sakit',
+              'Jumlah kasus Kematian Bayi dan Balita': 'kematian_bayi_balita',
             },
           ),
           _PokjaSubItem(
-            title: 'VIII. Menuju Keuangan Sehat',
-            deskripsi: 'Asuransi, Pengangguran, Penghasilan, Tabungan, Aset',
+            title:
+                'IV. Program Gerakan Keluarga Sehat Tanggap dan Tangguh Bencana Siaga Kebakaran Lingkungan',
+            deskripsi: '7 field • Kebakaran, Listrik, APAR, P3K',
+            icon: Icons.local_fire_department_rounded,
+            groupFields: {
+              'Jumlah kasus Kebakaran Rumah Tangga':
+                  'kebakaran_rumah_tangga',
+              'Jumlah Rumah Tangga Yang Memiliki Instalasi Listrik Yang Sesuai Standar':
+                  'rumah_listrik_standar',
+              'Jumlah Rumah Tangga Yang Memiliki Alat Pemadam Kebakaran':
+                  'rumah_alat_pemadam',
+              'Jumlah Rumah Semi Permanen dan rumah kayu':
+                  'rumah_semi_permanen',
+              'Jumlah Rumah Tangga yang memiliki Kotak P3K':
+                  'rumah_kotak_p3k',
+              'Jumlah Rumah Tangga Yang Telah Mendapatkan Informasi, Penyuluhan, Atau Sosialisasi Tentang Mitigasi Dan Penanggulangan Kebakaran':
+                  'rumah_info_mitigasi_kebakaran',
+              'Jumlah Kader PKK Yang Telah Mendapatkan Edukasi Terkait Mitigasi Bencana Kebakaran':
+                  'kader_edukasi_kebakaran',
+            },
+          ),
+          _PokjaSubItem(
+            title:
+                'V. Program Gerakan Keluarga Sehat Tanggap dan Tangguh Bencana Mitigasi Bencana Alam',
+            deskripsi: '7 field • Relawan, Posko, Tas Siaga',
+            icon: Icons.flood_rounded,
+            groupFields: {
+              'Jumlah Relawan Bencana Alam': 'relawan_bencana_alam',
+              'Jumlah Rumah Tangga Yang Telah Mendapatkan Informasi, Penyuluhan, Atau Sosialisasi Tentang Mitigasi Dan Penanggulangan Bencana Alam':
+                  'rumah_info_mitigasi_alam',
+              'Jumlah Kader PKK Yang Telah Mendapatkan Edukasi Terkait Mitigasi Bencana Alam':
+                  'kader_edukasi_alam',
+              'Jumlah Fasilitas/Bangunan Yang Ditetapkan Sebagai Alternatif Posko Bila Terjadi Bencana Alam':
+                  'fasilitas_posko_bencana',
+              'Jumlah Relawan Bencana Alam (2)': 'relawan_bencana_alam_2',
+              'Jumlah Rumah Tangga Yang Memiliki Tas Siaga Bencana':
+                  'rumah_tas_siaga',
+              'Jumlah Kerusakan Fasilitas Umum Yang Diakibatkan Oleh Bencana Alam':
+                  'kerusakan_fasilitas_umum',
+            },
+          ),
+          _PokjaSubItem(
+            title:
+                'VI. Program Gerakan Keluarga Sehat Tanggap dan Tangguh Bencana Peduli Lingkungan',
+            deskripsi: '7 field • Sampah, SPAL, Banjir, KLB',
+            icon: Icons.recycling_rounded,
+            groupFields: {
+              'Jumlah Keluarga yang memiliki bak sampah':
+                  'keluarga_bak_sampah',
+              'Jumlah Keluarga sebagai anggota Bank Sampah':
+                  'keluarga_anggota_bank_sampah',
+              'Jumlah keluarga yang menggunakan Sistem Pembuangan Air Limbah (SPAL)':
+                  'keluarga_spal',
+              'Jumlah kasus banjir': 'kasus_banjir',
+              'Jumlah bak sampah milik desa/kelurahan': 'bak_sampah_desa',
+              'Jumlah Rumah sehat': 'rumah_sehat',
+              'Jumlah kasus Kejadian Luar Biasa (KLB)': 'kasus_klb',
+            },
+          ),
+          _PokjaSubItem(
+            title:
+                'VII. Program Gerakan Keluarga Sehat Tanggap dan Tangguh Bencana Menuju Keluarga Sehat Berkualitas',
+            deskripsi: '7 field • 2 Anak, Berobat, Bayi Sehat',
+            icon: Icons.favorite_rounded,
+            groupFields: {
+              'Jumlah Keluarga dengan 2 anak': 'keluarga_2_anak',
+              'Jumlah Penduduk yang berobat ke fasilitas kesehatan berdasarkan data di fasilitas kesehatan':
+                  'penduduk_berobat',
+              'Jumlah kasus penyakit menular': 'penyakit_menular',
+              'Jumlah kasus penyakit tidak menular': 'penyakit_tidak_menular',
+              'Jumlah Bayi Lahir Sehat': 'bayi_lahir_sehat',
+              'Jumlah Bayi Lahir Cukup Bulan': 'bayi_cukup_bulan',
+              'Jumlah keluarga yang memiliki anggota dengan kriteria penyakit gangguan jiwa':
+                  'keluarga_gangguan_jiwa',
+            },
+          ),
+          _PokjaSubItem(
+            title:
+                'VIII. Program Gerakan Keluarga Sehat Tanggap dan Tangguh Bencana Menuju Keuangan Sehat',
+            deskripsi: '7 field • Asuransi, Tabungan, Aset',
             icon: Icons.savings_rounded,
             groupFields: {
-              'Asuransi Kesehatan': 'keluarga_asuransi',
-              'KK Pengangguran': 'kk_pengangguran',
-              'KK Kerja Tidak Tetap': 'kk_tidak_tetap',
-              'KK Berpenghasilan Tetap': 'kk_penghasilan_tetap',
-              'Ibu Hamil Tabulin': 'ibu_hamil_tabulin',
-              'Keluarga Punya Tabungan': 'keluarga_tabungan',
-              'Keluarga Punya Aset': 'keluarga_aset_investasi',
+              'Jumlah Keluarga yang memiliki Asuransi Kesehatan':
+                  'keluarga_asuransi',
+              'Jumlah kepala keluarga yang tidak memiliki pekerjaan / Pengangguran':
+                  'kk_pengangguran',
+              'Jumlah kepala keluarga yang tidak memiliki pekerjaan tetap':
+                  'kk_tidak_tetap',
+              'Jumlah Kepala Keluarga yang memiliki penghasilan tetap':
+                  'kk_penghasilan_tetap',
+              'Jumlah Ibu hamil yang mempunyai tabungan bersalin (TABULIN)':
+                  'ibu_hamil_tabulin',
+              'Jumlah keluarga yang memiliki tabungan': 'keluarga_tabungan',
+              'Jumlah keluarga yang mempunyai aset untuk investasi':
+                  'keluarga_aset_investasi',
             },
           ),
           _PokjaSubItem(
-            title: 'IX. Mewujudkan Keluarga Sehat PUS',
-            deskripsi: 'Bayi Sehat, Peserta KB, Masalah Reproduksi, Nikah Dini, dll',
+            title:
+                'IX. Program Gerakan Keluarga Sehat Tanggap dan Tangguh Bencana Mewujudkan Keluarga Sehat Pasangan Usia Subur (PUS)',
+            deskripsi: '7 field • KB, Reproduksi, Nikah Dini',
             icon: Icons.pregnant_woman_rounded,
             groupFields: {
-              'Ibu Lahirkan Bayi Sehat': 'ibu_melahirkan_bayi_sehat',
-              'Wanita Peserta KB': 'wanita_peserta_kb',
-              'Pria Peserta KB': 'pria_peserta_kb',
-              'PUS Masalah Reproduksi': 'pus_masalah_reproduksi',
-              'PUS Nikah <19 Tahun': 'pus_nikah_di_bawah_19',
-              'WUS Hamil Beresiko': 'wus_hamil_beresiko',
-              'PUS Penyakit Seksual': 'pus_penyakit_seksual',
+              'Jumlah Ibu melahirkan Bayi sehat':
+                  'ibu_melahirkan_bayi_sehat',
+              'Jumlah wanita sebagai peserta KB': 'wanita_peserta_kb',
+              'Jumlah pria peserta KB': 'pria_peserta_kb',
+              'Jumlah Pasangan Usia Subur (PUS) yang memiliki masalah kesehatan reproduksi':
+                  'pus_masalah_reproduksi',
+              'Jumlah Pasangan Usia Subur (PUS) yang menikah dengan istri usia dibawah usia 19 Tahun':
+                  'pus_nikah_di_bawah_19',
+              'Jumlah Wanita Usia Subur dengan kehamilan beresiko':
+                  'wus_hamil_beresiko',
+              'Jumlah penderita penyakit infeksi menular seksual pada Pasangan Usia Subur (PUS)':
+                  'pus_penyakit_seksual',
             },
           ),
         ];
@@ -1140,7 +1411,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                 const SizedBox(height: 4),
                 Text(
                   _restrictedPokja == PokjaKategori.pokja4
-                      ? '4 kategori Pokja IV'
+                      ? '5 kategori Pokja IV'
                       : '${pokjas.length} kategori tersedia',
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
@@ -1269,6 +1540,12 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
 
     if (sub.groupFields != null) {
       _showGroupedInputSheet(sub);
+      return;
+    }
+
+    // ✅ Kartu isian teks (Evaluasi/Keterangan Laporan Data Dukung)
+    if (sub.isText) {
+      _showTextInputSheet(sub);
       return;
     }
 
@@ -1482,6 +1759,156 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  void _showTextInputSheet(_PokjaSubItem sub) {
+    HapticFeedback.selectionClick();
+    final c = _getPokjaColor(_kategori);
+    final soft = _getPokjaSoft(_kategori);
+    final pal = _sheetPalette();
+    _angkaCtrl.putIfAbsent(sub.fieldL, () => TextEditingController());
+    final ctrl = _angkaCtrl[sub.fieldL]!;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) => Container(
+        decoration: BoxDecoration(
+          color: pal.bg,
+          borderRadius: const BorderRadius.vertical(
+            top: Radius.circular(24),
+          ),
+        ),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 36,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: pal.handle,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: _isDarkMode
+                            ? c.withValues(alpha: 0.14)
+                            : soft,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(sub.icon, size: 20, color: c),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            sub.title,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 15,
+                              color: pal.text,
+                            ),
+                          ),
+                          Text(
+                            sub.deskripsi,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 12,
+                              color: pal.sub,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: ctrl,
+                  maxLines: 5,
+                  minLines: 3,
+                  textInputAction: TextInputAction.done,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 13,
+                    color: pal.text,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: 'Tulis ${sub.title.toLowerCase()} di sini...',
+                    hintStyle: GoogleFonts.plusJakartaSans(
+                      fontSize: 12.5,
+                      color: pal.faint,
+                    ),
+                    filled: true,
+                    fillColor: pal.fill,
+                    contentPadding: const EdgeInsets.all(14),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide(
+                        color: c.withValues(alpha: 0.3),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {});
+                      Navigator.pop(ctx);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: c,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: Text(
+                      'Selesai',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -1850,7 +2277,14 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
             if (s.fieldP.isNotEmpty) allowed.add(s.fieldP);
           }
         }
+        // Kunci teks (Evaluasi/Keterangan) — disimpan sebagai string.
+        const textKeys = {'evaluasi', 'keterangan'};
         for (final key in allowed) {
+          if (textKeys.contains(key)) {
+            final t = _angkaCtrl[key]?.text.trim() ?? '';
+            if (t.isNotEmpty) dataAngka[key] = t;
+            continue;
+          }
           final v = int.tryParse(_angkaCtrl[key]?.text.trim() ?? '');
           if (v != null && v > 0) dataAngka[key] = v;
         }
@@ -1865,6 +2299,11 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
         dataAngka['tahun'] = _tanggal.year;
       }
 
+      String? emptyToNull(TextEditingController c) {
+        final v = c.text.trim();
+        return v.isEmpty ? null : v;
+      }
+
       final item = CatatanKegiatan(
         id: widget.catatan?.id ?? 0,
         judul: _judulController.text.trim(),
@@ -1875,8 +2314,88 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
         desa: _desaController.text.trim(),
         fotoPath: _fotoFile?.path,
         tanggal: _tanggal,
+        provinsi: emptyToNull(_provinsiController),
+        kabupatenKota: emptyToNull(_kabupatenController),
+        program: emptyToNull(_programController),
+        pjDesa: emptyToNull(_pjDesaController),
+        pjDesaHp: emptyToNull(_pjDesaHpController),
+        pjKecamatan: emptyToNull(_pjKecamatanController),
+        pjKecamatanHp: emptyToNull(_pjKecamatanHpController),
+        pjKabupaten: emptyToNull(_pjKabupatenController),
+        pjKabupatenHp: emptyToNull(_pjKabupatenHpController),
+        pjProvinsi: emptyToNull(_pjProvinsiController),
+        pjProvinsiHp: emptyToNull(_pjProvinsiHpController),
       );
-      await _service.kirim(item);
+      // ✅ 1 FORM GABUNGAN: split ke 2 tabel backend (Data Dukung + Data Program)
+      if (_kategori == PokjaKategori.pokja4DataDukung &&
+          widget.catatan == null) {
+        final dukung = <String, dynamic>{};
+        final program = <String, dynamic>{};
+        for (final e in dataAngka.entries) {
+          if (PokjaKategoriLabel.dataDukungKeys.contains(e.key)) {
+            dukung[e.key] = e.value;
+          } else if (PokjaKategoriLabel.dataProgramKeys.contains(e.key)) {
+            program[e.key] = e.value;
+          }
+        }
+        // ✅ Evaluasi & Keterangan ikut di kedua POST (kolom tabel).
+        for (final k in const ['evaluasi', 'keterangan']) {
+          final t = dataAngka[k];
+          if (t != null && (t as String).isNotEmpty) {
+            dukung[k] = t;
+            program[k] = t;
+          }
+        }
+        final baseJudul = _judulController.text.trim();
+        if (dukung.isNotEmpty && program.isNotEmpty) {
+          await _service.kirim(
+            item.copyWith(
+              judul: baseJudul,
+              kategori: PokjaKategori.pokja4DataDukung,
+              dataAngka: dukung,
+            ),
+          );
+          await _service.kirim(
+            CatatanKegiatan(
+              judul: '$baseJudul - Data Program',
+              deskripsiSingkat: _deskripsiController.text.trim(),
+              kategori: PokjaKategori.pokja4DataProgram,
+              dataAngka: program,
+              kecamatan: _selectedKecamatan,
+              desa: _desaController.text.trim(),
+              fotoPath: _fotoFile?.path,
+              tanggal: _tanggal,
+              provinsi: item.provinsi,
+              kabupatenKota: item.kabupatenKota,
+              program: item.program,
+              pjDesa: item.pjDesa,
+              pjDesaHp: item.pjDesaHp,
+              pjKecamatan: item.pjKecamatan,
+              pjKecamatanHp: item.pjKecamatanHp,
+              pjKabupaten: item.pjKabupaten,
+              pjKabupatenHp: item.pjKabupatenHp,
+              pjProvinsi: item.pjProvinsi,
+              pjProvinsiHp: item.pjProvinsiHp,
+            ),
+          );
+        } else if (program.isNotEmpty && dukung.isEmpty) {
+          await _service.kirim(
+            item.copyWith(
+              kategori: PokjaKategori.pokja4DataProgram,
+              dataAngka: program,
+            ),
+          );
+        } else {
+          await _service.kirim(
+            item.copyWith(
+              kategori: PokjaKategori.pokja4DataDukung,
+              dataAngka: dukung,
+            ),
+          );
+        }
+      } else {
+        await _service.kirim(item);
+      }
       if (mounted) {
         setState(() => _isSaving = false);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1972,6 +2491,10 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
         }
         continue;
       }
+      if (s.isText) {
+        if ((_angkaCtrl[s.fieldL]?.text ?? '').trim().isNotEmpty) c++;
+        continue;
+      }
       if ((int.tryParse(_angkaCtrl[s.fieldL]?.text ?? '') ?? 0) > 0) c++;
       if (s.fieldP.isNotEmpty &&
           (int.tryParse(_angkaCtrl[s.fieldP]?.text ?? '') ?? 0) > 0)
@@ -1997,6 +2520,8 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
             break;
           }
         }
+      } else if (s.isText) {
+        filled = (_angkaCtrl[s.fieldL]?.text ?? '').trim().isNotEmpty;
       } else {
         filled = (int.tryParse(_angkaCtrl[s.fieldL]?.text ?? '') ?? 0) > 0 ||
             (s.fieldP.isNotEmpty &&
@@ -2623,6 +3148,13 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                 }
                 final hasValue = sum > 0;
                 ringkas = hasValue ? '$sum Terisi' : 'Isi';
+              } else if (s.isText) {
+                final txt = (_angkaCtrl[s.fieldL]?.text ?? '').trim();
+                final hasValue = txt.isNotEmpty;
+                if (hasValue) sum = 1;
+                ringkas = hasValue
+                    ? (txt.length > 18 ? '${txt.substring(0, 18)}…' : txt)
+                    : 'Isi';
               } else {
                 if (_angkaCtrl[s.fieldL]?.text.isNotEmpty == true)
                   sum += int.tryParse(_angkaCtrl[s.fieldL]!.text) ?? 0;
@@ -2761,8 +3293,8 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                       ),
                     ),
                   ),
-                ),
-              );
+                  ),
+                );
             }),
 
             const SizedBox(height: 18),
@@ -2991,6 +3523,163 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                       ),
                     ],
                   ),
+                  // ✅ Kop Laporan Data Dukung (Image 2) — khusus form ini
+                  if (_kategori == PokjaKategori.pokja4DataDukung) ...[
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _kopField(
+                            controller: _provinsiController,
+                            label: 'Provinsi',
+                            hint: 'Jawa Barat',
+                            text: text,
+                            sub: sub,
+                            inputFill: inputFill,
+                            c: c,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: _kopField(
+                            controller: _kabupatenController,
+                            label: 'Kabupaten / Kota',
+                            hint: 'Tasikmalaya',
+                            text: text,
+                            sub: sub,
+                            inputFill: inputFill,
+                            c: c,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    _kopField(
+                      controller: _programController,
+                      label: 'Program',
+                      hint: 'Gerakan Keluarga Sehat ...',
+                      text: text,
+                      sub: sub,
+                      inputFill: inputFill,
+                      c: c,
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _kopField(
+                            controller: _pjDesaController,
+                            label: 'Penanggung Jawab Desa / Kel.',
+                            hint: 'Nama penanggung jawab',
+                            text: text,
+                            sub: sub,
+                            inputFill: inputFill,
+                            c: c,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: _kopField(
+                            controller: _pjDesaHpController,
+                            label: 'No. HP (Desa)',
+                            hint: '08xx',
+                            text: text,
+                            sub: sub,
+                            inputFill: inputFill,
+                            c: c,
+                            keyboardType: TextInputType.phone,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _kopField(
+                            controller: _pjKecamatanController,
+                            label: 'Penanggung Jawab Kecamatan',
+                            hint: 'Nama penanggung jawab',
+                            text: text,
+                            sub: sub,
+                            inputFill: inputFill,
+                            c: c,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: _kopField(
+                            controller: _pjKecamatanHpController,
+                            label: 'No. HP (Kecamatan)',
+                            hint: '08xx',
+                            text: text,
+                            sub: sub,
+                            inputFill: inputFill,
+                            c: c,
+                            keyboardType: TextInputType.phone,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _kopField(
+                            controller: _pjKabupatenController,
+                            label: 'Penanggung Jawab Kab. / Kota',
+                            hint: 'Nama penanggung jawab',
+                            text: text,
+                            sub: sub,
+                            inputFill: inputFill,
+                            c: c,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: _kopField(
+                            controller: _pjKabupatenHpController,
+                            label: 'No. HP (Kab. / Kota)',
+                            hint: '08xx',
+                            text: text,
+                            sub: sub,
+                            inputFill: inputFill,
+                            c: c,
+                            keyboardType: TextInputType.phone,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _kopField(
+                            controller: _pjProvinsiController,
+                            label: 'Penanggung Jawab Provinsi',
+                            hint: 'Nama penanggung jawab',
+                            text: text,
+                            sub: sub,
+                            inputFill: inputFill,
+                            c: c,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: _kopField(
+                            controller: _pjProvinsiHpController,
+                            label: 'No. HP (Provinsi)',
+                            hint: '08xx',
+                            text: text,
+                            sub: sub,
+                            inputFill: inputFill,
+                            c: c,
+                            keyboardType: TextInputType.phone,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -3221,6 +3910,51 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
     );
   }
 
+  /// Field teks kop Laporan Data Dukung — gaya mengikuti field Info pelaksanaan.
+  Widget _kopField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required Color text,
+    required Color sub,
+    required Color inputFill,
+    required Color c,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      style: GoogleFonts.plusJakartaSans(
+        fontSize: 13,
+        color: text,
+        fontWeight: FontWeight.w600,
+      ),
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        hintStyle: GoogleFonts.plusJakartaSans(fontSize: 12, color: sub),
+        filled: true,
+        fillColor: inputFill,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 13,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: c.withValues(alpha: 0.3)),
+        ),
+      ),
+    );
+  }
+
   String _bulan(int m) {
     const b = [
       'Jan',
@@ -3441,6 +4175,8 @@ class _PokjaSubItem {
   final String fieldP;
   final IconData icon;
   final Map<String, dynamic>? groupFields;
+  // ✅ Kartu isian teks (Evaluasi/Keterangan) — bukan angka
+  final bool isText;
 
   const _PokjaSubItem({
     required this.title,
@@ -3449,6 +4185,7 @@ class _PokjaSubItem {
     this.fieldP = '',
     required this.icon,
     this.groupFields,
+    this.isText = false,
   });
 }
 

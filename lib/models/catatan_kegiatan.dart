@@ -37,9 +37,9 @@ extension PokjaKategoriLabel on PokjaKategori {
       case PokjaKategori.pokja4Rekap:
         return 'Pokja IV - Rekapitulasi';
       case PokjaKategori.pokja4DataDukung:
-        return 'Pokja IV - Data Dukung';
+        return 'Pokja IV - Laporan Data Dukung';
       case PokjaKategori.pokja4DataProgram:
-        return 'Pokja IV - Data Program';
+        return 'Pokja IV - Data Program (Lama)';
     }
   }
 
@@ -60,7 +60,7 @@ extension PokjaKategoriLabel on PokjaKategori {
       case PokjaKategori.pokja4Rekap:
         return 'Rekapitulasi';
       case PokjaKategori.pokja4DataDukung:
-        return 'Data Dukung';
+        return 'Laporan Data Dukung';
       case PokjaKategori.pokja4DataProgram:
         return 'Data Program';
     }
@@ -117,6 +117,21 @@ extension PokjaKategoriLabel on PokjaKategori {
         return '/api/pokja4'; // placeholder — ga dipakai POST
     }
   }
+
+  /// ✅ Pilihan untuk form input — Data Program (Lama) disembunyikan,
+  /// sudah gabung ke Laporan Data Dukung. Dipakai semua picker input.
+  static List<PokjaKategori> get inputValues => PokjaKategori.values
+      .where((e) => e != PokjaKategori.pokja4DataProgram)
+      .toList();
+
+  /// Pilihan khusus kader Pokja 4 — 5 item, 1 form gabungan.
+  static const List<PokjaKategori> inputPokja4 = [
+    PokjaKategori.pokja4,
+    PokjaKategori.pokja4Pyd,
+    PokjaKategori.pokja4Posyandu,
+    PokjaKategori.pokja4Rekap,
+    PokjaKategori.pokja4DataDukung,
+  ];
 
   String get tableName {
     switch (this) {
@@ -390,34 +405,8 @@ extension PokjaKategoriLabel on PokjaKategori {
           'keterangan',
         ];
       case PokjaKategori.pokja4DataDukung:
-        return [
-          'jumlah_penduduk',
-          'jumlah_kk',
-          'jumlah_rumah',
-          'jumlah_laki',
-          'jumlah_perempuan',
-          'jumlah_usia_produktif',
-          'jumlah_pus',
-          'jumlah_ibu_hamil',
-          'jumlah_bayi_0_2',
-          'jumlah_bayi_asi',
-          'jumlah_balita',
-          'jumlah_anak',
-          'jumlah_lansia',
-          'jumlah_kb_aktif',
-          'jumlah_ibu_menyusui',
-          'jumlah_keluarga_sejahtera',
-          'jumlah_keluarga_pra_sejahtera',
-          'jumlah_mbr',
-          'jumlah_kader_pkk_rt_rw',
-          'jumlah_kader_pkk_kesehatan',
-          'jumlah_dasa_wisma',
-          'jumlah_kader_dasa_wisma',
-          'jumlah_posyandu_aktif',
-          'jumlah_bidan_desa',
-          'jumlah_bank_sampah',
-          'jumlah_posko_bencana',
-        ];
+        // ✅ GABUNGAN 1 FORM: A. Data Dukung (26) + B. Data Program (70)
+        return [...dataDukungKeys, ...dataProgramKeys];
       case PokjaKategori.pokja4DataProgram:
         return [
           // I. Stunting
@@ -496,8 +485,112 @@ extension PokjaKategoriLabel on PokjaKategori {
     }
   }
 
+  // ============================================================
+  // KUNCI 1 FORM GABUNGAN — dipakai untuk split simpan + seksi UI
+  // ============================================================
+  static const List<String> dataDukungKeys = [
+    'jumlah_penduduk',
+    'jumlah_kk',
+    'jumlah_rumah',
+    'jumlah_laki',
+    'jumlah_perempuan',
+    'jumlah_usia_produktif',
+    'jumlah_pus',
+    'jumlah_ibu_hamil',
+    'jumlah_bayi_0_2',
+    'jumlah_bayi_asi',
+    'jumlah_balita',
+    'jumlah_anak',
+    'jumlah_lansia',
+    'jumlah_kb_aktif',
+    'jumlah_ibu_menyusui',
+    'jumlah_keluarga_sejahtera',
+    'jumlah_keluarga_pra_sejahtera',
+    'jumlah_mbr',
+    'jumlah_kader_pkk_rt_rw',
+    'jumlah_kader_pkk_kesehatan',
+    'jumlah_dasa_wisma',
+    'jumlah_kader_dasa_wisma',
+    'jumlah_posyandu_aktif',
+    'jumlah_bidan_desa',
+    'jumlah_bank_sampah',
+    'jumlah_posko_bencana',
+  ];
+
+  static const List<String> dataProgramKeys = [
+    'bayi_prematur',
+    'bayi_bblr',
+    'balita_kurang_gizi',
+    'balita_stunting',
+    'bayi_balita_periksa',
+    'ibu_lahir_jarak_dekat',
+    'hamil_tidak_direncanakan',
+    'penduduk_tbc',
+    'rumah_jamban_sehat',
+    'rumah_bak_air',
+    'kasus_diare',
+    'keluarga_sadar_gizi',
+    'rumah_tanpa_asap_rokok',
+    'penduduk_babs',
+    'ibu_hamil_periksa',
+    'ayah_merokok',
+    'kematian_ibu_nifas',
+    'kanker_serviks',
+    'bayi_balita_imunisasi',
+    'bayi_balita_sakit',
+    'kematian_bayi_balita',
+    'kebakaran_rumah_tangga',
+    'rumah_listrik_standar',
+    'rumah_alat_pemadam',
+    'rumah_semi_permanen',
+    'rumah_kotak_p3k',
+    'rumah_info_mitigasi_kebakaran',
+    'kader_edukasi_kebakaran',
+    'relawan_bencana_alam',
+    'rumah_info_mitigasi_alam',
+    'kader_edukasi_alam',
+    'fasilitas_posko_bencana',
+    'relawan_bencana_alam_2',
+    'rumah_tas_siaga',
+    'kerusakan_fasilitas_umum',
+    'keluarga_bak_sampah',
+    'keluarga_anggota_bank_sampah',
+    'keluarga_spal',
+    'kasus_banjir',
+    'bak_sampah_desa',
+    'rumah_sehat',
+    'kasus_klb',
+    'keluarga_2_anak',
+    'penduduk_berobat',
+    'penyakit_menular',
+    'penyakit_tidak_menular',
+    'bayi_lahir_sehat',
+    'bayi_cukup_bulan',
+    'keluarga_gangguan_jiwa',
+    'keluarga_asuransi',
+    'kk_pengangguran',
+    'kk_tidak_tetap',
+    'kk_penghasilan_tetap',
+    'ibu_hamil_tabulin',
+    'keluarga_tabungan',
+    'keluarga_aset_investasi',
+    'ibu_melahirkan_bayi_sehat',
+    'wanita_peserta_kb',
+    'pria_peserta_kb',
+    'pus_masalah_reproduksi',
+    'pus_nikah_di_bawah_19',
+    'wus_hamil_beresiko',
+    'pus_penyakit_seksual',
+  ];
+
   // Label untuk field
   String getLabelForField(String field) {
+    // ✅ rumah_sehat dipakai dua konteks: Pokja III vs B-VI Data Program.
+    if (field == 'rumah_sehat' &&
+        (this == PokjaKategori.pokja4DataDukung ||
+            this == PokjaKategori.pokja4DataProgram)) {
+      return 'Jumlah Rumah sehat';
+    }
     switch (field) {
       case 'kader_umum': return 'Kader Umum';
       case 'kader_khusus': return 'Kader Khusus';
@@ -649,6 +742,7 @@ extension PokjaKategoriLabel on PokjaKategori {
       case 'damas_pkk_l': return 'Damas PKK (L)';
       case 'damas_pkk_p': return 'Damas PKK (P)';
       case 'keterangan': return 'Keterangan';
+      case 'evaluasi': return 'Evaluasi';
       // Pokja III — sesuai format DATA KEGIATAN PKK
       case 'jumlah_kader_pangan': return 'Jml Kader - Pangan';
       case 'jumlah_kader_sandang': return 'Jml Kader - Sandang';
@@ -674,6 +768,94 @@ extension PokjaKategoriLabel on PokjaKategori {
       case 'hatinya_pkk': return 'HATINYA PKK (lama)';
       case 'industri_rumah_tangga': return 'Industri Rumah Tangga (lama)';
       case 'jumlah_rumah': return 'Jumlah Rumah (lama)';
+      // Pokja IV — A. Data Dukung (tabel A no. 1-26)
+      case 'jumlah_penduduk': return 'Jumlah Penduduk';
+      case 'jumlah_kk': return 'Jumlah Kepala Keluarga';
+      case 'jumlah_laki': return 'Jumlah Laki-Laki';
+      case 'jumlah_perempuan': return 'Jumlah Perempuan';
+      case 'jumlah_usia_produktif': return 'Jumlah Usia Produktif (15-64 Tahun)';
+      case 'jumlah_ibu_hamil': return 'Jumlah Ibu Hamil';
+      case 'jumlah_bayi_0_2': return 'Jumlah Bayi (0-2 Tahun)';
+      case 'jumlah_bayi_asi': return 'Jumlah Bayi yang mendapatkan ASI Eksklusif (0-6 Bulan)';
+      case 'jumlah_balita': return 'Jumlah Balita (>2-5 Tahun)';
+      case 'jumlah_anak': return 'Jumlah Anak (6-14 Tahun)';
+      case 'jumlah_lansia': return 'Jumlah Lansia (≥65 Tahun)';
+      case 'jumlah_kb_aktif': return 'Jumlah Peserta KB Aktif';
+      case 'jumlah_ibu_menyusui': return 'Jumlah Ibu Menyusui';
+      case 'jumlah_keluarga_sejahtera': return 'Jumlah Keluarga Sejahtera';
+      case 'jumlah_keluarga_pra_sejahtera': return 'Jumlah Keluarga Pra Sejahtera';
+      case 'jumlah_mbr': return 'Jumlah Masyarakat Berpenghasilan Rendah (MBR)';
+      case 'jumlah_kader_pkk_rt_rw': return 'Jumlah Kader PKK RT/RW';
+      case 'jumlah_kader_pkk_kesehatan': return 'Jumlah Kader PKK Bidang Kesehatan';
+      case 'jumlah_dasa_wisma': return 'Jumlah Kelompok Dasa Wisma';
+      case 'jumlah_kader_dasa_wisma': return 'Jumlah Kader Dasa Wisma';
+      case 'jumlah_posyandu_aktif': return 'Jumlah Posyandu Aktif';
+      case 'jumlah_bidan_desa': return 'Jumlah Bidan Desa';
+      case 'jumlah_bank_sampah': return 'Jumlah Bank Sampah';
+      case 'jumlah_posko_bencana': return 'Jumlah Posko Bencana';
+      // Pokja IV — B. Data Program (I-IX @ 7)
+      case 'bayi_prematur': return 'Jumlah Bayi Lahir Prematur';
+      case 'bayi_bblr': return 'Jumlah Bayi Lahir Berat Badan Bayi Lahir Rendah (BBLR)';
+      case 'balita_kurang_gizi': return 'Jumlah Balita Kurang Gizi';
+      case 'balita_stunting': return 'Jumlah Balita Stunting';
+      case 'bayi_balita_periksa': return 'Jumlah bayi dan balita yang rutin dilakukan pemeriksaan tumbuh kembang setiap bulan';
+      case 'ibu_lahir_jarak_dekat': return 'Jumlah Ibu Yang Melahirkan dengan Jarak Terlalu Dekat';
+      case 'hamil_tidak_direncanakan': return 'Jumlah Kehamilan Yang Tidak Direncanakan / Tidak Diinginkan';
+      case 'penduduk_tbc': return 'Jumlah penduduk penderita Tuberkulosis (TBC)';
+      case 'rumah_jamban_sehat': return 'Jumlah rumah yang memiliki jamban sehat';
+      case 'rumah_bak_air': return 'Jumlah rumah yang memiliki fasilitas instalasi atau bak penampung air bersih';
+      case 'kasus_diare': return 'Jumlah kasus penyakit Diare';
+      case 'keluarga_sadar_gizi': return 'Jumlah keluarga yang sadar gizi';
+      case 'rumah_tanpa_asap_rokok': return 'Jumlah rumah tanpa asap rokok';
+      case 'penduduk_babs': return 'Jumlah penduduk yang masih Buang Air Besar Sembarangan (BABS)';
+      case 'ibu_hamil_periksa': return 'Jumlah ibu hamil yang rutin memeriksakan kehamilannya pada tenaga kesehatan secara periodik';
+      case 'ayah_merokok': return 'Jumlah Ayah yang merokok';
+      case 'kematian_ibu_nifas': return 'Jumlah kasus Kematian Ibu nifas';
+      case 'kanker_serviks': return 'Jumlah kasus Kanker Serviks pada Perempuan';
+      case 'bayi_balita_imunisasi': return 'Jumlah bayi dan balita yang mendapat imunisasi dasar lengkap';
+      case 'bayi_balita_sakit': return 'Jumlah bayi dan balita sakit yang terdata pada fasilitas kesehatan';
+      case 'kematian_bayi_balita': return 'Jumlah kasus Kematian Bayi dan Balita';
+      case 'kebakaran_rumah_tangga': return 'Jumlah kasus Kebakaran Rumah Tangga';
+      case 'rumah_listrik_standar': return 'Jumlah Rumah Tangga Yang Memiliki Instalasi Listrik Yang Sesuai Standar';
+      case 'rumah_alat_pemadam': return 'Jumlah Rumah Tangga Yang Memiliki Alat Pemadam Kebakaran';
+      case 'rumah_semi_permanen': return 'Jumlah Rumah Semi Permanen dan rumah kayu';
+      case 'rumah_kotak_p3k': return 'Jumlah Rumah Tangga yang memiliki Kotak P3K';
+      case 'rumah_info_mitigasi_kebakaran': return 'Jumlah Rumah Tangga Yang Telah Mendapatkan Informasi, Penyuluhan, Atau Sosialisasi Tentang Mitigasi Dan Penanggulangan Kebakaran';
+      case 'kader_edukasi_kebakaran': return 'Jumlah Kader PKK Yang Telah Mendapatkan Edukasi Terkait Mitigasi Bencana Kebakaran';
+      case 'relawan_bencana_alam': return 'Jumlah Relawan Bencana Alam';
+      case 'rumah_info_mitigasi_alam': return 'Jumlah Rumah Tangga Yang Telah Mendapatkan Informasi, Penyuluhan, Atau Sosialisasi Tentang Mitigasi Dan Penanggulangan Bencana Alam';
+      case 'kader_edukasi_alam': return 'Jumlah Kader PKK Yang Telah Mendapatkan Edukasi Terkait Mitigasi Bencana Alam';
+      case 'fasilitas_posko_bencana': return 'Jumlah Fasilitas/Bangunan Yang Ditetapkan Sebagai Alternatif Posko Bila Terjadi Bencana Alam';
+      case 'relawan_bencana_alam_2': return 'Jumlah Relawan Bencana Alam (2)';
+      case 'rumah_tas_siaga': return 'Jumlah Rumah Tangga Yang Memiliki Tas Siaga Bencana';
+      case 'kerusakan_fasilitas_umum': return 'Jumlah Kerusakan Fasilitas Umum Yang Diakibatkan Oleh Bencana Alam';
+      case 'keluarga_bak_sampah': return 'Jumlah Keluarga yang memiliki bak sampah';
+      case 'keluarga_anggota_bank_sampah': return 'Jumlah Keluarga sebagai anggota Bank Sampah';
+      case 'keluarga_spal': return 'Jumlah keluarga yang menggunakan Sistem Pembuangan Air Limbah (SPAL)';
+      case 'kasus_banjir': return 'Jumlah kasus banjir';
+      case 'bak_sampah_desa': return 'Jumlah bak sampah milik desa/kelurahan';
+      case 'kasus_klb': return 'Jumlah kasus Kejadian Luar Biasa (KLB)';
+      case 'keluarga_2_anak': return 'Jumlah Keluarga dengan 2 anak';
+      case 'penduduk_berobat': return 'Jumlah Penduduk yang berobat ke fasilitas kesehatan berdasarkan data di fasilitas kesehatan';
+      case 'penyakit_menular': return 'Jumlah kasus penyakit menular';
+      case 'penyakit_tidak_menular': return 'Jumlah kasus penyakit tidak menular';
+      case 'bayi_lahir_sehat': return 'Jumlah Bayi Lahir Sehat';
+      case 'bayi_cukup_bulan': return 'Jumlah Bayi Lahir Cukup Bulan';
+      case 'keluarga_gangguan_jiwa': return 'Jumlah keluarga yang memiliki anggota dengan kriteria penyakit gangguan jiwa';
+      case 'keluarga_asuransi': return 'Jumlah Keluarga yang memiliki Asuransi Kesehatan';
+      case 'kk_pengangguran': return 'Jumlah kepala keluarga yang tidak memiliki pekerjaan / Pengangguran';
+      case 'kk_tidak_tetap': return 'Jumlah kepala keluarga yang tidak memiliki pekerjaan tetap';
+      case 'kk_penghasilan_tetap': return 'Jumlah Kepala Keluarga yang memiliki penghasilan tetap';
+      case 'ibu_hamil_tabulin': return 'Jumlah Ibu hamil yang mempunyai tabungan bersalin (TABULIN)';
+      case 'keluarga_tabungan': return 'Jumlah keluarga yang memiliki tabungan';
+      case 'keluarga_aset_investasi': return 'Jumlah keluarga yang mempunyai aset untuk investasi';
+      case 'ibu_melahirkan_bayi_sehat': return 'Jumlah Ibu melahirkan Bayi sehat';
+      case 'wanita_peserta_kb': return 'Jumlah wanita sebagai peserta KB';
+      case 'pria_peserta_kb': return 'Jumlah pria peserta KB';
+      case 'pus_masalah_reproduksi': return 'Jumlah Pasangan Usia Subur (PUS) yang memiliki masalah kesehatan reproduksi';
+      case 'pus_nikah_di_bawah_19': return 'Jumlah Pasangan Usia Subur (PUS) yang menikah dengan istri usia dibawah usia 19 Tahun';
+      case 'wus_hamil_beresiko': return 'Jumlah Wanita Usia Subur dengan kehamilan beresiko';
+      case 'pus_penyakit_seksual': return 'Jumlah penderita penyakit infeksi menular seksual pada Pasangan Usia Subur (PUS)';
       default:
         return field;
     }
@@ -702,6 +884,12 @@ extension PokjaKategoriLabel on PokjaKategori {
       case 'IV-REKAP':
       case 'pokja4Rekap':
         return PokjaKategori.pokja4Rekap;
+      case 'IV-DATADUKUNG':
+      case 'pokja4DataDukung':
+        return PokjaKategori.pokja4DataDukung;
+      case 'IV-DATAPROGRAM':
+      case 'pokja4DataProgram':
+        return PokjaKategori.pokja4DataProgram;
       default:
         return PokjaKategori.pokja1;
     }
@@ -723,12 +911,24 @@ class CatatanKegiatan {
   final String judul;
   final String deskripsiSingkat;
   final PokjaKategori kategori;
-  final Map<String, dynamic> dataAngka; // âœ… dynamic â€” bisa int + string
+  final Map<String, dynamic> dataAngka; // ✅ dynamic — bisa int + string
   final String kecamatan;
   final String? desa;
   final String? fotoPath;
   final DateTime tanggal;
   final StatusKegiatan status;
+  // ✅ KOP LAPORAN DATA DUKUNG (Image 2) — nullable, khusus pokja4DataDukung
+  final String? provinsi;
+  final String? kabupatenKota;
+  final String? program;
+  final String? pjDesa;
+  final String? pjDesaHp;
+  final String? pjKecamatan;
+  final String? pjKecamatanHp;
+  final String? pjKabupaten;
+  final String? pjKabupatenHp;
+  final String? pjProvinsi;
+  final String? pjProvinsiHp;
 
   CatatanKegiatan({
     this.id = 0,
@@ -742,6 +942,17 @@ class CatatanKegiatan {
     this.fotoPath,
     DateTime? tanggal,
     this.status = StatusKegiatan.terkirim,
+    this.provinsi,
+    this.kabupatenKota,
+    this.program,
+    this.pjDesa,
+    this.pjDesaHp,
+    this.pjKecamatan,
+    this.pjKecamatanHp,
+    this.pjKabupaten,
+    this.pjKabupatenHp,
+    this.pjProvinsi,
+    this.pjProvinsiHp,
   }) : deskripsiSingkat = deskripsiSingkat ?? ceritaSingkat ?? '',
        tanggal = tanggal ?? DateTime.now();
 
@@ -764,6 +975,17 @@ class CatatanKegiatan {
     String? fotoPath,
     DateTime? tanggal,
     StatusKegiatan? status,
+    String? provinsi,
+    String? kabupatenKota,
+    String? program,
+    String? pjDesa,
+    String? pjDesaHp,
+    String? pjKecamatan,
+    String? pjKecamatanHp,
+    String? pjKabupaten,
+    String? pjKabupatenHp,
+    String? pjProvinsi,
+    String? pjProvinsiHp,
   }) {
     return CatatanKegiatan(
       id: id ?? this.id,
@@ -776,6 +998,17 @@ class CatatanKegiatan {
       fotoPath: fotoPath ?? this.fotoPath,
       tanggal: tanggal ?? this.tanggal,
       status: status ?? this.status,
+      provinsi: provinsi ?? this.provinsi,
+      kabupatenKota: kabupatenKota ?? this.kabupatenKota,
+      program: program ?? this.program,
+      pjDesa: pjDesa ?? this.pjDesa,
+      pjDesaHp: pjDesaHp ?? this.pjDesaHp,
+      pjKecamatan: pjKecamatan ?? this.pjKecamatan,
+      pjKecamatanHp: pjKecamatanHp ?? this.pjKecamatanHp,
+      pjKabupaten: pjKabupaten ?? this.pjKabupaten,
+      pjKabupatenHp: pjKabupatenHp ?? this.pjKabupatenHp,
+      pjProvinsi: pjProvinsi ?? this.pjProvinsi,
+      pjProvinsiHp: pjProvinsiHp ?? this.pjProvinsiHp,
     );
   }
 
@@ -829,13 +1062,24 @@ class CatatanKegiatan {
       'id': id,
       'judul': judul,
       'deskripsi': deskripsiSingkat,
-      'kategori_pokja': kategori.kategoriPokja, // âœ… FIX: string
+      'kategori_pokja': kategori.kategoriPokja, // ✅ FIX: string
       'data_angka': dataAngka,
       'kecamatan': kecamatan,
       'desa_kelurahan': desa,
       'foto_path': fotoPath,
       'tanggal': tanggal.toIso8601String(),
       'status': status.index,
+      'provinsi': provinsi,
+      'kabupaten_kota': kabupatenKota,
+      'program': program,
+      'pj_desa': pjDesa,
+      'pj_desa_hp': pjDesaHp,
+      'pj_kecamatan': pjKecamatan,
+      'pj_kecamatan_hp': pjKecamatanHp,
+      'pj_kabupaten': pjKabupaten,
+      'pj_kabupaten_hp': pjKabupatenHp,
+      'pj_provinsi': pjProvinsi,
+      'pj_provinsi_hp': pjProvinsiHp,
     };
   }
 
@@ -897,6 +1141,17 @@ class CatatanKegiatan {
           json['foto_path']?.toString() ??
           json['foto_url']?.toString(),
       tanggal: parsedTanggal,
+      provinsi: json['provinsi']?.toString(),
+      kabupatenKota: json['kabupaten_kota']?.toString() ?? json['kabupaten']?.toString(),
+      program: json['program']?.toString(),
+      pjDesa: json['pj_desa']?.toString() ?? json['penanggung_jawab_desa']?.toString(),
+      pjDesaHp: json['pj_desa_hp']?.toString(),
+      pjKecamatan: json['pj_kecamatan']?.toString() ?? json['penanggung_jawab_kecamatan']?.toString(),
+      pjKecamatanHp: json['pj_kecamatan_hp']?.toString(),
+      pjKabupaten: json['pj_kabupaten']?.toString() ?? json['penanggung_jawab_kabupaten']?.toString(),
+      pjKabupatenHp: json['pj_kabupaten_hp']?.toString(),
+      pjProvinsi: json['pj_provinsi']?.toString() ?? json['penanggung_jawab_provinsi']?.toString(),
+      pjProvinsiHp: json['pj_provinsi_hp']?.toString(),
       status: json['status'] == 'dibaca' || json['status'] == 1
           ? StatusKegiatan.dibaca
           : StatusKegiatan.terkirim,
@@ -913,10 +1168,21 @@ class CatatanKegiatan {
     final payload = {
       'judul': catatan.judul,
       'deskripsi': catatan.deskripsiSingkat,
-      'kategori_pokja': catatan.kategori.kategoriPokja, // âœ… IV, IV-PYD, dll
+      'kategori_pokja': catatan.kategori.kategoriPokja, // ✅ IV, IV-PYD, dll
       'data_angka': catatan.dataAngka,
       'kecamatan': catatan.kecamatan,
       'desa_kelurahan': catatan.desa,
+      'provinsi': catatan.provinsi,
+      'kabupaten_kota': catatan.kabupatenKota,
+      'program': catatan.program,
+      'pj_desa': catatan.pjDesa,
+      'pj_desa_hp': catatan.pjDesaHp,
+      'pj_kecamatan': catatan.pjKecamatan,
+      'pj_kecamatan_hp': catatan.pjKecamatanHp,
+      'pj_kabupaten': catatan.pjKabupaten,
+      'pj_kabupaten_hp': catatan.pjKabupatenHp,
+      'pj_provinsi': catatan.pjProvinsi,
+      'pj_provinsi_hp': catatan.pjProvinsiHp,
     };
 
     final response = await http.post(

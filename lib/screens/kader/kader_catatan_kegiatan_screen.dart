@@ -179,16 +179,10 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
   }
 
   List<PokjaKategori> _availablePokjas() {
-    if (_restrictedPokja == null) return PokjaKategori.values;
+    // ✅ 1 FORM GABUNGAN: Data Program (Lama) tidak tampil — sudah masuk ke Laporan Data Dukung.
+    if (_restrictedPokja == null) return PokjaKategoriLabel.inputValues;
     if (_restrictedPokja == PokjaKategori.pokja4) {
-      return const [
-        PokjaKategori.pokja4,
-        PokjaKategori.pokja4Pyd,
-        PokjaKategori.pokja4Posyandu,
-        PokjaKategori.pokja4Rekap,
-        PokjaKategori.pokja4DataDukung,
-        PokjaKategori.pokja4DataProgram,
-      ];
+      return PokjaKategoriLabel.inputPokja4;
     }
     return [_restrictedPokja!];
   }
@@ -429,9 +423,9 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
       case PokjaKategori.pokja4Rekap:
         return 'Rekap Ibu Hamil, Melahirkan & Nifas';
       case PokjaKategori.pokja4DataDukung:
-        return 'Data Umum & Laporan Pelaksanaan';
+        return '1 Form • A. Data Dukung + B. Data Program';
       case PokjaKategori.pokja4DataProgram:
-        return 'Data Program (Stunting, PHBS, Bencana)';
+        return 'Data Program (Lama — gabung ke atas)';
     }
   }
 

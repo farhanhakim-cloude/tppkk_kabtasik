@@ -431,8 +431,18 @@ class _VerifikasiLaporanScreenState extends State<VerifikasiLaporanScreen> {
     final chips = <Widget>[];
     final allCount = _laporanList.length;
     chips.add(_chip('Semua', null, allCount));
-    for (final p in PokjaKategori.values) {
-      final c = _laporanList.where((e) => e.kategori == p).length;
+    // ✅ 1 FORM GABUNGAN: chip Data Program (Lama) disembunyikan,
+    // jumlahnya digabung ke Laporan Data Dukung biar riwayat lama tetap kehitung.
+    for (final p in PokjaKategoriLabel.inputValues) {
+      final c = p == PokjaKategori.pokja4DataDukung
+          ? _laporanList
+                .where(
+                  (e) =>
+                      e.kategori == PokjaKategori.pokja4DataDukung ||
+                      e.kategori == PokjaKategori.pokja4DataProgram,
+                )
+                .length
+          : _laporanList.where((e) => e.kategori == p).length;
       chips.add(_chip(p.shortLabel, p, c));
     }
     return SingleChildScrollView(
