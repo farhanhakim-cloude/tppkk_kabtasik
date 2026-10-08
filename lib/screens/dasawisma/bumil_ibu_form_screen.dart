@@ -15,7 +15,7 @@ class BumilIbuFormScreen extends StatefulWidget {
 class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final _service = BumilService();
-  static const Color _primary = Color(0xFF0F4C81);
+  static const Color _primary = Color(0xFF0072BC);
   static const Color _ink = Color(0xFF1A2B3C);
   static const Color _muted = Color(0xFF5B6B7C);
   static const Color _line = Color(0xFFE1E7EE);

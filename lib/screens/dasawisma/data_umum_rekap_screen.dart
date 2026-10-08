@@ -15,7 +15,7 @@ class DataUmumRekapScreen extends StatefulWidget {
 }
 
 class _DataUmumRekapScreenState extends State<DataUmumRekapScreen> {
-  static const Color biru = Color(0xFF0F4C81);
+  static const Color biru = Color(0xFF0072BC);
   static const Color ink = Color(0xFF1A2B3C);
   static const Color muted = Color(0xFF5B6B7C);
   static const Color line = Color(0xFFE1E7EE);

@@ -25,7 +25,7 @@ class _BumilIbuListScreenState extends State<BumilIbuListScreen>
   int _bulan = DateTime.now().month;
   int _tahun = DateTime.now().year;
 
-  static const Color _biru = Color(0xFF0F4C81);
+  static const Color _biru = Color(0xFF0072BC);
   static const Color _ink = Color(0xFF1A2B3C);
   static const Color _muted = Color(0xFF5B6B7C);
   static const Color _line = Color(0xFFE1E7EE);
@@ -648,7 +648,7 @@ class _DetailSheet extends StatelessWidget {
                         style: GoogleFonts.plusJakartaSans(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
-                            color: const Color(0xFF0F4C81))),
+                            color: const Color(0xFF0072BC))),
                   ])),
               const Divider(height: 1, color: Color(0xFFE1E7EE)),
               Expanded(

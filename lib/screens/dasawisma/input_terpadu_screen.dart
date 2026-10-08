@@ -68,7 +68,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
   final _tanahService = PemanfaatanTanahService();
   final _industriService = IndustriRumahTanggaService();
 
-  static const Color _primary = Color(0xFF0F4C81);
+  static const Color _primary = Color(0xFF0072BC);
   static const Color _ink = Color(0xFF1A2B3C);
   static const Color _muted = Color(0xFF5B6B7C);
   static const Color _line = Color(0xFFE1E7EE);

@@ -13,7 +13,6 @@ class KegiatanWargaMainScreen extends StatefulWidget {
   final int initialIndex;
   const KegiatanWargaMainScreen({super.key, this.initialIndex = 0});
 
-  static const Color navy = Color(0xFF0F326D);
   static const Color biru = Color(0xFF0072BC);
 
   @override
@@ -80,7 +79,7 @@ class _KegiatanWargaMainScreenState extends State<KegiatanWargaMainScreen>
               ]),
               indicatorSize: TabBarIndicatorSize.tab,
               dividerColor: Colors.transparent,
-              labelColor: const Color(0xFF0F326D),
+              labelColor: KegiatanWargaMainScreen.biru,
               unselectedLabelColor: const Color(0xFF64748B),
               labelStyle: GoogleFonts.plusJakartaSans(fontSize: 12.5, fontWeight: FontWeight.w800),
               unselectedLabelStyle: GoogleFonts.plusJakartaSans(fontSize: 12.5, fontWeight: FontWeight.w600),

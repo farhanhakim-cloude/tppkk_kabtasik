@@ -30,7 +30,7 @@ class InputKeluargaDasawismaScreen extends StatefulWidget {
 
 class _InputKeluargaDasawismaScreenState
     extends State<InputKeluargaDasawismaScreen> {
-  static const Color _primary = Color(0xFF0F4C81);
+  static const Color _primary = Color(0xFF0072BC);
   static const Color _darkText = Color(0xFF1A2B3C);
   static const Color _muted = Color(0xFF5B6B7C);
   static const Color _bg = Color(0xFFF4F6F9);
