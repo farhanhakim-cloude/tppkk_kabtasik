@@ -239,10 +239,37 @@ extension PokjaKategoriLabel on PokjaKategori {
         ];
       case PokjaKategori.pokja3:
         return [
+          // JUMLAH KADER
+          'jumlah_kader_pangan',
+          'jumlah_kader_sandang',
+          'jumlah_kader_tata_laksana',
+          // PANGAN — Makanan Pokok
+          'pangan_beras',
+          'pangan_non_beras',
+          // PANGAN — Pemanfaatan Pekarangan / HATINYA PKK
+          'pangan_peternakan',
+          'pangan_perikanan',
+          'pangan_warung_hidup',
+          'pangan_lumbung_hidup',
+          'pangan_toga',
+          'pangan_tanaman_keras',
+          'pangan_tanaman_lainnya',
+          // JUMLAH INDUSTRI RUMAH TANGGA
+          'industri_pangan',
+          'industri_sandang',
+          'industri_jasa',
+          // JUMLAH RUMAH
           'rumah_sehat',
           'rumah_tidak_sehat',
+          'keterangan',
+          // LEGACY — tetap dibaca agar laporan lama tidak hilang
+          'jumlah_kader',
+          'jumlah_kader_p',
+          'makanan_pokok',
           'pemanfaatan_pekarangan',
+          'hatinya_pkk',
           'industri_rumah_tangga',
+          'jumlah_rumah',
         ];
       case PokjaKategori.pokja4:
         // âœ… FIX: 25 kolom â€” match dengan backend
@@ -622,6 +649,31 @@ extension PokjaKategoriLabel on PokjaKategori {
       case 'damas_pkk_l': return 'Damas PKK (L)';
       case 'damas_pkk_p': return 'Damas PKK (P)';
       case 'keterangan': return 'Keterangan';
+      // Pokja III — sesuai format DATA KEGIATAN PKK
+      case 'jumlah_kader_pangan': return 'Jml Kader - Pangan';
+      case 'jumlah_kader_sandang': return 'Jml Kader - Sandang';
+      case 'jumlah_kader_tata_laksana': return 'Jml Kader - Tata Laksana RT';
+      case 'pangan_beras': return 'Makanan Pokok - Beras';
+      case 'pangan_non_beras': return 'Makanan Pokok - Non Beras';
+      case 'pangan_peternakan': return 'HATINYA - Peternakan';
+      case 'pangan_perikanan': return 'HATINYA - Perikanan';
+      case 'pangan_warung_hidup': return 'HATINYA - Warung Hidup';
+      case 'pangan_lumbung_hidup': return 'HATINYA - Lumbung Hidup';
+      case 'pangan_toga': return 'HATINYA - TOGA';
+      case 'pangan_tanaman_keras': return 'HATINYA - Tanaman Keras';
+      case 'pangan_tanaman_lainnya': return 'HATINYA - Tanaman Lainnya';
+      case 'industri_pangan': return 'Industri RT - Pangan';
+      case 'industri_sandang': return 'Industri RT - Sandang';
+      case 'industri_jasa': return 'Industri RT - Jasa';
+      case 'rumah_sehat': return 'Rumah Sehat & Layak Huni';
+      case 'rumah_tidak_sehat': return 'Rumah Tidak Sehat & Tidak Layak Huni';
+      case 'jumlah_kader': return 'Jml Kader (lama)';
+      case 'jumlah_kader_p': return 'Jml Kader P (lama)';
+      case 'makanan_pokok': return 'Makanan Pokok (lama)';
+      case 'pemanfaatan_pekarangan': return 'Pemanfaatan Pekarangan (lama)';
+      case 'hatinya_pkk': return 'HATINYA PKK (lama)';
+      case 'industri_rumah_tangga': return 'Industri Rumah Tangga (lama)';
+      case 'jumlah_rumah': return 'Jumlah Rumah (lama)';
       default:
         return field;
     }

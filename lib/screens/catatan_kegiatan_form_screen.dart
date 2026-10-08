@@ -482,11 +482,58 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
         ];
 
       case PokjaKategori.pokja3:
+        // 17 input angka = kolom 3–19 tabel website persis (kolom 1-2 = NO &
+        // Kecamatan otomatis, kolom 20 = Keterangan dari Uraian Singkat).
         return const [
-          _PokjaSubItem(title: 'Jumlah Kader', deskripsi: 'L & P', icon: Icons.badge_rounded, groupFields: {'L': 'jumlah_kader', 'P': 'jumlah_kader_p'}),
-          _PokjaSubItem(title: 'Pangan', deskripsi: 'Makanan Pokok, Pemanfaatan Pekarangan, Hatinya PKK', icon: Icons.rice_bowl_rounded, groupFields: {'Makanan Pokok': 'makanan_pokok', 'Pemanfaatan Pekarangan': 'pemanfaatan_pekarangan', 'Hatinya PKK': 'hatinya_pkk'}),
-          _PokjaSubItem(title: 'Jumlah Industri Rumah Tangga', deskripsi: 'Jumlah industri', fieldL: 'industri_rumah_tangga', icon: Icons.store_rounded),
-          _PokjaSubItem(title: 'Jumlah Rumah', deskripsi: 'Sehat, Tidak Sehat, Jumlah', icon: Icons.house_rounded, groupFields: {'Sehat': 'rumah_sehat', 'Tidak Sehat': 'rumah_tidak_sehat', 'Jumlah': 'jumlah_rumah'}),
+          _PokjaSubItem(
+            title: 'Jumlah Kader',
+            deskripsi: 'Kolom 3–5 tabel website',
+            icon: Icons.badge_rounded,
+            groupFields: {
+              '3 • Pangan': 'jumlah_kader_pangan',
+              '4 • Sandang': 'jumlah_kader_sandang',
+              '5 • Tata Laksana Rumah Tangga': 'jumlah_kader_tata_laksana',
+            },
+          ),
+          _PokjaSubItem(
+            title: 'Pangan',
+            deskripsi: 'Kolom 6–14 tabel website',
+            icon: Icons.rice_bowl_rounded,
+            groupFields: {
+              'Makanan Pokok': {
+                '6 • Beras': 'pangan_beras',
+                '7 • Non Beras': 'pangan_non_beras',
+              },
+              'Pemanfaatan Pekarangan / HATINYA PKK': {
+                '8 • Peternakan': 'pangan_peternakan',
+                '9 • Perikanan': 'pangan_perikanan',
+                '10 • Warung Hidup': 'pangan_warung_hidup',
+                '11 • Lumbung Hidup': 'pangan_lumbung_hidup',
+                '12 • TOGA': 'pangan_toga',
+                '13 • Tanaman Keras': 'pangan_tanaman_keras',
+                '14 • Tanaman Lainnya': 'pangan_tanaman_lainnya',
+              },
+            },
+          ),
+          _PokjaSubItem(
+            title: 'Jumlah Industri Rumah Tangga',
+            deskripsi: 'Kolom 15–17 tabel website',
+            icon: Icons.store_rounded,
+            groupFields: {
+              '15 • Pangan': 'industri_pangan',
+              '16 • Sandang': 'industri_sandang',
+              '17 • Jasa': 'industri_jasa',
+            },
+          ),
+          _PokjaSubItem(
+            title: 'Jumlah Rumah',
+            deskripsi: 'Kolom 18–19 tabel website',
+            icon: Icons.house_rounded,
+            groupFields: {
+              '18 • Sehat dan Layak Huni': 'rumah_sehat',
+              '19 • Tidak Sehat dan Tidak Layak Huni': 'rumah_tidak_sehat',
+            },
+          ),
         ];
 
       case PokjaKategori.pokja4:
@@ -1792,9 +1839,20 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
           if (sasaran != null && sasaran > 0) dataAngka['${prog}_sasaran'] = sasaran;
         }
       } else {
-        for (final e in _angkaCtrl.entries) {
-          final v = int.tryParse(e.value.text.trim());
-          if (v != null && v > 0) dataAngka[e.key] = v;
+        // Hanya kirim field milik kategori aktif — cegah nilai sisa dari
+        // Pokja lain (satu form bisa ganti-ganti Pokja) ikut terkirim.
+        final allowed = <String>{};
+        for (final s in _getSubItems(_kategori)) {
+          if (s.groupFields != null) {
+            allowed.addAll(_flattenGroupKeys(s.groupFields!));
+          } else {
+            if (s.fieldL.isNotEmpty) allowed.add(s.fieldL);
+            if (s.fieldP.isNotEmpty) allowed.add(s.fieldP);
+          }
+        }
+        for (final key in allowed) {
+          final v = int.tryParse(_angkaCtrl[key]?.text.trim() ?? '');
+          if (v != null && v > 0) dataAngka[key] = v;
         }
       }
 
@@ -1863,6 +1921,18 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
     }
   }
 
+  List<String> _flattenGroupKeys(Map<String, dynamic> group) {
+    final keys = <String>[];
+    for (final v in group.values) {
+      if (v is String) {
+        keys.add(v);
+      } else if (v is Map) {
+        keys.addAll(_flattenGroupKeys(Map<String, dynamic>.from(v)));
+      }
+    }
+    return keys;
+  }
+
   int _hitungTotal() {
     int t = 0;
     for (final s in _getSubItems(_kategori)) {
@@ -1870,6 +1940,12 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
           ['kisah', 'kilas', 'krisan', 'kiat', 'kisak', 'pkbn'].contains(s.fieldL)) {
         final prefix = s.fieldL;
         t += int.tryParse(_angkaCtrl['${prefix}_sasaran']?.text ?? '') ?? 0;
+        continue;
+      }
+      if (s.groupFields != null) {
+        for (final k in _flattenGroupKeys(s.groupFields!)) {
+          t += int.tryParse(_angkaCtrl[k]?.text ?? '') ?? 0;
+        }
         continue;
       }
       t += int.tryParse(_angkaCtrl[s.fieldL]?.text ?? '') ?? 0;
@@ -1890,10 +1966,43 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
         if (kegiatan.isNotEmpty || sasaran.isNotEmpty) c++;
         continue;
       }
+      if (s.groupFields != null) {
+        for (final k in _flattenGroupKeys(s.groupFields!)) {
+          if ((int.tryParse(_angkaCtrl[k]?.text ?? '') ?? 0) > 0) c++;
+        }
+        continue;
+      }
       if ((int.tryParse(_angkaCtrl[s.fieldL]?.text ?? '') ?? 0) > 0) c++;
       if (s.fieldP.isNotEmpty &&
           (int.tryParse(_angkaCtrl[s.fieldP]?.text ?? '') ?? 0) > 0)
         c++;
+    }
+    return c;
+  }
+
+  int _countCardsFilled() {
+    int c = 0;
+    for (final s in _getSubItems(_kategori)) {
+      bool filled = false;
+      if (_kategori == PokjaKategori.pokja1 &&
+          ['kisah', 'kilas', 'krisan', 'kiat', 'kisak', 'pkbn'].contains(s.fieldL)) {
+        final prefix = s.fieldL;
+        final kegiatan = _angkaCtrl['${prefix}_kegiatan']?.text ?? '';
+        final sasaran = _angkaCtrl['${prefix}_sasaran']?.text ?? '';
+        filled = kegiatan.isNotEmpty || sasaran.isNotEmpty;
+      } else if (s.groupFields != null) {
+        for (final k in _flattenGroupKeys(s.groupFields!)) {
+          if ((int.tryParse(_angkaCtrl[k]?.text ?? '') ?? 0) > 0) {
+            filled = true;
+            break;
+          }
+        }
+      } else {
+        filled = (int.tryParse(_angkaCtrl[s.fieldL]?.text ?? '') ?? 0) > 0 ||
+            (s.fieldP.isNotEmpty &&
+                (int.tryParse(_angkaCtrl[s.fieldP]?.text ?? '') ?? 0) > 0);
+      }
+      if (filled) c++;
     }
     return c;
   }
@@ -2348,7 +2457,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                     ),
                   ),
                   child: Text(
-                    '${_countFilled()}/${subItems.length} terisi',
+                    '${_countCardsFilled()}/${subItems.length} terisi',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
@@ -2507,9 +2616,9 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                 );
               }
               if (s.groupFields != null) {
-                for (final f in s.groupFields!.values) {
-                  if (_angkaCtrl[f]?.text.isNotEmpty == true) {
-                    sum += int.tryParse(_angkaCtrl[f]!.text) ?? 0;
+                for (final k in _flattenGroupKeys(s.groupFields!)) {
+                  if (_angkaCtrl[k]?.text.isNotEmpty == true) {
+                    sum += int.tryParse(_angkaCtrl[k]!.text) ?? 0;
                   }
                 }
                 final hasValue = sum > 0;
@@ -2901,7 +3010,9 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Uraian singkat',
+                    _kategori == PokjaKategori.pokja3
+                        ? 'Uraian singkat (Kolom 20 • Keterangan)'
+                        : 'Uraian singkat',
                     style: GoogleFonts.plusJakartaSans(
                       fontWeight: FontWeight.w700,
                       fontSize: 12.5,
