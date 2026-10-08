@@ -5,7 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../models/keluarga.dart';
 import '../../services/keluarga_service.dart';
+import '../../services/auth_service.dart';
 import '../../widgets/kecamatan_dropdown_field.dart';
+import '../../widgets/wilayah_otomatis.dart';
 import 'map_picker_screen.dart';
 
 class KeluargaFormScreen extends StatefulWidget {
@@ -108,8 +110,8 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
     _alamatCtrl = TextEditingController(text: k?.alamat ?? '');
     _rtCtrl = TextEditingController(text: k?.rt ?? '');
     _rwCtrl = TextEditingController(text: k?.rw ?? '');
-    _desaCtrl = TextEditingController(text: k?.desa ?? 'Singaparna');
-    _kecamatanCtrl = TextEditingController(text: k?.kecamatan ?? 'Singaparna');
+    _desaCtrl = TextEditingController(text: k?.desa ?? '');
+    _kecamatanCtrl = TextEditingController(text: k?.kecamatan ?? '');
     _kabupatenCtrl = TextEditingController(text: k?.kabupaten ?? 'Kabupaten Tasikmalaya');
 
     _pendidikan = k?.pendidikan ?? 'SMA/SMK/Sederajat';
@@ -140,6 +142,21 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
     if (k?.fotoRumahPath != null) {
       _fotoRumah = File(k!.fotoRumahPath!);
     }
+    if (k == null) _isiWilayahOtomatis();
+  }
+
+  Future<void> _isiWilayahOtomatis() async {
+    try {
+      final user = await AuthService().getCurrentUser();
+      if (!mounted) return;
+      if (user.desa.isNotEmpty && _desaCtrl.text.trim().isEmpty) {
+        _desaCtrl.text = user.desa;
+      }
+      if (user.kecamatan.isNotEmpty && _kecamatanCtrl.text.trim().isEmpty) {
+        _kecamatanCtrl.text = user.kecamatan;
+      }
+      if (user.hasWilayah) setState(() {});
+    } catch (_) {}
   }
 
   @override
@@ -585,17 +602,20 @@ class _KeluargaFormScreenState extends State<KeluargaFormScreen> {
                         ],
                       ),
                       const SizedBox(height: 12),
+                      WilayahOtomatisBanner(desa: _desaCtrl.text, kecamatan: _kecamatanCtrl.text),
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
-                            child: TextFormField(
-                              controller: _desaCtrl,
-                              decoration: const InputDecoration(labelText: 'Desa'),
-                            ),
+                            child: DesaTerkunciField(controller: _desaCtrl),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
-                            child: KecamatanDropdownField(controller: _kecamatanCtrl),
+                            child: KecamatanDropdownField(
+                              controller: _kecamatanCtrl,
+                              enabled: false,
+                              lockedHint: 'Otomatis dari akun',
+                            ),
                           ),
                         ],
                       ),

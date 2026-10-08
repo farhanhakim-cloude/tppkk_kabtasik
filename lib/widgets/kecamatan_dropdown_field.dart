@@ -16,6 +16,8 @@ class KecamatanDropdownField extends StatelessWidget {
   final bool isCompact;
   final InputDecoration? customDecoration;
   final Widget? prefixIcon;
+  final bool enabled;
+  final String? lockedHint;
 
   const KecamatanDropdownField({
     super.key,
@@ -29,13 +31,15 @@ class KecamatanDropdownField extends StatelessWidget {
     this.isCompact = false,
     this.customDecoration,
     this.prefixIcon,
+    this.enabled = true,
+    this.lockedHint,
   });
 
   @override
   Widget build(BuildContext context) {
     const primary = Color(0xFF0072BC);
 
-    // Tentukan nilai terpilih saat ini
+    // Tentukan nilai terpilih saat ini — hormati data akun, jangan paksa default
     String? currentVal = value ?? controller?.text;
     if (currentVal != null && currentVal.isNotEmpty) {
       // Cari kecocokan case-insensitive
@@ -43,13 +47,9 @@ class KecamatanDropdownField extends StatelessWidget {
         (e) => e.toLowerCase() == currentVal?.toLowerCase(),
         orElse: () => '',
       );
-      currentVal = match.isNotEmpty ? match : (allowEmpty ? '' : null);
-    }
-
-    // Default fallback jika kosong dan allowEmpty false
-    if (!allowEmpty && (currentVal == null || currentVal.isEmpty)) {
-      currentVal = 'Singaparna';
-      controller?.text = 'Singaparna';
+      currentVal = match.isNotEmpty ? match : (allowEmpty ? '' : currentVal);
+    } else {
+      currentVal = allowEmpty ? '' : null;
     }
 
     final defaultDecoration = InputDecoration(
@@ -87,17 +87,35 @@ class KecamatanDropdownField extends StatelessWidget {
     return DropdownButtonFormField<String>(
       initialValue: currentVal,
       isExpanded: true,
-      icon: Icon(
-        Icons.arrow_drop_down_rounded,
-        color: const Color(0xFF64748B),
-        size: isCompact ? 18 : 22,
-      ),
+      icon: enabled
+          ? Icon(
+              Icons.arrow_drop_down_rounded,
+              color: const Color(0xFF64748B),
+              size: isCompact ? 18 : 22,
+            )
+          : const Icon(Icons.lock_rounded, color: Color(0xFF94A3B8), size: 18),
       style: GoogleFonts.plusJakartaSans(
         fontSize: isCompact ? 12 : 13.5,
         color: const Color(0xFF0F172A),
         fontWeight: FontWeight.w600,
       ),
-      decoration: customDecoration ?? defaultDecoration,
+      decoration: (customDecoration ?? defaultDecoration).copyWith(
+        filled: true,
+        fillColor: enabled ? const Color(0xFFF8FAFC) : const Color(0xFFF1F5F9),
+        helperText: !enabled ? (lockedHint ?? 'Otomatis dari akun') : null,
+        helperStyle: GoogleFonts.plusJakartaSans(fontSize: 11, color: const Color(0xFF64748B)),
+      ),
+      onChanged: enabled
+          ? (newVal) {
+              final val = newVal ?? '';
+              if (controller != null) {
+                controller!.text = val;
+              }
+              if (onChanged != null) {
+                onChanged!(val);
+              }
+            }
+          : null,
       items: [
         if (allowEmpty)
           DropdownMenuItem<String>(
@@ -125,15 +143,6 @@ class KecamatanDropdownField extends StatelessWidget {
           );
         }),
       ],
-      onChanged: (newVal) {
-        final val = newVal ?? '';
-        if (controller != null) {
-          controller!.text = val;
-        }
-        if (onChanged != null) {
-          onChanged!(val);
-        }
-      },
       validator: isRequired
           ? (v) => (v == null || v.isEmpty) ? '$label wajib dipilih' : null
           : null,

@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../models/data_umum_pkk.dart';
 import '../../services/data_umum_pkk_service.dart';
+import '../../services/auth_service.dart';
 import '../../widgets/kecamatan_dropdown_field.dart';
+import '../../widgets/wilayah_otomatis.dart';
 
 class DataUmumPkkFormScreen extends StatefulWidget {
   final String level; // 'desa' atau 'kecamatan'
@@ -81,8 +83,8 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
     _tahunCtrl = TextEditingController(text: it?.tahun ?? '2026');
     _kabCtrl = TextEditingController(text: it?.kabupaten ?? 'TASIKMALAYA');
     _provCtrl = TextEditingController(text: it?.provinsi ?? 'JAWA BARAT');
-    _kecCtrl = TextEditingController(text: it?.kecamatan ?? 'Singaparna');
-    _desaCtrl = TextEditingController(text: it?.desa ?? 'Singaparna');
+    _kecCtrl = TextEditingController(text: it?.kecamatan ?? '');
+    _desaCtrl = TextEditingController(text: it?.desa ?? '');
 
     _namaDusunCtrl = TextEditingController(text: it?.namaDusun ?? '');
     _namaDesaCtrl = TextEditingController(text: it?.namaDesa ?? '');
@@ -143,6 +145,21 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
     );
 
     _keteranganCtrl = TextEditingController(text: it?.keterangan ?? '');
+    if (it == null) _isiWilayahOtomatis();
+  }
+
+  Future<void> _isiWilayahOtomatis() async {
+    try {
+      final user = await AuthService().getCurrentUser();
+      if (!mounted) return;
+      if (user.desa.isNotEmpty && _desaCtrl.text.trim().isEmpty) {
+        _desaCtrl.text = user.desa;
+      }
+      if (user.kecamatan.isNotEmpty && _kecCtrl.text.trim().isEmpty) {
+        _kecCtrl.text = user.kecamatan;
+      }
+      if (user.hasWilayah) setState(() {});
+    } catch (_) {}
   }
 
   @override
@@ -342,25 +359,14 @@ class _DataUmumPkkFormScreenState extends State<DataUmumPkkFormScreen> {
               icon: Icons.location_on_rounded,
               color: const Color(0xFF0284C7),
               children: [
+                WilayahOtomatisBanner(desa: _desaCtrl.text, kecamatan: _kecCtrl.text),
                 if (isDesa)
-                  TextFormField(
-                    controller: _desaCtrl,
-                    style: GoogleFonts.plusJakartaSans(
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    decoration: _inputDecoration(
-                      'TP PKK Desa',
-                      'Contoh: Singaparna',
-                    ),
-                    validator: (v) => v!.isEmpty ? 'Wajib diisi' : null,
-                  ),
+                  DesaTerkunciField(controller: _desaCtrl),
                 if (isDesa) const SizedBox(height: 12),
                 KecamatanDropdownField(
-                  value: _kecCtrl.text.isNotEmpty
-                      ? _kecCtrl.text
-                      : 'Singaparna',
                   controller: _kecCtrl,
+                  enabled: false,
+                  lockedHint: 'Otomatis dari akun',
                   onChanged: (val) {
                     if (val != null) setState(() => _kecCtrl.text = val);
                   },

@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../models/data_keluarga_dasawisma.dart';
 import '../../services/daftar_warga_service.dart';
+import '../../services/auth_service.dart';
 import '../../widgets/kecamatan_dropdown_field.dart';
+import '../../widgets/wilayah_otomatis.dart';
 
 class DataKeluargaDasawismaFormScreen extends StatefulWidget {
   final DataKeluargaDasawisma? data;
@@ -152,6 +154,21 @@ class _DataKeluargaDasawismaFormScreenState
     _aktifitasKesling = d?.aktifitasKesehatanLingkungan ?? true;
     _aktifitasTanahPekarangan = d?.aktifitasTanahPekarangan ?? false;
     _aktifitasIndustriRumahTangga = d?.aktifitasIndustriRumahTangga ?? false;
+    if (d == null) _isiWilayahOtomatis();
+  }
+
+  Future<void> _isiWilayahOtomatis() async {
+    try {
+      final user = await AuthService().getCurrentUser();
+      if (!mounted) return;
+      if (user.desa.isNotEmpty && _desaCtrl.text.trim().isEmpty) {
+        _desaCtrl.text = user.desa;
+      }
+      if (user.kecamatan.isNotEmpty && _kecamatanCtrl.text.trim().isEmpty) {
+        _kecamatanCtrl.text = user.kecamatan;
+      }
+      if (user.hasWilayah) setState(() {});
+    } catch (_) {}
   }
 
   @override
@@ -756,18 +773,20 @@ class _DataKeluargaDasawismaFormScreenState
                   decoration: _inputDeco('Dusun', 'Nama dusun'),
                 ),
                 const SizedBox(height: 10),
+                WilayahOtomatisBanner(desa: _desaCtrl.text, kecamatan: _kecamatanCtrl.text),
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      child: TextFormField(
-                        controller: _desaCtrl,
-                        style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
-                        decoration: _inputDeco('Desa', 'Singaparna'),
-                      ),
+                      child: DesaTerkunciField(controller: _desaCtrl),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: KecamatanDropdownField(controller: _kecamatanCtrl),
+                      child: KecamatanDropdownField(
+                        controller: _kecamatanCtrl,
+                        enabled: false,
+                        lockedHint: 'Otomatis dari akun',
+                      ),
                     ),
                   ],
                 ),

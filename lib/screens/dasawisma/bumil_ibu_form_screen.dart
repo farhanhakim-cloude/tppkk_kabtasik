@@ -15,8 +15,11 @@ class BumilIbuFormScreen extends StatefulWidget {
 class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final _service = BumilService();
-  static const Color _primary = Color(0xFF0072BC);
-  static const Color _primaryLight = Color(0xFFE6F1F9);
+  static const Color _primary = Color(0xFF0F4C81);
+  static const Color _ink = Color(0xFF1A2B3C);
+  static const Color _muted = Color(0xFF5B6B7C);
+  static const Color _line = Color(0xFFE1E7EE);
+  static const Color _paper = Color(0xFFF4F6F9);
 
   late final TextEditingController _namaCtrl,
       _suamiCtrl,
@@ -234,23 +237,23 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: _paper,
       appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 0,
           scrolledUnderElevation: 0,
-          iconTheme: const IconThemeData(color: Color(0xFF0F172A)),
+          iconTheme: const IconThemeData(color: _ink),
           title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(_isEdit ? 'Edit Data Ibu' : 'Tambah Data Ibu',
                     style: GoogleFonts.plusJakartaSans(
                         fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                        color: const Color(0xFF0F172A))),
+                        fontWeight: FontWeight.w700,
+                        color: _ink)),
                 Text('Satu ibu satu status per bulan',
                     style: GoogleFonts.plusJakartaSans(
-                        fontSize: 11, color: const Color(0xFF64748B)))
+                        fontSize: 11, color: _muted))
               ]),
           actions: [
             if (_saving)
@@ -273,19 +276,19 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
       body: Form(
           key: _formKey,
           child: ListView(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
               children: [
                 _section(Icons.calendar_month_rounded, 'Periode',
                     'Bulan pencatatan'),
-                const SizedBox(height: 14),
+                const SizedBox(height: 10),
                 Row(children: [
                   Expanded(child: _bulanDropdown()),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 10),
                   Expanded(child: _tahunDropdown()),
                 ]),
-                const SizedBox(height: 28),
+                const SizedBox(height: 16),
                 _section(Icons.person_rounded, 'Data Ibu', 'Identitas ibu'),
-                const SizedBox(height: 14),
+                const SizedBox(height: 10),
                 _field(
                     ctrl: _namaCtrl,
                     label: 'Nama Ibu',
@@ -315,7 +318,7 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
                             FilteringTextInputFormatter.digitsOnly
                           ],
                           serverField: 'umur')),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 10),
                   Expanded(child: _statusDropdown()),
                 ]),
                 const SizedBox(height: 10),
@@ -327,7 +330,7 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
                           hint: 'Mawar 01',
                           icon: Icons.holiday_village_outlined,
                           serverField: 'dasawisma')),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 10),
                   Expanded(
                       child: _field(
                           ctrl: _dusunCtrl,
@@ -345,7 +348,7 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
                           hint: '01',
                           icon: Icons.location_on_outlined,
                           serverField: 'rt')),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 10),
                   Expanded(
                       child: _field(
                           ctrl: _rwCtrl,
@@ -355,10 +358,10 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
                           serverField: 'rw')),
                 ]),
                 if (_statusIbu == 'melahirkan') ...[
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 16),
                   _section(Icons.child_care_rounded, 'Kelahiran Bayi',
                       'Wajib karena status Melahirkan'),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 10),
                   _field(
                       ctrl: _bayiNamaCtrl,
                       label: 'Nama Bayi',
@@ -368,7 +371,7 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
                   const SizedBox(height: 10),
                   Row(children: [
                     Expanded(child: _jkDropdown()),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 10),
                     Expanded(child: _tglTile(
                         label: 'Tgl Lahir',
                         tanggal: _bayiTgl,
@@ -382,10 +385,10 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
                   const SizedBox(height: 10),
                   _aktaPicker(),
                 ],
-                const SizedBox(height: 28),
+                const SizedBox(height: 16),
                 _section(Icons.info_outline_rounded, 'Kematian',
                     'Isi bila ada yang meninggal bulan ini'),
-                const SizedBox(height: 14),
+                const SizedBox(height: 10),
                 SwitchListTile(
                   value: _adaKematian,
                   onChanged: (v) => setState(() => _adaKematian = v),
@@ -416,10 +419,11 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
                     Expanded(
                         child: Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 12),
+                                horizontal: 12, vertical: 14),
                             decoration: BoxDecoration(
-                                color: _primaryLight,
-                                borderRadius: BorderRadius.circular(12)),
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: _line)),
                             child: Text(
                                 'Otomatis: ${_matiKategori == 'bayi'
                                     ? 'Bayi (<12 bln)'
@@ -441,7 +445,7 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
                   const SizedBox(height: 10),
                   Row(children: [
                     Expanded(child: _jkMatiDropdown()),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 10),
                     Expanded(child: _tglTile(
                         label: 'Tgl Meninggal',
                         tanggal: _matiTgl,
@@ -485,7 +489,7 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
                               fontSize: 13,
                               color: const Color(0xFF7F1D1D)))),
                 ],
-                const SizedBox(height: 32),
+                const SizedBox(height: 16),
                 SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -493,10 +497,10 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
                         style: ElevatedButton.styleFrom(
                             backgroundColor: _primary,
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14)),
-                            elevation: 2),
+                                borderRadius: BorderRadius.circular(12)),
+                            elevation: 0),
                         child: _saving
                             ? const SizedBox(
                                 height: 20,
@@ -505,7 +509,7 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
                                     strokeWidth: 2.5, color: Colors.white))
                             : Text(_isEdit ? 'Perbarui' : 'Simpan',
                                 style: GoogleFonts.plusJakartaSans(
-                                    fontSize: 15,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.w700))))
               ])),
     );
@@ -600,7 +604,7 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFFE2E8F0))),
+          border: Border.all(color: _line)),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
       child: child);
 
@@ -609,7 +613,7 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
           labelText: label,
           prefixIcon: Icon(icon, size: 18, color: _primary),
           labelStyle:
-              GoogleFonts.plusJakartaSans(fontSize: 13, color: const Color(0xFF64748B)),
+              GoogleFonts.plusJakartaSans(fontSize: 13, color: _muted),
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
@@ -626,7 +630,7 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
             decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFE2E8F0))),
+                border: Border.all(color: _line)),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
             child: Row(children: [
               const Icon(Icons.calendar_today_outlined,
@@ -638,13 +642,13 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
                       children: [
                     Text(label,
                         style: GoogleFonts.plusJakartaSans(
-                            fontSize: 11, color: const Color(0xFF64748B))),
+                            fontSize: 11, color: _muted)),
                     Text(
                         tanggal == null
                             ? 'Pilih'
                             : '${tanggal.day}/${tanggal.month}/${tanggal.year}',
                         style: GoogleFonts.plusJakartaSans(
-                            fontSize: 14, color: const Color(0xFF0F172A))),
+                            fontSize: 14, color: _ink)),
                   ])),
             ])));
   }
@@ -653,29 +657,29 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
     Widget opt(String label, bool? v) => Expanded(
             child: InkWell(
           onTap: () => setState(() => _bayiAkta = v),
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
           child: Container(
               padding: const EdgeInsets.symmetric(vertical: 12),
               decoration: BoxDecoration(
-                  color: _bayiAkta == v ? _primaryLight : Colors.white,
-                  borderRadius: BorderRadius.circular(10),
+                  color: _bayiAkta == v ? _primary : Colors.white,
+                  borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                       color: _bayiAkta == v
                           ? _primary
-                          : const Color(0xFFE2E8F0))),
+                          : _line)),
               child: Center(
                   child: Text(label,
                       style: GoogleFonts.plusJakartaSans(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
                           color: _bayiAkta == v
-                              ? _primary
-                              : const Color(0xFF64748B))))),
-        ));
+                              ? Colors.white
+                              : _muted))))),
+        );
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Text('Akta Kelahiran',
           style:
-              GoogleFonts.plusJakartaSans(fontSize: 13, color: const Color(0xFF64748B))),
+              GoogleFonts.plusJakartaSans(fontSize: 13, color: _muted)),
       const SizedBox(height: 8),
       Row(children: [
         opt('Ada', true),
@@ -685,24 +689,33 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
     ]);
   }
 
-  Widget _section(IconData icon, String title, String sub) => Row(children: [
-        Container(
-            padding: const EdgeInsets.all(9),
-            decoration: BoxDecoration(
-                color: _primaryLight, borderRadius: BorderRadius.circular(12)),
-            child: Icon(icon, size: 18, color: _primary)),
-        const SizedBox(width: 12),
-        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(title,
-              style: GoogleFonts.plusJakartaSans(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFF0F172A))),
-          Text(sub,
-              style: GoogleFonts.plusJakartaSans(
-                  fontSize: 11.5, color: const Color(0xFF64748B)))
-        ])
-      ]);
+  Widget _section(IconData icon, String title, String sub) => Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+            color: _primary, borderRadius: BorderRadius.circular(12)),
+        child: Row(children: [
+          Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(10)),
+              child: Icon(icon, size: 20, color: Colors.white)),
+          const SizedBox(width: 12),
+          Expanded(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                Text(title,
+                    style: GoogleFonts.plusJakartaSans(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white)),
+                Text(sub,
+                    style: GoogleFonts.plusJakartaSans(
+                        fontSize: 12, color: Colors.white70))
+              ]))
+        ]));
 
   Widget _field({
     required TextEditingController ctrl,
@@ -717,19 +730,11 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
   }) {
     final serverErr = serverField == null ? null : _serverError(serverField);
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Container(
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                  color: serverErr != null
-                      ? Colors.red[400]!
-                      : const Color(0xFFE2E8F0))),
-          child: TextFormField(
+      TextFormField(
               controller: ctrl,
               keyboardType: keyboard,
               inputFormatters: inputFormatters,
-              style: GoogleFonts.plusJakartaSans(fontSize: 14),
+              style: GoogleFonts.plusJakartaSans(fontSize: 14, color: _ink),
               validator: (v) {
                 if (serverErr != null) return serverErr;
                 if (validator != null) return validator(v);
@@ -747,16 +752,24 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
                   hintText: hint,
                   prefixIcon: Icon(icon, size: 18, color: _primary),
                   hintStyle: GoogleFonts.plusJakartaSans(
-                      fontSize: 13, color: Colors.grey[400]),
+                      fontSize: 12.5, color: _muted),
                   labelStyle: GoogleFonts.plusJakartaSans(
-                      fontSize: 13, color: const Color(0xFF64748B)),
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  errorBorder: InputBorder.none,
-                  focusedErrorBorder: InputBorder.none,
+                      fontSize: 13, color: _muted),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                          color: serverErr != null ? Colors.red[400]! : _line)),
+                  enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(
+                          color: serverErr != null ? Colors.red[400]! : _line)),
+                  focusedBorder: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                      borderSide: BorderSide(color: _primary, width: 1.5)),
                   contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 14)))),
+                      horizontal: 14, vertical: 14))),
     ]);
   }
 }

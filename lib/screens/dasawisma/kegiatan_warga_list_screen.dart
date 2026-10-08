@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../models/kegiatan_warga.dart';
 import '../../services/kegiatan_warga_service.dart';
+import '../../widgets/skeleton.dart';
+import 'input_terpadu_screen.dart';
 import 'kegiatan_warga_form_screen.dart';
 import 'kegiatan_warga_gabungan_form_screen.dart';
 
@@ -22,8 +24,12 @@ class _KegiatanWargaListScreenState extends State<KegiatanWargaListScreen>
   bool _loading = true;
   String? _error;
   String _query = '';
-  static const Color _primary = Color(0xFF0072BC);
-  static const Color _primaryLight = Color(0xFFE6F1F9);
+
+  static const Color _biru = Color(0xFF0F4C81);
+  static const Color _ink = Color(0xFF1A2B3C);
+  static const Color _muted = Color(0xFF5B6B7C);
+  static const Color _line = Color(0xFFE1E7EE);
+  static const Color _paper = Color(0xFFF4F6F9);
   late AnimationController _animController;
 
   @override
@@ -140,34 +146,23 @@ class _KegiatanWargaListScreenState extends State<KegiatanWargaListScreen>
     ));
   }
 
-  // Badge status: Menunggu (amber) / Disetujui (hijau) / Perlu Diperbaiki (merah)
-  Widget _statusBadge(KegiatanWarga d) {
-    late Color bg, fg;
-    late IconData icon;
+  // Status gaya dashboard: teks saja.
+  Widget _statusText(KegiatanWarga d) {
+    late Color c;
+    late String t;
     if (d.isApproved) {
-      bg = const Color(0xFFDCFCE7);
-      fg = const Color(0xFF15803D);
-      icon = Icons.check_circle_rounded;
+      c = const Color(0xFF1B7A4D);
+      t = 'Disetujui';
     } else if (d.isRejected) {
-      bg = const Color(0xFFFEE2E2);
-      fg = const Color(0xFFB91C1C);
-      icon = Icons.error_outline_rounded;
+      c = const Color(0xFFB42318);
+      t = 'Ditolak';
     } else {
-      bg = const Color(0xFFFEF3C7);
-      fg = const Color(0xFFB45309);
-      icon = Icons.hourglass_top_rounded;
+      c = const Color(0xFF92600A);
+      t = 'Menunggu';
     }
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(20)),
-      child: Row(mainAxisSize: MainAxisSize.min, children: [
-        Icon(icon, size: 13, color: fg),
-        const SizedBox(width: 4),
-        Text(d.statusLabel,
-            style: GoogleFonts.plusJakartaSans(
-                fontSize: 11, fontWeight: FontWeight.w700, color: fg)),
-      ]),
-    );
+    return Text(t,
+        style: GoogleFonts.plusJakartaSans(
+            fontSize: 12, fontWeight: FontWeight.w700, color: c));
   }
 
   String _fmtTanggal(DateTime? t) {
@@ -182,53 +177,50 @@ class _KegiatanWargaListScreenState extends State<KegiatanWargaListScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: _paper,
       appBar: widget.embedded
           ? null
           : AppBar(
               backgroundColor: Colors.white,
               elevation: 0,
               scrolledUnderElevation: 0,
-              iconTheme: const IconThemeData(color: Color(0xFF0F172A)),
+              iconTheme: const IconThemeData(color: _ink),
               title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Kegiatan Warga',
                         style: GoogleFonts.plusJakartaSans(
                             fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                            color: const Color(0xFF0F172A))),
+                            fontWeight: FontWeight.w700,
+                            color: _ink)),
                     Text('UP2K, Pekarangan, Industri, Kesehatan',
                         style: GoogleFonts.plusJakartaSans(
-                            fontSize: 11, color: const Color(0xFF64748B)))
+                            fontSize: 11, color: _muted))
                   ])),
-      floatingActionButton: FloatingActionButton.extended(
-          heroTag: 'fab-kegiatan-warga-list',
-          onPressed: () async {
-            HapticFeedback.mediumImpact();
-            _openForm();
-          },
-          backgroundColor: _primary,
-          foregroundColor: Colors.white,
-          elevation: 3,
-          icon: const Icon(Icons.add_rounded),
-          label: Text('Tambah Data',
-              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700))),
+      floatingActionButton: widget.embedded
+          ? null
+          : FloatingActionButton.extended(
+              heroTag: 'fab-kegiatan-warga-list',
+              onPressed: () async {
+                HapticFeedback.mediumImpact();
+                _openForm();
+              },
+              backgroundColor: _biru,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              icon: const Icon(Icons.add_rounded),
+              label: Text('Tambah Data',
+                  style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700))),
       body: Column(children: [
+        if (widget.embedded) _terpaduBanner(),
         _buildStats(),
         Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
             child: Container(
                 decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.04),
-                          blurRadius: 6,
-                          offset: const Offset(0, 2))
-                    ]),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: _line)),
                 child: TextField(
                     controller: _searchController,
                     onChanged: (v) {
@@ -241,11 +233,11 @@ class _KegiatanWargaListScreenState extends State<KegiatanWargaListScreen>
                         hintStyle: GoogleFonts.plusJakartaSans(
                             fontSize: 13, color: Colors.grey[400]),
                         prefixIcon: const Icon(Icons.search_rounded,
-                            color: Color(0xFF64748B), size: 20),
+                            color: _muted, size: 20),
                         suffixIcon: _query.isNotEmpty
                             ? IconButton(
                                 icon: const Icon(Icons.close_rounded,
-                                    size: 18, color: Color(0xFF64748B)),
+                                    size: 18, color: _muted),
                                 onPressed: () {
                                   _searchController.clear();
                                   _query = '';
@@ -262,61 +254,82 @@ class _KegiatanWargaListScreenState extends State<KegiatanWargaListScreen>
       ]));
   }
 
+  Widget _terpaduBanner() {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _line),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.info_outline_rounded, color: _biru, size: 18),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text('Input dari menu Terpadu (4 langkah). Di sini hanya lihat data.',
+                style: GoogleFonts.plusJakartaSans(fontSize: 12, color: _ink)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.push(
+                context, MaterialPageRoute(builder: (_) => const InputTerpaduScreen())),
+            style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: const Size(0, 30)),
+            child: Text('Buka',
+                style: GoogleFonts.plusJakartaSans(
+                    fontSize: 12, fontWeight: FontWeight.w700, color: _biru)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _statBox(String label, String value) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: _line)),
+        child: Column(children: [
+          Text(value,
+              style: GoogleFonts.plusJakartaSans(
+                  fontSize: 18, fontWeight: FontWeight.w700, color: _biru)),
+          const SizedBox(height: 2),
+          Text(label,
+              style: GoogleFonts.plusJakartaSans(fontSize: 11, color: _muted)),
+        ]),
+      ),
+    );
+  }
+
   Widget _buildStats() {
+    if (_loading) {
+      return const Padding(
+          padding: EdgeInsets.fromLTRB(16, 12, 16, 0), child: SkeletonStats());
+    }
     final total = _stats['total'] ?? 0;
     final pending = _stats['pending'] ?? 0;
     final approved = _stats['approved'] ?? 0;
-    return Container(
-        margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: const Color(0xFFE2E8F0)),
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.04),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2))
-            ]),
+    return Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
         child: Row(children: [
-          Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                  color: const Color(0xFF0072BC).withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(12)),
-              child: const Icon(Icons.diversity_3_rounded,
-                  color: Color(0xFF0072BC), size: 24)),
-          const SizedBox(width: 14),
-          Expanded(
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                Text('Total Laporan',
-                    style: GoogleFonts.plusJakartaSans(
-                        fontSize: 12, color: const Color(0xFF64748B))),
-                Text('$total Laporan',
-                    style: GoogleFonts.plusJakartaSans(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w900,
-                        color: const Color(0xFF0F172A)))
-              ])),
-          Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-            Text('$pending Menunggu',
-                style: GoogleFonts.plusJakartaSans(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF0F172A))),
-            Text('$approved Disetujui',
-                style: GoogleFonts.plusJakartaSans(
-                    fontSize: 11, color: const Color(0xFF64748B)))
-          ])
+          _statBox('Total', '$total'),
+          const SizedBox(width: 8),
+          _statBox('Menunggu', '$pending'),
+          const SizedBox(width: 8),
+          _statBox('Disetujui', '$approved'),
+          const SizedBox(width: 8),
+          _statBox('Kegiatan', '$total'),
         ]));
   }
 
   Widget _buildBody() {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator(color: _primary));
+      return const SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(16, 4, 16, 100),
+          child: SkeletonList(count: 4));
     }
     if (_error != null) {
       return Center(
@@ -325,23 +338,19 @@ class _KegiatanWargaListScreenState extends State<KegiatanWargaListScreen>
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: const BoxDecoration(
-                            color: Color(0xFFFEE2E2), shape: BoxShape.circle),
-                        child: const Icon(Icons.cloud_off_outlined,
-                            size: 44, color: Color(0xFFB91C1C))),
+                    const Icon(Icons.cloud_off_outlined,
+                        size: 44, color: _muted),
                     const SizedBox(height: 16),
                     Text('Gagal memuat data',
                         style: GoogleFonts.plusJakartaSans(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
-                            color: const Color(0xFF475569))),
+                            color: _muted)),
                     const SizedBox(height: 8),
                     Text(_error!,
                         textAlign: TextAlign.center,
                         style: GoogleFonts.plusJakartaSans(
-                            fontSize: 13, color: const Color(0xFF94A3B8))),
+                            fontSize: 13, color: _muted)),
                     const SizedBox(height: 16),
                     ElevatedButton.icon(
                         onPressed: _loadData,
@@ -350,15 +359,16 @@ class _KegiatanWargaListScreenState extends State<KegiatanWargaListScreen>
                             style: GoogleFonts.plusJakartaSans(
                                 fontWeight: FontWeight.w700)),
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: _primary,
+                            backgroundColor: _biru,
                             foregroundColor: Colors.white,
+                            elevation: 0,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12)))),
                   ])));
     }
     if (_data.isEmpty) return _buildEmpty();
     return RefreshIndicator(
-        color: _primary,
+        color: _biru,
         onRefresh: _loadData,
         child: ListView.builder(
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 100),
@@ -389,36 +399,16 @@ class _KegiatanWargaListScreenState extends State<KegiatanWargaListScreen>
                   child: child));
         },
         child: Container(
-            margin: const EdgeInsets.only(bottom: 12),
+            margin: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                    color: d.isRejected
-                        ? const Color(0xFFFECACA)
-                        : const Color(0xFFE2E8F0)),
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2))
-                ]),
-            child: Column(children: [
-              Container(
-                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 10),
-                  decoration: const BoxDecoration(
-                      color: _primaryLight,
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(16))),
-                  child: Row(children: [
-                    Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                            color: _primary.withValues(alpha: 0.15),
-                            shape: BoxShape.circle),
-                        child: const Icon(Icons.diversity_3_rounded,
-                            size: 18, color: _primary)),
-                    const SizedBox(width: 10),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: _line)),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(children: [
                     Expanded(
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -427,14 +417,14 @@ class _KegiatanWargaListScreenState extends State<KegiatanWargaListScreen>
                               d.dasaWisma.isEmpty ? 'Dasa Wisma' : d.dasaWisma,
                               style: GoogleFonts.plusJakartaSans(
                                   fontSize: 14,
-                                  fontWeight: FontWeight.w800,
-                                  color: const Color(0xFF0F172A))),
+                                  fontWeight: FontWeight.w600,
+                                  color: _ink)),
+                          const SizedBox(height: 2),
                           Text(subtitle,
                               style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 11.5,
-                                  color: const Color(0xFF64748B))),
+                                  fontSize: 12, color: _muted)),
                         ])),
-                    _statusBadge(d),
+                    _statusText(d),
                     const SizedBox(width: 4),
                     PopupMenuButton<String>(
                         onSelected: (v) {
@@ -451,7 +441,7 @@ class _KegiatanWargaListScreenState extends State<KegiatanWargaListScreen>
                                   value: 'detail',
                                   child: Row(children: [
                                     const Icon(Icons.visibility_outlined,
-                                        size: 16, color: Color(0xFF64748B)),
+                                        size: 16, color: _muted),
                                     const SizedBox(width: 8),
                                     Text('Lihat Detail',
                                         style: GoogleFonts.plusJakartaSans())
@@ -461,11 +451,11 @@ class _KegiatanWargaListScreenState extends State<KegiatanWargaListScreen>
                                     value: 'edit',
                                     child: Row(children: [
                                       const Icon(Icons.edit_outlined,
-                                          size: 16, color: Color(0xFF0072BC)),
+                                          size: 16, color: _biru),
                                       const SizedBox(width: 8),
                                       Text('Edit',
                                           style: GoogleFonts.plusJakartaSans(
-                                              color: Color(0xFF0072BC)))
+                                              color: _biru))
                                     ])),
                               if (!d.isApproved)
                                 PopupMenuItem(
@@ -479,81 +469,42 @@ class _KegiatanWargaListScreenState extends State<KegiatanWargaListScreen>
                                               color: Colors.red[600]))
                                     ])),
                             ]),
-                  ])),
-              Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(children: [
-                          Expanded(
-                              child: Text(d.kegiatanLabel,
-                                  style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 13.5,
-                                      fontWeight: FontWeight.w700,
-                                      color: const Color(0xFF0F172A)))),
-                          Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 4),
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFF0FDF4),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                      color: const Color(0xFFBBF7D0))),
-                              child: Text('${d.jumlahPeserta} Peserta',
-                                  style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w700,
-                                      color: const Color(0xFF15803D)))),
-                        ]),
-                        if (d.keterangan.isNotEmpty) ...[
-                          const SizedBox(height: 6),
-                          Text(d.keterangan,
-                              style: GoogleFonts.plusJakartaSans(
-                                  fontSize: 12.5,
-                                  color: const Color(0xFF64748B)),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis),
-                        ],
-                        // Alasan penolakan dari Admin Desa
-                        if (d.isRejected &&
-                            (d.rejectedReason ?? '').isNotEmpty) ...[
-                          const SizedBox(height: 8),
-                          Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                  color: const Color(0xFFFEF2F2),
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      color: const Color(0xFFFECACA))),
-                              child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Icon(Icons.info_outline_rounded,
-                                        size: 16, color: Color(0xFFB91C1C)),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                        child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                          Text('Perlu diperbaiki:',
-                                              style: GoogleFonts.plusJakartaSans(
-                                                  fontSize: 11.5,
-                                                  fontWeight: FontWeight.w700,
-                                                  color:
-                                                      const Color(0xFFB91C1C))),
-                                          Text(d.rejectedReason!,
-                                              style: GoogleFonts.plusJakartaSans(
-                                                  fontSize: 12,
-                                                  color:
-                                                      const Color(0xFF7F1D1D))),
-                                        ])),
-                                  ])),
-                        ],
-                      ])),
-            ])));
+                  ]),
+                  const Divider(height: 20, color: _line),
+                  Text(d.kegiatanLabel,
+                      style: GoogleFonts.plusJakartaSans(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: _ink)),
+                  const SizedBox(height: 2),
+                  Text('${d.jumlahPeserta} Peserta',
+                      style: GoogleFonts.plusJakartaSans(
+                          fontSize: 12, color: _muted)),
+                  if (d.keterangan.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Text(d.keterangan,
+                        style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12, color: _muted),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis),
+                  ],
+                  if (d.isRejected &&
+                      (d.rejectedReason ?? '').isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: _line)),
+                        child: Text(
+                            'Perlu diperbaiki: ${d.rejectedReason!}',
+                            style: GoogleFonts.plusJakartaSans(
+                                fontSize: 12,
+                                color: const Color(0xFFB42318)))),
+                  ],
+                ])));
   }
 
   void _showDetail(KegiatanWarga d) {
@@ -566,25 +517,20 @@ class _KegiatanWargaListScreenState extends State<KegiatanWargaListScreen>
 
   Widget _buildEmpty() => Center(
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Container(
-            padding: const EdgeInsets.all(24),
-            decoration:
-                const BoxDecoration(color: _primaryLight, shape: BoxShape.circle),
-            child: const Icon(Icons.diversity_3_outlined,
-                size: 48, color: _primary)),
+        const Icon(Icons.diversity_3_outlined, size: 48, color: _muted),
         const SizedBox(height: 16),
         Text(_query.isNotEmpty ? 'Tidak ditemukan' : 'Belum ada data kegiatan warga',
             style: GoogleFonts.plusJakartaSans(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: const Color(0xFF475569))),
+                color: _muted)),
         const SizedBox(height: 8),
         Text(
             _query.isNotEmpty
                 ? 'Coba kata kunci berbeda'
                 : 'Tekan "Tambah Data" untuk mencatat\nkegiatan warga pertama',
             textAlign: TextAlign.center,
-            style: GoogleFonts.plusJakartaSans(fontSize: 13, color: const Color(0xFF94A3B8)))
+            style: GoogleFonts.plusJakartaSans(fontSize: 13, color: _muted))
       ]));
 }
 
@@ -601,13 +547,13 @@ class _DetailSheet extends StatelessWidget {
               width: 130,
               child: Text(label,
                   style: GoogleFonts.plusJakartaSans(
-                      fontSize: 12.5, color: const Color(0xFF64748B)))),
+                      fontSize: 12.5, color: const Color(0xFF5B6B7C)))),
           Expanded(
               child: Text(value.isEmpty ? '-' : value,
                   style: GoogleFonts.plusJakartaSans(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF0F172A)))),
+                      color: const Color(0xFF1A2B3C)))),
         ]));
 
     return DraggableScrollableSheet(
@@ -624,7 +570,7 @@ class _DetailSheet extends StatelessWidget {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                      color: Colors.grey[300],
+                      color: const Color(0xFFE1E7EE),
                       borderRadius: BorderRadius.circular(2))),
               Padding(
                   padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
@@ -640,25 +586,19 @@ class _DetailSheet extends StatelessWidget {
                               style: GoogleFonts.plusJakartaSans(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w800,
-                                  color: const Color(0xFF0F172A))),
+                                  color: const Color(0xFF1A2B3C))),
                           Text(data.kegiatanLabel,
                               style: GoogleFonts.plusJakartaSans(
                                   fontSize: 12,
-                                  color: const Color(0xFF64748B))),
+                                  color: const Color(0xFF5B6B7C))),
                         ])),
-                    Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                            color: const Color(0xFFE6F1F9),
-                            borderRadius: BorderRadius.circular(20)),
-                        child: Text(data.statusLabel,
-                            style: GoogleFonts.plusJakartaSans(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
-                                color: const Color(0xFF0072BC)))),
+                    Text(data.statusLabel,
+                        style: GoogleFonts.plusJakartaSans(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF0F4C81))),
                   ])),
-              const Divider(height: 1),
+              const Divider(height: 1, color: Color(0xFFE1E7EE)),
               Expanded(
                   child: ListView(
                       controller: sc,

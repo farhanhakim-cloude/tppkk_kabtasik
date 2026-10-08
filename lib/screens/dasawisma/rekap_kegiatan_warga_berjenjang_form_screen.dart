@@ -7,7 +7,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/rekap_kegiatan_warga_berjenjang.dart';
 import '../../services/rekap_kegiatan_warga_berjenjang_service.dart';
+import '../../services/auth_service.dart';
 import '../../widgets/kecamatan_dropdown_field.dart';
+import '../../widgets/wilayah_otomatis.dart';
 import '../../constants/app_constants.dart';
 
 class RekapKegiatanWargaBerjenjangFormScreen extends StatefulWidget {
@@ -109,8 +111,8 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
     _rtCtrl = TextEditingController(text: it?.rt ?? '01');
     _rwCtrl = TextEditingController(text: it?.rw ?? '05');
     _dusunCtrl = TextEditingController(text: it?.dusun ?? 'Cikunir');
-    _desaCtrl = TextEditingController(text: it?.desa ?? 'Singaparna');
-    _kecCtrl = TextEditingController(text: it?.kecamatan ?? 'Singaparna');
+    _desaCtrl = TextEditingController(text: it?.desa ?? '');
+    _kecCtrl = TextEditingController(text: it?.kecamatan ?? '');
     _dasaWismaCtrl = TextEditingController(text: it?.dasaWisma ?? 'Mawar 01');
 
     _namaDasawismaCtrl = TextEditingController(
@@ -119,7 +121,7 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
     _nomorRtCtrl = TextEditingController(text: it?.nomorRt ?? '01');
     _nomorRwCtrl = TextEditingController(text: it?.nomorRw ?? '05');
     _namaDusunCtrl = TextEditingController(text: it?.namaDusun ?? 'Cikunir');
-    _namaDesaCtrl = TextEditingController(text: it?.namaDesa ?? 'Singaparna');
+    _namaDesaCtrl = TextEditingController(text: it?.namaDesa ?? '');
 
     _jumlahDusunCtrl = TextEditingController(
       text: (it?.jumlahDusun ?? 0).toString(),
@@ -197,6 +199,21 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
     );
 
     _keteranganCtrl = TextEditingController(text: it?.keterangan ?? '');
+    if (it == null) _isiWilayahOtomatis();
+  }
+
+  Future<void> _isiWilayahOtomatis() async {
+    try {
+      final user = await AuthService().getCurrentUser();
+      if (!mounted) return;
+      if (user.desa.isNotEmpty && _desaCtrl.text.trim().isEmpty) {
+        _desaCtrl.text = user.desa;
+      }
+      if (user.kecamatan.isNotEmpty && _kecCtrl.text.trim().isEmpty) {
+        _kecCtrl.text = user.kecamatan;
+      }
+      if (user.hasWilayah) setState(() {});
+    } catch (_) {}
   }
 
   @override
@@ -451,7 +468,9 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
               icon: Icons.location_city_rounded,
               color: const Color(0xFF0072BC),
               children: [
+                WilayahOtomatisBanner(desa: _desaCtrl.text, kecamatan: _kecCtrl.text),
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
                       child: _textField(
@@ -465,19 +484,18 @@ class _RekapKegiatanWargaBerjenjangFormScreenState
                       child: KecamatanDropdownField(
                         controller: _kecCtrl,
                         label: 'Kecamatan',
+                        enabled: false,
+                        lockedHint: 'Otomatis dari akun',
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 12),
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      child: _textField(
-                        controller: _desaCtrl,
-                        label: 'Desa / Kelurahan',
-                        icon: Icons.apartment_rounded,
-                      ),
+                      child: DesaTerkunciField(controller: _desaCtrl),
                     ),
                     const SizedBox(width: 12),
                     Expanded(

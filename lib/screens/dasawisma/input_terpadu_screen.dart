@@ -12,6 +12,7 @@ import '../../services/kegiatan_warga_service.dart';
 import '../../services/pemanfaatan_tanah_service.dart';
 import '../../services/industri_rumah_tangga_service.dart';
 import '../../services/api_exception.dart' show ApiValidationException;
+import '../../widgets/skeleton.dart';
 
 // INPUT TERPADU SATU PINTU — ganti 5 tab input satuan.
 // Satu layar, satu tombol Kirim:
@@ -67,8 +68,11 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
   final _tanahService = PemanfaatanTanahService();
   final _industriService = IndustriRumahTanggaService();
 
-  static const Color _primary = Color(0xFF0072BC);
-  static const Color _primaryLight = Color(0xFFE6F1F9);
+  static const Color _primary = Color(0xFF0F4C81);
+  static const Color _ink = Color(0xFF1A2B3C);
+  static const Color _muted = Color(0xFF5B6B7C);
+  static const Color _line = Color(0xFFE1E7EE);
+  static const Color _paper = Color(0xFFF4F6F9);
 
   List<DataKeluargaDasawisma> _kkList = [];
   bool _kkLoading = true;
@@ -358,23 +362,23 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: _paper,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
-        iconTheme: const IconThemeData(color: Color(0xFF0F172A)),
+        iconTheme: const IconThemeData(color: _ink),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text('Input Terpadu Satu Pintu',
                 style: GoogleFonts.plusJakartaSans(
                     fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    color: const Color(0xFF0F172A))),
+                    fontWeight: FontWeight.w700,
+                    color: _ink)),
             Text('KK → Anggota → Kegiatan, kirim sekaligus',
                 style: GoogleFonts.plusJakartaSans(
-                    fontSize: 11, color: const Color(0xFF64748B))),
+                    fontSize: 11, color: _muted)),
           ],
         ),
         actions: <Widget>[
@@ -403,12 +407,10 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
           children: <Widget>[
-            _nomor('1'),
-            _section(Icons.home_work_outlined, 'Pilih KK',
-                'Wilayah otomatis ikut dari KK'),
-            const SizedBox(height: 14),
+            _stepHeader('1', 'Pilih KK', 'Wilayah otomatis ikut dari KK'),
+            const SizedBox(height: 10),
             _kkDropdown(),
             const SizedBox(height: 10),
             Row(
@@ -444,11 +446,9 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
                         icon: Icons.landscape_outlined)),
               ],
             ),
-            const SizedBox(height: 28),
-            _nomor('2'),
-            _section(Icons.people_outline_rounded, 'Anggota Keluarga',
-                'Isi yang mau dicatat, tambah bila perlu'),
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
+            _stepHeader('2', 'Anggota Keluarga', 'Isi yang mau dicatat, tambah bila perlu'),
+            const SizedBox(height: 10),
             for (var i = 0; i < _anggota.length; i++)
               _anggotaCard(_anggota[i], i),
             OutlinedButton.icon(
@@ -466,17 +466,13 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 12),
               ),
             ),
-            const SizedBox(height: 28),
-            _nomor('3'),
-            _section(Icons.diversity_3_rounded, 'Kegiatan Diikuti',
-                'Centang bila ada (boleh kosong)'),
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
+            _stepHeader('3', 'Kegiatan Diikuti', 'Centang bila ada (boleh kosong)'),
+            const SizedBox(height: 10),
             for (final k in _kegiatans) _kegiatanTile(k),
-            const SizedBox(height: 28),
-            _nomor('4'),
-            _section(Icons.yard_outlined, 'Pekarangan & Industri',
-                'Centang bila ada (boleh kosong)'),
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
+            _stepHeader('4', 'Pekarangan & Industri', 'Centang bila ada (boleh kosong)'),
+            const SizedBox(height: 10),
             _opsionalCard(
               judul: 'Pemanfaatan Pekarangan',
               icon: Icons.grass_outlined,
@@ -555,7 +551,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 32),
+            const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -563,10 +559,10 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: _primary,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14)),
-                  elevation: 2,
+                      borderRadius: BorderRadius.circular(12)),
+                  elevation: 0,
                 ),
                 child: _saving
                     ? const SizedBox(
@@ -576,7 +572,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
                             strokeWidth: 2.5, color: Colors.white))
                     : Text('Kirim Semua Sekaligus',
                         style: GoogleFonts.plusJakartaSans(
-                            fontSize: 15, fontWeight: FontWeight.w700)),
+                            fontSize: 14, fontWeight: FontWeight.w700)),
               ),
             ),
           ],
@@ -585,73 +581,49 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
     );
   }
 
-  Widget _nomor(String n) => Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        decoration: BoxDecoration(
-          color: _primary,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Text('Langkah $n',
-            style: GoogleFonts.plusJakartaSans(
-                fontSize: 11,
-                fontWeight: FontWeight.w800,
-                color: Colors.white)),
-      );
-
-  Widget _section(IconData icon, String title, String sub) {
-    return Row(
-      children: <Widget>[
-        Container(
-          padding: const EdgeInsets.all(9),
-          decoration: BoxDecoration(
-            color: _primaryLight,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(icon, size: 18, color: _primary),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(title,
+  Widget _stepHeader(String num, String title, String sub) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: _primary,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: <Widget>[
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.2),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Center(
+              child: Text(num,
                   style: GoogleFonts.plusJakartaSans(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF0F172A))),
-              Text(sub,
-                  style: GoogleFonts.plusJakartaSans(
-                      fontSize: 11.5, color: const Color(0xFF64748B))),
-            ],
+                      fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white)),
+            ),
           ),
-        ),
-      ],
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(title,
+                    style: GoogleFonts.plusJakartaSans(
+                        fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white)),
+                Text(sub,
+                    style: GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.white70)),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _kkDropdown() {
     if (_kkLoading) {
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: const Color(0xFFE2E8F0)),
-        ),
-        child: Row(
-          children: <Widget>[
-            const SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(strokeWidth: 2)),
-            const SizedBox(width: 12),
-            Text('Memuat daftar KK...',
-                style:
-                    GoogleFonts.plusJakartaSans(fontSize: 13, color: Colors.grey[500])),
-          ],
-        ),
-      );
+      return const SkeletonForm();
     }
     if (_kkError != null) {
       return Container(
@@ -679,20 +651,20 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        border: Border.all(color: _line),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
       child: DropdownButtonFormField<int>(
         initialValue: _kkId,
         isExpanded: true,
         icon: const Icon(Icons.keyboard_arrow_down_rounded,
-            color: Color(0xFF64748B)),
+            color: _muted),
         decoration: InputDecoration(
           labelText: 'Kepala Keluarga',
           prefixIcon: const Icon(Icons.home_work_outlined,
               size: 18, color: _primary),
           labelStyle:
-              GoogleFonts.plusJakartaSans(fontSize: 13, color: const Color(0xFF64748B)),
+              GoogleFonts.plusJakartaSans(fontSize: 13, color: _muted),
           border: InputBorder.none,
           enabledBorder: InputBorder.none,
           focusedBorder: InputBorder.none,
@@ -721,8 +693,8 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: _line),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -732,8 +704,8 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
               Text('Anggota ${index + 1}',
                   style: GoogleFonts.plusJakartaSans(
                       fontSize: 13,
-                      fontWeight: FontWeight.w800,
-                      color: const Color(0xFF0F172A))),
+                      fontWeight: FontWeight.w700,
+                      color: _ink)),
               const Spacer(),
               if (_anggota.length > 1)
                 IconButton(
@@ -759,15 +731,17 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
-                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                    border: Border.all(color: _line),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                   child: DropdownButtonFormField<String>(
                     initialValue: a.jenisKelamin,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'L/P',
+                      labelStyle: GoogleFonts.plusJakartaSans(fontSize: 13, color: _muted),
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.zero,
                     ),
@@ -784,15 +758,17 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    border: Border.all(color: const Color(0xFFE2E8F0)),
-                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                    border: Border.all(color: _line),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
                   child: DropdownButtonFormField<String>(
                     initialValue: a.hubungan,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: 'Hubungan',
+                      labelStyle: GoogleFonts.plusJakartaSans(fontSize: 13, color: _muted),
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.zero,
                     ),
@@ -845,12 +821,13 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
   Widget _tglLahirTile(_AnggotaDraft a) {
     return InkWell(
       onTap: () => _pickTanggal(a),
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
         decoration: BoxDecoration(
-          border: Border.all(color: const Color(0xFFE2E8F0)),
-          borderRadius: BorderRadius.circular(10),
+          color: Colors.white,
+          border: Border.all(color: _line),
+          borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: <Widget>[
@@ -863,7 +840,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
                     ? 'Tgl lahir'
                     : '${a.tanggalLahir!.day}/${a.tanggalLahir!.month}/${a.tanggalLahir!.year}',
                 style: GoogleFonts.plusJakartaSans(
-                    fontSize: 12.5, color: const Color(0xFF0F172A)),
+                    fontSize: 12.5, color: _ink),
               ),
             ),
           ],
@@ -879,8 +856,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-            color:
-                k.ikut ? const Color(0xFF5EEAD4) : const Color(0xFFE2E8F0)),
+            color: k.ikut ? _primary : _line),
       ),
       child: Column(
         children: <Widget>[
@@ -937,8 +913,8 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
                             horizontal: 10, vertical: 13),
                         decoration: BoxDecoration(
                           border:
-                              Border.all(color: const Color(0xFFE2E8F0)),
-                          borderRadius: BorderRadius.circular(10),
+                              Border.all(color: _line),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           k.tanggal == null
@@ -969,7 +945,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-            color: aktif ? const Color(0xFF5EEAD4) : const Color(0xFFE2E8F0)),
+            color: aktif ? _primary : _line),
       ),
       child: Column(
         children: <Widget>[
@@ -1010,13 +986,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
     bool desimal = false,
     bool wajib = false,
   }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-      ),
-      child: TextFormField(
+    return TextFormField(
         controller: ctrl,
         keyboardType: angka
             ? (desimal
@@ -1030,7 +1000,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
                     : FilteringTextInputFormatter.digitsOnly,
               ]
             : null,
-        style: GoogleFonts.plusJakartaSans(fontSize: 13),
+        style: GoogleFonts.plusJakartaSans(fontSize: 14, color: _ink),
         validator: (v) {
           if (wajib && (v == null || v.trim().isEmpty)) return 'Wajib';
           return null;
@@ -1038,20 +1008,19 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
         decoration: InputDecoration(
           labelText: label,
           hintText: hint,
-          prefixIcon: Icon(icon, size: 16, color: _primary),
+          prefixIcon: Icon(icon, size: 18, color: _primary),
           hintStyle:
-              GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.grey[400]),
+              GoogleFonts.plusJakartaSans(fontSize: 12.5, color: _muted),
           labelStyle:
-              GoogleFonts.plusJakartaSans(fontSize: 12, color: const Color(0xFF64748B)),
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          errorBorder: InputBorder.none,
-          focusedErrorBorder: InputBorder.none,
+              GoogleFonts.plusJakartaSans(fontSize: 13, color: _muted),
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: _line)),
+          enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: _line)),
+          focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: _primary, width: 1.5)),
           contentPadding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         ),
-      ),
-    );
+      );
   }
 }

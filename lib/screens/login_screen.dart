@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -17,12 +18,16 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _captchaController = TextEditingController();
   final _authService = AuthService();
+  final _random = Random();
 
   bool _loading = false;
   bool _obscurePassword = true;
   bool _rememberMe = false;
   String _errorMessage = '';
+  int _captchaA = 3;
+  int _captchaB = 4;
 
   static const _pkkBlue = Color(0xFF0072BC);
   static const _pkkGold = Color(0xFFFFC72C);
@@ -38,7 +43,16 @@ class _LoginScreenState extends State<LoginScreen> {
         statusBarIconBrightness: Brightness.dark,
       ),
     );
+    _generateCaptcha();
     _loadSavedCredentials();
+  }
+
+  void _generateCaptcha() {
+    setState(() {
+      _captchaA = 1 + _random.nextInt(9);
+      _captchaB = 1 + _random.nextInt(9);
+      _captchaController.clear();
+    });
   }
 
   Future<void> _loadSavedCredentials() async {
@@ -98,6 +112,16 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final expected = _captchaA + _captchaB;
+    final answered = int.tryParse(_captchaController.text.trim());
+    if (answered != expected) {
+      setState(() {
+        _errorMessage = 'Kode keamanan salah. Silakan hitung ulang.';
+      });
+      _generateCaptcha();
+      return;
+    }
+
     setState(() {
       _loading = true;
       _errorMessage = '';
@@ -124,6 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
         _errorMessage = e.toString().replaceFirst('Exception: ', '');
         _loading = false;
       });
+      _generateCaptcha();
     }
   }
 
@@ -239,6 +264,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     _usernameController.dispose();
     _passwordController.dispose();
+    _captchaController.dispose();
     _authService.dispose();
     super.dispose();
   }
@@ -504,6 +530,75 @@ class _LoginScreenState extends State<LoginScreen> {
                                           fontWeight: FontWeight.w600,
                                           color: _pkkBlue,
                                         ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 18),
+                                Text(
+                                  'Kode Keamanan',
+                                  style: GoogleFonts.plusJakartaSans(
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.w600,
+                                    color: _ink,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFFF5F7FA),
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(color: const Color(0xFFD0D7DE)),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            '$_captchaA + $_captchaB = ?',
+                                            style: GoogleFonts.plusJakartaSans(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w800,
+                                              color: _ink,
+                                              letterSpacing: 1.2,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          InkWell(
+                                            onTap: _loading ? null : _generateCaptcha,
+                                            borderRadius: BorderRadius.circular(6),
+                                            child: const Padding(
+                                              padding: EdgeInsets.all(2),
+                                              child: Icon(Icons.refresh_rounded, size: 18, color: _pkkBlue),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: TextFormField(
+                                        controller: _captchaController,
+                                        keyboardType: TextInputType.number,
+                                        textInputAction: TextInputAction.done,
+                                        onFieldSubmitted: (_) => _handleLogin(),
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter.digitsOnly,
+                                          LengthLimitingTextInputFormatter(3),
+                                        ],
+                                        style: fieldStyle,
+                                        decoration: _fieldDecoration(
+                                          hint: 'Jawaban',
+                                          icon: Icons.shield_outlined,
+                                        ),
+                                        validator: (value) {
+                                          if (value == null || value.trim().isEmpty) {
+                                            return 'Wajib diisi';
+                                          }
+                                          return null;
+                                        },
                                       ),
                                     ),
                                   ],

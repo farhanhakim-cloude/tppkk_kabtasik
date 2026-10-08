@@ -1,11 +1,10 @@
 // lib/screens/dasawisma/data_umum_rekap_screen.dart
-// ✅ FIXED: baca dari API — bukan SharedPreferences
+// Rekap Data Umum — gaya disamakan dengan dashboard (biru-putih dinas).
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/data_keluarga_dasawisma.dart';
-// ✅ GANTI: dari lokal ke API
 import '../../services/daftar_warga_service.dart';
 
 class DataUmumRekapScreen extends StatefulWidget {
@@ -16,11 +15,13 @@ class DataUmumRekapScreen extends StatefulWidget {
 }
 
 class _DataUmumRekapScreenState extends State<DataUmumRekapScreen> {
-  static const Color _primary = Color(0xFF0072BC);
-  static const Color _darkText = Color(0xFF0F172A);
+  static const Color biru = Color(0xFF0F4C81);
+  static const Color ink = Color(0xFF1A2B3C);
+  static const Color muted = Color(0xFF5B6B7C);
+  static const Color line = Color(0xFFE1E7EE);
+  static const Color paper = Color(0xFFF4F6F9);
 
   bool _loading = true;
-  List<DataKeluargaDasawisma> _listKk = [];
   int _totalKk = 0;
   int _totalJiwa = 0;
   int _totalL = 0;
@@ -45,7 +46,6 @@ class _DataUmumRekapScreenState extends State<DataUmumRekapScreen> {
   Future<void> _loadData() async {
     setState(() => _loading = true);
     try {
-      // ✅ FIXED: pakai DaftarWargaService (API)
       final list = await DaftarWargaService().getAll();
       final listKk = list.cast<DataKeluargaDasawisma>();
 
@@ -83,7 +83,6 @@ class _DataUmumRekapScreenState extends State<DataUmumRekapScreen> {
 
       if (!mounted) return;
       setState(() {
-        _listKk = listKk;
         _totalKk = listKk.length;
         _totalJiwa = totalJiwa;
         _totalL = totalL;
@@ -99,8 +98,7 @@ class _DataUmumRekapScreenState extends State<DataUmumRekapScreen> {
         _perDusun = perDusun;
         _loading = false;
       });
-    } catch (e) {
-      print('❌ DataUmumRekapScreen error: $e');
+    } catch (_) {
       if (!mounted) return;
       setState(() => _loading = false);
     }
@@ -109,197 +107,125 @@ class _DataUmumRekapScreenState extends State<DataUmumRekapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
+      backgroundColor: paper,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: biru,
+        foregroundColor: Colors.white,
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded, color: _darkText),
+          icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Rekap Data Umum',
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 16,
-                fontWeight: FontWeight.w800,
-                color: _darkText,
-              ),
-            ),
-            Text(
-              'Ringkasan data KK & warga',
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                color: const Color(0xFF64748B),
-              ),
-            ),
+            Text('Rekap Data Umum',
+                style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
+            Text('Ringkasan KK dan warga',
+                style: GoogleFonts.plusJakartaSans(fontSize: 11, color: Colors.white70)),
           ],
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: _primary),
-            onPressed: _loadData,
-          ),
+          IconButton(icon: const Icon(Icons.refresh_rounded, color: Colors.white), onPressed: _loadData),
         ],
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator(color: _primary))
+          ? const Center(child: CircularProgressIndicator(color: biru))
           : RefreshIndicator(
               onRefresh: _loadData,
-              color: _primary,
+              color: biru,
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 24),
                 children: [
-                  _sectionTitle('Ringkasan Utama'),
+                  _section('Ringkasan'),
+                  const SizedBox(height: 8),
+                  _grid4([
+                    _Stat('KK', '$_totalKk'),
+                    _Stat('Jiwa', '$_totalJiwa'),
+                    _Stat('L', '$_totalL'),
+                    _Stat('P', '$_totalP'),
+                  ]),
+                  const SizedBox(height: 16),
+                  _section('Kelompok Khusus'),
+                  const SizedBox(height: 8),
+                  _grid4([
+                    _Stat('Balita', '$_totalBalita'),
+                    _Stat('PUS', '$_totalPus'),
+                    _Stat('WUS', '$_totalWus'),
+                    _Stat('Bumil', '$_totalBumil'),
+                  ]),
                   const SizedBox(height: 10),
-                  GridView.count(
-                    crossAxisCount: 2,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                    childAspectRatio: 1.6,
-                    children: [
-                      _statCard('Total KK', '$_totalKk', Icons.home_rounded, const Color(0xFF0072BC)),
-                      _statCard('Total Jiwa', '$_totalJiwa', Icons.people_rounded, const Color(0xFF3B82F6)),
-                      _statCard('Laki-laki', '$_totalL', Icons.male_rounded, const Color(0xFF2563EB)),
-                      _statCard('Perempuan', '$_totalP', Icons.female_rounded, const Color(0xFFEC4899)),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-
-                  _sectionTitle('Kategori Khusus'),
-                  const SizedBox(height: 10),
-                  GridView.count(
-                    crossAxisCount: 3,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    mainAxisSpacing: 8,
-                    crossAxisSpacing: 8,
-                    childAspectRatio: 1.05,
-                    children: [
-                      _statCardSmall('Balita', '$_totalBalita', const Color(0xFFF59E0B)),
-                      _statCardSmall('PUS', '$_totalPus', const Color(0xFF10B981)),
-                      _statCardSmall('WUS', '$_totalWus', const Color(0xFF06B6D4)),
-                      _statCardSmall('Bumil', '$_totalBumil', const Color(0xFFEC4899)),
-                      _statCardSmall('Busui', '$_totalBusui', const Color(0xFF8B5CF6)),
-                      _statCardSmall('Lansia', '$_totalLansia', const Color(0xFF6366F1)),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-
-                  _sectionTitle('Kriteria Rumah'),
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _statCardBig(
-                          'Rumah Sehat',
-                          '$_totalRumahSehat',
-                          Icons.home_rounded,
-                          const Color(0xFF10B981),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: _statCardBig(
-                          'Kurang Sehat',
-                          '$_totalRumahTidakSehat',
-                          Icons.home_outlined,
-                          const Color(0xFFF59E0B),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-
-                  _sectionTitle('Rekap per Dusun'),
-                  const SizedBox(height: 10),
+                  _grid4([
+                    _Stat('Busui', '$_totalBusui'),
+                    _Stat('Lansia', '$_totalLansia'),
+                    _Stat('Sehat', '$_totalRumahSehat'),
+                    _Stat('Krg Sehat', '$_totalRumahTidakSehat'),
+                  ]),
+                  const SizedBox(height: 16),
+                  _section('Per Dusun'),
+                  const SizedBox(height: 8),
                   if (_perDusun.isEmpty)
-                    _emptyState('Belum ada data dusun')
-                  else
-                    ..._perDusun.entries.map((e) {
-                      final dusun = e.key;
-                      final data = e.value;
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        padding: const EdgeInsets.all(14),
-                        decoration: BoxDecoration(
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 16),
+                      decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFE2E8F0)),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 42, height: 42,
-                              decoration: BoxDecoration(
-                                color: _primary.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Icon(Icons.location_city_rounded, color: _primary, size: 20),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                          border: Border.all(color: line)),
+                      child: Center(
+                        child: Text('Belum ada data dusun',
+                            style: GoogleFonts.plusJakartaSans(fontSize: 13, color: muted)),
+                      ),
+                    )
+                  else
+                    Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: line)),
+                      child: Column(
+                        children: [
+                          for (final e in _perDusun.entries) ...[
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+                              child: Row(
                                 children: [
-                                  Text(
-                                    dusun,
-                                    style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w800,
-                                      color: _darkText,
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(e.key,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: GoogleFonts.plusJakartaSans(
+                                                fontSize: 14, fontWeight: FontWeight.w600, color: ink)),
+                                        Text('${e.value['kk']} KK • ${e.value['jiwa']} jiwa • ${e.value['balita']} balita',
+                                            style: GoogleFonts.plusJakartaSans(fontSize: 12, color: muted)),
+                                      ],
                                     ),
                                   ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    '${data['kk']} KK • ${data['jiwa']} Jiwa • ${data['balita']} Balita',
-                                    style: GoogleFonts.plusJakartaSans(
-                                      fontSize: 12,
-                                      color: const Color(0xFF64748B),
-                                    ),
-                                  ),
+                                  Text('${e.value['kk']}',
+                                      style: GoogleFonts.plusJakartaSans(
+                                          fontSize: 17, fontWeight: FontWeight.w700, color: biru)),
                                 ],
                               ),
                             ),
-                            Text(
-                              '${data['kk']}',
-                              style: GoogleFonts.plusJakartaSans(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w800,
-                                color: _primary,
-                              ),
-                            ),
+                            if (e.key != _perDusun.entries.last.key)
+                              const Divider(height: 1, indent: 14, endIndent: 14, color: line),
                           ],
-                        ),
-                      );
-                    }),
-
-                  const SizedBox(height: 20),
-
-                  Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFF7ED),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: const Color(0xFFFED7AA)),
+                        ],
+                      ),
                     ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.info_outline_rounded, color: Color(0xFFEA580C), size: 20),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            'Data ini otomatis terisi dari input kader. Setelah disetujui Admin Desa, akan masuk ke rekap kabupaten.',
-                            style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: const Color(0xFF9A3412), height: 1.4),
-                          ),
-                        ),
-                      ],
+                  const SizedBox(height: 14),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: line)),
+                    child: Text(
+                      'Otomatis dari input kader. Masuk rekap kabupaten setelah disetujui Admin Desa.',
+                      style: GoogleFonts.plusJakartaSans(fontSize: 12, color: muted),
                     ),
                   ),
                 ],
@@ -308,121 +234,38 @@ class _DataUmumRekapScreenState extends State<DataUmumRekapScreen> {
     );
   }
 
-  Widget _sectionTitle(String title) {
-    return Text(
-      title,
-      style: GoogleFonts.plusJakartaSans(
-        fontSize: 14,
-        fontWeight: FontWeight.w800,
-        color: _darkText,
-      ),
-    );
-  }
+  Widget _section(String t) => Text(t,
+      style: GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.w700, color: ink));
 
-  Widget _statCard(String label, String value, IconData icon, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: color.withValues(alpha: 0.15)),
-        boxShadow: [
-          BoxShadow(color: color.withValues(alpha: 0.08), blurRadius: 10, offset: const Offset(0, 4)),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(7),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(9),
-            ),
-            child: Icon(icon, color: color, size: 16),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(value, style: GoogleFonts.plusJakartaSans(fontSize: 20, fontWeight: FontWeight.w800, color: _darkText, height: 1)),
-              const SizedBox(height: 2),
-              Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 10.5, fontWeight: FontWeight.w600, color: const Color(0xFF64748B))),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _statCardSmall(String label, String value, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.15)),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(value, style: GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.w800, color: color, height: 1)),
-          const SizedBox(height: 4),
-          Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 10, fontWeight: FontWeight.w600, color: const Color(0xFF64748B))),
-        ],
-      ),
-    );
-  }
-
-  Widget _statCardBig(String label, String value, IconData icon, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: color.withValues(alpha: 0.15)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(9),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: color, size: 18),
-          ),
-          const SizedBox(width: 10),
+  Widget _grid4(List<_Stat> items) {
+    return Row(
+      children: [
+        for (int i = 0; i < items.length; i++) ...[
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(value, style: GoogleFonts.plusJakartaSans(fontSize: 20, fontWeight: FontWeight.w800, color: _darkText, height: 1)),
-                const SizedBox(height: 2),
-                Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 10.5, fontWeight: FontWeight.w600, color: const Color(0xFF64748B))),
-              ],
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                  color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: line)),
+              child: Column(
+                children: [
+                  Text(items[i].value,
+                      style: GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.w700, color: biru)),
+                  const SizedBox(height: 2),
+                  Text(items[i].label,
+                      style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: muted)),
+                ],
+              ),
             ),
           ),
+          if (i < items.length - 1) const SizedBox(width: 8),
         ],
-      ),
+      ],
     );
   }
+}
 
-  Widget _emptyState(String msg) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-      ),
-      child: Column(
-        children: [
-          Icon(Icons.inbox_rounded, size: 48, color: const Color(0xFF94A3B8).withValues(alpha: 0.5)),
-          const SizedBox(height: 10),
-          Text(msg, style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w600, color: const Color(0xFF64748B))),
-        ],
-      ),
-    );
-  }
+class _Stat {
+  final String label;
+  final String value;
+  _Stat(this.label, this.value);
 }

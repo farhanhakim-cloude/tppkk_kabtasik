@@ -7,6 +7,8 @@ class User {
   final String email;
   final List<String> roles;
   final String? mobileRole;
+  final String kecamatan;
+  final String desa;
 
   User({
     this.id,
@@ -18,8 +20,13 @@ class User {
     String? role,
     String? jabatan,
     String? mobileRole,
+    String? kecamatan,
+    String? desa,
+    String? kelurahan,
   })  : name = name ?? nama ?? 'User',
         mobileRole = mobileRole ?? role,
+        kecamatan = kecamatan ?? '',
+        desa = desa ?? kelurahan ?? '',
         roles = roles ?? (role != null ? [role] : (jabatan != null ? [jabatan] : const []));
 
   // Compatibility getters
@@ -52,6 +59,8 @@ class User {
       email: map['email'] ?? '',
       roles: parsedRoles,
       mobileRole: map['role']?.toString(),
+      kecamatan: (map['kecamatan'] ?? '').toString(),
+      desa: (map['desa'] ?? map['kelurahan'] ?? map['nama_desa'] ?? '').toString(),
     );
   }
 
@@ -63,5 +72,11 @@ class User {
     'email': email,
     'roles': roles,
     'role': mobileRole ?? role,
+    'kecamatan': kecamatan,
+    'desa': desa,
   };
+
+  bool get hasWilayah => kecamatan.isNotEmpty && desa.isNotEmpty;
+  String get wilayahLabel =>
+      hasWilayah ? '$desa, Kec. $kecamatan' : 'Wilayah belum diatur';
 }

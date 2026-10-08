@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../models/kriteria_rumah.dart';
 import '../../services/kriteria_rumah_service.dart';
+import '../../services/auth_service.dart';
 import '../../widgets/kecamatan_dropdown_field.dart';
+import '../../widgets/wilayah_otomatis.dart';
 
 class KriteriaRumahFormScreen extends StatefulWidget {
   final KriteriaRumah? existing;
@@ -89,7 +91,22 @@ class _KriteriaRumahFormScreenState extends State<KriteriaRumahFormScreen> {
     } else {
       _tglCtrl.text = _fmtDate(DateTime.now());
       _kabCtrl.text = 'Kabupaten Tasikmalaya';
+      _isiWilayahOtomatis();
     }
+  }
+
+  Future<void> _isiWilayahOtomatis() async {
+    try {
+      final user = await AuthService().getCurrentUser();
+      if (!mounted) return;
+      if (user.desa.isNotEmpty && _desaCtrl.text.trim().isEmpty) {
+        _desaCtrl.text = user.desa;
+      }
+      if (user.kecamatan.isNotEmpty && _kecCtrl.text.trim().isEmpty) {
+        _kecCtrl.text = user.kecamatan;
+      }
+      if (user.hasWilayah) setState(() {});
+    } catch (_) {}
   }
 
   String _fmtDate(DateTime d) =>
@@ -242,8 +259,13 @@ class _KriteriaRumahFormScreenState extends State<KriteriaRumahFormScreen> {
                 Expanded(child: _buildTextField(_rwCtrl, 'RW *', Icons.location_on_rounded, required: true)),
               ],
             ),
-            _buildTextField(_desaCtrl, 'Desa/Kelurahan', Icons.apartment_rounded),
-            KecamatanDropdownField(controller: _kecCtrl),
+            WilayahOtomatisBanner(desa: _desaCtrl.text, kecamatan: _kecCtrl.text),
+            DesaTerkunciField(controller: _desaCtrl),
+            KecamatanDropdownField(
+              controller: _kecCtrl,
+              enabled: false,
+              lockedHint: 'Otomatis dari akun',
+            ),
             _buildTextField(_kabCtrl, 'Kabupaten/Kota', Icons.location_city_rounded),
             GestureDetector(
               onTap: _pickDate,

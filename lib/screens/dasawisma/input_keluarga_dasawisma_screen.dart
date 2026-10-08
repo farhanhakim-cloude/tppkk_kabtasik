@@ -14,7 +14,9 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../models/data_keluarga_dasawisma.dart';
 import '../../services/daftar_warga_service.dart';
+import '../../services/auth_service.dart';
 import '../../widgets/kecamatan_dropdown_field.dart';
+import '../../widgets/wilayah_otomatis.dart';
 
 class InputKeluargaDasawismaScreen extends StatefulWidget {
   final DataKeluargaDasawisma? data;
@@ -28,10 +30,11 @@ class InputKeluargaDasawismaScreen extends StatefulWidget {
 
 class _InputKeluargaDasawismaScreenState
     extends State<InputKeluargaDasawismaScreen> {
-  static const Color _primary = Color(0xFF0072BC);
-  static const Color _darkText = Color(0xFF0F172A);
-  static const Color _bg = Color(0xFFF8FAFC);
-  static const Color _border = Color(0xFFE2E8F0);
+  static const Color _primary = Color(0xFF0F4C81);
+  static const Color _darkText = Color(0xFF1A2B3C);
+  static const Color _muted = Color(0xFF5B6B7C);
+  static const Color _bg = Color(0xFFF4F6F9);
+  static const Color _border = Color(0xFFE1E7EE);
 
   final _formKey = GlobalKey<FormState>();
   final _service = DaftarWargaService();
@@ -121,7 +124,24 @@ class _InputKeluargaDasawismaScreenState
       _tanahPekarangan = d.aktifitasTanahPekarangan;
       _industriRt = d.aktifitasIndustriRumahTangga;
       _kesehatanLingkungan = d.aktifitasKesehatanLingkungan;
+    } else {
+      // Input baru: otomatis isi Desa & Kecamatan dari akun Dasawisma
+      _isiWilayahOtomatis();
     }
+  }
+
+  Future<void> _isiWilayahOtomatis() async {
+    try {
+      final user = await AuthService().getCurrentUser();
+      if (!mounted) return;
+      if (user.desa.isNotEmpty && _desaCtrl.text.trim().isEmpty) {
+        _desaCtrl.text = user.desa;
+      }
+      if (user.kecamatan.isNotEmpty && _kecamatanCtrl.text.trim().isEmpty) {
+        _kecamatanCtrl.text = user.kecamatan;
+      }
+      if (user.hasWilayah) setState(() {});
+    } catch (_) {}
   }
 
   @override
@@ -313,13 +333,22 @@ class _InputKeluargaDasawismaScreenState
           icon: const Icon(Icons.arrow_back_rounded, color: _darkText),
           onPressed: _prevStep,
         ),
-        title: Text(
-          widget.data == null ? 'Input Data Keluarga' : 'Edit Data Keluarga',
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 16,
-            fontWeight: FontWeight.w800,
-            color: _darkText,
-          ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.data == null ? 'Input Data Keluarga' : 'Edit Data Keluarga',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: _darkText,
+              ),
+            ),
+            Text(
+              'Langkah ${_currentStep + 1} dari 5',
+              style: GoogleFonts.plusJakartaSans(fontSize: 11, color: _muted),
+            ),
+          ],
         ),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(64),
@@ -374,7 +403,7 @@ class _InputKeluargaDasawismaScreenState
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 10,
                       fontWeight: isActive ? FontWeight.w800 : FontWeight.w600,
-                      color: isActive ? _primary : const Color(0xFF94A3B8),
+                      color: isActive ? _primary : _muted,
                     ),
                   ),
                 ],
@@ -395,13 +424,23 @@ class _InputKeluargaDasawismaScreenState
       children: [
         _stepHeader('1', 'Identitas Wilayah', 'Tentukan lokasi dasawisma', Icons.location_on_rounded),
         const SizedBox(height: 16),
+        WilayahOtomatisBanner(desa: _desaCtrl.text, kecamatan: _kecamatanCtrl.text),
         _field(_dasaWismaCtrl, 'Nama Dasa Wisma *', 'Contoh: Mawar 01', Icons.holiday_village_outlined),
         _twoField(_rtCtrl, 'RT', '01', _rwCtrl, 'RW', '05'),
         _field(_dusunCtrl, 'Dusun / Lingkungan', 'Nama dusun', Icons.landscape_outlined),
-        _twoFieldText(
-          _desaCtrl, 'Desa *', 'Nama desa',
-          _kecamatanCtrl, 'Kecamatan *', 'Pilih kecamatan',
-          isKecamatan: true,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: DesaTerkunciField(controller: _desaCtrl)),
+            const SizedBox(width: 10),
+            Expanded(
+              child: KecamatanDropdownField(
+                controller: _kecamatanCtrl,
+                enabled: false,
+                lockedHint: 'Otomatis dari akun',
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -489,20 +528,20 @@ class _InputKeluargaDasawismaScreenState
         _switchTile('Kesehatan Lingkungan', _kesehatanLingkungan, (v) => setState(() => _kesehatanLingkungan = v)),
         const SizedBox(height: 20),
         Container(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: const Color(0xFFFFF7ED),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFFED7AA)),
+            border: Border.all(color: _border),
           ),
           child: Row(
             children: [
-              const Icon(Icons.info_outline_rounded, color: Color(0xFFEA580C), size: 20),
+              const Icon(Icons.info_outline_rounded, color: _primary, size: 20),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
                   'Setelah dikirim, data akan ditinjau Admin Desa. Kalau disetujui, akan masuk ke rekap Data Umum PKK.',
-                  style: GoogleFonts.plusJakartaSans(fontSize: 11.5, color: const Color(0xFF9A3412), height: 1.4),
+                  style: GoogleFonts.plusJakartaSans(fontSize: 12, color: _muted, height: 1.4),
                 ),
               ),
             ],
@@ -551,8 +590,8 @@ class _InputKeluargaDasawismaScreenState
               child: _isSaving
                   ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                   : Text(
-                      isLast ? '🚀 Kirim ke Desa' : 'Lanjut',
-                      style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 14, color: Colors.white),
+                      isLast ? 'Kirim ke Desa' : 'Lanjut',
+                      style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 14, color: Colors.white),
                     ),
             ),
           ),
@@ -566,18 +605,18 @@ class _InputKeluargaDasawismaScreenState
   // ═══════════════════════════════════════════════════════
   Widget _stepHeader(String num, String title, String subtitle, IconData icon) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: _primary,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         children: [
           Container(
-            width: 42, height: 42,
-            decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(12)),
+            width: 38, height: 38,
+            decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(10)),
             child: Center(
-              child: Text(num, style: GoogleFonts.plusJakartaSans(fontSize: 20, fontWeight: FontWeight.w800, color: Colors.white)),
+              child: Text(num, style: GoogleFonts.plusJakartaSans(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white)),
             ),
           ),
           const SizedBox(width: 12),
@@ -585,12 +624,12 @@ class _InputKeluargaDasawismaScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: GoogleFonts.plusJakartaSans(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white)),
-                Text(subtitle, style: GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.white.withValues(alpha: 0.85))),
+                Text(title, style: GoogleFonts.plusJakartaSans(fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white)),
+                Text(subtitle, style: GoogleFonts.plusJakartaSans(fontSize: 12, color: Colors.white70)),
               ],
             ),
           ),
-          Icon(icon, color: Colors.white.withValues(alpha: 0.5), size: 28),
+          Icon(icon, color: Colors.white70, size: 24),
         ],
       ),
     );
@@ -598,7 +637,7 @@ class _InputKeluargaDasawismaScreenState
 
   Widget _sectionLabel(String label) => Padding(
     padding: const EdgeInsets.only(bottom: 8),
-    child: Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 12.5, fontWeight: FontWeight.w700, color: const Color(0xFF334155))),
+    child: Text(label, style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w700, color: _muted)),
   );
 
   Widget _field(TextEditingController ctrl, String label, String hint, IconData icon, {bool isNumber = false}) {
@@ -612,8 +651,8 @@ class _InputKeluargaDasawismaScreenState
           labelText: label,
           hintText: hint,
           prefixIcon: Icon(icon, size: 18, color: _primary),
-          hintStyle: GoogleFonts.plusJakartaSans(fontSize: 12.5, color: const Color(0xFF94A3B8)),
-          labelStyle: GoogleFonts.plusJakartaSans(fontSize: 13, color: const Color(0xFF64748B)),
+          hintStyle: GoogleFonts.plusJakartaSans(fontSize: 12.5, color: _muted),
+          labelStyle: GoogleFonts.plusJakartaSans(fontSize: 13, color: _muted),
           filled: true,
           fillColor: Colors.white,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: _border)),
@@ -633,24 +672,6 @@ class _InputKeluargaDasawismaScreenState
           Expanded(child: _field(a, la, ha, Icons.numbers_rounded, isNumber: true)),
           const SizedBox(width: 10),
           Expanded(child: _field(b, lb, hb, Icons.numbers_rounded, isNumber: true)),
-        ],
-      ),
-    );
-  }
-
-  Widget _twoFieldText(
-    TextEditingController a, String la, String ha,
-    TextEditingController b, String lb, String hb,
-    {bool isKecamatan = false}
-  ) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(child: _field(a, la, ha, Icons.home_outlined)),
-          const SizedBox(width: 10),
-          Expanded(child: isKecamatan ? KecamatanDropdownField(controller: b) : _field(b, lb, hb, Icons.location_city_outlined)),
         ],
       ),
     );

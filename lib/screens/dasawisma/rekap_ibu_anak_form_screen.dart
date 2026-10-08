@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../models/rekap_ibu_anak.dart';
 import '../../services/rekap_ibu_anak_service.dart';
+import '../../services/auth_service.dart';
+import '../../widgets/wilayah_otomatis.dart';
 
 class RekapIbuAnakFormScreen extends StatefulWidget {
   final RekapIbuAnak? item;
@@ -56,7 +58,7 @@ class _RekapIbuAnakFormScreenState extends State<RekapIbuAnakFormScreen> {
     _rtCtrl = TextEditingController(text: item?.rt ?? '01');
     _rwCtrl = TextEditingController(text: item?.rw ?? '02');
     _dusunCtrl = TextEditingController(text: item?.dusun ?? 'Cikunir');
-    _desaCtrl = TextEditingController(text: item?.desa ?? 'Singaparna');
+    _desaCtrl = TextEditingController(text: item?.desa ?? '');
     _bulanCtrl = TextEditingController(text: item?.bulan ?? 'September');
     _tahunCtrl = TextEditingController(text: item?.tahun ?? '2026');
 
@@ -78,6 +80,18 @@ class _RekapIbuAnakFormScreenState extends State<RekapIbuAnakFormScreen> {
     _sebabMeninggalCtrl = TextEditingController(text: item?.sebabMeninggal ?? '');
 
     _keteranganCtrl = TextEditingController(text: item?.keterangan ?? '');
+    if (item == null) _isiWilayahOtomatis();
+  }
+
+  Future<void> _isiWilayahOtomatis() async {
+    try {
+      final user = await AuthService().getCurrentUser();
+      if (!mounted) return;
+      if (user.desa.isNotEmpty && _desaCtrl.text.trim().isEmpty) {
+        _desaCtrl.text = user.desa;
+      }
+      if (user.hasWilayah) setState(() {});
+    } catch (_) {}
   }
 
   @override
@@ -203,6 +217,7 @@ class _RekapIbuAnakFormScreenState extends State<RekapIbuAnakFormScreen> {
               // ── SECTION 1: WILAYAH / DASA WISMA ──
               _buildSectionTitle(Icons.location_on_rounded, 'Identitas Dasa Wisma / Wilayah', primary),
               const SizedBox(height: 10),
+              WilayahOtomatisBanner(desa: _desaCtrl.text, kecamatan: ''),
               Card(
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 child: Padding(
@@ -236,6 +251,7 @@ class _RekapIbuAnakFormScreenState extends State<RekapIbuAnakFormScreen> {
                       ),
                       const SizedBox(height: 12),
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
                             child: TextFormField(
@@ -245,10 +261,7 @@ class _RekapIbuAnakFormScreenState extends State<RekapIbuAnakFormScreen> {
                           ),
                           const SizedBox(width: 12),
                           Expanded(
-                            child: TextFormField(
-                              controller: _desaCtrl,
-                              decoration: const InputDecoration(labelText: 'Desa / Kelurahan'),
-                            ),
+                            child: DesaTerkunciField(controller: _desaCtrl),
                           ),
                         ],
                       ),
