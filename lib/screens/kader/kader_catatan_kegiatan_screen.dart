@@ -216,7 +216,7 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                     width: 36,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE2E8F0),
+                      color: const Color(0xFFE1E7EE),
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
@@ -243,16 +243,16 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                         Text(
                           'Filter',
                           style: GoogleFonts.plusJakartaSans(
-                            fontWeight: FontWeight.w800,
+                            fontWeight: FontWeight.w700,
                             fontSize: 16,
-                            color: const Color(0xFF0F172A),
+                            color: const Color(0xFF1A2B3C),
                           ),
                         ),
                         Text(
                           'Saring catatan berdasarkan kategori',
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 12,
-                            color: const Color(0xFF64748B),
+                            color: const Color(0xFF5B6B7C),
                           ),
                         ),
                       ],
@@ -302,10 +302,10 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                       Navigator.pop(ctx);
                     } : null,
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF64748B),
-                      side: const BorderSide(color: Color(0xFFE2E8F0)),
+                      foregroundColor: const Color(0xFF5B6B7C),
+                      side: const BorderSide(color: Color(0xFFE1E7EE)),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                     child: Text(
@@ -335,10 +335,10 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
   ) {
     final isSel = _selectedFilter == pokja;
     return Material(
-      color: isSel ? color.withValues(alpha: 0.08) : const Color(0xFFF8FAFC),
-      borderRadius: BorderRadius.circular(14),
+      color: isSel ? color.withValues(alpha: 0.08) : const Color(0xFFF4F6F9),
+      borderRadius: BorderRadius.circular(12),
       child: InkWell(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(12),
         onTap: () {
           setState(() => _selectedFilter = pokja);
           Navigator.pop(sheetCtx);
@@ -346,7 +346,7 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isSel ? color.withValues(alpha: 0.22) : Colors.transparent,
             ),
@@ -359,7 +359,7 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                 decoration: BoxDecoration(
                   color: isSel ? color.withValues(alpha: 0.15) : Colors.white,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                  border: Border.all(color: const Color(0xFFE1E7EE)),
                 ),
                 child: Icon(icon, size: 18, color: color),
               ),
@@ -375,7 +375,7 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                       style: GoogleFonts.plusJakartaSans(
                         fontWeight: FontWeight.w700,
                         fontSize: 13,
-                        color: const Color(0xFF0F172A),
+                        color: const Color(0xFF1A2B3C),
                       ),
                     ),
                     Text(
@@ -384,7 +384,7 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.plusJakartaSans(
                         fontSize: 11.5,
-                        color: const Color(0xFF64748B),
+                        color: const Color(0xFF5B6B7C),
                       ),
                     ),
                   ],
@@ -438,16 +438,16 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
     final primaryAccent = _isDarkMode
         ? const Color(0xFF4DA6E0)
         : const Color(0xFF0072BC);
-    final textColor = _isDarkMode ? Colors.white : const Color(0xFF14181D);
+    final textColor = _isDarkMode ? Colors.white : const Color(0xFF1A2B3C);
     final subtextColor = _isDarkMode
         ? const Color(0xFF8E9BAE)
-        : const Color(0xFF64748B);
+        : const Color(0xFF5B6B7C);
     final borderColor = _isDarkMode
         ? Colors.white.withValues(alpha: 0.08)
-        : Colors.black.withValues(alpha: 0.06);
+        : const Color(0xFFE1E7EE);
     final searchBg = _isDarkMode
         ? const Color(0xFF252B36)
-        : const Color(0xFFF1F5F9);
+        : const Color(0xFFF4F6F9);
     final appBarBg = _isDarkMode ? const Color(0xFF1A1F28) : Colors.white;
 
     return Scaffold(
@@ -455,22 +455,36 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
       appBar: AppBar(
         backgroundColor: appBarBg,
         elevation: 0,
+        scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
+        iconTheme: IconThemeData(color: textColor),
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: _isDarkMode ? Colors.white : const Color(0xFF0F172A),
+            color: textColor,
             size: 20,
           ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
-          'Catatan Kegiatan Pokja',
-          style: GoogleFonts.plusJakartaSans(
-            fontSize: 17,
-            fontWeight: FontWeight.w700,
-            color: textColor,
-          ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Catatan Kegiatan Pokja',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: textColor,
+              ),
+            ),
+            Text(
+              'Laporan kegiatan kader per Pokja',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 11,
+                color: subtextColor,
+              ),
+            ),
+          ],
         ),
         actions: [
           IconButton(
@@ -490,7 +504,7 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                   child: Container(
                     decoration: BoxDecoration(
                       color: searchBg,
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: borderColor),
                     ),
                     child: TextField(
@@ -523,15 +537,15 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                 const SizedBox(width: 10),
                 Material(
                   color: _selectedFilter == null ? cardBg : primaryAccent,
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(12),
                   child: InkWell(
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(12),
                     onTap: _showFilterSheet,
                     child: Container(
                       width: 46,
                       height: 46,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(12),
                         border: Border.all(
                           color: _selectedFilter == null
                               ? borderColor
@@ -810,7 +824,7 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                                 padding: const EdgeInsets.all(14),
                                 decoration: BoxDecoration(
                                   color: cardBg,
-                                  borderRadius: BorderRadius.circular(16),
+                                  borderRadius: BorderRadius.circular(12),
                                   border: Border.all(color: borderColor),
                                 ),
                                 child: Text(
@@ -841,7 +855,7 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
               _openForm(pokjaAwal: _selectedFilter ?? PokjaKategori.pokja1),
           backgroundColor: primaryAccent,
           foregroundColor: Colors.white,
-          elevation: 4,
+          elevation: 0,
           icon: const Icon(Icons.add_rounded, size: 22),
           label: Text(
             'Input Kegiatan',
@@ -866,29 +880,23 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
     final color = _getPokjaColor(item.kategori);
     final isApproved = item.status == StatusKegiatan.dibaca;
     final statusLabel = isApproved ? 'Disetujui' : 'Menunggu Verifikasi';
+    // Status selaras Dasawisma: hijau dinas / mustard.
     final statusColor = isApproved
-        ? const Color(0xFF10B981)
-        : const Color(0xFFD97706);
+        ? const Color(0xFF1B7A4D)
+        : const Color(0xFF92600A);
     final statusBg = isApproved
         ? const Color(0xFFECFDF5)
         : const Color(0xFFFFF7ED);
     return Container(
       margin: const EdgeInsets.only(bottom: 2),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 6,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: cardBg,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: borderColor, width: 1),
       ),
       child: InkWell(
         onTap: () => _openForm(catatan: item),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(14),
           child: Column(
@@ -931,8 +939,8 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                 item.judul.isNotEmpty ? item.judul : 'Tanpa judul #${item.id}',
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 15,
-                  fontWeight: FontWeight.w800,
-                  color: const Color(0xFF0F172A),
+                  fontWeight: FontWeight.w700,
+                  color: textColor,
                 ),
               ),
               const SizedBox(height: 4),
@@ -944,7 +952,7 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                 overflow: TextOverflow.ellipsis,
                 style: GoogleFonts.plusJakartaSans(
                   fontSize: 13,
-                  color: const Color(0xFF475569),
+                  color: subtextColor,
                   height: 1.4,
                 ),
               ),
@@ -967,7 +975,7 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: const Color(0xFF2563EB),
+                      color: const Color(0xFF0072BC),
                     ),
                   ),
                 ],

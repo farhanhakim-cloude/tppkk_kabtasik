@@ -62,15 +62,15 @@ class _KaderBeritaScreenState extends State<KaderBeritaScreen> {
     switch (s) {
       case 'published':
       case 'disetujui':
-        return const Color(0xFF16A34A); // Green
+        return const Color(0xFF1B7A4D); // Green
       case 'pending':
       case 'menunggu':
-        return const Color(0xFFD97706); // Amber
+        return const Color(0xFF92600A); // Amber
       case 'rejected':
       case 'ditolak':
-        return const Color(0xFFDC2626); // Red
+        return const Color(0xFFB42318); // Red
       default:
-        return const Color(0xFF64748B); // Slate
+        return const Color(0xFF5B6B7C); // Slate
     }
   }
 
@@ -102,14 +102,14 @@ class _KaderBeritaScreenState extends State<KaderBeritaScreen> {
         title: Text(
           'Berita & Kabar Kader',
           style: GoogleFonts.plusJakartaSans(
-            fontSize: 17,
+            fontSize: 16,
             fontWeight: FontWeight.w700,
-            color: const Color(0xFF0F172A),
+            color: const Color(0xFF1A2B3C),
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: Color(0xFF64748B)),
+            icon: const Icon(Icons.refresh_rounded, color: Color(0xFF5B6B7C)),
             onPressed: _fetchMyBerita,
           ),
         ],
@@ -138,20 +138,13 @@ class _KaderBeritaScreenState extends State<KaderBeritaScreen> {
                                 _openTulisBerita(berita: item);
                               }
                             },
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(12),
                             child: Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(color: const Color(0xFFE2E8F0)),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.03),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: const Color(0xFFE1E7EE)),
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -198,7 +191,7 @@ class _KaderBeritaScreenState extends State<KaderBeritaScreen> {
                                     style: GoogleFonts.plusJakartaSans(
                                       fontSize: 15,
                                       fontWeight: FontWeight.w700,
-                                      color: const Color(0xFF0F172A),
+                                      color: const Color(0xFF1A2B3C),
                                     ),
                                   ),
                                   const SizedBox(height: 4),
@@ -208,7 +201,7 @@ class _KaderBeritaScreenState extends State<KaderBeritaScreen> {
                                     overflow: TextOverflow.ellipsis,
                                     style: GoogleFonts.plusJakartaSans(
                                       fontSize: 13,
-                                      color: const Color(0xFF64748B),
+                                      color: const Color(0xFF5B6B7C),
                                       height: 1.4,
                                     ),
                                   ),
@@ -232,7 +225,7 @@ class _KaderBeritaScreenState extends State<KaderBeritaScreen> {
                                           style: GoogleFonts.plusJakartaSans(
                                             fontSize: 11,
                                             fontWeight: FontWeight.w600,
-                                            color: const Color(0xFF2563EB),
+                                            color: const Color(0xFF0072BC),
                                           ),
                                         ),
                                     ],
@@ -248,6 +241,7 @@ class _KaderBeritaScreenState extends State<KaderBeritaScreen> {
         heroTag: 'fab-kader-berita',
         onPressed: () => _openTulisBerita(),
         backgroundColor: const Color(0xFF0072BC),
+        elevation: 0,
         icon: const Icon(Icons.edit_note_rounded, color: Colors.white),
         label: Text(
           'Tulis Berita',
@@ -281,7 +275,7 @@ class _KaderBeritaScreenState extends State<KaderBeritaScreen> {
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: const Color(0xFF0F172A),
+                color: const Color(0xFF1A2B3C),
               ),
             ),
             const SizedBox(height: 6),
@@ -290,7 +284,7 @@ class _KaderBeritaScreenState extends State<KaderBeritaScreen> {
               textAlign: TextAlign.center,
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 13,
-                color: const Color(0xFF64748B),
+                color: const Color(0xFF5B6B7C),
               ),
             ),
           ],
@@ -306,14 +300,14 @@ class _KaderBeritaScreenState extends State<KaderBeritaScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.wifi_off_rounded, size: 48, color: Color(0xFFDC2626)),
+            const Icon(Icons.wifi_off_rounded, size: 48, color: Color(0xFFB42318)),
             const SizedBox(height: 16),
             Text(
               'Gagal Memuat Berita',
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: const Color(0xFF0F172A),
+                color: const Color(0xFF1A2B3C),
               ),
             ),
             const SizedBox(height: 6),
@@ -322,7 +316,7 @@ class _KaderBeritaScreenState extends State<KaderBeritaScreen> {
               textAlign: TextAlign.center,
               style: GoogleFonts.plusJakartaSans(
                 fontSize: 13,
-                color: const Color(0xFF64748B),
+                color: const Color(0xFF5B6B7C),
               ),
             ),
             const SizedBox(height: 16),

@@ -1,6 +1,7 @@
 // lib/screens/kader/kader_dashboard_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -134,10 +135,17 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
 
   String _selectedCategory = 'Semua';
 
+  // Palet Dinas selaras Dasawisma: biru 0072BC, ink 1A2B3C, muted 5B6B7C, line E1E7EE, paper F4F6F9.
+  static const Color _biru = Color(0xFF0072BC);
+  static const Color _ink = Color(0xFF1A2B3C);
+  static const Color _muted = Color(0xFF5B6B7C);
+  static const Color _line = Color(0xFFE1E7EE);
+  static const Color _paper = Color(0xFFF4F6F9);
+
   @override
   Widget build(BuildContext context) {
-    final bgColor = _isDarkMode ? const Color(0xFF10141D) : const Color(0xFFF1F4F9);
-    const brandBlue = Color(0xFF0072BC); // Biru resmi TP PKK seperti tombol login
+    final bgColor = _isDarkMode ? const Color(0xFF10141D) : _paper;
+    const brandBlue = _biru; // Biru resmi TP PKK seperti tombol login
 
     final pages = [
       _buildBeranda(bgColor, brandBlue),
@@ -146,80 +154,57 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
       const ProfileScreen(embedded: true),
     ];
 
+    Future<void> openInputForm() async {
+      HapticFeedback.mediumImpact();
+      PokjaKategori? awal;
+      if (_pokjaRole == 'pokja1') awal = PokjaKategori.pokja1;
+      if (_pokjaRole == 'pokja2') awal = PokjaKategori.pokja2;
+      if (_pokjaRole == 'pokja3') awal = PokjaKategori.pokja3;
+      if (_pokjaRole == 'pokja4') awal = PokjaKategori.pokja4;
+
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => CatatanKegiatanFormScreen(pokjaAwal: awal),
+        ),
+      );
+      _loadData();
+    }
+
     return Scaffold(
       backgroundColor: bgColor,
       body: IndexedStack(index: _navIndex, children: pages),
-      floatingActionButton: SizedBox(
-        width: 60,
-        height: 60,
-        child: FloatingActionButton(
-          heroTag: 'fab-kader-dashboard', // ✅ FIX: heroTag unik — biar ga warning Multiple heroes
-          onPressed: () async {
-            PokjaKategori? awal;
-            if (_pokjaRole == 'pokja1') awal = PokjaKategori.pokja1;
-            if (_pokjaRole == 'pokja2') awal = PokjaKategori.pokja2;
-            if (_pokjaRole == 'pokja3') awal = PokjaKategori.pokja3;
-            if (_pokjaRole == 'pokja4') awal = PokjaKategori.pokja4;
-
-            await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => CatatanKegiatanFormScreen(pokjaAwal: awal),
-              ),
-            );
-            _loadData();
-          },
-          backgroundColor: Colors.white,
-          shape: const CircleBorder(),
-          elevation: 4,
-          child: const Icon(Icons.add_rounded, size: 28, color: Color(0xFF0072BC)),
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Container(
-        margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-        decoration: BoxDecoration(
-          color: brandBlue,
-          borderRadius: BorderRadius.circular(30),
-          boxShadow: [
-            BoxShadow(
-              color: brandBlue.withValues(alpha: 0.35),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
-            ),
-          ],
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          border: Border(top: BorderSide(color: _line)),
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(30),
-          child: SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Left group
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _navItem(0, Icons.home_rounded, 'Beranda'),
-                      const SizedBox(width: 4),
-                      _navItem(1, Icons.assignment_outlined, 'Catatan'),
-                    ],
+        child: SafeArea(
+          child: SizedBox(
+            height: 64,
+            child: Row(
+              children: [
+                _navItem(0, Icons.home_outlined, Icons.home_rounded, 'Beranda'),
+                _navItem(1, Icons.assignment_outlined, Icons.assignment_rounded, 'Catatan'),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                    child: ElevatedButton(
+                      onPressed: openInputForm,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: brandBlue,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                      child: Text('Input',
+                          style: GoogleFonts.plusJakartaSans(fontSize: 13, fontWeight: FontWeight.w700)),
+                    ),
                   ),
-                  // Center gap for FAB (match FAB diameter)
-                  const SizedBox(width: 60),
-                  // Right group
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _navItem(2, Icons.newspaper_rounded, 'Kabar'),
-                      const SizedBox(width: 4),
-                      _navItem(3, Icons.person_outline_rounded, 'Profil'),
-                    ],
-                  ),
-                ],
-              ),
+                ),
+                _navItem(2, Icons.newspaper_outlined, Icons.newspaper_rounded, 'Kabar'),
+                _navItem(3, Icons.person_outline, Icons.person_rounded, 'Profil'),
+              ],
             ),
           ),
         ),
@@ -227,35 +212,26 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
     );
   }
 
-  Widget _navItem(int idx, IconData icon, String label) {
+  Widget _navItem(int idx, IconData icon, IconData iconActive, String label) {
     final isSelected = _navIndex == idx;
-    return InkWell(
-      onTap: () => setState(() => _navIndex = idx),
-      borderRadius: BorderRadius.circular(16),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    return Expanded(
+      child: InkWell(
+        onTap: () {
+          HapticFeedback.selectionClick();
+          setState(() => _navIndex = idx);
+        },
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: isSelected ? Colors.white : Colors.transparent,
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Icon(
-                icon,
-                size: 22,
-                color: isSelected ? const Color(0xFF0072BC) : Colors.white.withValues(alpha: 0.7),
-              ),
-            ),
-            const SizedBox(height: 2),
+            Icon(isSelected ? iconActive : icon,
+                size: 22, color: isSelected ? _biru : _muted),
+            const SizedBox(height: 3),
             Text(
               label,
               style: GoogleFonts.plusJakartaSans(
-                fontSize: 10.5,
+                fontSize: 11,
                 fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.75),
+                color: isSelected ? _biru : _muted,
               ),
             ),
           ],
@@ -264,11 +240,95 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
     );
   }
 
+  // Kepala dinas selaras Dasawisma: biru PKK solid, teks putih, logo di kotak putih.
+  Widget _buildDinasHeader(Color brandBlue) {
+    final roleLabel = _pokjaRole != null ? _pokjaRole!.toUpperCase() : 'KADER PKK';
+    final initial = _userName.trim().isEmpty ? 'K' : _userName.trim()[0].toUpperCase();
+    return Container(
+      color: brandBlue,
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(11),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, _, _) => const Icon(Icons.account_balance_outlined, color: _biru, size: 22),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('TP PKK KAB. TASIKMALAYA',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.plusJakartaSans(
+                            fontSize: 10.5, fontWeight: FontWeight.w700, color: Colors.white70, letterSpacing: 0.4)),
+                    Text(roleLabel,
+                        style: GoogleFonts.plusJakartaSans(fontSize: 17, fontWeight: FontWeight.w700, color: Colors.white)),
+                  ],
+                ),
+              ),
+              IconButton(
+                onPressed: _loadData,
+                tooltip: 'Muat ulang',
+                visualDensity: VisualDensity.compact,
+                icon: const Icon(Icons.refresh_rounded, color: Colors.white, size: 20),
+              ),
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                    color: Colors.white, borderRadius: BorderRadius.circular(17)),
+                child: Center(
+                    child: Text(initial,
+                        style: GoogleFonts.plusJakartaSans(
+                            fontSize: 14, fontWeight: FontWeight.w700, color: _biru))),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(9),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text('$_userName  •  $_desaKecamatan',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.plusJakartaSans(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white)),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildBeranda(Color bgColor, Color brandBlue) {
     final cardBg = _isDarkMode ? const Color(0xFF1E242F) : Colors.white;
-    final textCol = _isDarkMode ? Colors.white : const Color(0xFF0F172A);
-    final sub = _isDarkMode ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
-    final border = _isDarkMode ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFE2E8F0);
+    final textCol = _isDarkMode ? Colors.white : _ink;
+    final sub = _isDarkMode ? const Color(0xFF94A3B8) : _muted;
+    final border = _isDarkMode ? Colors.white.withValues(alpha: 0.08) : _line;
 
     return SafeArea(
       bottom: false,
@@ -277,65 +337,16 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
         color: brandBlue,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 110),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 1. KOP PROFIL DINAS (Bersih, Rapi & Elegan)
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: cardBg,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: border),
-                ),
-                child: Row(
+              // Kepala dinas selaras Dasawisma: biru solid + logo + user/wilayah.
+              _buildDinasHeader(brandBlue),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    CircleAvatar(
-                      radius: 22,
-                      backgroundColor: brandBlue,
-                      child: const Icon(Icons.person_rounded, color: Colors.white, size: 24),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _userName,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                              color: textCol,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            _pokjaRole != null
-                                ? '${_pokjaRole!.toUpperCase()} • $_desaKecamatan'
-                                : 'Kader PKK • $_desaKecamatan',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: GoogleFonts.plusJakartaSans(
-                              fontSize: 12,
-                              color: sub,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.notifications_none_rounded, color: sub, size: 22),
-                      onPressed: () {},
-                      tooltip: 'Pemberitahuan',
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 14),
 
               // 2. RINGKASAN DATA RESMI (2 KARTU UTAMA: Kegiatan & Kabar)
               Row(
@@ -365,9 +376,9 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
                             Text(
                               '$_totalKegiatan',
                               style: GoogleFonts.plusJakartaSans(
-                                fontSize: 20,
+                                fontSize: 19,
                                 fontWeight: FontWeight.w800,
-                                color: textCol,
+                                color: brandBlue,
                               ),
                             ),
                           ],
@@ -401,9 +412,9 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
                             Text(
                               '$_totalBerita',
                               style: GoogleFonts.plusJakartaSans(
-                                fontSize: 20,
+                                fontSize: 19,
                                 fontWeight: FontWeight.w800,
-                                color: textCol,
+                                color: brandBlue,
                               ),
                             ),
                           ],
@@ -462,21 +473,23 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
                             'Catatan Kegiatan Terkini',
                             style: GoogleFonts.plusJakartaSans(
-                              fontSize: 14.5,
-                              fontWeight: FontWeight.w800,
+                              fontSize: 17,
+                              fontWeight: FontWeight.w700,
                               color: textCol,
                             ),
                           ),
-                          InkWell(
-                            onTap: () => setState(() => _navIndex = 1),
+                          TextButton(
+                            onPressed: () => setState(() => _navIndex = 1),
+                            style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: const Size(0, 32)),
                             child: Text(
                               'Lihat Semua',
                               style: GoogleFonts.plusJakartaSans(
-                                fontSize: 12.5,
+                                fontSize: 12,
                                 fontWeight: FontWeight.w700,
                                 color: brandBlue,
                               ),
@@ -503,7 +516,10 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
             ],
           ),
         ),
+      ],
       ),
+      ),
+    ),
     );
   }
 
@@ -521,12 +537,12 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: cardBg,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(color: border),
         ),
         child: Row(
@@ -534,7 +550,7 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: const Color(0xFFF1F5F9),
+                color: const Color(0xFFF4F6F9),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(icon, color: brandBlue, size: 20),
@@ -568,7 +584,7 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFFF1F5F9),
+                color: const Color(0xFFF4F6F9),
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(color: border),
               ),
@@ -597,9 +613,10 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
     required Color border,
     required Color brandBlue,
   }) {
+    // Status selaras Dasawisma: Disetujui hijau dinas, Menunggu mustard.
     final statusColor = item.status == StatusKegiatan.dibaca
-        ? const Color(0xFF10B981)
-        : const Color(0xFFD97706);
+        ? const Color(0xFF1B7A4D)
+        : const Color(0xFF92600A);
     final statusLabel = item.status == StatusKegiatan.dibaca ? 'Disetujui' : 'Menunggu';
     final statusBg = item.status == StatusKegiatan.dibaca
         ? const Color(0xFFECFDF5)
@@ -613,12 +630,12 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
           builder: (_) => KaderCatatanKegiatanScreen(pokjaDefault: item.kategori),
         ),
       ),
-      borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: cardBg,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(color: border),
         ),
         child: Column(

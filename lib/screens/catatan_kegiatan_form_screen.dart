@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/catatan_kegiatan.dart';
 import '../services/catatan_kegiatan_service.dart';
+import '../services/wilayah_service.dart';
 import '../main.dart';
 
 class CatatanKegiatanFormScreen extends StatefulWidget {
@@ -49,6 +50,11 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
   bool _pokjaDipilih = false;
   late PokjaKategori _kategori;
   String _selectedKecamatan = 'Singaparna';
+
+  // Desa mengikuti kecamatan (master backend /api/wilayah/desa + cache).
+  // Kosong + tidak loading = backend tak terjangkau → fallback ketik manual.
+  List<String> _desaList = [];
+  bool _desaLoading = false;
 
   File? _fotoFile;
   Uint8List? _fotoBytes;
@@ -125,6 +131,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
       _kategori = PokjaKategori.pokja1;
       _pokjaDipilih = false;
     }
+    _loadDesa();
   }
 
   Future<void> _loadRoleRestriction() async {
@@ -349,11 +356,11 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
     }
     return (
       bg: Colors.white,
-      text: const Color(0xFF0F172A),
-      sub: const Color(0xFF64748B),
+      text: const Color(0xFF1A2B3C),
+      sub: const Color(0xFF5B6B7C),
       faint: const Color(0xFF94A3B8),
       fill: const Color(0xFFF8FAFC),
-      handle: const Color(0xFFE2E8F0),
+      handle: const Color(0xFFE1E7EE),
     );
   }
 
@@ -381,7 +388,6 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
             deskripsi: 'Warga Buta, Paket A-C, KF, PAUD, Taman Bacaan',
             icon: Icons.school_rounded,
             groupFields: {
-              'Warga Buta - Jml KLP': 'kelompok_warga_buta',
               'Jml. Warga Yang Masih 3 Buta': {
                 'Laki-laki': 'warga_buta_l',
                 'Perempuan': 'warga_buta_p',
@@ -406,12 +412,10 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                 'Laki-laki': 'warga_belajar_kf_l',
                 'Perempuan': 'warga_belajar_kf_p',
               },
-              'PAUD - Jml KLP': 'kelompok_paud',
               'PAUD Sejenis': {
                 'Laki-laki': 'paud_l',
                 'Perempuan': 'paud_p',
               },
-              'Taman Bacaan - Jml KLP': 'kelompok_taman_bacaan',
               'Taman Bacaan/Perpustakaan': {
                 'Laki-laki': 'taman_bacaan_l',
                 'Perempuan': 'taman_bacaan_p',
@@ -430,47 +434,38 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
               },
               'BKB - Jml Ibu (SET)': 'ibu_set_bkb',
               'BKB - Jml APE': 'ape_bkb',
-              'BKB - Simulasi Jml KLP': 'kelompok_simulasi_bkb',
               'BKB - Simulasi': {
                 'Laki-laki': 'kelompok_simulasi_bkb_l',
                 'Perempuan': 'kelompok_simulasi_bkb_p',
               },
-              'Tutor - KF Jml': 'tutor_kf',
               'Tutor - KF': {
                 'Laki-laki': 'tutor_kf_l',
                 'Perempuan': 'tutor_kf_p',
               },
-              'Tutor - PAUD Jml': 'tutor_paud',
               'Tutor - PAUD Sejenis': {
                 'Laki-laki': 'tutor_paud_l',
                 'Perempuan': 'tutor_paud_p',
               },
-              'Kader BKB Jml': 'kader_bkb',
               'Kader BKB': {
                 'Laki-laki': 'kader_bkb_l',
                 'Perempuan': 'kader_bkb_p',
               },
-              'Kader Koperasi Jml': 'kader_koperasi',
               'Kader Koperasi': {
                 'Laki-laki': 'kader_koperasi_l',
                 'Perempuan': 'kader_koperasi_p',
               },
-              'Kader Keterampilan Jml': 'kader_keterampilan',
               'Kader Keterampilan': {
                 'Laki-laki': 'kader_keterampilan_l',
                 'Perempuan': 'kader_keterampilan_p',
               },
-              'LP3 PKK Jml': 'lp3_pkk',
               'LP3 PKK': {
                 'Laki-laki': 'lp3_pkk_l',
                 'Perempuan': 'lp3_pkk_p',
               },
-              'TP3 PKK Jml': 'tp3_pkk',
               'TP3 PKK': {
                 'Laki-laki': 'tp3_pkk_l',
                 'Perempuan': 'tp3_pkk_p',
               },
-              'Damas PKK Jml': 'damas_pkk',
               'Damas PKK': {
                 'Laki-laki': 'damas_pkk_l',
                 'Perempuan': 'damas_pkk_p',
@@ -1131,7 +1126,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                 width: 36,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE2E8F0),
+                  color: const Color(0xFFE1E7EE),
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
@@ -1160,7 +1155,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                   'Ambil foto langsung',
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
-                    color: const Color(0xFF64748B),
+                    color: const Color(0xFF5B6B7C),
                   ),
                 ),
                 onTap: () => Navigator.pop(context, ImageSource.camera),
@@ -1189,7 +1184,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                   'Pilih dari galeri',
                   style: GoogleFonts.plusJakartaSans(
                     fontSize: 12,
-                    color: const Color(0xFF64748B),
+                    color: const Color(0xFF5B6B7C),
                   ),
                 ),
                 onTap: () => Navigator.pop(context, ImageSource.gallery),
@@ -1318,7 +1313,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                         height: 1,
                         color: _isDarkMode
                             ? Colors.white.withValues(alpha: 0.06)
-                            : const Color(0xFFF1F5F9),
+                            : const Color(0xFFF4F6F9),
                       ),
                       itemBuilder: (_, i) {
                         final kec = filtered[i];
@@ -1348,6 +1343,186 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                               : null,
                           onTap: () {
                             setState(() => _selectedKecamatan = kec);
+                            Navigator.pop(ctx);
+                            _loadDesa(resetDesa: true);
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Muat daftar desa untuk [_selectedKecamatan] dari backend (cache offline).
+  /// [resetDesa]=true (dipakai saat ganti kecamatan): nilai desa lama yang
+  /// tidak ada di daftar baru dibersihkan setelah list berhasil dimuat.
+  Future<void> _loadDesa({bool resetDesa = false}) async {
+    final kec = _selectedKecamatan;
+    setState(() => _desaLoading = true);
+    try {
+      final list = await WilayahService().getDesa(kec);
+      if (!mounted) return;
+      setState(() {
+        // Abaikan hasil basi bila user sudah pindah kecamatan lain.
+        if (kec != _selectedKecamatan) {
+          _desaLoading = false;
+          return;
+        }
+        _desaList = list;
+        _desaLoading = false;
+        if (resetDesa) {
+          final cur = _desaController.text.trim().toLowerCase();
+          if (cur.isNotEmpty &&
+              !list.any((d) => d.toLowerCase() == cur)) {
+            _desaController.clear();
+          }
+        }
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _desaLoading = false);
+    }
+  }
+
+  void _showDesaPicker() {
+    if (_desaList.isEmpty || _desaLoading) return;
+    HapticFeedback.selectionClick();
+    final c = _getPokjaColor(_kategori);
+    final pal = _sheetPalette();
+    final searchCtrl = TextEditingController();
+    List<String> filtered = List.from(_desaList);
+    final kec = _selectedKecamatan;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setModal) => Container(
+          height: MediaQuery.of(context).size.height * 0.72,
+          decoration: BoxDecoration(
+            color: pal.bg,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 36,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: pal.handle,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Pilih Desa',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 16,
+                      color: pal.text,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Desa di Kec. $kec • ${filtered.length} desa',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 12,
+                      color: pal.sub,
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+                  TextField(
+                    controller: searchCtrl,
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 14,
+                      color: pal.text,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Cari desa...',
+                      hintStyle: GoogleFonts.plusJakartaSans(
+                        fontSize: 13,
+                        color: pal.faint,
+                      ),
+                      prefixIcon: Icon(
+                        Icons.search_rounded,
+                        size: 20,
+                        color: pal.faint,
+                      ),
+                      filled: true,
+                      fillColor: pal.fill,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 12,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    onChanged: (v) => setModal(
+                      () => filtered = _desaList
+                          .where(
+                            (d) => d.toLowerCase().contains(
+                              v.toLowerCase().trim(),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Expanded(
+                    child: ListView.separated(
+                      itemCount: filtered.length,
+                      separatorBuilder: (_, _) => Divider(
+                        height: 1,
+                        color: _isDarkMode
+                            ? Colors.white.withValues(alpha: 0.06)
+                            : const Color(0xFFF4F6F9),
+                      ),
+                      itemBuilder: (_, i) {
+                        final desa = filtered[i];
+                        final sel =
+                            desa.toLowerCase() ==
+                            _desaController.text.trim().toLowerCase();
+                        return ListTile(
+                          dense: true,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          title: Text(
+                            desa,
+                            style: GoogleFonts.plusJakartaSans(
+                              fontWeight: sel
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
+                              fontSize: 14,
+                              color: sel ? c : pal.text,
+                            ),
+                          ),
+                          trailing: sel
+                              ? Icon(
+                                  Icons.check_circle_rounded,
+                                  color: c,
+                                  size: 20,
+                                )
+                              : null,
+                          onTap: () {
+                            setState(
+                              () => _desaController.text = desa,
+                            );
                             Navigator.pop(ctx);
                           },
                         );
@@ -1654,7 +1829,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                             pal.bg,
                             _isDarkMode
                                 ? Colors.white.withValues(alpha: 0.08)
-                                : const Color(0xFFE2E8F0),
+                                : const Color(0xFFE1E7EE),
                             pal.text,
                             pal.sub,
                             setSheet,
@@ -1673,7 +1848,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                               pal.bg,
                               _isDarkMode
                                   ? Colors.white.withValues(alpha: 0.08)
-                                  : const Color(0xFFE2E8F0),
+                                  : const Color(0xFFE1E7EE),
                               pal.text,
                               pal.sub,
                               setSheet,
@@ -1930,12 +2105,33 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
       }
     }
 
+    // Cari + progres pengisian (mempermudah sheet panjang seperti Pokja II).
+    // Kunci data tidak berubah — hanya tampilan.
+    String sheetQuery = '';
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (ctx) => StatefulBuilder(
         builder: (context, setSheet) {
+          final allEntries = sub.groupFields!.entries.toList();
+          final q = sheetQuery.trim().toLowerCase();
+          final visibleEntries = q.isEmpty
+              ? allEntries
+              : allEntries.where((e) {
+                  if (e.key.toLowerCase().contains(q)) return true;
+                  if (e.value is Map) {
+                    return (e.value as Map).keys.any((k) =>
+                        k.toString().toLowerCase().contains(q));
+                  }
+                  return false;
+                }).toList();
+          final flatKeys =
+              _flattenGroupKeys(Map<String, dynamic>.from(sub.groupFields!));
+          final filledCount = flatKeys
+              .where((k) =>
+                  (int.tryParse(_angkaCtrl[k]?.text.trim() ?? '') ?? 0) > 0)
+              .length;
           return Container(
             decoration: BoxDecoration(
               color: pal.bg,
@@ -1973,13 +2169,30 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                             children: [
                               Text(sub.title, style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800, fontSize: 15, color: pal.text)),
                               Text(sub.deskripsi, style: GoogleFonts.plusJakartaSans(fontSize: 12, color: pal.sub)),
+                              const SizedBox(height: 4),
+                              Text('$filledCount dari ${flatKeys.length} baris terisi',
+                                  style: GoogleFonts.plusJakartaSans(fontSize: 11.5, fontWeight: FontWeight.w700, color: c)),
                             ],
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 24),
-                    ...sub.groupFields!.entries.map((entry) {
+                    const SizedBox(height: 12),
+                    TextField(
+                      style: GoogleFonts.plusJakartaSans(fontSize: 14, color: pal.text),
+                      decoration: InputDecoration(
+                        hintText: 'Cari baris...',
+                        hintStyle: GoogleFonts.plusJakartaSans(fontSize: 13, color: pal.faint),
+                        prefixIcon: Icon(Icons.search_rounded, size: 20, color: pal.faint),
+                        filled: true,
+                        fillColor: pal.fill,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                      ),
+                      onChanged: (v) => setSheet(() => sheetQuery = v),
+                    ),
+                    const SizedBox(height: 12),
+                    ...visibleEntries.map((entry) {
                       if (entry.value is String) {
                         return Padding(
                           padding: const EdgeInsets.only(bottom: 12),
@@ -1995,7 +2208,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                               c,
                               pal.fill,
                               pal.bg,
-                              _isDarkMode ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFE2E8F0),
+                              _isDarkMode ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFE1E7EE),
                               pal.text,
                               pal.sub,
                               setSheet,
@@ -2034,6 +2247,13 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                                     ),
                                   );
                                 }).toList(),
+                                // Total otomatis L+P — yang dikirim ke website
+                                // adalah jumlahnya (kolom agregat, tanpa gender).
+                                _pairTotalChip(
+                                  subFields.values.map((v) => v as String).toList(),
+                                  c,
+                                  pal.sub,
+                                ),
                               ],
                             ),
                           ),
@@ -2535,11 +2755,11 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
   Widget _buildPokjaSelectionScreen() {
     final bg = _isDarkMode ? const Color(0xFF14181F) : const Color(0xFFF8FAFC);
     final cardBg = _isDarkMode ? const Color(0xFF1E242D) : Colors.white;
-    final text = _isDarkMode ? Colors.white : const Color(0xFF0F172A);
-    final sub = _isDarkMode ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
+    final text = _isDarkMode ? Colors.white : const Color(0xFF1A2B3C);
+    final sub = _isDarkMode ? const Color(0xFF94A3B8) : const Color(0xFF5B6B7C);
     final border = _isDarkMode
         ? Colors.white.withValues(alpha: 0.06)
-        : const Color(0xFFE2E8F0);
+        : const Color(0xFFE1E7EE);
 
     final pokjas = _availablePokjas();
 
@@ -2755,11 +2975,11 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
     final soft = _getPokjaSoft(_kategori);
     final bg = _isDarkMode ? const Color(0xFF14181F) : const Color(0xFFF8FAFC);
     final cardBg = _isDarkMode ? const Color(0xFF1E242D) : Colors.white;
-    final text = _isDarkMode ? Colors.white : const Color(0xFF0F172A);
-    final sub = _isDarkMode ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
+    final text = _isDarkMode ? Colors.white : const Color(0xFF1A2B3C);
+    final sub = _isDarkMode ? const Color(0xFF94A3B8) : const Color(0xFF5B6B7C);
     final border = _isDarkMode
         ? Colors.white.withValues(alpha: 0.06)
-        : const Color(0xFFE2E8F0);
+        : const Color(0xFFE1E7EE);
     final inputFill = _isDarkMode
         ? const Color(0xFF14181F)
         : const Color(0xFFF8FAFC);
@@ -3482,7 +3702,10 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                       ),
                       const SizedBox(width: 10),
                       Expanded(
-                        child: TextFormField(
+                        // Desa mengikuti kecamatan: picker bila daftar dari
+                        // backend/cache tersedia, ketik manual bila offline.
+                        child: (_desaList.isEmpty && !_desaLoading)
+                            ? TextFormField(
                           controller: _desaController,
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 13,
@@ -3519,6 +3742,65 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                           ),
                           validator: (v) =>
                               (v == null || v.trim().isEmpty) ? 'Wajib' : null,
+                        )
+                            : TextFormField(
+                          controller: _desaController,
+                          readOnly: true,
+                          onTap: _showDesaPicker,
+                          style: GoogleFonts.plusJakartaSans(
+                            fontSize: 13,
+                            color: text,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          decoration: InputDecoration(
+                            labelText: 'Desa / Kel. *',
+                            hintText: _desaLoading
+                                ? 'Memuat desa...'
+                                : 'Pilih desa di Kec. $_selectedKecamatan',
+                            hintStyle: GoogleFonts.plusJakartaSans(
+                              fontSize: 12,
+                              color: sub,
+                            ),
+                            filled: true,
+                            fillColor: inputFill,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 13,
+                            ),
+                            suffixIcon: _desaLoading
+                                ? Padding(
+                                    padding: const EdgeInsets.all(12),
+                                    child: SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: c,
+                                      ),
+                                    ),
+                                  )
+                                : Icon(
+                                    Icons.keyboard_arrow_down_rounded,
+                                    size: 18,
+                                    color: sub,
+                                  ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              borderSide: BorderSide.none,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              borderSide: BorderSide.none,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              borderSide: BorderSide(
+                                color: c.withValues(alpha: 0.3),
+                              ),
+                            ),
+                          ),
+                          validator: (v) =>
+                              (v == null || v.trim().isEmpty) ? 'Pilih desa' : null,
                         ),
                       ),
                     ],
@@ -4000,7 +4282,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
           style: GoogleFonts.plusJakartaSans(
             fontWeight: FontWeight.w800,
             fontSize: 13.5,
-            color: _isDarkMode ? Colors.white : const Color(0xFF0F172A),
+            color: _isDarkMode ? Colors.white : const Color(0xFF1A2B3C),
           ),
         ),
         const SizedBox(width: 8),
@@ -4009,7 +4291,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
             height: 1,
             color: _isDarkMode
                 ? Colors.white.withValues(alpha: 0.06)
-                : const Color(0xFFF1F5F9),
+                : const Color(0xFFF4F6F9),
           ),
         ),
       ],
@@ -4048,12 +4330,45 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
               style: GoogleFonts.plusJakartaSans(
                 fontWeight: FontWeight.w800,
                 fontSize: 12.5,
-                color: _isDarkMode ? Colors.white : const Color(0xFF0F172A),
+                color: _isDarkMode ? Colors.white : const Color(0xFF1A2B3C),
               ),
             ),
           ],
         ),
       ],
+    );
+  }
+
+  /// Chip total otomatis untuk pasangan L/P — hanya tampilan.
+  /// Nilai yang dikirim tetap rinci per kunci; agregasi dilakukan backend
+  /// agar output website sesuai kolom rekap (tanpa gender).
+  Widget _pairTotalChip(List<String> keys, Color c, Color sub) {
+    int total = 0;
+    for (final k in keys) {
+      total += int.tryParse(_angkaCtrl[k]?.text.trim() ?? '') ?? 0;
+    }
+    return Padding(
+      padding: const EdgeInsets.only(top: 2),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: c.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              'Total: $total',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                color: c,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
