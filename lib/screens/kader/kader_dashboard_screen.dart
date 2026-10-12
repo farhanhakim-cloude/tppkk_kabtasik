@@ -15,6 +15,7 @@ import '../../widgets/notifikasi_bell.dart';
 import '../../widgets/skeleton.dart';
 import '../notifikasi_screen.dart';
 import '../catatan_kegiatan_form_screen.dart';
+import 'buku_kegiatan_pokja1_form_screen.dart';
 import 'kader_catatan_kegiatan_screen.dart';
 import 'kader_berita_screen.dart';
 import '../profile_screen.dart';
@@ -421,7 +422,64 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
+              if (_pokjaRole == 'pokja1')
+                InkWell(
+                  onTap: () async {
+                    final res = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            const BukuKegiatanPokja1FormScreen(),
+                      ),
+                    );
+                    if (res == true) _loadData();
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: cardBg,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: brandBlue.withValues(alpha: 0.3)),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(9),
+                          decoration: BoxDecoration(
+                            color: brandBlue.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Icon(Icons.menu_book_rounded,
+                              color: brandBlue, size: 20),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Buku Kegiatan • Lamp. 4.13',
+                                  style: GoogleFonts.plusJakartaSans(
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 13.5,
+                                      color: textCol)),
+                              const SizedBox(height: 2),
+                              Text(
+                                  'Input nama–uraian, terkirim pending ke admin kabupaten',
+                                  style: GoogleFonts.plusJakartaSans(
+                                      fontSize: 11.5, color: sub)),
+                            ],
+                          ),
+                        ),
+                        Icon(Icons.arrow_forward_ios_rounded,
+                            size: 15, color: brandBlue),
+                      ],
+                    ),
+                  ),
+                ),
+              if (_pokjaRole == 'pokja1') const SizedBox(height: 12),
+              if (_pokjaRole != 'pokja1') const SizedBox(height: 4),
 
               // 3. CATATAN KEGIATAN TERKINI (DATA YANG SUDAH DI INPUT)
               FutureBuilder<List<CatatanKegiatan>>(

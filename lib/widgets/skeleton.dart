@@ -31,44 +31,50 @@ class SkeletonList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        for (int i = 0; i < count; i++)
-          Padding(
-            padding: EdgeInsets.only(bottom: i < count - 1 ? 10 : 0),
-            child: Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFE1E7EE)),
-              ),
-              child: Row(
-                children: [
-                  Shimmer.fromColors(
-                    baseColor: const Color(0xFFE6ECF2),
-                    highlightColor: const Color(0xFFF4F6F9),
-                    child: Container(
-                        width: 40, height: 40,
-                        decoration: BoxDecoration(
-                            color: const Color(0xFFE6ECF2), borderRadius: BorderRadius.circular(10))),
-                  ),
-                  const SizedBox(width: 12),
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SkeletonBox(width: 140, height: 13),
-                        SizedBox(height: 6),
-                        SkeletonBox(width: 200, height: 11, radius: 7),
-                      ],
+    // Dibungkus scroll-view non-scroll agar tidak overflow bila parent
+    // memberi tinggi ketat (mis. kartu ringkasan dashboard) — sisa konten
+    // terpotong rapi, bukan error garis kuning-hitam.
+    return SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(),
+      child: Column(
+        children: [
+          for (int i = 0; i < count; i++)
+            Padding(
+              padding: EdgeInsets.only(bottom: i < count - 1 ? 10 : 0),
+              child: Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFE1E7EE)),
+                ),
+                child: Row(
+                  children: [
+                    Shimmer.fromColors(
+                      baseColor: const Color(0xFFE6ECF2),
+                      highlightColor: const Color(0xFFF4F6F9),
+                      child: Container(
+                          width: 40, height: 40,
+                          decoration: BoxDecoration(
+                              color: const Color(0xFFE6ECF2), borderRadius: BorderRadius.circular(10))),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 12),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SkeletonBox(width: 140, height: 13),
+                          SizedBox(height: 6),
+                          SkeletonBox(width: 200, height: 11, radius: 7),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }

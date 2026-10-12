@@ -6,10 +6,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../../main.dart';
+import '../../models/buku_kegiatan_pokja1.dart';
 import '../../models/catatan_kegiatan.dart';
 import '../../services/catatan_kegiatan_service.dart';
 import '../../widgets/skeleton.dart';
 import '../catatan_kegiatan_form_screen.dart';
+import 'buku_kegiatan_pokja1_form_screen.dart';
 
 class KaderCatatanKegiatanScreen extends StatefulWidget {
   final PokjaKategori? pokjaDefault;
@@ -177,6 +179,29 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
     );
     if (!mounted) return;
     await _reload();
+  }
+
+  // Buku Kegiatan Pokja I — Lampiran 4.13. Alur sama (laporan-kegiatan,
+  // kategori I) sehingga pending & tampil di verifikasi admin kabupaten +
+  // super admin, tidak dipublish.
+  Future<void> _openBukuKegiatan({CatatanKegiatan? catatan}) async {
+    final res = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BukuKegiatanPokja1FormScreen(existing: catatan),
+      ),
+    );
+    if (!mounted) return;
+    if (res == true) await _reload();
+  }
+
+  bool get _bukuKegiatanVisible {
+    final sel = _selectedFilter;
+    final restricted = _restrictedPokja;
+    if (restricted != null && restricted != PokjaKategori.pokja1) {
+      return false;
+    }
+    return sel == null || sel == PokjaKategori.pokja1;
   }
 
   List<PokjaKategori> _availablePokjas() {
@@ -414,7 +439,7 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
       case PokjaKategori.pokja2:
         return 'Pendidikan & Ekonomi Keluarga';
       case PokjaKategori.pokja3:
-        return 'Pangan, Sandang & Papan';
+        return 'Pangan, Sandang, Perumahan dan Tata Laksana Rumah Tangga';
       case PokjaKategori.pokja4:
         return 'Kesehatan & Lingkungan';
       case PokjaKategori.pokja4Pyd:
@@ -588,6 +613,78 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
               ],
             ),
           ),
+          if (_bukuKegiatanVisible)
+            Container(
+              width: double.infinity,
+              color: appBarBg,
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: primaryAccent.withValues(alpha: 0.07),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                      color: primaryAccent.withValues(alpha: 0.25)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: primaryAccent.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(Icons.menu_book_rounded,
+                          size: 18, color: primaryAccent),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Buku Kegiatan Pokja I • Lamp. 4.13',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w800,
+                              color: textColor,
+                            ),
+                          ),
+                          Text(
+                            'Pending ke admin kabupaten, tidak dipublish',
+                            style: GoogleFonts.plusJakartaSans(
+                              fontSize: 11,
+                              color: subtextColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () => _openBukuKegiatan(),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primaryAccent,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 10),
+                      ),
+                      child: Text(
+                        'Input',
+                        style: GoogleFonts.plusJakartaSans(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 12.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           if (_selectedFilter != null || _searchQuery.isNotEmpty)
             Container(
               width: double.infinity,
@@ -895,7 +992,9 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
         border: Border.all(color: borderColor, width: 1),
       ),
       child: InkWell(
-        onTap: () => _openForm(catatan: item),
+        onTap: () => BukuKegiatanPokja1.isBukuKegiatan(item)
+            ? _openBukuKegiatan(catatan: item)
+            : _openForm(catatan: item),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(14),
@@ -971,7 +1070,9 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
                   ),
                   const Spacer(),
                   Text(
-                    'Ketuk untuk edit',
+                    BukuKegiatanPokja1.isBukuKegiatan(item)
+                        ? 'Buku Kegiatan • ketuk untuk edit'
+                        : 'Ketuk untuk edit',
                     style: GoogleFonts.plusJakartaSans(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,

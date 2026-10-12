@@ -303,7 +303,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
       case PokjaKategori.pokja2:
         return 'Pendidikan & Ekonomi Keluarga';
       case PokjaKategori.pokja3:
-        return 'Pangan, Sandang & Papan Sehat';
+        return 'Pangan, Sandang, Perumahan dan Tata Laksana Rumah Tangga';
       case PokjaKategori.pokja4:
         return 'Kesehatan & Lingkungan';
       case PokjaKategori.pokja4Pyd:

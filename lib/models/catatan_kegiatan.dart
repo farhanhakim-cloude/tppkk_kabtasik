@@ -27,7 +27,7 @@ extension PokjaKategoriLabel on PokjaKategori {
       case PokjaKategori.pokja2:
         return 'Pokja II - Pendidikan & Ekonomi';
       case PokjaKategori.pokja3:
-        return 'Pokja III - Pangan, Sandang, Papan';
+        return 'Pokja III - Pangan, Sandang, Perumahan dan Tata Laksana Rumah Tangga';
       case PokjaKategori.pokja4:
         return 'Pokja IV - Kesehatan & Lingkungan';
       case PokjaKategori.pokja4Pyd:
