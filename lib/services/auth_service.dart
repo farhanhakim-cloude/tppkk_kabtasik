@@ -12,7 +12,12 @@ class AuthService {
   // ============================================================
   // LOGIN - KONEK KE API LARAVEL
   // ============================================================
-  Future<Map<String, dynamic>> login(String username, String password) async {
+  Future<Map<String, dynamic>> login(String usernameOrEmail, String password) async {
+    // Backend Api\AuthController dukung username ATAU email.
+    // Kalau input mengandung '@' kirim sebagai field email,
+    // kalau tidak kirim sebagai username (ikut pola website).
+    final input = usernameOrEmail.trim();
+    final isEmail = input.contains('@');
     final response = await _client.post(
       Uri.parse('${AppConstants.baseUrl}${AppConstants.login}'),
       headers: {
@@ -20,7 +25,7 @@ class AuthService {
         'Accept': 'application/json',
       },
       body: jsonEncode({
-        'username': username,
+        if (isEmail) 'email': input else 'username': input,
         'password': password,
       }),
     );
