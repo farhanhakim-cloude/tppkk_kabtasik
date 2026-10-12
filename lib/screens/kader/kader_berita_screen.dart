@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../models/berita.dart';
 import '../../services/berita_service.dart';
+import '../../widgets/skeleton.dart';
 import '../berita_form_screen.dart';
 
 class KaderBeritaScreen extends StatefulWidget {
@@ -115,7 +116,12 @@ class _KaderBeritaScreenState extends State<KaderBeritaScreen> {
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF0072BC)))
+          // Skeleton dinas selaras Dasawisma (tanpa spinner).
+          ? const SingleChildScrollView(
+              padding: EdgeInsets.all(16),
+              physics: NeverScrollableScrollPhysics(),
+              child: SkeletonList(count: 4),
+            )
           : _errorMessage.isNotEmpty && _myNews.isEmpty
               ? _buildErrorState()
               : _myNews.isEmpty

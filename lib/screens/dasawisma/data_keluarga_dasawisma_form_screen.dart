@@ -6,6 +6,7 @@ import '../../services/daftar_warga_service.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/kecamatan_dropdown_field.dart';
 import '../../widgets/wilayah_otomatis.dart';
+import 'map_picker_screen.dart';
 
 class DataKeluargaDasawismaFormScreen extends StatefulWidget {
   final DataKeluargaDasawisma? data;
@@ -63,6 +64,10 @@ class _DataKeluargaDasawismaFormScreenState
   bool _aktifitasKesling = true;
   bool _aktifitasTanahPekarangan = false;
   bool _aktifitasIndustriRumahTangga = false;
+
+  // Titik GPS rumah (opsional, untuk Peta Sebaran)
+  double? _latitude;
+  double? _longitude;
 
   bool _saving = false;
 
@@ -154,6 +159,8 @@ class _DataKeluargaDasawismaFormScreenState
     _aktifitasKesling = d?.aktifitasKesehatanLingkungan ?? true;
     _aktifitasTanahPekarangan = d?.aktifitasTanahPekarangan ?? false;
     _aktifitasIndustriRumahTangga = d?.aktifitasIndustriRumahTangga ?? false;
+    _latitude = d?.latitude;
+    _longitude = d?.longitude;
     if (d == null) _isiWilayahOtomatis();
   }
 
@@ -505,6 +512,94 @@ class _DataKeluargaDasawismaFormScreenState
     onChanged: onChanged,
   );
 
+  Future<void> _pilihTitikPeta() async {
+    HapticFeedback.selectionClick();
+    final result = await Navigator.push<Map<String, dynamic>>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => MapPickerScreen(
+          initialLat: _latitude,
+          initialLng: _longitude,
+        ),
+      ),
+    );
+    if (result != null && mounted) {
+      setState(() {
+        _latitude = (result['lat'] as num?)?.toDouble();
+        _longitude = (result['lng'] as num?)?.toDouble();
+      });
+    }
+  }
+
+  // Tombol titik peta rumah (opsional, untuk Peta Sebaran) — selaras gaya form.
+  Widget _buildMapButton(Color primary) {
+    final ada = _latitude != null && _longitude != null;
+    return InkWell(
+      onTap: _pilihTitikPeta,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFE2E8F0)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: primary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                Icons.add_location_alt_rounded,
+                color: primary,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Titik Peta Rumah',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF0F172A),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    ada
+                        ? 'Lat: ${_latitude!.toStringAsFixed(5)}, Lng: ${_longitude!.toStringAsFixed(5)}'
+                        : 'Belum diatur (opsional)',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 11.5,
+                      color: const Color(0xFF64748B),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Text(
+              ada ? 'Ubah' : 'Pilih',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: primary,
+              ),
+            ),
+            const SizedBox(width: 4),
+            Icon(Icons.chevron_right_rounded, size: 18, color: primary),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _saving = true);
@@ -524,6 +619,8 @@ class _DataKeluargaDasawismaFormScreenState
       nomorKk: _nomorKkCtrl.text.trim(),
       nikKepalaKeluarga: _nikKepalaCtrl.text.trim(),
       alamat: _alamatCtrl.text.trim(),
+      latitude: _latitude,
+      longitude: _longitude,
       jumlahLakiLaki: int.tryParse(_jmlLakiCtrl.text) ?? 0,
       jumlahPerempuan: int.tryParse(_jmlPerempuanCtrl.text) ?? 0,
       jumlahAnggota: enteredGenderCount > 0
@@ -823,6 +920,8 @@ class _DataKeluargaDasawismaFormScreenState
                   style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
                   decoration: _inputDeco('Alamat', 'Alamat lengkap'),
                 ),
+                const SizedBox(height: 10),
+                _buildMapButton(primary),
                 const SizedBox(height: 10),
                 Row(
                   children: [

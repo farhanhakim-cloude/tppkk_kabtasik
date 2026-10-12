@@ -5,12 +5,15 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import '../../main.dart';
 
 import '../../models/catatan_kegiatan.dart';
 import '../../services/catatan_kegiatan_service.dart';
 import '../../services/berita_service.dart';
+import '../../services/notifikasi_service.dart';
+import '../../widgets/notifikasi_bell.dart';
+import '../../widgets/skeleton.dart';
+import '../notifikasi_screen.dart';
 import '../catatan_kegiatan_form_screen.dart';
 import 'kader_catatan_kegiatan_screen.dart';
 import 'kader_berita_screen.dart';
@@ -36,11 +39,8 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
   int _totalKegiatan = 0;
   int _totalBerita = 0;
   bool _isLoading = true;
-
-  String _weatherCity = 'Tasikmalaya';
-  String _weatherCondition = 'Cerah Berawan';
-  int _weatherTemp = 28;
-  int _weatherHumidity = 65;
+  int _unreadNotif = 0;
+  final _notifService = NotifikasiService();
 
   String _getFormattedDate() {
     final now = DateTime.now();
@@ -49,33 +49,6 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
     final dayName = days[now.weekday - 1];
     final monthName = months[now.month - 1];
     return '$dayName, ${now.day} $monthName ${now.year}';
-  }
-
-  Future<void> _loadWeather() async {
-    try {
-      final res = await http.get(Uri.parse('https://api.open-meteo.com/v1/forecast?latitude=-7.3274&longitude=108.2207&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code&timezone=Asia%2FJakarta')).timeout(const Duration(seconds: 8));
-      if (res.statusCode == 200) {
-        final data = jsonDecode(res.body);
-        final current = data['current'];
-        final temp = (current['temperature_2m'] as num).round();
-        final humidity = (current['relative_humidity_2m'] as num).round();
-        final code = current['weather_code'] as int;
-        String condition;
-        if (code == 0) condition = 'Cerah';
-        else if (code <= 3) condition = 'Berawan';
-        else if (code <= 48) condition = 'Berkabut';
-        else if (code <= 67) condition = 'Hujan';
-        else if (code <= 77) condition = 'Salju';
-        else if (code <= 99) condition = 'Badai';
-        else condition = 'Cerah Berawan';
-        if (!mounted) return;
-        setState(() {
-          _weatherTemp = temp;
-          _weatherHumidity = humidity;
-          _weatherCondition = condition;
-        });
-      }
-    } catch (_) {}
   }
 
   void _onThemeChanged() {
@@ -95,6 +68,7 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
   @override
   void dispose() {
     themeNotifier.removeListener(_onThemeChanged);
+    _notifService.dispose();
     super.dispose();
   }
 
@@ -117,7 +91,7 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
   }
   
   Future<void> _loadData() async {
-    _loadWeather();
+    _refreshNotifCount();
     try {
       final catatan = await _catatanService.getAll();
       final berita = await _beritaService.getMyBerita();
@@ -133,7 +107,19 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
     }
   }
 
-  String _selectedCategory = 'Semua';
+  Future<void> _refreshNotifCount() async {
+    final n = await _notifService.getUnreadCount();
+    if (mounted) setState(() => _unreadNotif = n);
+  }
+
+  Future<void> _bukaNotifikasi() async {
+    HapticFeedback.selectionClick();
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const NotifikasiScreen()),
+    );
+    _refreshNotifCount();
+  }
 
   // Palet Dinas selaras Dasawisma: biru 0072BC, ink 1A2B3C, muted 5B6B7C, line E1E7EE, paper F4F6F9.
   static const Color _biru = Color(0xFF0072BC);
@@ -289,6 +275,7 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
                 visualDensity: VisualDensity.compact,
                 icon: const Icon(Icons.refresh_rounded, color: Colors.white, size: 20),
               ),
+              NotifikasiBell(count: _unreadNotif, onTap: _bukaNotifikasi),
               Container(
                 width: 34,
                 height: 34,
@@ -348,9 +335,19 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
 
-              // 2. RINGKASAN DATA RESMI (2 KARTU UTAMA: Kegiatan & Kabar)
-              Row(
-                children: [
+              // 2. RINGKASAN DATA RESMI (2 KARTU UTAMA: Kegiatan & Kabar).
+              // Skeleton dinas selaras Dasawisma selagi _isLoading.
+              if (_isLoading)
+                Row(
+                  children: [
+                    Expanded(child: _buildSummarySkeletonCard(cardBg, border)),
+                    const SizedBox(width: 10),
+                    Expanded(child: _buildSummarySkeletonCard(cardBg, border)),
+                  ],
+                )
+              else
+                Row(
+                  children: [
                   Expanded(
                     child: InkWell(
                       onTap: () => setState(() => _navIndex = 1),
@@ -431,10 +428,8 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
                 future: _catatanService.getAll(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const SizedBox(
-                      height: 100,
-                      child: Center(child: CircularProgressIndicator()),
-                    );
+                    // Skeleton dinas selaras Dasawisma (tanpa spinner).
+                    return const SkeletonList(count: 3);
                   }
                   final allList = snapshot.data ?? [];
                   final filteredList = _pokjaRole != null
@@ -520,6 +515,26 @@ class _KaderDashboardScreenState extends State<KaderDashboardScreen> {
       ),
       ),
     ),
+    );
+  }
+
+  // Skeleton kartu ringkasan selaras Dasawisma (tanpa spinner).
+  Widget _buildSummarySkeletonCard(Color cardBg, Color border) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      decoration: BoxDecoration(
+        color: cardBg,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: border),
+      ),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SkeletonBox(width: 110, height: 12),
+          SizedBox(height: 8),
+          SkeletonBox(width: 48, height: 19),
+        ],
+      ),
     );
   }
 

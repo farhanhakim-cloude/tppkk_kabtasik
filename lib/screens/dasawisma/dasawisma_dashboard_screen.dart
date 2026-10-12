@@ -13,7 +13,11 @@ import '../../services/auth_service.dart';
 import '../../services/daftar_warga_service.dart';
 import '../../services/kegiatan_warga_service.dart';
 import '../../services/bumil_service.dart';
+import '../../services/notifikasi_service.dart';
+import '../../widgets/notifikasi_bell.dart';
 import '../../widgets/skeleton.dart';
+
+import '../notifikasi_screen.dart';
 
 import 'input_keluarga_dasawisma_screen.dart';
 import 'input_terpadu_screen.dart';
@@ -43,6 +47,8 @@ class _DasawismaDashboardScreenState extends State<DasawismaDashboardScreen> {
   int _navIndex = 0;
 
   bool _loading = true;
+  int _unreadNotif = 0;
+  final _notifService = NotifikasiService();
   List<DataKeluargaDasawisma> _listKk = [];
   int _totalKk = 0;
   int _totalJiwa = 0;
@@ -64,6 +70,7 @@ class _DasawismaDashboardScreenState extends State<DasawismaDashboardScreen> {
   @override
   void dispose() {
     themeNotifier.removeListener(_onThemeChanged);
+    _notifService.dispose();
     super.dispose();
   }
 
@@ -97,6 +104,7 @@ class _DasawismaDashboardScreenState extends State<DasawismaDashboardScreen> {
 
   Future<void> _loadData() async {
     setState(() => _loading = true);
+    _refreshNotifCount();
     try {
       List<DataKeluargaDasawisma> listKk = [];
       var listKeg = <dynamic>[];
@@ -157,6 +165,20 @@ class _DasawismaDashboardScreenState extends State<DasawismaDashboardScreen> {
     HapticFeedback.selectionClick();
     final r = await Navigator.push(context, MaterialPageRoute(builder: (_) => page));
     if (refresh && r == true && mounted) _loadData();
+  }
+
+  Future<void> _refreshNotifCount() async {
+    final n = await _notifService.getUnreadCount();
+    if (mounted) setState(() => _unreadNotif = n);
+  }
+
+  Future<void> _bukaNotifikasi() async {
+    HapticFeedback.selectionClick();
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const NotifikasiScreen()),
+    );
+    _refreshNotifCount();
   }
 
   TextStyle get _tTitle => GoogleFonts.plusJakartaSans(fontSize: 17, fontWeight: FontWeight.w700, color: ink);
@@ -351,6 +373,7 @@ class _DasawismaDashboardScreenState extends State<DasawismaDashboardScreen> {
                 visualDensity: VisualDensity.compact,
                 icon: const Icon(Icons.refresh_rounded, color: Colors.white, size: 20),
               ),
+              NotifikasiBell(count: _unreadNotif, onTap: _bukaNotifikasi),
               Container(
                 width: 34,
                 height: 34,

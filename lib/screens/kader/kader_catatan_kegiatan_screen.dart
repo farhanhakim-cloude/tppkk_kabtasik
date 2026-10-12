@@ -8,6 +8,7 @@ import 'dart:convert';
 import '../../main.dart';
 import '../../models/catatan_kegiatan.dart';
 import '../../services/catatan_kegiatan_service.dart';
+import '../../widgets/skeleton.dart';
 import '../catatan_kegiatan_form_screen.dart';
 
 class KaderCatatanKegiatanScreen extends StatefulWidget {
@@ -658,11 +659,10 @@ class _KaderCatatanKegiatanScreenState extends State<KaderCatatanKegiatanScreen>
               future: _future,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
-                    child: CircularProgressIndicator(
-                      color: primaryAccent,
-                      strokeWidth: 2.5,
-                    ),
+                  // Skeleton dinas selaras Dasawisma (tanpa spinner).
+                  return const Padding(
+                    padding: EdgeInsets.all(16),
+                    child: SkeletonList(count: 4),
                   );
                 }
                 if (snapshot.hasError) {

@@ -17,6 +17,7 @@ import '../../services/daftar_warga_service.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/kecamatan_dropdown_field.dart';
 import '../../widgets/wilayah_otomatis.dart';
+import 'map_picker_screen.dart';
 
 class InputKeluargaDasawismaScreen extends StatefulWidget {
   final DataKeluargaDasawisma? data;
@@ -57,6 +58,10 @@ class _InputKeluargaDasawismaScreenState
   final _noKkCtrl = TextEditingController();
   final _alamatCtrl = TextEditingController();
   final _jmlKkCtrl = TextEditingController(text: '1');
+
+  // ── Titik GPS rumah (opsional, untuk Peta Sebaran) ──
+  double? _latitude;
+  double? _longitude;
 
   // ── STEP 3: ANGGOTA (AGREGAT) ───────────────────────
   final _jmlLakiCtrl = TextEditingController(text: '0');
@@ -124,6 +129,8 @@ class _InputKeluargaDasawismaScreenState
       _tanahPekarangan = d.aktifitasTanahPekarangan;
       _industriRt = d.aktifitasIndustriRumahTangga;
       _kesehatanLingkungan = d.aktifitasKesehatanLingkungan;
+      _latitude = d.latitude;
+      _longitude = d.longitude;
     } else {
       // Input baru: otomatis isi Desa & Kecamatan dari akun Dasawisma
       _isiWilayahOtomatis();
@@ -265,6 +272,8 @@ class _InputKeluargaDasawismaScreenState
       nomorKk: _noKkCtrl.text.trim(),
       nikKepalaKeluarga: _nikKepalaCtrl.text.trim(),
       alamat: _alamatCtrl.text.trim(),
+      latitude: _latitude,
+      longitude: _longitude,
       jumlahLakiLaki: l,
       jumlahPerempuan: p,
       jumlahAnggota: l + p,
@@ -460,6 +469,7 @@ class _InputKeluargaDasawismaScreenState
         _field(_noKkCtrl, 'Nomor Kartu Keluarga', '16 digit', Icons.credit_card_rounded, isNumber: true),
         _field(_jmlKkCtrl, 'Jumlah KK dalam rumah ini', '1', Icons.home_outlined, isNumber: true),
         _field(_alamatCtrl, 'Alamat', 'Nama jalan / gang', Icons.map_outlined),
+        _mapButton(),
       ],
     );
   }
@@ -596,6 +606,97 @@ class _InputKeluargaDasawismaScreenState
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Future<void> _pilihTitikPeta() async {
+    HapticFeedback.selectionClick();
+    final result = await Navigator.push<Map<String, dynamic>>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => MapPickerScreen(
+          initialLat: _latitude,
+          initialLng: _longitude,
+        ),
+      ),
+    );
+    if (result != null && mounted) {
+      setState(() {
+        _latitude = (result['lat'] as num?)?.toDouble();
+        _longitude = (result['lng'] as num?)?.toDouble();
+      });
+    }
+  }
+
+  // Tombol titik peta rumah (opsional, untuk Peta Sebaran) — selaras gaya form.
+  Widget _mapButton() {
+    final ada = _latitude != null && _longitude != null;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: InkWell(
+        onTap: _pilihTitikPeta,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: _border),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: _primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  Icons.add_location_alt_rounded,
+                  color: _primary,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Titik Peta Rumah',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: _darkText,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      ada
+                          ? 'Lat: ${_latitude!.toStringAsFixed(5)}, Lng: ${_longitude!.toStringAsFixed(5)}'
+                          : 'Belum diatur (opsional)',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 11.5,
+                        color: _muted,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Text(
+                ada ? 'Ubah' : 'Pilih',
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: _primary,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Icon(Icons.chevron_right_rounded, size: 18, color: _primary),
+            ],
+          ),
+        ),
       ),
     );
   }

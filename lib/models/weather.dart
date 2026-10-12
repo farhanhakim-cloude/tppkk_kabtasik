@@ -1,6 +1,6 @@
 // lib/models/weather.dart
-// Model untuk response Open-Meteo current weather
-// API: https://api.open-meteo.com/v1/forecast?latitude=-7.55&longitude=108.15&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&timezone=Asia%2FJakarta
+// Model untuk response Open-Meteo current weather (Singaparna — selaras website)
+// API: https://api.open-meteo.com/v1/forecast?latitude=-7.35&longitude=108.10&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&timezone=Asia%2FJakarta
 
 import 'package:flutter/material.dart';
 
@@ -34,8 +34,8 @@ class Weather {
   factory Weather.fromJson(Map<String, dynamic> json) {
     final current = json['current'] as Map<String, dynamic>? ?? {};
     return Weather(
-      latitude: (json['latitude'] as num?)?.toDouble() ?? -7.55,
-      longitude: (json['longitude'] as num?)?.toDouble() ?? 108.15,
+      latitude: (json['latitude'] as num?)?.toDouble() ?? -7.35,
+      longitude: (json['longitude'] as num?)?.toDouble() ?? 108.10,
       elevation: (json['elevation'] as num?)?.toDouble() ?? 0,
       timezone: json['timezone'] as String? ?? 'Asia/Jakarta',
       time: current['time'] as String? ?? '',

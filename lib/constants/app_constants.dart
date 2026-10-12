@@ -75,6 +75,9 @@ class AppConstants {
   static const String myLaporan = "laporan-kegiatan/my-laporan";
   static const String laporanKegiatan = "laporan-kegiatan";
 
+  // ✅ TAMBAH — Notifikasi lonceng (agenda baru dari kabupaten)
+  static const String notifikasi = "notifikasi";
+
   // ============================================================
   // SHARED PREFERENCES KEYS
   // ============================================================

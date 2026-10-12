@@ -120,6 +120,10 @@ class DataKeluargaDasawisma {
   final bool aktifitasTanahPekarangan;
   final bool aktifitasIndustriRumahTangga;
 
+  // Titik GPS rumah (opsional, untuk Peta Sebaran)
+  final double? latitude;
+  final double? longitude;
+
   DataKeluargaDasawisma({
     required this.id,
     this.status = 'pending',
@@ -165,6 +169,8 @@ class DataKeluargaDasawisma {
     this.aktifitasKesehatanLingkungan = true,
     this.aktifitasTanahPekarangan = false,
     this.aktifitasIndustriRumahTangga = false,
+    this.latitude,
+    this.longitude,
   });
 
   DataKeluargaDasawisma copyWith({
@@ -212,6 +218,8 @@ class DataKeluargaDasawisma {
     bool? aktifitasKesehatanLingkungan,
     bool? aktifitasTanahPekarangan,
     bool? aktifitasIndustriRumahTangga,
+    double? latitude,
+    double? longitude,
   }) {
     return DataKeluargaDasawisma(
       id: id ?? this.id,
@@ -262,7 +270,17 @@ class DataKeluargaDasawisma {
           aktifitasTanahPekarangan ?? this.aktifitasTanahPekarangan,
       aktifitasIndustriRumahTangga:
           aktifitasIndustriRumahTangga ?? this.aktifitasIndustriRumahTangga,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
     );
+  }
+
+  static double? _d(dynamic v) {
+    if (v == null) return null;
+    if (v is double) return v;
+    if (v is int) return v.toDouble();
+    if (v is String) return double.tryParse(v);
+    return null;
   }
 
   static int _p(dynamic v) {
@@ -285,6 +303,8 @@ class DataKeluargaDasawisma {
         kabupaten: j['kabupaten']?.toString() ?? 'Kabupaten Tasikmalaya',
         provinsi: j['provinsi']?.toString() ?? 'Provinsi Jawa Barat',
         namaKepalaRumahTangga: j['namaKepalaRumahTangga']?.toString() ?? '',
+        latitude: _d(j['latitude']),
+        longitude: _d(j['longitude']),
         jumlahLakiLaki: _p(j['jumlahLakiLaki']),
         jumlahPerempuan: _p(j['jumlahPerempuan']),
         jumlahAnggota: _p(j['jumlahAnggota']),
@@ -369,6 +389,8 @@ class DataKeluargaDasawisma {
             j['ikut_kesling'] == true || j['ikut_kesling'] == 1,
         aktifitasTanahPekarangan: false,
         aktifitasIndustriRumahTangga: false,
+        latitude: _d(j['latitude']),
+        longitude: _d(j['longitude']),
       );
 
   Map<String, dynamic> toDaftarWargaJson() => {
@@ -405,6 +427,9 @@ class DataKeluargaDasawisma {
     'makanan_pokok': makananPokok,
     'ikut_up2k': aktifitasUp2k,
     'ikut_kesling': aktifitasKesehatanLingkungan,
+    // Titik GPS rumah (opsional, untuk Peta Sebaran)
+    'latitude': latitude,
+    'longitude': longitude,
   };
 
   Map<String, dynamic> toJson() => {
@@ -418,6 +443,8 @@ class DataKeluargaDasawisma {
     'kabupaten': kabupaten,
     'provinsi': provinsi,
     'namaKepalaRumahTangga': namaKepalaRumahTangga,
+    'latitude': latitude,
+    'longitude': longitude,
     'jumlahLakiLaki': jumlahLakiLaki,
     'jumlahPerempuan': jumlahPerempuan,
     'jumlahAnggota': jumlahAnggota,
