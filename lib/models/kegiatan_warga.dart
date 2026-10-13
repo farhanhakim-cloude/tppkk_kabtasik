@@ -11,6 +11,8 @@ class KegiatanWarga {
   final String desa;
   final String kecamatan;
   final String kegiatan; // up2k|pekarangan|industri|kesehatan|lainnya
+  /// Rincian Excel (7 pilihan) — info tambahan, rekap tetap kolom kegiatan.
+  final String rincian;
   final int jumlahPeserta;
   final DateTime? tanggal;
   final String keterangan;
@@ -36,6 +38,7 @@ class KegiatanWarga {
     this.desa = '',
     this.kecamatan = '',
     required this.kegiatan,
+    this.rincian = '',
     this.jumlahPeserta = 0,
     this.tanggal,
     this.keterangan = '',
@@ -56,6 +59,17 @@ class KegiatanWarga {
     'kesehatan': 'Kesehatan',
     'lainnya': 'Lainnya',
   };
+
+  /// Rincian Excel KEGIATAN WARGA (info tambahan, rekap tetap kolom kegiatan).
+  static const List<String> daftarRincian = [
+    'Penghayatan dan Pengamalan Pancasila',
+    'Kerjabakti',
+    'Rukun Kematian',
+    'Kegiatan Keagamaan',
+    'Jimpitan',
+    'Arisan',
+    'Lain-lain',
+  ];
 
   static List<String> get daftarKegiatan => kegiatanLabels.keys.toList();
 
@@ -94,6 +108,7 @@ class KegiatanWarga {
     String? desa,
     String? kecamatan,
     String? kegiatan,
+    String? rincian,
     int? jumlahPeserta,
     DateTime? tanggal,
     String? keterangan,
@@ -115,6 +130,7 @@ class KegiatanWarga {
       desa: desa ?? this.desa,
       kecamatan: kecamatan ?? this.kecamatan,
       kegiatan: kegiatan ?? this.kegiatan,
+      rincian: rincian ?? this.rincian,
       jumlahPeserta: jumlahPeserta ?? this.jumlahPeserta,
       tanggal: tanggal ?? this.tanggal,
       keterangan: keterangan ?? this.keterangan,
@@ -162,6 +178,7 @@ class KegiatanWarga {
       desa: str(json['desa']),
       kecamatan: str(json['kecamatan']),
       kegiatan: str(json['kegiatan']),
+      rincian: str(json['rincian']),
       jumlahPeserta:
           intOf(json['jumlah_peserta'] ?? json['jumlahPeserta']),
       tanggal: dateOf(json['tanggal']),
@@ -198,6 +215,7 @@ class KegiatanWarga {
       'rt': rt,
       'rw': rw,
       'kegiatan': kegiatan,
+      'rincian': rincian.isEmpty ? null : rincian,
       'jumlah_peserta': jumlahPeserta,
       'tanggal': ymd(tanggal),
       'keterangan': keterangan,

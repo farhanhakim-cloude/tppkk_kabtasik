@@ -12,6 +12,8 @@ class PemanfaatanTanah {
   final String desa;
   final String kecamatan;
   final String jenisTanaman;
+  // Kategori Excel: peternakan/perikanan/warung hidup/toga/tanaman keras lainnya.
+  final String kategori;
   final double luasM2;
   final int jumlahKk;
   final String hasil;
@@ -34,6 +36,7 @@ class PemanfaatanTanah {
     this.desa = '',
     this.kecamatan = '',
     required this.jenisTanaman,
+    this.kategori = '',
     this.luasM2 = 0,
     this.jumlahKk = 0,
     this.hasil = '',
@@ -43,6 +46,56 @@ class PemanfaatanTanah {
     this.kecamatanStatus,
     this.kecamatanRejectedReason,
   });
+
+  static const Map<String, String> kategoriLabels = {
+    'peternakan': 'Peternakan',
+    'perikanan': 'Perikanan',
+    'warung hidup': 'Warung Hidup',
+    'toga': 'TOGA',
+    'tanaman keras lainnya': 'Tanaman Keras Lainnya',
+  };
+
+  static List<String> get daftarKategori => kategoriLabels.keys.toList();
+
+  String get kategoriLabel => kategoriLabels[kategori] ?? kategori;
+
+  /// Kategori ternak/ikan tak pakai Luas (m²) — cukup komoditi + KK + hasil.
+  bool get pakaiLuas =>
+      kategori.isEmpty || !['peternakan', 'perikanan'].contains(kategori);
+
+  /// Label komoditi menyesuaikan kategori (Excel: KOMODITI).
+  String get komoditiLabel {
+    switch (kategori) {
+      case 'peternakan':
+        return 'Jenis Ternak';
+      case 'perikanan':
+        return 'Jenis Ikan';
+      default:
+        return 'Jenis Tanaman';
+    }
+  }
+
+  String get komoditiHint {
+    switch (kategori) {
+      case 'peternakan':
+        return 'Ayam, kambing, ...';
+      case 'perikanan':
+        return 'Lele, nila, ...';
+      default:
+        return 'Cabai, tomat, ...';
+    }
+  }
+
+  String get hasilHint {
+    switch (kategori) {
+      case 'peternakan':
+        return 'cth: 10 ekor...';
+      case 'perikanan':
+        return 'cth: 20 kg...';
+      default:
+        return '20 kg cabai...';
+    }
+  }
 
   bool get isPending => status == 'pending';
   bool get isApproved => status == 'approved';
@@ -68,6 +121,7 @@ class PemanfaatanTanah {
     String? desa,
     String? kecamatan,
     String? jenisTanaman,
+    String? kategori,
     double? luasM2,
     int? jumlahKk,
     String? hasil,
@@ -86,6 +140,7 @@ class PemanfaatanTanah {
       desa: desa ?? this.desa,
       kecamatan: kecamatan ?? this.kecamatan,
       jenisTanaman: jenisTanaman ?? this.jenisTanaman,
+      kategori: kategori ?? this.kategori,
       luasM2: luasM2 ?? this.luasM2,
       jumlahKk: jumlahKk ?? this.jumlahKk,
       hasil: hasil ?? this.hasil,
@@ -127,6 +182,7 @@ class PemanfaatanTanah {
       kecamatan: str(json['kecamatan']),
       jenisTanaman:
           str(json['jenis_tanaman'] ?? json['jenisTanaman']),
+      kategori: str(json['kategori']),
       luasM2: doubleOf(json['luas_m2'] ?? json['luasM2']),
       jumlahKk: intOf(json['jumlah_kk'] ?? json['jumlahKk']),
       hasil: str(json['hasil']),
@@ -150,6 +206,7 @@ class PemanfaatanTanah {
         'dusun': dusun,
         'rt': rt,
         'rw': rw,
+        'kategori': kategori.isEmpty ? null : kategori,
         'jenis_tanaman': jenisTanaman,
         'luas_m2': luasM2,
         'jumlah_kk': jumlahKk,

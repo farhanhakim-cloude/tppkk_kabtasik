@@ -416,6 +416,21 @@ class _IndustriRumahTanggaListScreenState
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                          if (d.kategoriLabel.isNotEmpty)
+                            Container(
+                                margin:
+                                    const EdgeInsets.only(bottom: 4),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 3),
+                                decoration: BoxDecoration(
+                                    color: const Color(0xFFE6F1F9),
+                                    borderRadius:
+                                        BorderRadius.circular(20)),
+                                child: Text(d.kategoriLabel,
+                                    style: GoogleFonts.plusJakartaSans(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w700,
+                                        color: const Color(0xFF0072BC)))),
                           Text(d.jenisIndustri,
                               style: GoogleFonts.plusJakartaSans(
                                   fontSize: 14,
@@ -587,6 +602,8 @@ class _DetailSheet extends StatelessWidget {
                       padding: const EdgeInsets.all(20),
                       children: [
                     row('Jenis Industri', data.jenisIndustri),
+                    if (data.kategoriLabel.isNotEmpty)
+                      row('Kategori', data.kategoriLabel),
                     row('Pemilik', data.pemilik),
                     row('Tenaga Kerja', '${data.jumlahTenagaKerja}'),
                     row('Omzet', rp(data.omzet)),

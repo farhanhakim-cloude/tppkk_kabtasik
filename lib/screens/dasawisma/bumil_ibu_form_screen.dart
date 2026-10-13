@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../models/bumil_ibu.dart';
+import '../../models/data_keluarga_dasawisma.dart';
+import '../../models/dasawisma_catatan_keluarga.dart';
 import '../../services/bumil_service.dart';
+import '../../services/daftar_warga_service.dart';
+import '../../services/dasawisma_catatan_keluarga_service.dart';
 import '../../services/api_exception.dart';
 
 class BumilIbuFormScreen extends StatefulWidget {
@@ -48,6 +52,18 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
   bool _saving = false;
   Map<String, List<String>> _fieldErrors = {};
 
+  // ── KK + Anggota (dropdown Nama Suami otomatis) ──
+  final _kkService = DaftarWargaService();
+  final _anggotaService = DasawismaCatatanKeluargaService();
+  List<DataKeluargaDasawisma> _kkList = [];
+  bool _kkLoading = true;
+  int _kkId = 0;
+  List<DasawismaCatatanKeluarga> _anggota = [];
+  bool _anggotaLoading = false;
+  String _namaKrtCalon = '';
+  String? _suamiDipilih; // null = ketik manual
+  bool get _suamiManual => _suamiDipilih == null;
+
   bool get _isEdit => widget.data != null;
 
   @override
@@ -88,6 +104,125 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
       }
       _matiTgl = d.kematianTanggal;
     }
+    _muatKK();
+  }
+
+  Future<void> _muatKK() async {
+    try {
+      final list = await _kkService.getAll();
+      if (!mounted) return;
+      setState(() {
+        _kkList = list;
+        _kkLoading = false;
+      });
+      final awal = widget.data?.daftarWargaId ?? 0;
+      if (awal > 0 && list.any((e) => e.id == awal)) {
+        _pilihKK(awal, isiWilayah: false);
+      }
+    } catch (_) {
+      if (mounted) setState(() => _kkLoading = false);
+    }
+  }
+
+  /// Pilih KK → isi wilayah otomatis + muat anggota Laki-laki u/ dropdown suami.
+  Future<void> _pilihKK(int id, {bool isiWilayah = true}) async {
+    setState(() {
+      _kkId = id;
+      _anggota = [];
+      _namaKrtCalon = '';
+      _suamiDipilih = null;
+    });
+    if (id <= 0) return;
+    final cocokKK = _kkList.where((e) => e.id == id);
+    final kk = cocokKK.isEmpty ? null : cocokKK.first;
+    if (kk != null && isiWilayah) {
+      _dasaWismaCtrl.text = kk.dasaWisma;
+      _dusunCtrl.text = kk.dusun;
+      _rtCtrl.text = kk.rt;
+      _rwCtrl.text = kk.rw;
+    }
+    setState(() => _anggotaLoading = true);
+    try {
+      final semua =
+          await _anggotaService.getAll(daftarWargaId: id);
+      if (!mounted) return;
+      // Calon suami = Laki-laki BUKAN anak (kepala dulu). Anak tak
+      // pernah jadi suami — kasus "Malik (Anak)" kepilih.
+      final laki = semua
+          .where((e) =>
+              e.namaAnggota.trim().isNotEmpty &&
+              e.jenisKelamin.toUpperCase() == 'L' &&
+              e.hubunganKeluarga != 'anak')
+          .toList()
+        ..sort((a, b) {
+          int bobot(DasawismaCatatanKeluarga e) =>
+              e.hubunganKeluarga == 'kepala' ? 0 : 1;
+          final c = bobot(a).compareTo(bobot(b));
+          return c != 0
+              ? c
+              : a.namaAnggota.compareTo(b.namaAnggota);
+        });
+      // KRT sendiri belum tentu terdata sebagai anggota — jadikan
+      // opsi pertama bila namanya tak ada di daftar.
+      final krt = kk?.namaKepalaRumahTangga.trim() ?? '';
+      final adaKrt = krt.isEmpty ||
+          laki.any((e) =>
+              e.namaAnggota.trim().toLowerCase() == krt.toLowerCase());
+      setState(() {
+        _anggota = laki;
+        _anggotaLoading = false;
+        _namaKrtCalon = adaKrt ? '' : krt;
+        // Auto-pilih bila cuma 1 calon (umumnya kepala).
+        final calon = _calonSuami;
+        if (calon.length == 1) {
+          _suamiDipilih = calon.first;
+          _suamiCtrl.text = calon.first;
+        } else {
+          // Samakan pilihan dgn isian lama (mode edit) bila cocok.
+          final lama = _suamiCtrl.text.trim();
+          final cocok = calon.where((n) =>
+              n.trim().toLowerCase() == lama.toLowerCase());
+          if (lama.isNotEmpty && cocok.isNotEmpty) {
+            _suamiDipilih = cocok.first;
+          }
+        }
+      });
+      // Nama Ibu otomatis dari anggota 'istri' bila cuma 1.
+      final istri = semua
+          .where((e) =>
+              e.namaAnggota.trim().isNotEmpty &&
+              e.hubunganKeluarga == 'istri')
+          .map((e) => e.namaAnggota.trim())
+          .toSet()
+          .toList();
+      if (istri.length == 1 && _namaCtrl.text.trim().isEmpty) {
+        setState(() => _namaCtrl.text = istri.first);
+      }
+    } catch (_) {
+      if (mounted) setState(() => _anggotaLoading = false);
+    }
+  }
+
+  /// Opsi dropdown suami: KRT (bila tak terdata) + anggota kepala/L.
+  List<String> get _calonSuami {
+    final list = <String>[];
+    if (_namaKrtCalon.isNotEmpty) list.add(_namaKrtCalon);
+    for (final e in _anggota) {
+      final n = e.namaAnggota.trim();
+      if (n.isNotEmpty &&
+          !list.any((x) => x.toLowerCase() == n.toLowerCase())) {
+        list.add(n);
+      }
+    }
+    return list;
+  }
+
+  String _labelCalon(String nama) {
+    if (nama == _namaKrtCalon) return '$nama (Kepala Keluarga)';
+    final cari = _anggota.where(
+        (e) => e.namaAnggota.trim().toLowerCase() == nama.toLowerCase());
+    if (cari.isEmpty) return nama;
+    return '$nama (${cari.first.hubunganLabel})';
   }
 
   @override
@@ -160,7 +295,10 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
         rw: _rwCtrl.text.trim(),
         dusun: _dusunCtrl.text.trim(),
         nama: _namaCtrl.text.trim(),
-        suamiNama: _suamiCtrl.text.trim(),
+        suamiNama: _suamiManual
+            ? _suamiCtrl.text.trim()
+            : (_suamiDipilih ?? '').trim(),
+        daftarWargaId: _kkId,
         umur: int.tryParse(_umurCtrl.text.trim()) ?? 0,
         statusIbu: _statusIbu,
         bayiNama: _statusIbu == 'melahirkan'
@@ -287,6 +425,11 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
                   Expanded(child: _tahunDropdown()),
                 ]),
                 const SizedBox(height: 16),
+                _section(Icons.home_work_rounded, 'Keluarga',
+                    'Pilih KK — suami + wilayah otomatis'),
+                const SizedBox(height: 10),
+                _kkDropdown(),
+                const SizedBox(height: 16),
                 _section(Icons.person_rounded, 'Data Ibu', 'Identitas ibu'),
                 const SizedBox(height: 10),
                 _field(
@@ -299,12 +442,7 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
                         ? 'Nama wajib diisi'
                         : null),
                 const SizedBox(height: 10),
-                _field(
-                    ctrl: _suamiCtrl,
-                    label: 'Nama Suami',
-                    hint: 'Nama suami',
-                    icon: Icons.person_outline_rounded,
-                    serverField: 'suami_nama'),
+                _suamiPicker(),
                 const SizedBox(height: 10),
                 Row(children: [
                   Expanded(
@@ -543,6 +681,152 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
         if (v == null) return;
         setState(() => _tahun = v);
       }));
+
+  /// Pilih KK — anggota Laki-laki jadi dropdown Nama Suami,
+  /// wilayah (dasawisma/dusun/RT/RW) terisi otomatis. 0 = manual.
+  Widget _kkDropdown() {
+    if (_kkLoading) {
+      return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: _line)),
+          child: Row(children: [
+            const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2)),
+            const SizedBox(width: 10),
+            Text('Memuat daftar KK...',
+                style: GoogleFonts.plusJakartaSans(
+                    fontSize: 13, color: _muted)),
+          ]));
+    }
+    return _wrapDropdown(DropdownButtonFormField<int>(
+        initialValue: _kkId,
+        isExpanded: true,
+        decoration: _ddDecoration('Kepala Keluarga', Icons.home_outlined),
+        items: [
+          const DropdownMenuItem(
+              value: 0, child: Text('Tanpa KK (isi manual)')),
+          ..._kkList.map((e) => DropdownMenuItem(
+              value: e.id,
+              child: Text(
+                  '${e.namaKepalaRumahTangga} — ${e.dusun.isEmpty ? e.desa : e.dusun}',
+                  style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
+                  overflow: TextOverflow.ellipsis))),
+        ],
+        onChanged: (v) {
+          if (v == null) return;
+          _pilihKK(v);
+        }));
+  }
+
+  /// Dropdown suami dari anggota Laki-laki KK terpilih (kepala dulu).
+  /// Tanpa KK / KK kosong / tak cocok → ketik manual seperti biasa.
+  Widget _suamiPicker() {
+    if (_kkId <= 0) {
+      return _field(
+          ctrl: _suamiCtrl,
+          label: 'Nama Suami',
+          hint: 'Nama suami',
+          icon: Icons.person_outline_rounded,
+          serverField: 'suami_nama');
+    }
+    if (_anggotaLoading) {
+      return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: _line)),
+          child: Row(children: [
+            const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2)),
+            const SizedBox(width: 10),
+            Text('Memuat anggota KK...',
+                style: GoogleFonts.plusJakartaSans(
+                    fontSize: 13, color: _muted)),
+          ]));
+    }
+    if (_calonSuami.isEmpty) {
+      return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                margin: const EdgeInsets.only(bottom: 10),
+                decoration: BoxDecoration(
+                    color: const Color(0xFFFFFBEB),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                        color: const Color(0xFFF59E0B).withValues(alpha: 0.4))),
+                child: Text(
+                    'KK ini belum punya kepala/suami terdata (anak tak dihitung) — isi manual atau tambah anggota dulu di Input Terpadu.',
+                    style: GoogleFonts.plusJakartaSans(
+                        fontSize: 12,
+                        color: const Color(0xFF92400E)))),
+            _field(
+                ctrl: _suamiCtrl,
+                label: 'Nama Suami',
+                hint: 'Nama suami',
+                icon: Icons.person_outline_rounded,
+                serverField: 'suami_nama'),
+          ]);
+    }
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _wrapDropdown(DropdownButtonFormField<String>(
+              initialValue: _suamiDipilih,
+              isExpanded: true,
+              decoration: _ddDecoration(
+                  'Nama Suami (dari anggota KK)', Icons.person_outline_rounded),
+              hint: Text('Pilih suami...',
+                  style: GoogleFonts.plusJakartaSans(
+                      fontSize: 13.5, color: _muted)),
+              items: [
+                ..._calonSuami.map((n) => DropdownMenuItem(
+                    value: n,
+                    child: Text(
+                        _labelCalon(n),
+                        style:
+                            GoogleFonts.plusJakartaSans(fontSize: 13.5),
+                        overflow: TextOverflow.ellipsis))),
+                DropdownMenuItem(
+                    value: '@manual',
+                    child: Text('Ketik manual...',
+                        style: GoogleFonts.plusJakartaSans(
+                            fontSize: 13.5,
+                            fontStyle: FontStyle.italic,
+                            color: _muted))),
+              ],
+              onChanged: (v) {
+                if (v == null) return;
+                setState(() {
+                  if (v == '@manual') {
+                    _suamiDipilih = null;
+                  } else {
+                    _suamiDipilih = v;
+                    _suamiCtrl.text = v;
+                  }
+                });
+              })),
+          if (_suamiManual) ...[
+            const SizedBox(height: 10),
+            _field(
+                ctrl: _suamiCtrl,
+                label: 'Nama Suami (manual)',
+                hint: 'Nama suami',
+                icon: Icons.person_outline_rounded,
+                serverField: 'suami_nama'),
+          ],
+        ]);
+  }
 
   Widget _statusDropdown() => _wrapDropdown(DropdownButtonFormField<String>(
       initialValue: _statusIbu,

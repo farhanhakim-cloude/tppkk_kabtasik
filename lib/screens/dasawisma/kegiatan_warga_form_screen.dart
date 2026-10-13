@@ -24,6 +24,7 @@ class _KegiatanWargaFormScreenState extends State<KegiatanWargaFormScreen> {
       _pesertaCtrl,
       _keteranganCtrl;
   String _kegiatan = 'up2k';
+  String? _rincian;
   DateTime? _tanggal;
   bool _saving = false;
 
@@ -46,6 +47,10 @@ class _KegiatanWargaFormScreenState extends State<KegiatanWargaFormScreen> {
     if (d != null && KegiatanWarga.kegiatanLabels.containsKey(d.kegiatan)) {
       _kegiatan = d.kegiatan;
     }
+    final awalRincian = d?.rincian ?? '';
+    _rincian = KegiatanWarga.daftarRincian.contains(awalRincian)
+        ? awalRincian
+        : null;
     _tanggal = d?.tanggal ?? DateTime.now();
   }
 
@@ -96,6 +101,7 @@ class _KegiatanWargaFormScreenState extends State<KegiatanWargaFormScreen> {
         rw: _rwCtrl.text.trim(),
         dusun: _dusunCtrl.text.trim(),
         kegiatan: _kegiatan,
+        rincian: _rincian ?? '',
         jumlahPeserta: int.tryParse(_pesertaCtrl.text.trim()) ?? 0,
         tanggal: _tanggal,
         keterangan: _keteranganCtrl.text.trim(),
@@ -235,6 +241,7 @@ class _KegiatanWargaFormScreenState extends State<KegiatanWargaFormScreen> {
                           style: GoogleFonts.plusJakartaSans(
                               fontSize: 12, color: Colors.red[700]))),
                 const SizedBox(height: 10),
+                _rincianDropdown(),
                 Row(children: [
                   Expanded(
                       child: _field(
@@ -324,6 +331,46 @@ class _KegiatanWargaFormScreenState extends State<KegiatanWargaFormScreen> {
               ])),
     );
   }
+
+  /// Rincian Excel KEGIATAN WARGA (7 pilihan) — info tambahan, opsional.
+  /// Rekap tetap memakai Jenis Kegiatan (5 enum) di atas.
+  Widget _rincianDropdown() => Container(
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: const Color(0xFFE2E8F0))),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
+      child: DropdownButtonFormField<String>(
+          initialValue: _rincian,
+          isExpanded: true,
+          icon: const Icon(Icons.keyboard_arrow_down_rounded,
+              color: Color(0xFF64748B)),
+          decoration: InputDecoration(
+              labelText: 'Rincian (Excel)',
+              prefixIcon:
+                  const Icon(Icons.list_alt_outlined, size: 18, color: _primary),
+              labelStyle: GoogleFonts.plusJakartaSans(
+                  fontSize: 13, color: const Color(0xFF64748B)),
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              contentPadding: EdgeInsets.zero),
+          hint: Text('Pilih rincian (opsional)...',
+              style: GoogleFonts.plusJakartaSans(
+                  fontSize: 13.5, color: const Color(0xFF64748B))),
+          items: KegiatanWarga.daftarRincian
+              .map((v) => DropdownMenuItem(
+                  value: v,
+                  child: Text(v,
+                      style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
+                      overflow: TextOverflow.ellipsis)))
+              .toList(),
+          onChanged: (v) {
+            setState(() {
+              _rincian = v;
+              _fieldErrors.remove('rincian');
+            });
+          }));
 
   Widget _kegiatanDropdown() => Container(
       decoration: BoxDecoration(

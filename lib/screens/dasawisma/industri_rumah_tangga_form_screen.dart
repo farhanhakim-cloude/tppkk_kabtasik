@@ -30,6 +30,7 @@ class _IndustriRumahTanggaFormScreenState
       _omzetCtrl;
   bool _saving = false;
   Map<String, List<String>> _fieldErrors = {};
+  String? _kategori;
 
   bool get _isEdit => widget.data != null;
 
@@ -52,6 +53,10 @@ class _IndustriRumahTanggaFormScreenState
             ? ''
             : d.omzet.toStringAsFixed(
                 d.omzet.truncateToDouble() == d.omzet ? 0 : 2));
+    final awalKat = d?.kategori ?? '';
+    _kategori = IndustriRumahTangga.daftarKategori.contains(awalKat)
+        ? awalKat
+        : null;
   }
 
   @override
@@ -87,6 +92,7 @@ class _IndustriRumahTanggaFormScreenState
         rt: _rtCtrl.text.trim(),
         rw: _rwCtrl.text.trim(),
         dusun: _dusunCtrl.text.trim(),
+        kategori: _kategori ?? '',
         jenisIndustri: _jenisCtrl.text.trim(),
         pemilik: _pemilikCtrl.text.trim(),
         jumlahTenagaKerja: int.tryParse(_tenagaCtrl.text.trim()) ?? 0,
@@ -223,6 +229,8 @@ class _IndustriRumahTanggaFormScreenState
                 _section(Icons.storefront_rounded, 'Data Usaha',
                     'Jenis, pemilik, tenaga kerja, omzet'),
                 const SizedBox(height: 14),
+                _kategoriDropdown(),
+                const SizedBox(height: 10),
                 _field(
                     ctrl: _jenisCtrl,
                     label: 'Jenis Industri',
@@ -326,6 +334,62 @@ class _IndustriRumahTanggaFormScreenState
                                     fontWeight: FontWeight.w700))))
               ])),
     );
+  }
+
+  /// Dropdown Kategori Excel (pangan/sandang/konveksi/jasa lainnya).
+  Widget _kategoriDropdown() {
+    final serverErr = _serverError('kategori');
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Container(
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                  color: serverErr != null
+                      ? Colors.red[400]!
+                      : const Color(0xFFE2E8F0))),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+          child: DropdownButtonFormField<String>(
+              initialValue: _kategori,
+              isExpanded: true,
+              decoration: InputDecoration(
+                  labelText: 'Kategori',
+                  prefixIcon: const Icon(
+                      Icons.category_outlined, size: 18, color: _primary),
+                  labelStyle: GoogleFonts.plusJakartaSans(
+                      fontSize: 13, color: const Color(0xFF64748B)),
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  contentPadding: EdgeInsets.zero),
+              hint: Text('Pilih kategori...',
+                  style: GoogleFonts.plusJakartaSans(
+                      fontSize: 13.5,
+                      color: const Color(0xFF64748B))),
+              items: IndustriRumahTangga.daftarKategori
+                  .map((v) => DropdownMenuItem(
+                      value: v,
+                      child: Text(IndustriRumahTangga.kategoriLabels[v]!,
+                          style: GoogleFonts.plusJakartaSans(fontSize: 13.5))))
+                  .toList(),
+              validator: (v) {
+                if (serverErr != null) return serverErr;
+                if (v == null || v.isEmpty) return 'Pilih kategori';
+                return null;
+              },
+              onChanged: (v) {
+                setState(() {
+                  _kategori = v;
+                  _fieldErrors.remove('kategori');
+                });
+              })),
+      if (serverErr != null)
+        Padding(
+            padding: const EdgeInsets.only(top: 4, left: 4),
+            child: Text(serverErr,
+                style: GoogleFonts.plusJakartaSans(
+                    fontSize: 12, color: Colors.red[700]))),
+    ]);
   }
 
   Widget _section(IconData icon, String title, String sub) => Row(children: [

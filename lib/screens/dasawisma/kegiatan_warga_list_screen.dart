@@ -605,6 +605,8 @@ class _DetailSheet extends StatelessWidget {
                       padding: const EdgeInsets.all(20),
                       children: [
                     row('Kegiatan', data.kegiatanLabel),
+                    if (data.rincian.isNotEmpty)
+                      row('Rincian', data.rincian),
                     row('Jumlah Peserta', '${data.jumlahPeserta}'),
                     row('Tanggal',
                         data.tanggal == null

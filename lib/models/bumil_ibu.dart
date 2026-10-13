@@ -15,6 +15,8 @@ class BumilIbu {
   final String kecamatan;
   final String nama;
   final String suamiNama;
+  // KK asal (dropdown di form). 0 = input manual tanpa KK.
+  final int daftarWargaId;
   final int umur;
   final String statusIbu; // hamil|melahirkan|nifas|meninggal
 
@@ -55,6 +57,7 @@ class BumilIbu {
     this.kecamatan = '',
     required this.nama,
     this.suamiNama = '',
+    this.daftarWargaId = 0,
     this.umur = 0,
     this.statusIbu = 'hamil',
     this.bayiNama = '',
@@ -126,6 +129,7 @@ class BumilIbu {
     String? kecamatan,
     String? nama,
     String? suamiNama,
+    int? daftarWargaId,
     int? umur,
     String? statusIbu,
     String? bayiNama,
@@ -157,6 +161,7 @@ class BumilIbu {
       kecamatan: kecamatan ?? this.kecamatan,
       nama: nama ?? this.nama,
       suamiNama: suamiNama ?? this.suamiNama,
+      daftarWargaId: daftarWargaId ?? this.daftarWargaId,
       umur: umur ?? this.umur,
       statusIbu: statusIbu ?? this.statusIbu,
       bayiNama: bayiNama ?? this.bayiNama,
@@ -226,6 +231,7 @@ class BumilIbu {
       kecamatan: str(json['kecamatan']),
       nama: str(json['nama']),
       suamiNama: str(json['suami_nama'] ?? json['suamiNama']),
+      daftarWargaId: intOf(json['daftar_warga_id'] ?? json['daftarWargaId']),
       umur: intOf(json['umur']),
       statusIbu: str(json['status_ibu'] ?? json['statusIbu']).isEmpty
           ? 'hamil'
@@ -283,6 +289,7 @@ class BumilIbu {
       'dusun': dusun,
       'rt': rt,
       'rw': rw,
+      'daftar_warga_id': daftarWargaId > 0 ? daftarWargaId : null,
       'nama': nama,
       'suami_nama': suamiNama.isEmpty ? null : suamiNama,
       'umur': umur == 0 ? null : umur,

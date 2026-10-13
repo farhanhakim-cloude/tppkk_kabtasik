@@ -30,8 +30,13 @@ class _PemanfaatanTanahFormScreenState
       _hasilCtrl;
   bool _saving = false;
   Map<String, List<String>> _fieldErrors = {};
+  String? _kategori;
 
   bool get _isEdit => widget.data != null;
+
+  /// Draf kategori aktif u/ label adaptif (ternak/ikan tanpa Luas).
+  PemanfaatanTanah get _kat => PemanfaatanTanah(
+      id: '0', jenisTanaman: '', kategori: _kategori ?? '');
 
   @override
   void initState() {
@@ -47,6 +52,10 @@ class _PemanfaatanTanahFormScreenState
     _kkCtrl = TextEditingController(
         text: d == null || d.jumlahKk == 0 ? '' : '${d.jumlahKk}');
     _hasilCtrl = TextEditingController(text: d?.hasil ?? '');
+    final awalKat = d?.kategori ?? '';
+    _kategori = PemanfaatanTanah.daftarKategori.contains(awalKat)
+        ? awalKat
+        : null;
   }
 
   @override
@@ -82,8 +91,11 @@ class _PemanfaatanTanahFormScreenState
         rt: _rtCtrl.text.trim(),
         rw: _rwCtrl.text.trim(),
         dusun: _dusunCtrl.text.trim(),
+        kategori: _kategori ?? '',
         jenisTanaman: _jenisCtrl.text.trim(),
-        luasM2: double.tryParse(_luasCtrl.text.trim().replaceAll(',', '.')) ?? 0,
+        luasM2: _kat.pakaiLuas
+            ? double.tryParse(_luasCtrl.text.trim().replaceAll(',', '.')) ?? 0
+            : 0,
         jumlahKk: int.tryParse(_kkCtrl.text.trim()) ?? 0,
         hasil: _hasilCtrl.text.trim(),
       );
@@ -217,31 +229,34 @@ class _PemanfaatanTanahFormScreenState
                 _section(Icons.grass_rounded, 'Tanaman & Hasil',
                     'Jenis, luas, KK, hasil panen'),
                 const SizedBox(height: 14),
+                _kategoriDropdown(),
+                const SizedBox(height: 10),
                 _field(
                     ctrl: _jenisCtrl,
-                    label: 'Jenis Tanaman',
-                    hint: 'Cabai, tomat, ...',
+                    label: _kat.komoditiLabel,
+                    hint: _kat.komoditiHint,
                     icon: Icons.yard_outlined,
                     serverField: 'jenis_tanaman',
                     validator: (v) => v == null || v.trim().isEmpty
-                        ? 'Jenis tanaman wajib diisi'
+                        ? '${_kat.komoditiLabel} wajib diisi'
                         : null),
                 const SizedBox(height: 10),
                 Row(children: [
-                  Expanded(
-                      child: _field(
-                          ctrl: _luasCtrl,
-                          label: 'Luas (m²)',
-                          hint: '50',
-                          icon: Icons.square_foot_outlined,
-                          keyboard: const TextInputType.numberWithOptions(
-                              decimal: true),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                                RegExp(r'[0-9,.]'))
-                          ],
-                          serverField: 'luas_m2')),
-                  const SizedBox(width: 12),
+                  if (_kat.pakaiLuas)
+                    Expanded(
+                        child: _field(
+                            ctrl: _luasCtrl,
+                            label: 'Luas (m²)',
+                            hint: '50',
+                            icon: Icons.square_foot_outlined,
+                            keyboard: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'[0-9,.]'))
+                            ],
+                            serverField: 'luas_m2')),
+                  if (_kat.pakaiLuas) const SizedBox(width: 12),
                   Expanded(
                       child: _field(
                           ctrl: _kkCtrl,
@@ -265,7 +280,7 @@ class _PemanfaatanTanahFormScreenState
                 _field(
                     ctrl: _hasilCtrl,
                     label: 'Hasil',
-                    hint: '20 kg cabai...',
+                    hint: _kat.hasilHint,
                     icon: Icons.shopping_basket_outlined,
                     serverField: 'hasil'),
                 if (_isEdit &&
@@ -319,6 +334,62 @@ class _PemanfaatanTanahFormScreenState
                                     fontWeight: FontWeight.w700))))
               ])),
     );
+  }
+
+  /// Dropdown Kategori Excel (peternakan s.d. tanaman keras lainnya).
+  Widget _kategoriDropdown() {
+    final serverErr = _serverError('kategori');
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Container(
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                  color: serverErr != null
+                      ? Colors.red[400]!
+                      : const Color(0xFFE2E8F0))),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+          child: DropdownButtonFormField<String>(
+              initialValue: _kategori,
+              isExpanded: true,
+              decoration: InputDecoration(
+                  labelText: 'Kategori',
+                  prefixIcon: const Icon(
+                      Icons.category_outlined, size: 18, color: _primary),
+                  labelStyle: GoogleFonts.plusJakartaSans(
+                      fontSize: 13, color: const Color(0xFF64748B)),
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  contentPadding: EdgeInsets.zero),
+              hint: Text('Pilih kategori...',
+                  style: GoogleFonts.plusJakartaSans(
+                      fontSize: 13.5,
+                      color: const Color(0xFF64748B))),
+              items: PemanfaatanTanah.daftarKategori
+                  .map((v) => DropdownMenuItem(
+                      value: v,
+                      child: Text(PemanfaatanTanah.kategoriLabels[v]!,
+                          style: GoogleFonts.plusJakartaSans(fontSize: 13.5))))
+                  .toList(),
+              validator: (v) {
+                if (serverErr != null) return serverErr;
+                if (v == null || v.isEmpty) return 'Pilih kategori';
+                return null;
+              },
+              onChanged: (v) {
+                setState(() {
+                  _kategori = v;
+                  _fieldErrors.remove('kategori');
+                });
+              })),
+      if (serverErr != null)
+        Padding(
+            padding: const EdgeInsets.only(top: 4, left: 4),
+            child: Text(serverErr,
+                style: GoogleFonts.plusJakartaSans(
+                    fontSize: 12, color: Colors.red[700]))),
+    ]);
   }
 
   Widget _section(IconData icon, String title, String sub) => Row(children: [

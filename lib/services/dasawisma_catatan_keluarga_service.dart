@@ -181,6 +181,7 @@ class DasawismaCatatanKeluargaService {
     String? tahun,
     String? desa,
     String? kecamatan,
+    int? daftarWargaId,
   }) async {
     final items = <DasawismaCatatanKeluarga>[];
     var page = 1;
@@ -191,6 +192,9 @@ class DasawismaCatatanKeluargaService {
         'page': '$page',
       };
       if (query.trim().isNotEmpty) params['search'] = query.trim();
+      if (daftarWargaId != null && daftarWargaId > 0) {
+        params['daftar_warga_id'] = '$daftarWargaId';
+      }
 
       final uri = Uri.parse(_endpoint).replace(queryParameters: params);
       final res = await _get(uri);

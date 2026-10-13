@@ -99,12 +99,18 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
   late final TextEditingController _dusunCtrl;
 
   bool _adaPekarangan = false;
+  String? _kategoriTanah;
+
+  /// Label adaptif kartu pekarangan (ternak/ikan tanpa Luas).
+  PemanfaatanTanah get _katTanah => PemanfaatanTanah(
+      id: '0', jenisTanaman: '', kategori: _kategoriTanah ?? '');
   late final TextEditingController _jenisTanamanCtrl;
   late final TextEditingController _luasCtrl;
   late final TextEditingController _kkTanahCtrl;
   late final TextEditingController _hasilTanahCtrl;
 
   bool _adaIndustri = false;
+  String? _kategoriIndustri;
   late final TextEditingController _jenisIndustriCtrl;
   late final TextEditingController _pemilikCtrl;
   late final TextEditingController _tenagaCtrl;
@@ -289,6 +295,9 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
 
     // 3. Pekarangan (opsional).
     if (_adaPekarangan) {
+      if ((_kategoriTanah ?? '').isEmpty) {
+        gagal.add('Pekarangan: pilih kategori dulu.');
+      } else {
       try {
         await _tanahService.add(PemanfaatanTanah(
           id: '0',
@@ -296,6 +305,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
           rt: _rtCtrl.text.trim(),
           rw: _rwCtrl.text.trim(),
           dusun: _dusunCtrl.text.trim(),
+          kategori: _kategoriTanah ?? '',
           jenisTanaman: _jenisTanamanCtrl.text.trim(),
           luasM2:
               double.tryParse(_luasCtrl.text.trim().replaceAll(',', '.')) ?? 0,
@@ -308,10 +318,14 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
       } catch (e) {
         gagal.add('Pekarangan: ${_err(e)}');
       }
+      }
     }
 
     // 4. Industri (opsional).
     if (_adaIndustri) {
+      if ((_kategoriIndustri ?? '').isEmpty) {
+        gagal.add('Industri: pilih kategori dulu.');
+      } else {
       try {
         await _industriService.add(IndustriRumahTangga(
           id: '0',
@@ -319,6 +333,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
           rt: _rtCtrl.text.trim(),
           rw: _rwCtrl.text.trim(),
           dusun: _dusunCtrl.text.trim(),
+          kategori: _kategoriIndustri ?? '',
           jenisIndustri: _jenisIndustriCtrl.text.trim(),
           pemilik: _pemilikCtrl.text.trim(),
           jumlahTenagaKerja: int.tryParse(_tenagaCtrl.text.trim()) ?? 0,
@@ -330,6 +345,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
         gagal.add('Industri: ${e.message}');
       } catch (e) {
         gagal.add('Industri: ${_err(e)}');
+      }
       }
     }
 
@@ -479,23 +495,32 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
               aktif: _adaPekarangan,
               onUbah: (v) => setState(() => _adaPekarangan = v),
               anak: <Widget>[
+                _miniDropdown(
+                    nilai: _kategoriTanah,
+                    label: 'Kategori',
+                    icon: Icons.category_outlined,
+                    opsi: PemanfaatanTanah.daftarKategori,
+                    labelOf: (v) => PemanfaatanTanah.kategoriLabels[v] ?? v,
+                    onPilih: (v) => setState(() => _kategoriTanah = v)),
+                const SizedBox(height: 10),
                 _miniField(
                     ctrl: _jenisTanamanCtrl,
-                    label: 'Jenis Tanaman',
-                    hint: 'Cabai',
+                    label: _katTanah.komoditiLabel,
+                    hint: _katTanah.komoditiHint,
                     icon: Icons.yard_outlined,
                     wajib: _adaPekarangan),
                 const SizedBox(height: 10),
                 Row(
                   children: <Widget>[
-                    Expanded(
-                        child: _miniField(
-                            ctrl: _luasCtrl,
-                            label: 'Luas (m²)',
-                            icon: Icons.square_foot_outlined,
-                            angka: true,
-                            desimal: true)),
-                    const SizedBox(width: 12),
+                    if (_katTanah.pakaiLuas)
+                      Expanded(
+                          child: _miniField(
+                              ctrl: _luasCtrl,
+                              label: 'Luas (m²)',
+                              icon: Icons.square_foot_outlined,
+                              angka: true,
+                              desimal: true)),
+                    if (_katTanah.pakaiLuas) const SizedBox(width: 12),
                     Expanded(
                         child: _miniField(
                             ctrl: _kkTanahCtrl,
@@ -508,7 +533,7 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
                 _miniField(
                     ctrl: _hasilTanahCtrl,
                     label: 'Hasil',
-                    hint: '20 kg',
+                    hint: _katTanah.hasilHint,
                     icon: Icons.shopping_basket_outlined),
               ],
             ),
@@ -519,6 +544,14 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
               aktif: _adaIndustri,
               onUbah: (v) => setState(() => _adaIndustri = v),
               anak: <Widget>[
+                _miniDropdown(
+                    nilai: _kategoriIndustri,
+                    label: 'Kategori',
+                    icon: Icons.category_outlined,
+                    opsi: IndustriRumahTangga.daftarKategori,
+                    labelOf: (v) => IndustriRumahTangga.kategoriLabels[v] ?? v,
+                    onPilih: (v) => setState(() => _kategoriIndustri = v)),
+                const SizedBox(height: 10),
                 _miniField(
                     ctrl: _jenisIndustriCtrl,
                     label: 'Jenis Usaha',
@@ -974,6 +1007,44 @@ class _InputTerpaduScreenState extends State<InputTerpaduScreen> {
             ),
         ],
       ),
+    );
+  }
+
+  Widget _miniDropdown({
+    required String? nilai,
+    required String label,
+    required IconData icon,
+    required List<String> opsi,
+    required String Function(String) labelOf,
+    required ValueChanged<String?> onPilih,
+  }) {
+    return DropdownButtonFormField<String>(
+      initialValue: nilai,
+      isExpanded: true,
+      style: GoogleFonts.plusJakartaSans(fontSize: 14, color: _ink),
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, size: 18, color: _primary),
+        labelStyle:
+            GoogleFonts.plusJakartaSans(fontSize: 13, color: _muted),
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: _line)),
+        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: _line)),
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: _primary, width: 1.5)),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+      ),
+      hint: Text('Pilih $label...',
+          style: GoogleFonts.plusJakartaSans(fontSize: 13, color: _muted)),
+      items: opsi
+          .map((v) => DropdownMenuItem(
+              value: v,
+              child: Text(labelOf(v),
+                  style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
+                  overflow: TextOverflow.ellipsis)))
+          .toList(),
+      onChanged: onPilih,
     );
   }
 

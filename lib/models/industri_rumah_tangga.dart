@@ -12,6 +12,8 @@ class IndustriRumahTangga {
   final String desa;
   final String kecamatan;
   final String jenisIndustri;
+  // Kategori Excel: pangan/sandang/konveksi/jasa lainnya.
+  final String kategori;
   final String pemilik;
   final int jumlahTenagaKerja;
   final double omzet;
@@ -34,6 +36,7 @@ class IndustriRumahTangga {
     this.desa = '',
     this.kecamatan = '',
     required this.jenisIndustri,
+    this.kategori = '',
     this.pemilik = '',
     this.jumlahTenagaKerja = 0,
     this.omzet = 0,
@@ -43,6 +46,17 @@ class IndustriRumahTangga {
     this.kecamatanStatus,
     this.kecamatanRejectedReason,
   });
+
+  static const Map<String, String> kategoriLabels = {
+    'pangan': 'Pangan',
+    'sandang': 'Sandang',
+    'konveksi': 'Konveksi',
+    'jasa lainnya': 'Jasa Lainnya',
+  };
+
+  static List<String> get daftarKategori => kategoriLabels.keys.toList();
+
+  String get kategoriLabel => kategoriLabels[kategori] ?? kategori;
 
   bool get isPending => status == 'pending';
   bool get isApproved => status == 'approved';
@@ -68,6 +82,7 @@ class IndustriRumahTangga {
     String? desa,
     String? kecamatan,
     String? jenisIndustri,
+    String? kategori,
     String? pemilik,
     int? jumlahTenagaKerja,
     double? omzet,
@@ -86,6 +101,7 @@ class IndustriRumahTangga {
       desa: desa ?? this.desa,
       kecamatan: kecamatan ?? this.kecamatan,
       jenisIndustri: jenisIndustri ?? this.jenisIndustri,
+      kategori: kategori ?? this.kategori,
       pemilik: pemilik ?? this.pemilik,
       jumlahTenagaKerja: jumlahTenagaKerja ?? this.jumlahTenagaKerja,
       omzet: omzet ?? this.omzet,
@@ -127,6 +143,7 @@ class IndustriRumahTangga {
       kecamatan: str(json['kecamatan']),
       jenisIndustri:
           str(json['jenis_industri'] ?? json['jenisIndustri']),
+      kategori: str(json['kategori']),
       pemilik: str(json['pemilik']),
       jumlahTenagaKerja:
           intOf(json['jumlah_tenaga_kerja'] ?? json['jumlahTenagaKerja']),
@@ -151,6 +168,7 @@ class IndustriRumahTangga {
         'dusun': dusun,
         'rt': rt,
         'rw': rw,
+        'kategori': kategori.isEmpty ? null : kategori,
         'jenis_industri': jenisIndustri,
         'pemilik': pemilik,
         'jumlah_tenaga_kerja': jumlahTenagaKerja,
