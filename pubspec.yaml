@@ -40,6 +40,9 @@ dependencies:
   google_fonts: ^6.2.1
   shimmer: ^3.0.0  # 🔥 UBAH DARI ^4.0.0 KE ^3.0.0 (STABIL)
   device_info_plus: ^13.3.0
+  geolocator: ^13.0.4
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.1
 
 dev_dependencies:
   flutter_test:

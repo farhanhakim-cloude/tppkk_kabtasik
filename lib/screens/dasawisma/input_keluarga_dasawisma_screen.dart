@@ -264,6 +264,14 @@ class _InputKeluargaDasawismaScreenState
   // ═══════════════════════════════════════════════════════
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+    // Penjaga: tolak koordinat default Tasik (peta lama / GPS belum ngunci).
+    if (_isDefaultPoint(_latitude, _longitude)) {
+      _showError(
+        'Titik peta masih default Tasikmalaya. Buka Titik Peta Rumah, '
+        'ketuk ikon GPS, tunggu tulisan "GPS HP", baru kirim.',
+      );
+      return;
+    }
     setState(() => _isSaving = true);
     HapticFeedback.mediumImpact();
 
@@ -638,7 +646,36 @@ class _InputKeluargaDasawismaScreenState
         _latitude = (result['lat'] as num?)?.toDouble();
         _longitude = (result['lng'] as num?)?.toDouble();
       });
+      // Alamat terisi otomatis dari titik peta — hanya jika masih kosong,
+      // ketikan kader tak pernah ditimpa. Tetap bisa dikoreksi manual.
+      final saran = result['alamat'] as String?;
+      if (saran != null &&
+          saran.trim().isNotEmpty &&
+          _alamatCtrl.text.trim().isEmpty) {
+        setState(() => _alamatCtrl.text = saran.trim());
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '📍 Alamat terisi otomatis dari peta — cek/koreksi bila perlu.',
+              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600),
+            ),
+            backgroundColor: const Color(0xFF0072BC),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            margin: const EdgeInsets.all(16),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
     }
+  }
+
+  /// true jika titik = default pusat Tasikmalaya (-7.3274, 108.2207):
+  /// artinya peta lama atau GPS belum ngunci — jangan kirim.
+  bool _isDefaultPoint(double? lat, double? lng) {
+    if (lat == null || lng == null) return false;
+    return (lat - (-7.3274)).abs() < 0.000001 &&
+        (lng - 108.2207).abs() < 0.000001;
   }
 
   // Tombol titik peta rumah (opsional, untuk Peta Sebaran) — selaras gaya form.

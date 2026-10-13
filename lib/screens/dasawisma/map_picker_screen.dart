@@ -1,6 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
+import 'package:latlong2/latlong.dart';
+import 'dart:async';
+import 'dart:convert';
 
+/// Pilih titik GPS rumah.
+/// - Buka dengan posisi awal = data tersimpan, atau GPS asli HP, atau
+///   fallback Tasikmalaya bila GPS mati/ditolak.
+/// - Peta asli OpenStreetMap (gratis, tanpa API key). Pin = tengah peta.
 class MapPickerScreen extends StatefulWidget {
   final double? initialLat;
   final double? initialLng;
@@ -12,27 +22,164 @@ class MapPickerScreen extends StatefulWidget {
 }
 
 class _MapPickerScreenState extends State<MapPickerScreen> {
-  // Tasikmalaya default coordinates
-  late double _lat;
-  late double _lng;
-  double _zoom = 15.0;
+  static const LatLng _tasikDefault = LatLng(-7.3274, 108.2207);
 
-  // Offset in pixels for dragging simulation
-  Offset _mapOffset = Offset.zero;
-  Offset _dragStart = Offset.zero;
+  final MapController _mapCtrl = MapController();
+  late LatLng _center;
+  bool _loadingGps = false;
+  bool _fromGps = false;
+  String? _gpsNote;
+  // Alamat saran dari reverse-geocode (Nominatim/OSM, gratis tanpa API key).
+  String? _alamatSaran;
+  bool _alamatLoading = false;
+  Timer? _alamatDebounce;
+  String? _lookupKey;
 
   @override
   void initState() {
     super.initState();
-    _lat = widget.initialLat ?? -7.3274;
-    _lng = widget.initialLng ?? 108.2207;
+    if (widget.initialLat != null && widget.initialLng != null) {
+      _center = LatLng(widget.initialLat!, widget.initialLng!);
+      _gpsNote = 'Titik tersimpan sebelumnya';
+      _scheduleAlamatLookup();
+    } else {
+      _center = _tasikDefault;
+      _ambilGpsAwal();
+    }
   }
 
-  void _updateCoordinatesFromOffset() {
-    // Tasikmalaya base offset math
+  @override
+  void dispose() {
+    _alamatDebounce?.cancel();
+    _mapCtrl.dispose();
+    super.dispose();
+  }
+
+  /// Jadwalkan reverse-geocode dengan debounce (kebijakan Nominatim: maks 1 req/detik).
+  void _scheduleAlamatLookup() {
+    _alamatDebounce?.cancel();
+    _alamatDebounce = Timer(const Duration(milliseconds: 900), () {
+      _lookupAlamat(_center);
+    });
+  }
+
+  Future<void> _lookupAlamat(LatLng p) async {
+    final key = '${p.latitude.toStringAsFixed(4)},${p.longitude.toStringAsFixed(4)}';
+    if (key == _lookupKey) return;
+    _lookupKey = key;
+    setState(() => _alamatLoading = true);
+    try {
+      final uri = Uri.https('nominatim.openstreetmap.org', '/reverse', {
+        'format': 'jsonv2',
+        'lat': p.latitude.toString(),
+        'lon': p.longitude.toString(),
+        'zoom': '18',
+        'addressdetails': '1',
+      });
+      final res = await http
+          .get(uri, headers: {'User-Agent': 'tppkk_kabtasik/1.0'})
+          .timeout(const Duration(seconds: 8));
+      if (!mounted) return;
+      if (res.statusCode == 200) {
+        final json = jsonDecode(res.body) as Map<String, dynamic>;
+        final addr = json['address'] as Map<String, dynamic>?;
+        setState(() => _alamatSaran = _rangkaiAlamat(addr, json['display_name'] as String?));
+      }
+    } catch (_) {
+      // Gagal jaringan / timeout: abaikan, koordinat tetap bisa dipakai.
+    } finally {
+      if (mounted) setState(() => _alamatLoading = false);
+    }
+  }
+
+  /// Rangkai alamat pendek: Jalan, Dusun/Desa, Kecamatan/Kabupaten.
+  String? _rangkaiAlamat(Map<String, dynamic>? a, String? display) {
+    if (a == null) {
+      if (display == null || display.isEmpty) return null;
+      return display.split(',').take(3).join(',').trim();
+    }
+    String? pick(List<String> keys) {
+      for (final k in keys) {
+        final v = a[k];
+        if (v is String && v.trim().isNotEmpty) return v.trim();
+      }
+      return null;
+    }
+    final parts = [
+      pick(['road', 'pedestrian', 'footway', 'cycleway', 'neighbourhood']),
+      pick(['hamlet', 'village', 'suburb', 'town']),
+      pick(['city_district', 'city', 'county', 'municipality']),
+    ].whereType<String>().toList();
+    if (parts.isEmpty) {
+      if (display == null || display.isEmpty) return null;
+      return display.split(',').take(3).join(',').trim();
+    }
+    return parts.join(', ');
+  }
+
+  Future<void> _ambilGpsAwal() async {
+    setState(() => _loadingGps = true);
+    final pos = await _posisiGps();
+    if (!mounted) return;
     setState(() {
-      _lat = -7.3274 - (_mapOffset.dy / 10000) * (20 / _zoom);
-      _lng = 108.2207 + (_mapOffset.dx / 10000) * (20 / _zoom);
+      _loadingGps = false;
+      if (pos != null) {
+        _center = LatLng(pos.latitude, pos.longitude);
+        _fromGps = true;
+        _gpsNote = 'GPS HP (±${pos.accuracy.toStringAsFixed(0)} m)';
+        _mapCtrl.move(_center, 17);
+        _scheduleAlamatLookup();
+      } else {
+        _gpsNote = _gpsNote ?? 'GPS tidak tersedia — tampilkan pusat Tasikmalaya';
+      }
+    });
+  }
+
+  /// null = GPS tak bisa dipakai (service mati / izin ditolak).
+  Future<Position?> _posisiGps() async {
+    final serviceOn = await Geolocator.isLocationServiceEnabled();
+    if (!serviceOn) {
+      if (mounted) {
+        setState(() => _gpsNote = 'GPS HP mati — nyalakan GPS lalu ketuk ikon target');
+      }
+      return null;
+    }
+    var perm = await Geolocator.checkPermission();
+    if (perm == LocationPermission.denied) {
+      perm = await Geolocator.requestPermission();
+    }
+    if (perm == LocationPermission.denied ||
+        perm == LocationPermission.deniedForever) {
+      if (mounted) {
+        setState(() => _gpsNote = 'Izin lokasi ditolak — geser peta manual ke rumah');
+      }
+      return null;
+    }
+    try {
+      return await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 15),
+        ),
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> _keGpsSaya() async {
+    setState(() => _loadingGps = true);
+    final pos = await _posisiGps();
+    if (!mounted) return;
+    setState(() {
+      _loadingGps = false;
+      if (pos != null) {
+        _center = LatLng(pos.latitude, pos.longitude);
+        _fromGps = true;
+        _gpsNote = 'GPS HP (±${pos.accuracy.toStringAsFixed(0)} m)';
+        _mapCtrl.move(_center, 17);
+        _scheduleAlamatLookup();
+      }
     });
   }
 
@@ -64,139 +211,104 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.gps_fixed_rounded),
-            onPressed: () {
-              setState(() {
-                _mapOffset = Offset.zero;
-                _lat = -7.3274;
-                _lng = 108.2207;
-              });
-            },
+            tooltip: 'Ke posisi GPS saya',
+            icon: _loadingGps
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.gps_fixed_rounded),
+            onPressed: _loadingGps ? null : _keGpsSaya,
           ),
         ],
       ),
       body: Stack(
         children: [
-          // 1. Simulated Map Canvas (Gesture detector for panning)
-          GestureDetector(
-            onPanStart: (details) {
-              _dragStart = details.localPosition - _mapOffset;
-            },
-            onPanUpdate: (details) {
-              setState(() {
-                _mapOffset = details.localPosition - _dragStart;
-              });
-              _updateCoordinatesFromOffset();
-            },
-            child: ClipRect(
-              child: CustomPaint(
-                size: Size.infinite,
-                painter: _MapPainter(
-                  offset: _mapOffset,
-                  zoom: _zoom,
-                  primaryColor: primary,
-                ),
-              ),
+          FlutterMap(
+            mapController: _mapCtrl,
+            options: MapOptions(
+              initialCenter: _center,
+              initialZoom: 16,
+              minZoom: 5,
+              maxZoom: 19,
+              onPositionChanged: (pos, _) {
+                final c = pos.center;
+                if (c != null && c != _center) {
+                  setState(() {
+                    _center = c;
+                    if (_fromGps) {
+                      // Pengguna menggeser setelah GPS: bukan murni GPS lagi.
+                      _fromGps = false;
+                      _gpsNote = 'Digeser manual dari GPS';
+                    }
+                  });
+                  _scheduleAlamatLookup();
+                }
+              },
             ),
+            children: [
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'tppkk_kabtasik',
+              ),
+            ],
           ),
 
-          // 2. Fixed Center Pin Marker
-          Positioned.fill(
+          // Pin tengah (tetap).
+          const Positioned.fill(
             child: IgnorePointer(
               child: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Glowing indicator for accuracy
-                    Container(
-                      width: 16,
-                      height: 16,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: primary.withValues(alpha: 0.2),
-                        border: Border.all(color: primary, width: 2),
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Icon(Icons.location_on_rounded, size: 40, color: primary),
-                    const SizedBox(height: 40), // Offset to align pin tip
+                    Icon(Icons.location_on_rounded, size: 44, color: Color(0xFF0072BC)),
+                    SizedBox(height: 44),
                   ],
                 ),
               ),
             ),
           ),
 
-          // 3. Search overlay & Info controls
-          Positioned(
-            top: 16,
-            left: 16,
-            right: 16,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              height: 48,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.08),
-                    blurRadius: 16,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.search_rounded, color: Color(0xFF94A3B8)),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: TextField(
-                      enabled: false,
-                      decoration: InputDecoration(
-                        hintText: 'Pencarian segera hadir',
-                        hintStyle: GoogleFonts.plusJakartaSans(
-                          fontSize: 13,
-                          color: const Color(0xFF94A3B8),
-                        ),
-                        border: InputBorder.none,
-                        isDense: true,
-                      ),
-                      style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
+          if (_loadingGps)
+            Positioned(
+              top: 16,
+              left: 16,
+              right: 16,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.08),
+                      blurRadius: 16,
+                      offset: const Offset(0, 4),
                     ),
-                  ),
-                ],
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      'Mengambil GPS HP…',
+                      style: GoogleFonts.plusJakartaSans(
+                        fontSize: 13,
+                        color: const Color(0xFF64748B),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
 
-          // 4. Zoom buttons
-          Positioned(
-            right: 16,
-            bottom: 180,
-            child: Column(
-              children: [
-                _MapButton(
-                  icon: Icons.add,
-                  onPressed: () {
-                    setState(() {
-                      if (_zoom < 20) _zoom += 1.0;
-                    });
-                  },
-                ),
-                const SizedBox(height: 8),
-                _MapButton(
-                  icon: Icons.remove,
-                  onPressed: () {
-                    setState(() {
-                      if (_zoom > 10) _zoom -= 1.0;
-                    });
-                  },
-                ),
-              ],
-            ),
-          ),
-
-          // 5. Selected Coordinate Info panel
+          // Panel koordinat.
           Positioned(
             left: 16,
             right: 16,
@@ -227,7 +339,9 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
-                          Icons.my_location_rounded,
+                          _fromGps
+                              ? Icons.satellite_alt_rounded
+                              : Icons.my_location_rounded,
                           color: primary,
                           size: 18,
                         ),
@@ -246,7 +360,8 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              'Peta ilustrasi — pastikan pin di rumah yang benar',
+                              _gpsNote ??
+                                  'Geser peta / ketuk ikon target untuk GPS',
                               style: GoogleFonts.plusJakartaSans(
                                 fontSize: 12,
                                 color: const Color(0xFF64748B),
@@ -268,7 +383,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Lat: ${_lat.toStringAsFixed(5)}',
+                          'Lat: ${_center.latitude.toStringAsFixed(6)}',
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
@@ -276,7 +391,7 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                           ),
                         ),
                         Text(
-                          'Lng: ${_lng.toStringAsFixed(5)}',
+                          'Lng: ${_center.longitude.toStringAsFixed(6)}',
                           style: GoogleFonts.plusJakartaSans(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
@@ -286,13 +401,64 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 8),
+                  if (_alamatLoading || _alamatSaran != null)
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEFF6FF),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          if (_alamatLoading)
+                            const SizedBox(
+                              width: 14,
+                              height: 14,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          else
+                            const Icon(
+                              Icons.place_outlined,
+                              size: 16,
+                              color: Color(0xFF0072BC),
+                            ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              _alamatLoading
+                                  ? 'Mencari alamat…'
+                                  : 'Kira-kira: $_alamatSaran',
+                              style: GoogleFonts.plusJakartaSans(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF334155),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (_alamatLoading || _alamatSaran != null)
+                    const SizedBox(height: 8),
+                  Text(
+                    'Pastikan pin tepat di rumah yang didata — di depan rumah, ketuk ikon target.',
+                    style: GoogleFonts.plusJakartaSans(
+                      fontSize: 11.5,
+                      color: const Color(0xFF94A3B8),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
                   SizedBox(
                     width: double.infinity,
                     height: 48,
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.pop(context, {'lat': _lat, 'lng': _lng});
+                        Navigator.pop(context, {
+                          'lat': _center.latitude,
+                          'lng': _center.longitude,
+                          'alamat': _alamatSaran,
+                        });
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primary,
@@ -318,188 +484,4 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
       ),
     );
   }
-}
-
-class _MapButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onPressed;
-
-  const _MapButton({required this.icon, required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 46,
-      height: 46,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: IconButton(
-        tooltip: icon == Icons.add ? 'Perbesar' : 'Perkecil',
-        icon: Icon(icon, color: const Color(0xFF334155), size: 22),
-        onPressed: onPressed,
-      ),
-    );
-  }
-}
-
-// Custom Painter to draw a premium stylized simulated map vector
-class _MapPainter extends CustomPainter {
-  final Offset offset;
-  final double zoom;
-  final Color primaryColor;
-
-  _MapPainter({
-    required this.offset,
-    required this.zoom,
-    required this.primaryColor,
-  });
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paintBg = Paint()
-      ..color = const Color(0xFFF1F5F9); // map background land
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paintBg);
-
-    final double scale = zoom / 15.0;
-
-    // Save state for translation
-    canvas.save();
-    canvas.translate(size.width / 2 + offset.dx, size.height / 2 + offset.dy);
-    canvas.scale(scale);
-
-    // Draw some mock land features: Parks (green areas)
-    final paintPark = Paint()
-      ..color = const Color(0xFFDCFCE7)
-      ..style = PaintingStyle.fill;
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        const Rect.fromLTWH(-500, -300, 300, 200),
-        const Radius.circular(30),
-      ),
-      paintPark,
-    );
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        const Rect.fromLTWH(150, -400, 400, 250),
-        const Radius.circular(50),
-      ),
-      paintPark,
-    );
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        const Rect.fromLTWH(-300, 180, 500, 300),
-        const Radius.circular(40),
-      ),
-      paintPark,
-    );
-
-    // Draw a River (blue curve)
-    final paintRiver = Paint()
-      ..color = const Color(0xFFE0F2FE)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 36
-      ..strokeCap = StrokeCap.round;
-    final riverPath = Path()
-      ..moveTo(-800, -600)
-      ..quadraticBezierTo(-300, -200, 200, -500)
-      ..quadraticBezierTo(700, -800, 900, 300);
-    canvas.drawPath(riverPath, paintRiver);
-
-    // Draw some mock blocks/neighborhoods (buildings)
-    final paintBuilding = Paint()..color = const Color(0xFFE2E8F0);
-    for (int x = -600; x < 600; x += 120) {
-      for (int y = -600; y < 600; y += 120) {
-        // Exclude river or park zones dynamically
-        if ((x > -400 && x < -100 && y > -300 && y < -100) ||
-            (x > 150 && x < 550 && y > -400 && y < -150))
-          continue;
-        if (x.abs() % 240 == 0 && y.abs() % 240 == 0) {
-          canvas.drawRect(
-            Rect.fromLTWH(x.toDouble(), y.toDouble(), 35, 35),
-            paintBuilding,
-          );
-          canvas.drawRect(
-            Rect.fromLTWH(x + 50.0, y.toDouble(), 30, 25),
-            paintBuilding,
-          );
-          canvas.drawRect(
-            Rect.fromLTWH(x.toDouble(), y + 45.0, 45, 30),
-            paintBuilding,
-          );
-        }
-      }
-    }
-
-    // Draw Roads (grid style and major highways)
-    final paintRoadMain = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-
-    final paintRoadLine = Paint()
-      ..color = const Color(0xFFCBD5E1)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
-
-    // Major Highways (thick white lines)
-    paintRoadMain.strokeWidth = 16;
-    canvas.drawLine(
-      const Offset(-1000, 0),
-      const Offset(1000, 0),
-      paintRoadMain,
-    );
-    canvas.drawLine(
-      const Offset(0, -1000),
-      const Offset(0, 1000),
-      paintRoadMain,
-    );
-    canvas.drawLine(
-      const Offset(-800, -800),
-      const Offset(800, 800),
-      paintRoadMain,
-    );
-
-    // Minor Roads (thinner white lines)
-    paintRoadMain.strokeWidth = 8;
-    for (double i = -1000; i <= 1000; i += 200) {
-      if (i != 0) {
-        canvas.drawLine(Offset(-1000, i), Offset(1000, i), paintRoadMain);
-        canvas.drawLine(Offset(i, -1000), Offset(i, 1000), paintRoadMain);
-      }
-    }
-
-    // Major highway dashed center line
-    paintRoadLine.strokeWidth = 1.2;
-    paintRoadLine.color = const Color(0xFFF59E0B); // Yellow highway divider
-    canvas.drawLine(
-      const Offset(-1000, 0),
-      const Offset(1000, 0),
-      paintRoadLine,
-    );
-    canvas.drawLine(
-      const Offset(0, -1000),
-      const Offset(0, 1000),
-      paintRoadLine,
-    );
-
-    // Draw some points of interest (mock markers on land)
-    final paintPoi = Paint()..color = primaryColor.withValues(alpha: 0.6);
-    canvas.drawCircle(const Offset(-200, 80), 8, paintPoi);
-    canvas.drawCircle(const Offset(220, 200), 8, paintPoi);
-    canvas.drawCircle(const Offset(-400, -250), 10, paintPoi);
-
-    canvas.restore();
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
