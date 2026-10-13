@@ -181,76 +181,98 @@ extension PokjaKategoriLabel on PokjaKategori {
           'keterangan',
         ];
       case PokjaKategori.pokja2:
+        // ✅ SESUAI FORMAT TABEL POKJA II (kolom 3–36, tanpa gender).
+        // Kolom 1-2 = No & Nama Wilayah (otomatis). Kolom 36 = Keterangan.
         return [
+          // Pendidikan Keterampilan — Kelompok Belajar (kolom 3–11)
+          'jml_warga_buta',
+          'kelompok_belajar_paket_a',
+          'warga_belajar_paket_a',
+          'kelompok_belajar_paket_b',
+          'warga_belajar_paket_b',
+          'kelompok_belajar_paket_c',
+          'warga_belajar_paket_c',
+          'kf',
+          'warga_belajar_kf',
+          // PAUD, Taman Bacaan, BKB (kolom 12–17)
+          'kelompok_paud',
+          'jml_taman_bacaan',
+          'kelompok_bkb',
+          'peserta_bkb',
+          'ape_bkb',
+          'kelompok_simulasi_bkb',
+          // Kader Khusus (kolom 18–22)
+          'tutor_kf',
+          'tutor_paud',
+          'kader_bkb',
+          'kader_koperasi',
+          'kader_keterampilan',
+          // Jumlah Kader Yang Sudah Dilatih (kolom 23–25)
+          'lp3_pkk',
+          'tp3_pkk',
+          'damas_pkk',
+          // UP2K (kolom 26–33)
+          'up2k_pemula_kelompok',
+          'up2k_pemula_peserta',
+          'up2k_madya_kelompok',
+          'up2k_madya_peserta',
+          'up2k_utama_kelompok',
+          'up2k_utama_peserta',
+          'up2k_mandiri_kelompok',
+          'up2k_mandiri_peserta',
+          // Koperasi Berbadan Hukum (kolom 34–35)
+          'koperasi_berbadan_hukum',
+          'anggota_koperasi',
+          'keterangan',
+          // LEGACY (L/P) — tetap dibaca agar laporan lama tidak hilang,
+          // tidak lagi tampil di form input.
           'kelompok_warga_buta',
           'warga_buta_l',
           'warga_buta_p',
-          'kelompok_belajar_paket_a',
           'warga_belajar_paket_a_l',
           'warga_belajar_paket_a_p',
-          'kelompok_belajar_paket_b',
           'warga_belajar_paket_b_l',
           'warga_belajar_paket_b_p',
-          'kelompok_belajar_paket_c',
           'warga_belajar_paket_c_l',
           'warga_belajar_paket_c_p',
-          'kf',
           'warga_belajar_kf_l',
           'warga_belajar_kf_p',
-          'kelompok_paud',
           'paud_l',
           'paud_p',
           'kelompok_taman_bacaan',
           'taman_bacaan_l',
           'taman_bacaan_p',
-          'kelompok_bkb',
           'peserta_bkb_l',
           'peserta_bkb_p',
-          'ape_bkb',
-          'kelompok_simulasi_bkb',
           'kelompok_simulasi_bkb_l',
           'kelompok_simulasi_bkb_p',
-          'tutor_kf',
           'tutor_kf_l',
           'tutor_kf_p',
-          'tutor_paud',
           'tutor_paud_l',
           'tutor_paud_p',
-          'kader_bkb',
           'kader_bkb_l',
           'kader_bkb_p',
-          'kader_koperasi',
           'kader_koperasi_l',
           'kader_koperasi_p',
-          'kader_keterampilan',
           'kader_keterampilan_l',
           'kader_keterampilan_p',
-          'up2k_pemula_kelompok',
           'up2k_pemula_peserta_l',
           'up2k_pemula_peserta_p',
-          'up2k_madya_kelompok',
           'up2k_madya_peserta_l',
           'up2k_madya_peserta_p',
-          'up2k_utama_kelompok',
           'up2k_utama_peserta_l',
           'up2k_utama_peserta_p',
-          'up2k_mandiri_kelompok',
           'up2k_mandiri_peserta_l',
           'up2k_mandiri_peserta_p',
-          'koperasi_berbadan_hukum',
           'anggota_koperasi_l',
           'anggota_koperasi_p',
           'ibu_set_bkb',
-          'lp3_pkk',
           'lp3_pkk_l',
           'lp3_pkk_p',
-          'tp3_pkk',
           'tp3_pkk_l',
           'tp3_pkk_p',
-          'damas_pkk',
           'damas_pkk_l',
           'damas_pkk_p',
-          'keterangan',
         ];
       case PokjaKategori.pokja3:
         return [
@@ -672,75 +694,90 @@ extension PokjaKategoriLabel on PokjaKategori {
         return 'Program Lingkungan';
       case 'program_perencanaan':
         return 'Program Perencanaan';
-      case 'kelompok_warga_buta': return 'Warga Buta - Jml KLP';
-      case 'warga_buta_l': return 'Warga Buta (L)';
-      case 'warga_buta_p': return 'Warga Buta (P)';
-      case 'kelompok_belajar_paket_a': return 'Kelompok Belajar Paket A';
-      case 'warga_belajar_paket_a_l': return 'Warga Belajar Paket A (L)';
-      case 'warga_belajar_paket_a_p': return 'Warga Belajar Paket A (P)';
-      case 'kelompok_belajar_paket_b': return 'Kelompok Belajar Paket B';
-      case 'warga_belajar_paket_b_l': return 'Warga Belajar Paket B (L)';
-      case 'warga_belajar_paket_b_p': return 'Warga Belajar Paket B (P)';
-      case 'kelompok_belajar_paket_c': return 'Kelompok Belajar Paket C';
-      case 'warga_belajar_paket_c_l': return 'Warga Belajar Paket C (L)';
-      case 'warga_belajar_paket_c_p': return 'Warga Belajar Paket C (P)';
-      case 'kf': return 'Keaksaraan Fungsional (KF)';
-      case 'warga_belajar_kf_l': return 'Warga Belajar KF (L)';
-      case 'warga_belajar_kf_p': return 'Warga Belajar KF (P)';
-      case 'kelompok_paud': return 'PAUD - Jml KLP';
-      case 'paud_l': return 'PAUD Sejenis (L)';
-      case 'paud_p': return 'PAUD Sejenis (P)';
-      case 'kelompok_taman_bacaan': return 'Taman Bacaan - Jml KLP';
-      case 'taman_bacaan_l': return 'Taman Bacaan (L)';
-      case 'taman_bacaan_p': return 'Taman Bacaan (P)';
-      case 'kelompok_bkb': return 'BKB - Jml KLP';
-      case 'kelompok_bkb_l': return 'BKB - Jml KLP (L)';
-      case 'kelompok_bkb_p': return 'BKB - Jml KLP (P)';
-      case 'peserta_bkb_l': return 'Peserta BKB (L)';
-      case 'peserta_bkb_p': return 'Peserta BKB (P)';
-      case 'ape_bkb': return 'APE BKB';
-      case 'kelompok_simulasi_bkb': return 'BKB - Simulasi Jml KLP';
-      case 'kelompok_simulasi_bkb_l': return 'Simulasi BKB (L)';
-      case 'kelompok_simulasi_bkb_p': return 'Simulasi BKB (P)';
-      case 'tutor_kf': return 'Tutor KF Jml';
-      case 'tutor_kf_l': return 'Tutor KF (L)';
-      case 'tutor_kf_p': return 'Tutor KF (P)';
-      case 'tutor_paud': return 'Tutor PAUD Jml';
-      case 'tutor_paud_l': return 'Tutor PAUD (L)';
-      case 'tutor_paud_p': return 'Tutor PAUD (P)';
-      case 'kader_bkb': return 'Kader BKB Jml';
-      case 'kader_bkb_l': return 'Kader BKB (L)';
-      case 'kader_bkb_p': return 'Kader BKB (P)';
-      case 'kader_koperasi': return 'Kader Koperasi Jml';
-      case 'kader_koperasi_l': return 'Kader Koperasi (L)';
-      case 'kader_koperasi_p': return 'Kader Koperasi (P)';
-      case 'kader_keterampilan': return 'Kader Keterampilan Jml';
-      case 'kader_keterampilan_l': return 'Kader Keterampilan (L)';
-      case 'kader_keterampilan_p': return 'Kader Keterampilan (P)';
-      case 'up2k_pemula_kelompok': return 'UP2K Pemula Kelompok';
-      case 'up2k_pemula_peserta_l': return 'UP2K Pemula Peserta (L)';
-      case 'up2k_pemula_peserta_p': return 'UP2K Pemula Peserta (P)';
-      case 'up2k_madya_kelompok': return 'UP2K Madya Kelompok';
-      case 'up2k_madya_peserta_l': return 'UP2K Madya Peserta (L)';
-      case 'up2k_madya_peserta_p': return 'UP2K Madya Peserta (P)';
-      case 'up2k_utama_kelompok': return 'UP2K Utama Kelompok';
-      case 'up2k_utama_peserta_l': return 'UP2K Utama Peserta (L)';
-      case 'up2k_utama_peserta_p': return 'UP2K Utama Peserta (P)';
-      case 'up2k_mandiri_kelompok': return 'UP2K Mandiri Kelompok';
-      case 'up2k_mandiri_peserta_l': return 'UP2K Mandiri Peserta (L)';
-      case 'up2k_mandiri_peserta_p': return 'UP2K Mandiri Peserta (P)';
-      case 'anggota_koperasi_l': return 'Anggota Koperasi (L)';
-      case 'anggota_koperasi_p': return 'Anggota Koperasi (P)';
-      case 'ibu_set_bkb': return 'Ibu SET BKB';
-      case 'lp3_pkk': return 'LP3 PKK Jml';
-      case 'lp3_pkk_l': return 'LP3 PKK (L)';
-      case 'lp3_pkk_p': return 'LP3 PKK (P)';
-      case 'tp3_pkk': return 'TP3 PKK Jml';
-      case 'tp3_pkk_l': return 'TP3 PKK (L)';
-      case 'tp3_pkk_p': return 'TP3 PKK (P)';
-      case 'damas_pkk': return 'Damas PKK Jml';
-      case 'damas_pkk_l': return 'Damas PKK (L)';
-      case 'damas_pkk_p': return 'Damas PKK (P)';
+      // Pokja II — sesuai format tabel POKJA II kolom 3–36 (tanpa gender)
+      case 'jml_warga_buta': return '3 • Jml. Warga Yang Masih 3 (Tiga) Buta';
+      case 'kelompok_belajar_paket_a': return '4 • Paket A - Jml. KLP';
+      case 'warga_belajar_paket_a': return '5 • Paket A - Warga Belajar';
+      case 'kelompok_belajar_paket_b': return '6 • Paket B - Jml. KLP';
+      case 'warga_belajar_paket_b': return '7 • Paket B - Warga Belajar';
+      case 'kelompok_belajar_paket_c': return '8 • Paket C - Jml. KLP';
+      case 'warga_belajar_paket_c': return '9 • Paket C - Warga Belajar';
+      case 'kf': return '10 • KF - Jml. KLP';
+      case 'warga_belajar_kf': return '11 • KF - Warga Belajar';
+      case 'kelompok_paud': return '12 • PAUD Sejenis';
+      case 'jml_taman_bacaan': return '13 • Jml. Taman Bacaan / Perpustakaan';
+      case 'kelompok_bkb': return '14 • BKB - Jml. KLP';
+      case 'peserta_bkb': return '15 • BKB - Peserta';
+      case 'ape_bkb': return '16 • BKB - Jml. (Set) APE';
+      case 'kelompok_simulasi_bkb': return '17 • BKB - Jml. KLP Simulasi';
+      case 'tutor_kf': return '18 • Tutor KF';
+      case 'tutor_paud': return '19 • Tutor PAUD Sejenis';
+      case 'kader_bkb': return '20 • Kader BKB';
+      case 'kader_koperasi': return '21 • Kader Koperasi';
+      case 'kader_keterampilan': return '22 • Kader Keterampilan';
+      case 'lp3_pkk': return '23 • LP3 PKK';
+      case 'tp3_pkk': return '24 • TPK 3 PKK';
+      case 'damas_pkk': return '25 • Damas PKK';
+      case 'up2k_pemula_kelompok': return '26 • Pemula - Jml. KLP';
+      case 'up2k_pemula_peserta': return '27 • Pemula - Peserta';
+      case 'up2k_madya_kelompok': return '28 • Madya - Jml. KLP';
+      case 'up2k_madya_peserta': return '29 • Madya - Peserta';
+      case 'up2k_utama_kelompok': return '30 • Utama - Jml. KLP';
+      case 'up2k_utama_peserta': return '31 • Utama - Peserta';
+      case 'up2k_mandiri_kelompok': return '32 • Mandiri - Jml. KLP';
+      case 'up2k_mandiri_peserta': return '33 • Mandiri - Peserta';
+      case 'koperasi_berbadan_hukum': return '34 • Koperasi Berbadan Hukum - Jml. KLP';
+      case 'anggota_koperasi': return '35 • Koperasi Berbadan Hukum - Jml. Anggota';
+      // LEGACY (laporan lama, tetap terbaca)
+      case 'kelompok_warga_buta': return 'Warga Buta - Jml KLP (lama)';
+      case 'warga_buta_l': return 'Warga Buta (L) (lama)';
+      case 'warga_buta_p': return 'Warga Buta (P) (lama)';
+      case 'warga_belajar_paket_a_l': return 'Warga Belajar Paket A (L) (lama)';
+      case 'warga_belajar_paket_a_p': return 'Warga Belajar Paket A (P) (lama)';
+      case 'warga_belajar_paket_b_l': return 'Warga Belajar Paket B (L) (lama)';
+      case 'warga_belajar_paket_b_p': return 'Warga Belajar Paket B (P) (lama)';
+      case 'warga_belajar_paket_c_l': return 'Warga Belajar Paket C (L) (lama)';
+      case 'warga_belajar_paket_c_p': return 'Warga Belajar Paket C (P) (lama)';
+      case 'warga_belajar_kf_l': return 'Warga Belajar KF (L) (lama)';
+      case 'warga_belajar_kf_p': return 'Warga Belajar KF (P) (lama)';
+      case 'paud_l': return 'PAUD Sejenis (L) (lama)';
+      case 'paud_p': return 'PAUD Sejenis (P) (lama)';
+      case 'kelompok_taman_bacaan': return 'Taman Bacaan - Jml KLP (lama)';
+      case 'taman_bacaan_l': return 'Taman Bacaan (L) (lama)';
+      case 'taman_bacaan_p': return 'Taman Bacaan (P) (lama)';
+      case 'kelompok_bkb_l': return 'BKB - Jml KLP (L) (lama)';
+      case 'kelompok_bkb_p': return 'BKB - Jml KLP (P) (lama)';
+      case 'peserta_bkb_l': return 'Peserta BKB (L) (lama)';
+      case 'peserta_bkb_p': return 'Peserta BKB (P) (lama)';
+      case 'kelompok_simulasi_bkb_l': return 'Simulasi BKB (L) (lama)';
+      case 'kelompok_simulasi_bkb_p': return 'Simulasi BKB (P) (lama)';
+      case 'tutor_kf_l': return 'Tutor KF (L) (lama)';
+      case 'tutor_kf_p': return 'Tutor KF (P) (lama)';
+      case 'tutor_paud_l': return 'Tutor PAUD (L) (lama)';
+      case 'tutor_paud_p': return 'Tutor PAUD (P) (lama)';
+      case 'kader_bkb_l': return 'Kader BKB (L) (lama)';
+      case 'kader_bkb_p': return 'Kader BKB (P) (lama)';
+      case 'kader_koperasi_l': return 'Kader Koperasi (L) (lama)';
+      case 'kader_koperasi_p': return 'Kader Koperasi (P) (lama)';
+      case 'kader_keterampilan_l': return 'Kader Keterampilan (L) (lama)';
+      case 'kader_keterampilan_p': return 'Kader Keterampilan (P) (lama)';
+      case 'up2k_pemula_peserta_l': return 'UP2K Pemula Peserta (L) (lama)';
+      case 'up2k_pemula_peserta_p': return 'UP2K Pemula Peserta (P) (lama)';
+      case 'up2k_madya_peserta_l': return 'UP2K Madya Peserta (L) (lama)';
+      case 'up2k_madya_peserta_p': return 'UP2K Madya Peserta (P) (lama)';
+      case 'up2k_utama_peserta_l': return 'UP2K Utama Peserta (L) (lama)';
+      case 'up2k_utama_peserta_p': return 'UP2K Utama Peserta (P) (lama)';
+      case 'up2k_mandiri_peserta_l': return 'UP2K Mandiri Peserta (L) (lama)';
+      case 'up2k_mandiri_peserta_p': return 'UP2K Mandiri Peserta (P) (lama)';
+      case 'anggota_koperasi_l': return 'Anggota Koperasi (L) (lama)';
+      case 'anggota_koperasi_p': return 'Anggota Koperasi (P) (lama)';
+      case 'ibu_set_bkb': return 'Ibu SET BKB (lama)';
+      case 'lp3_pkk_l': return 'LP3 PKK (L) (lama)';
+      case 'lp3_pkk_p': return 'LP3 PKK (P) (lama)';
+      case 'tp3_pkk_l': return 'TP3 PKK (L) (lama)';
+      case 'tp3_pkk_p': return 'TP3 PKK (P) (lama)';
+      case 'damas_pkk_l': return 'Damas PKK (L) (lama)';
+      case 'damas_pkk_p': return 'Damas PKK (P) (lama)';
       case 'keterangan': return 'Keterangan';
       case 'evaluasi': return 'Evaluasi';
       // Pokja III — sesuai format DATA KEGIATAN PKK

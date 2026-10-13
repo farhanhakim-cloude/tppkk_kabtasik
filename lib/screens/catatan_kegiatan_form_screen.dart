@@ -382,125 +382,84 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
         ];
 
       case PokjaKategori.pokja2:
+        // ✅ SESUAI GAMBAR TABEL POKJA II (kolom 3–36, tanpa gender).
+        // Kolom 1-2 = No & Nama Wilayah (otomatis), kolom 36 = Keterangan.
         return const [
           _PokjaSubItem(
             title: 'Pendidikan Keterampilan',
-            deskripsi: 'Warga Buta, Paket A-C, KF, PAUD, Taman Bacaan',
+            deskripsi: 'Kolom 3–13 • Buta, Paket A-C, KF, PAUD, Bacaan',
             icon: Icons.school_rounded,
             groupFields: {
-              'Jml. Warga Yang Masih 3 Buta': {
-                'Laki-laki': 'warga_buta_l',
-                'Perempuan': 'warga_buta_p',
+              '3 • Jml. Warga Yang Masih 3 (Tiga) Buta': 'jml_warga_buta',
+              'Paket A': {
+                '4 • Jml. KLP': 'kelompok_belajar_paket_a',
+                '5 • Warga Belajar': 'warga_belajar_paket_a',
               },
-              'Paket A - Jml KLP': 'kelompok_belajar_paket_a',
-              'Paket A - Warga Belajar': {
-                'Laki-laki': 'warga_belajar_paket_a_l',
-                'Perempuan': 'warga_belajar_paket_a_p',
+              'Paket B': {
+                '6 • Jml. KLP': 'kelompok_belajar_paket_b',
+                '7 • Warga Belajar': 'warga_belajar_paket_b',
               },
-              'Paket B - Jml KLP': 'kelompok_belajar_paket_b',
-              'Paket B - Warga Belajar': {
-                'Laki-laki': 'warga_belajar_paket_b_l',
-                'Perempuan': 'warga_belajar_paket_b_p',
+              'Paket C': {
+                '8 • Jml. KLP': 'kelompok_belajar_paket_c',
+                '9 • Warga Belajar': 'warga_belajar_paket_c',
               },
-              'Paket C - Jml KLP': 'kelompok_belajar_paket_c',
-              'Paket C - Warga Belajar': {
-                'Laki-laki': 'warga_belajar_paket_c_l',
-                'Perempuan': 'warga_belajar_paket_c_p',
+              'KF': {
+                '10 • Jml. KLP': 'kf',
+                '11 • Warga Belajar': 'warga_belajar_kf',
               },
-              'KF - Jml KLP': 'kf',
-              'KF - Warga Belajar': {
-                'Laki-laki': 'warga_belajar_kf_l',
-                'Perempuan': 'warga_belajar_kf_p',
-              },
-              'PAUD Sejenis': {
-                'Laki-laki': 'paud_l',
-                'Perempuan': 'paud_p',
-              },
-              'Taman Bacaan/Perpustakaan': {
-                'Laki-laki': 'taman_bacaan_l',
-                'Perempuan': 'taman_bacaan_p',
-              },
+              '12 • PAUD Sejenis': 'kelompok_paud',
+              '13 • Jml. Taman Bacaan / Perpustakaan': 'jml_taman_bacaan',
             },
           ),
           _PokjaSubItem(
-            title: 'Jumlah Kader Khusus',
-            deskripsi: 'BKB, Tutor, Koperasi, Keterampilan, dll',
+            title: 'BKB & Kader Khusus',
+            deskripsi: 'Kolom 14–25 • BKB, Tutor, Kader, Dilatih',
             icon: Icons.badge_rounded,
             groupFields: {
-              'BKB - Jml KLP': 'kelompok_bkb',
-              'BKB - Peserta': {
-                'Laki-laki': 'peserta_bkb_l',
-                'Perempuan': 'peserta_bkb_p',
+              'BKB': {
+                '14 • Jml. KLP': 'kelompok_bkb',
+                '15 • Peserta': 'peserta_bkb',
+                '16 • Jml. (Set) APE': 'ape_bkb',
+                '17 • Jml. KLP Simulasi': 'kelompok_simulasi_bkb',
               },
-              'BKB - Jml Ibu (SET)': 'ibu_set_bkb',
-              'BKB - Jml APE': 'ape_bkb',
-              'BKB - Simulasi': {
-                'Laki-laki': 'kelompok_simulasi_bkb_l',
-                'Perempuan': 'kelompok_simulasi_bkb_p',
+              'Kader Khusus': {
+                '18 • Tutor KF': 'tutor_kf',
+                '19 • Tutor PAUD Sejenis': 'tutor_paud',
+                '20 • Kader BKB': 'kader_bkb',
+                '21 • Kader Koperasi': 'kader_koperasi',
+                '22 • Kader Keterampilan': 'kader_keterampilan',
               },
-              'Tutor - KF': {
-                'Laki-laki': 'tutor_kf_l',
-                'Perempuan': 'tutor_kf_p',
-              },
-              'Tutor - PAUD Sejenis': {
-                'Laki-laki': 'tutor_paud_l',
-                'Perempuan': 'tutor_paud_p',
-              },
-              'Kader BKB': {
-                'Laki-laki': 'kader_bkb_l',
-                'Perempuan': 'kader_bkb_p',
-              },
-              'Kader Koperasi': {
-                'Laki-laki': 'kader_koperasi_l',
-                'Perempuan': 'kader_koperasi_p',
-              },
-              'Kader Keterampilan': {
-                'Laki-laki': 'kader_keterampilan_l',
-                'Perempuan': 'kader_keterampilan_p',
-              },
-              'LP3 PKK': {
-                'Laki-laki': 'lp3_pkk_l',
-                'Perempuan': 'lp3_pkk_p',
-              },
-              'TP3 PKK': {
-                'Laki-laki': 'tp3_pkk_l',
-                'Perempuan': 'tp3_pkk_p',
-              },
-              'Damas PKK': {
-                'Laki-laki': 'damas_pkk_l',
-                'Perempuan': 'damas_pkk_p',
+              'Jumlah Kader Yang Sudah Dilatih': {
+                '23 • LP3 PKK': 'lp3_pkk',
+                '24 • TPK 3 PKK': 'tp3_pkk',
+                '25 • Damas PKK': 'damas_pkk',
               },
             },
           ),
           _PokjaSubItem(
             title: 'Pengembangan Kehidupan Berkoperasi',
-            deskripsi: 'Pemula, Madya, Utama, Mandiri, Berbadan Hukum',
+            deskripsi: 'Kolom 26–35 • Pemula, Madya, Utama, Mandiri, Hukum',
             icon: Icons.storefront_rounded,
             groupFields: {
-              'Pemula - Jml KLP': 'up2k_pemula_kelompok',
-              'Pemula - Peserta': {
-                'Laki-laki': 'up2k_pemula_peserta_l',
-                'Perempuan': 'up2k_pemula_peserta_p',
+              'Pemula': {
+                '26 • Jml. KLP': 'up2k_pemula_kelompok',
+                '27 • Peserta': 'up2k_pemula_peserta',
               },
-              'Madya - Jml KLP': 'up2k_madya_kelompok',
-              'Madya - Peserta': {
-                'Laki-laki': 'up2k_madya_peserta_l',
-                'Perempuan': 'up2k_madya_peserta_p',
+              'Madya': {
+                '28 • Jml. KLP': 'up2k_madya_kelompok',
+                '29 • Peserta': 'up2k_madya_peserta',
               },
-              'Utama - Jml KLP': 'up2k_utama_kelompok',
-              'Utama - Peserta': {
-                'Laki-laki': 'up2k_utama_peserta_l',
-                'Perempuan': 'up2k_utama_peserta_p',
+              'Utama': {
+                '30 • Jml. KLP': 'up2k_utama_kelompok',
+                '31 • Peserta': 'up2k_utama_peserta',
               },
-              'Mandiri - Jml KLP': 'up2k_mandiri_kelompok',
-              'Mandiri - Peserta': {
-                'Laki-laki': 'up2k_mandiri_peserta_l',
-                'Perempuan': 'up2k_mandiri_peserta_p',
+              'Mandiri': {
+                '32 • Jml. KLP': 'up2k_mandiri_kelompok',
+                '33 • Peserta': 'up2k_mandiri_peserta',
               },
-              'Berbadan Hukum - Jml KLP': 'koperasi_berbadan_hukum',
-              'Berbadan Hukum - Jml Anggota': {
-                'Laki-laki': 'anggota_koperasi_l',
-                'Perempuan': 'anggota_koperasi_p',
+              'Koperasi Berbadan Hukum': {
+                '34 • Jml. KLP': 'koperasi_berbadan_hukum',
+                '35 • Jml. Anggota': 'anggota_koperasi',
               },
             },
           ),
@@ -2247,13 +2206,19 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                                     ),
                                   );
                                 }).toList(),
-                                // Total otomatis L+P — yang dikirim ke website
-                                // adalah jumlahnya (kolom agregat, tanpa gender).
-                                _pairTotalChip(
-                                  subFields.values.map((v) => v as String).toList(),
-                                  c,
-                                  pal.sub,
-                                ),
+                                // Total otomatis hanya untuk pasangan gender (L/P) —
+                                // tidak tampil untuk kelompok Pokja II baru (KLP vs
+                                // Peserta satuannya beda, tanpa gender).
+                                if (subFields.keys.every((k) =>
+                                    k == 'Laki-laki' ||
+                                    k == 'Perempuan' ||
+                                    k == 'L' ||
+                                    k == 'P'))
+                                  _pairTotalChip(
+                                    subFields.values.map((v) => v as String).toList(),
+                                    c,
+                                    pal.sub,
+                                  ),
                               ],
                             ),
                           ),
@@ -3601,7 +3566,7 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Tanggal kegiatan',
+                                  'Tanggal pengisian',
                                   style: GoogleFonts.plusJakartaSans(
                                     fontSize: 11,
                                     color: sub,
