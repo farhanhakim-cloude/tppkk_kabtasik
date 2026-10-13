@@ -39,6 +39,8 @@ class _DataKeluargaDasawismaFormScreenState
   late TextEditingController _jmlBalitaCtrl;
   late TextEditingController _jmlBalitaLCtrl;
   late TextEditingController _jmlBalitaPCtrl;
+  // Stunting per rumah — layer oranye Peta Sebaran (Pokja 4).
+  late TextEditingController _jmlStuntingCtrl;
   late TextEditingController _jmlAnakCtrl;
   late TextEditingController _jmlPusCtrl;
   late TextEditingController _jmlWusCtrl;
@@ -105,6 +107,9 @@ class _DataKeluargaDasawismaFormScreenState
     );
     _jmlBalitaPCtrl = TextEditingController(
       text: d?.jumlahBalitaP.toString() ?? '0',
+    );
+    _jmlStuntingCtrl = TextEditingController(
+      text: d?.jumlahBalitaStunting.toString() ?? '0',
     );
     _jmlAnakCtrl = TextEditingController(
       text: d != null && d.jumlahAnak != 0 ? d.jumlahAnak.toString() : '',
@@ -196,6 +201,7 @@ class _DataKeluargaDasawismaFormScreenState
     _jmlBalitaCtrl.dispose();
     _jmlBalitaLCtrl.dispose();
     _jmlBalitaPCtrl.dispose();
+    _jmlStuntingCtrl.dispose();
     _jmlAnakCtrl.dispose();
     _jmlPusCtrl.dispose();
     _jmlWusCtrl.dispose();
@@ -602,6 +608,21 @@ class _DataKeluargaDasawismaFormScreenState
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
+    final balita = (int.tryParse(_jmlBalitaLCtrl.text) ?? 0) + (int.tryParse(_jmlBalitaPCtrl.text) ?? 0);
+    final stunt = int.tryParse(_jmlStuntingCtrl.text) ?? 0;
+    if (stunt > balita) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Balita stunting tidak boleh melebihi total balita (L+P).',
+              style: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w600)),
+          backgroundColor: const Color(0xFFDC2626),
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          margin: const EdgeInsets.all(16),
+        ),
+      );
+      return;
+    }
     setState(() => _saving = true);
     HapticFeedback.mediumImpact();
     final enteredGenderCount =
@@ -630,6 +651,7 @@ class _DataKeluargaDasawismaFormScreenState
       jumlahBalita: int.tryParse(_jmlBalitaCtrl.text) ?? 0,
       jumlahBalitaL: int.tryParse(_jmlBalitaLCtrl.text) ?? 0,
       jumlahBalitaP: int.tryParse(_jmlBalitaPCtrl.text) ?? 0,
+      jumlahBalitaStunting: int.tryParse(_jmlStuntingCtrl.text) ?? 0,
       jumlahAnak: int.tryParse(_jmlAnakCtrl.text) ?? 0,
       jumlahPus: int.tryParse(_jmlPusCtrl.text) ?? 0,
       jumlahWus: int.tryParse(_jmlWusCtrl.text) ?? 0,
@@ -974,6 +996,13 @@ class _DataKeluargaDasawismaFormScreenState
                   'Balita L',
                   _jmlBalitaPCtrl,
                   'Balita P',
+                ),
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: _jmlStuntingCtrl,
+                  keyboardType: TextInputType.number,
+                  style: GoogleFonts.plusJakartaSans(fontSize: 13.5),
+                  decoration: _inputDeco('Balita Stunting (oranye di Peta)', '0'),
                 ),
                 const SizedBox(height: 8),
                 _twoField(_jmlBalitaCtrl, 'Balita Total', _jmlAnakCtrl, 'Anak'),

@@ -68,6 +68,8 @@ class _InputKeluargaDasawismaScreenState
   final _jmlPerempuanCtrl = TextEditingController(text: '0');
   final _jmlBalitaLCtrl = TextEditingController(text: '0');
   final _jmlBalitaPCtrl = TextEditingController(text: '0');
+  // Stunting per rumah — layer oranye Peta Sebaran (Pokja 4).
+  final _jmlStuntingCtrl = TextEditingController(text: '0');
   final _jmlPusCtrl = TextEditingController(text: '0');
   final _jmlWusCtrl = TextEditingController(text: '0');
   final _jmlBumilCtrl = TextEditingController(text: '0');
@@ -111,6 +113,7 @@ class _InputKeluargaDasawismaScreenState
       _jmlPerempuanCtrl.text = d.jumlahPerempuan.toString();
       _jmlBalitaLCtrl.text = d.jumlahBalitaL.toString();
       _jmlBalitaPCtrl.text = d.jumlahBalitaP.toString();
+      _jmlStuntingCtrl.text = d.jumlahBalitaStunting.toString();
       _jmlPusCtrl.text = d.jumlahPus.toString();
       _jmlWusCtrl.text = d.jumlahWus.toString();
       _jmlBumilCtrl.text = d.jumlahIbuHamil.toString();
@@ -158,6 +161,7 @@ class _InputKeluargaDasawismaScreenState
       _dasaWismaCtrl, _rtCtrl, _rwCtrl, _dusunCtrl, _desaCtrl, _kecamatanCtrl,
       _namaKrtCtrl, _nikKepalaCtrl, _noKkCtrl, _alamatCtrl, _jmlKkCtrl,
       _jmlLakiCtrl, _jmlPerempuanCtrl, _jmlBalitaLCtrl, _jmlBalitaPCtrl,
+      _jmlStuntingCtrl,
       _jmlPusCtrl, _jmlWusCtrl, _jmlBumilCtrl, _jmlBusuiCtrl, _jmlLansiaCtrl,
       _jmlTigaButaLCtrl, _jmlTigaButaPCtrl,
     ]) {
@@ -198,6 +202,12 @@ class _InputKeluargaDasawismaScreenState
         final p = _parseInt(_jmlPerempuanCtrl.text);
         if (l + p == 0) {
           _showError('Minimal isi 1 anggota keluarga (Laki-laki atau Perempuan)');
+          return false;
+        }
+        final balita = _parseInt(_jmlBalitaLCtrl.text) + _parseInt(_jmlBalitaPCtrl.text);
+        final stunt = _parseInt(_jmlStuntingCtrl.text);
+        if (stunt > balita) {
+          _showError('Balita stunting tidak boleh melebihi total balita (L+P)');
           return false;
         }
         return true;
@@ -281,6 +291,7 @@ class _InputKeluargaDasawismaScreenState
       jumlahBalita: _parseInt(_jmlBalitaLCtrl.text) + _parseInt(_jmlBalitaPCtrl.text),
       jumlahBalitaL: _parseInt(_jmlBalitaLCtrl.text),
       jumlahBalitaP: _parseInt(_jmlBalitaPCtrl.text),
+      jumlahBalitaStunting: _parseInt(_jmlStuntingCtrl.text),
       jumlahPus: _parseInt(_jmlPusCtrl.text),
       jumlahWus: _parseInt(_jmlWusCtrl.text),
       jumlahTigaButa: _parseInt(_jmlTigaButaLCtrl.text) + _parseInt(_jmlTigaButaPCtrl.text),
@@ -488,6 +499,7 @@ class _InputKeluargaDasawismaScreenState
         const SizedBox(height: 14),
         _sectionLabel('Kategori Khusus'),
         _twoField(_jmlBalitaLCtrl, 'Balita L', '0', _jmlBalitaPCtrl, 'Balita P', '0'),
+        _field(_jmlStuntingCtrl, 'Balita Stunting', '0 — oranye di Peta', Icons.child_care_rounded, isNumber: true),
         _twoField(_jmlPusCtrl, 'PUS', '0', _jmlWusCtrl, 'WUS', '0'),
         _twoField(_jmlBumilCtrl, 'Ibu Hamil', '0', _jmlBusuiCtrl, 'Ibu Menyusui', '0'),
         _twoField(_jmlLansiaCtrl, 'Lansia', '0', _jmlTigaButaLCtrl, '3 Buta L', '0'),

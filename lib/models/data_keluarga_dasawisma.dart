@@ -92,6 +92,9 @@ class DataKeluargaDasawisma {
   final int jumlahBalita;
   final int jumlahBalitaL;
   final int jumlahBalitaP;
+  // Stunting per rumah — layer oranye Peta Sebaran (Pokja 4 kesehatan).
+  // 0 = tidak ada kasus. Wajib <= Balita L + Balita P (divalidasi backend).
+  final int jumlahBalitaStunting;
   final int jumlahAnak;
   final int jumlahPus; // Pasangan Usia Subur
   final int jumlahWus; // Wanita Usia Subur
@@ -146,6 +149,7 @@ class DataKeluargaDasawisma {
     this.jumlahBalita = 1,
     this.jumlahBalitaL = 0,
     this.jumlahBalitaP = 0,
+    this.jumlahBalitaStunting = 0,
     this.jumlahAnak = 1,
     this.jumlahPus = 1,
     this.jumlahWus = 1,
@@ -195,6 +199,7 @@ class DataKeluargaDasawisma {
     int? jumlahBalita,
     int? jumlahBalitaL,
     int? jumlahBalitaP,
+    int? jumlahBalitaStunting,
     int? jumlahAnak,
     int? jumlahPus,
     int? jumlahWus,
@@ -244,6 +249,7 @@ class DataKeluargaDasawisma {
       jumlahBalita: jumlahBalita ?? this.jumlahBalita,
       jumlahBalitaL: jumlahBalitaL ?? this.jumlahBalitaL,
       jumlahBalitaP: jumlahBalitaP ?? this.jumlahBalitaP,
+      jumlahBalitaStunting: jumlahBalitaStunting ?? this.jumlahBalitaStunting,
       jumlahAnak: jumlahAnak ?? this.jumlahAnak,
       jumlahPus: jumlahPus ?? this.jumlahPus,
       jumlahWus: jumlahWus ?? this.jumlahWus,
@@ -310,6 +316,9 @@ class DataKeluargaDasawisma {
         jumlahAnggota: _p(j['jumlahAnggota']),
         jumlahKk: _p(j['jumlahKk']),
         jumlahBalita: _p(j['jumlahBalita']),
+        jumlahBalitaL: _p(j['jumlahBalitaL']),
+        jumlahBalitaP: _p(j['jumlahBalitaP']),
+        jumlahBalitaStunting: _p(j['jumlahBalitaStunting'] ?? j['jumlah_balita_stunting']),
         jumlahAnak: _p(j['jumlahAnak']),
         jumlahPus: _p(j['jumlahPus']),
         jumlahWus: _p(j['jumlahWus']),
@@ -361,6 +370,7 @@ class DataKeluargaDasawisma {
         jumlahBalita: 0,
         jumlahBalitaL: _p(j['jumlah_balita_l']),
         jumlahBalitaP: _p(j['jumlah_balita_p']),
+        jumlahBalitaStunting: _p(j['jumlah_balita_stunting']),
         jumlahAnak: 0,
         jumlahPus: _p(j['jumlah_pus']),
         jumlahWus: _p(j['jumlah_wus']),
@@ -410,6 +420,7 @@ class DataKeluargaDasawisma {
     // Demografi + rumah tangga (sumber rekap otomatis)
     'jumlah_balita_l': jumlahBalitaL,
     'jumlah_balita_p': jumlahBalitaP,
+    'jumlah_balita_stunting': jumlahBalitaStunting,
     'jumlah_pus': jumlahPus,
     'jumlah_wus': jumlahWus,
     'jumlah_ibu_hamil': jumlahIbuHamil,
@@ -450,6 +461,9 @@ class DataKeluargaDasawisma {
     'jumlahAnggota': jumlahAnggota,
     'jumlahKk': jumlahKk,
     'jumlahBalita': jumlahBalita,
+    'jumlahBalitaL': jumlahBalitaL,
+    'jumlahBalitaP': jumlahBalitaP,
+    'jumlahBalitaStunting': jumlahBalitaStunting,
     'jumlahAnak': jumlahAnak,
     'jumlahPus': jumlahPus,
     'jumlahWus': jumlahWus,

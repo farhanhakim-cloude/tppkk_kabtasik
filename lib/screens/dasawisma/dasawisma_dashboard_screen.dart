@@ -53,6 +53,7 @@ class _DasawismaDashboardScreenState extends State<DasawismaDashboardScreen> {
   int _totalKk = 0;
   int _totalJiwa = 0;
   int _totalBalita = 0;
+  int _totalStunting = 0;
   int _totalBumil = 0;
   int _totalKegiatan = 0;
   int _pendingKk = 0;
@@ -121,11 +122,13 @@ class _DasawismaDashboardScreenState extends State<DasawismaDashboardScreen> {
 
       int totalJiwa = 0;
       int totalBalita = 0;
+      int totalStunting = 0;
       int pending = 0;
       int approved = 0;
       for (final kk in listKk) {
         totalJiwa += (kk.jumlahLakiLaki + kk.jumlahPerempuan);
         totalBalita += (kk.jumlahBalitaL + kk.jumlahBalitaP);
+        totalStunting += kk.jumlahBalitaStunting;
         final s = kk.status.toLowerCase();
         if (s == 'approved' || s == 'disetujui') {
           approved++;
@@ -140,6 +143,7 @@ class _DasawismaDashboardScreenState extends State<DasawismaDashboardScreen> {
         _totalKk = listKk.length;
         _totalJiwa = totalJiwa;
         _totalBalita = totalBalita;
+        _totalStunting = totalStunting;
         _totalBumil = listBumil.length;
         _totalKegiatan = listKeg.length;
         _pendingKk = pending;
@@ -459,6 +463,30 @@ class _DasawismaDashboardScreenState extends State<DasawismaDashboardScreen> {
           const SizedBox(height: 8),
           Text('$_pendingKk menunggu  •  $_totalJiwa jiwa  •  $_totalBalita balita',
               style: GoogleFonts.plusJakartaSans(fontSize: 12, color: muted)),
+          if (_totalStunting > 0) ...[
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFFBEB),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFFF59E0B).withValues(alpha: 0.4)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.warning_amber_rounded, color: Color(0xFFF59E0B), size: 20),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      '$_totalStunting balita stunting terdata — pin oranye di Peta Sebaran kabupaten.',
+                      style: GoogleFonts.plusJakartaSans(
+                          fontSize: 12, fontWeight: FontWeight.w600, color: const Color(0xFF92400E)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );
