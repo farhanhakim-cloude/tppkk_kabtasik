@@ -43,3 +43,8 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Signing secrets — JANGAN commit (hilang = tak bisa update aplikasi selamanya)
+android/key.properties
+android/*.jks
+android/*.keystore

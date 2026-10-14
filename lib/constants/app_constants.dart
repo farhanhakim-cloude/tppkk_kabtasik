@@ -9,6 +9,14 @@ class AppConstants {
   // 🔥 SEMUA DI 1 LAPTOP (Laravel & Flutter Web sama-sama di sini)
   static const String _configuredBaseUrl = String.fromEnvironment('API_BASE_URL');
   static String get baseUrl {
+    // Pengaman rilis: AAB tanpa --dart-define=API_BASE_URL akan crash jelas
+    // di awal, bukan diam-diam nelpon 127.0.0.1 di HP pengguna.
+    if (kReleaseMode && _configuredBaseUrl.isEmpty) {
+      throw StateError(
+        'API_BASE_URL kosong saat release — build ulang dengan '
+        '--dart-define=API_BASE_URL=https://domain/api/',
+      );
+    }
     if (_configuredBaseUrl.isNotEmpty) {
       return _configuredBaseUrl.endsWith('/')
           ? _configuredBaseUrl

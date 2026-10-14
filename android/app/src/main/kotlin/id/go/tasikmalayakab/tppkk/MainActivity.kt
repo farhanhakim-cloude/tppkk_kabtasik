@@ -1,4 +1,4 @@
-package com.example.tppkk_kabtasik
+package id.go.tasikmalayakab.tppkk
 
 import io.flutter.embedding.android.FlutterActivity
 
