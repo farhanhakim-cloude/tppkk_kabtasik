@@ -648,7 +648,9 @@ class _BumilIbuFormScreenState extends State<BumilIbuFormScreen> {
                             : Text(_isEdit ? 'Perbarui' : 'Simpan',
                                 style: GoogleFonts.plusJakartaSans(
                                     fontSize: 14,
-                                    fontWeight: FontWeight.w700))))
+                                    fontWeight: FontWeight.w700)))),
+                // Ruang nav HP: tombol tidak ketutup tombol sistem.
+                SizedBox(height: MediaQuery.of(context).viewPadding.bottom + 16),
               ])),
     );
   }

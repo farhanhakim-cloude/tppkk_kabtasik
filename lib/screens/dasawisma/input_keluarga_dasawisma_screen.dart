@@ -397,7 +397,10 @@ class _InputKeluargaDasawismaScreenState
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomNav(),
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: _buildBottomNav(),
+      ),
     );
   }
 
@@ -587,7 +590,7 @@ class _InputKeluargaDasawismaScreenState
   Widget _buildBottomNav() {
     final isLast = _currentStep == 4;
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, -3))],

@@ -308,11 +308,11 @@ class _MapPickerScreenState extends State<MapPickerScreen> {
               ),
             ),
 
-          // Panel koordinat.
+          // Panel koordinat (naik di atas nav HP).
           Positioned(
             left: 16,
             right: 16,
-            bottom: 16,
+            bottom: 16 + MediaQuery.of(context).viewPadding.bottom,
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(

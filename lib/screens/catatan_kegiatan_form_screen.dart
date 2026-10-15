@@ -4127,6 +4127,8 @@ class _CatatanKegiatanFormScreenState extends State<CatatanKegiatanFormScreen> {
                 style: GoogleFonts.plusJakartaSans(fontSize: 11, color: sub),
               ),
             ),
+            // Ruang nav HP: tombol tidak ketutup tombol sistem.
+            SizedBox(height: MediaQuery.of(context).viewPadding.bottom + 16),
           ],
         ),
       ),

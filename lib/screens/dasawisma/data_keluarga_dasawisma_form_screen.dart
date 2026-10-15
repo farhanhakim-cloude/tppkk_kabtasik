@@ -1434,6 +1434,8 @@ class _DataKeluargaDasawismaFormScreenState
                       ),
               ),
             ),
+            // Ruang nav HP: tombol tidak ketutup tombol sistem.
+            SizedBox(height: MediaQuery.of(context).viewPadding.bottom + 16),
           ],
         ),
       ),
